@@ -54,7 +54,7 @@ jobs:
                   if 'already exists' in result.stderr.lower():
                       print(f'[SKIP] Label: {name} (already exists)')
                   else:
-                      print(f'[ERR] Label: {name} - {result.stderr[:100]}')
+                      print(f'[WARN] Label: {name} - {result.stderr[:80]}')
           PYEOF
 
       - name: Create milestones via API
@@ -68,27 +68,10 @@ jobs:
               data = yaml.safe_load(f)
 
           print(f"Creating {len(data.get('milestones', []))} milestones...")
-          
-          # Get existing milestones first
-          result = subprocess.run(
-              ['gh', 'api', 'repos/{owner}/{repo}/milestones', '-X', 'GET'],
-              capture_output=True, text=True, env={**__import__('os').environ, 'GH_TOKEN': __import__('os').environ.get('GH_TOKEN', '')}
-          )
-          existing_milestones = set()
-          if result.returncode == 0 and result.stdout.strip():
-              try:
-                  existing_milestones = {m['title'] for m in json.loads(result.stdout)}
-              except:
-                  pass
-          print(f"Existing milestones: {existing_milestones}")
 
           for ms in data.get('milestones', []):
               title = ms['title']
               desc = ms.get('description', '')
-              
-              if title in existing_milestones:
-                  print(f'[SKIP] Milestone: {title} (already exists)')
-                  continue
               
               # Use gh api to create milestone
               result = subprocess.run(
@@ -97,18 +80,27 @@ jobs:
               )
               if result.returncode == 0:
                   print(f'[OK] Milestone: {title}')
-                  existing_milestones.add(title)
               else:
-                  print(f'[ERR] Milestone: {title} - {result.stderr[:100]}')
+                  if 'already exists' in result.stderr.lower() or 'Validation Failed' in result.stderr:
+                      print(f'[SKIP] Milestone: {title} (already exists)')
+                  else:
+                      print(f'[ERR] Milestone: {title}')
+                      print(f'      {result.stderr[:100]}')
+                      # Try to get existing
+                      get_result = subprocess.run(
+                          ['gh', 'api', 'repos/{owner}/{repo}/milestones', '-X', 'GET'],
+                          capture_output=True, text=True
+                      )
+                      if get_result.returncode == 0:
+                          print(f'      Available: {get_result.stdout[:200]}')
           PYEOF
 
-      - name: Get milestone numbers
+      - name: Get milestone mapping
         run: |
           python3 << 'PYEOF'
           import yaml
           import subprocess
           import json
-          import os
 
           with open('TASKS.yaml', encoding='utf-8') as f:
               data = yaml.safe_load(f)
@@ -123,14 +115,13 @@ jobs:
               try:
                   for m in json.loads(result.stdout):
                       milestones[m['title']] = m['number']
-              except:
-                  pass
+                      print(f"Found milestone: {m['title']} -> #{m['number']}")
+              except Exception as e:
+                  print(f"Error parsing: {e}")
           
-          # Save to file for next step
+          # Save to file
           with open('milestones.json', 'w') as f:
               json.dump(milestones, f)
-          
-          print(f"Milestones mapped: {milestones}")
           PYEOF
 
       - name: Create issues
@@ -223,10 +214,9 @@ jobs:
 
               body = '\n'.join(lines)
 
-              # Determine milestone number
+              # Use milestone TITLE not number - gh expects the title
               ms_title = phase_to_milestone.get(task.get('phase', ''))
-              ms_number = milestone_numbers.get(ms_title) if ms_title else None
-              ms_arg = ['--milestone', str(ms_number)] if ms_number else []
+              ms_arg = ['--milestone', ms_title] if ms_title else []
 
               # Determine labels
               labels = task.get('labels', [])
