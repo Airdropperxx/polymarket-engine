@@ -29,20 +29,6 @@ jobs:
           echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
           gh auth status
 
-      - name: Debug - Show TASKS.yaml structure
-        run: |
-          python3 << 'PYEOF'
-          import yaml
-          with open('TASKS.yaml', encoding='utf-8') as f:
-              data = yaml.safe_load(f)
-          print(f"Labels: {len(data.get('labels', []))}")
-          print(f"Milestones: {len(data.get('milestones', []))}")
-          print(f"Tasks: {len(data.get('tasks', []))}")
-          print("--- Milestones ---")
-          for ms in data.get('milestones', []):
-              print(f"  - {ms.get('title')}")
-          PYEOF
-
       - name: Create labels
         run: |
           python3 << 'PYEOF'
@@ -58,7 +44,6 @@ jobs:
               color = label.get('color', 'ededed')
               desc = label.get('description', '')
               
-              # Just try to create - --force doesn't exist so we use || true
               result = subprocess.run(
                   ['gh', 'label', 'create', name, '--color', color, '--description', desc],
                   capture_output=True, text=True
@@ -66,38 +51,86 @@ jobs:
               if result.returncode == 0:
                   print(f'[OK] Label: {name}')
               else:
-                  # Already exists is fine
                   if 'already exists' in result.stderr.lower():
                       print(f'[SKIP] Label: {name} (already exists)')
                   else:
                       print(f'[ERR] Label: {name} - {result.stderr[:100]}')
           PYEOF
 
-      - name: Create milestones
+      - name: Create milestones via API
         run: |
           python3 << 'PYEOF'
           import yaml
           import subprocess
+          import json
 
           with open('TASKS.yaml', encoding='utf-8') as f:
               data = yaml.safe_load(f)
 
           print(f"Creating {len(data.get('milestones', []))} milestones...")
+          
+          # Get existing milestones first
+          result = subprocess.run(
+              ['gh', 'api', 'repos/{owner}/{repo}/milestones', '-X', 'GET'],
+              capture_output=True, text=True, env={**__import__('os').environ, 'GH_TOKEN': __import__('os').environ.get('GH_TOKEN', '')}
+          )
+          existing_milestones = set()
+          if result.returncode == 0 and result.stdout.strip():
+              try:
+                  existing_milestones = {m['title'] for m in json.loads(result.stdout)}
+              except:
+                  pass
+          print(f"Existing milestones: {existing_milestones}")
+
           for ms in data.get('milestones', []):
               title = ms['title']
               desc = ms.get('description', '')
               
+              if title in existing_milestones:
+                  print(f'[SKIP] Milestone: {title} (already exists)')
+                  continue
+              
+              # Use gh api to create milestone
               result = subprocess.run(
-                  ['gh', 'milestone', 'create', title, '--description', desc],
+                  ['gh', 'api', 'repos/{owner}/{repo}/milestones', '-X', 'POST', '-f', f'title={title}', '-f', f'description={desc}'],
                   capture_output=True, text=True
               )
               if result.returncode == 0:
                   print(f'[OK] Milestone: {title}')
+                  existing_milestones.add(title)
               else:
-                  if 'already exists' in result.stderr.lower() or 'found' in result.stderr.lower():
-                      print(f'[SKIP] Milestone: {title} (already exists)')
-                  else:
-                      print(f'[ERR] Milestone: {title} - {result.stderr[:100]}')
+                  print(f'[ERR] Milestone: {title} - {result.stderr[:100]}')
+          PYEOF
+
+      - name: Get milestone numbers
+        run: |
+          python3 << 'PYEOF'
+          import yaml
+          import subprocess
+          import json
+          import os
+
+          with open('TASKS.yaml', encoding='utf-8') as f:
+              data = yaml.safe_load(f)
+
+          # Get all milestones with their numbers
+          result = subprocess.run(
+              ['gh', 'api', 'repos/{owner}/{repo}/milestones', '-X', 'GET'],
+              capture_output=True, text=True
+          )
+          milestones = {}
+          if result.returncode == 0 and result.stdout.strip():
+              try:
+                  for m in json.loads(result.stdout):
+                      milestones[m['title']] = m['number']
+              except:
+                  pass
+          
+          # Save to file for next step
+          with open('milestones.json', 'w') as f:
+              json.dump(milestones, f)
+          
+          print(f"Milestones mapped: {milestones}")
           PYEOF
 
       - name: Create issues
@@ -109,6 +142,10 @@ jobs:
 
           with open('TASKS.yaml', encoding='utf-8') as f:
               data = yaml.safe_load(f)
+
+          # Load milestone numbers
+          with open('milestones.json') as f:
+              milestone_numbers = json.load(f)
 
           phase_to_milestone = {
               'MVP': 'v0.1.0-mvp',
@@ -186,9 +223,10 @@ jobs:
 
               body = '\n'.join(lines)
 
-              # Determine milestone
+              # Determine milestone number
               ms_title = phase_to_milestone.get(task.get('phase', ''))
-              ms_arg = ['--milestone', ms_title] if ms_title else []
+              ms_number = milestone_numbers.get(ms_title) if ms_title else None
+              ms_arg = ['--milestone', str(ms_number)] if ms_number else []
 
               # Determine labels
               labels = task.get('labels', [])
