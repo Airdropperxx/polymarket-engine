@@ -10,7 +10,7 @@ on:
 jobs:
   bootstrap:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     if: ${{ github.event.inputs.confirm == 'BOOTSTRAP' }}
     permissions:
       contents: read
@@ -25,107 +25,137 @@ jobs:
           sudo apt-get install -y gh
 
       - name: Authenticate GitHub CLI
-        env:
-          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          unset GH_TOKEN
           echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
 
       - name: Create labels from TASKS.yaml
         run: |
-          python3 -c "
+          python3 << 'PYEOF'
           import yaml
-          with open('TASKS.yaml') as f:
+          import subprocess
+          import json
+
+          with open('TASKS.yaml', encoding='utf-8') as f:
               data = yaml.safe_load(f)
+
           for label in data.get('labels', []):
               name = label['name']
               color = label.get('color', 'ededed')
               desc = label.get('description', '')
-              # Check if label exists
-              result = \$(gh label list --json name -q '.[] | select(.name == \"\$name\")' 2>/dev/null || echo '')
-              if [ -z \"\$result\" ]; then
-                  gh label create \"\$name\" --color \"\$color\" --description \"\$desc\" || echo \"Label \$name may already exist\"
-              else
-                  echo \"Label \$name already exists, skipping\"
-              fi
-          "
+              
+              # Check if label exists using gh
+              result = subprocess.run(
+                  ['gh', 'label', 'list', '--json', 'name', '-q', f'.[] | select(.name == "{name}")'],
+                  capture_output=True, text=True
+              )
+              existing = result.stdout.strip()
+              
+              if not existing or existing == '[]':
+                  subprocess.run(
+                      ['gh', 'label', 'create', name, '--color', color, '--description', desc],
+                      check=False
+                  )
+                  print(f'[OK] Label: {name}')
+              else:
+                  print(f'[SKIP] Label: {name}')
+          PYEOF
 
       - name: Create milestones from TASKS.yaml
         run: |
-          python3 -c "
-          import yaml
-          with open('TASKS.yaml') as f:
-              data = yaml.safe_load(f)
-          for ms in data.get('milestones', []):
-              title = ms['title']
-              desc = ms.get('description', '')
-              # Check if milestone exists
-              result = \$(gh milestone list --json title -q '.[] | select(.title == \"\$title\")' 2>/dev/null || echo '')
-              if [ -z \"\$result\" ]; then
-                  gh milestone create \"\$title\" --description \"\$desc\" || echo \"Milestone \$title may already exist\"
-              else
-                  echo \"Milestone \$title already exists, skipping\"
-              fi
-          "
-
-      - name: Create issues from TASKS.yaml
-        run: |
-          python3 -c "
+          python3 << 'PYEOF'
           import yaml
           import subprocess
           import json
-          
-          with open('TASKS.yaml') as f:
+
+          with open('TASKS.yaml', encoding='utf-8') as f:
               data = yaml.safe_load(f)
-          
+
+          for ms in data.get('milestones', []):
+              title = ms['title']
+              desc = ms.get('description', '')
+              
+              # Check if milestone exists
+              result = subprocess.run(
+                  ['gh', 'milestone', 'list', '--json', 'title', '-q', f'.[] | select(.title == "{title}")'],
+                  capture_output=True, text=True
+              )
+              existing = result.stdout.strip()
+              
+              if not existing or existing == '[]':
+                  subprocess.run(
+                      ['gh', 'milestone', 'create', title, '--description', desc],
+                      check=False
+                  )
+                  print(f'[OK] Milestone: {title}')
+              else:
+                  print(f'[SKIP] Milestone: {title}')
+          PYEOF
+
+      - name: Create issues from TASKS.yaml
+        run: |
+          python3 << 'PYEOF'
+          import yaml
+          import subprocess
+          import json
+
+          with open('TASKS.yaml', encoding='utf-8') as f:
+              data = yaml.safe_load(f)
+
           phase_to_milestone = {
               'MVP': 'v0.1.0-mvp',
               'P2': 'v0.2.0',
               'P3': 'v0.3.0',
               'P4': 'v1.0.0-production',
           }
-          
+
           # Get existing issues
-          result = subprocess.run(['gh', 'issue', 'list', '--json', 'title', '-q', '.[] | .title'], capture_output=True, text=True)
-          existing_titles = set(json.loads(result.stdout)) if result.stdout else set()
-          
+          result = subprocess.run(
+              ['gh', 'issue', 'list', '--json', 'title', '-q', '.[] | .title'],
+              capture_output=True, text=True
+          )
+          existing_titles = set(json.loads(result.stdout)) if result.stdout.strip() else set()
+
+          created = 0
+          skipped = 0
+
           for task in data.get('tasks', []):
               task_id = task['id']
-              title = f'[{task_id}] {task[\"title\"]}'
-              
+              title = f'[{task_id}] {task["title"]}'
+
               if title in existing_titles:
                   print(f'[SKIP] {title}')
+                  skipped += 1
                   continue
-              
+
               # Build issue body
               lines = [
-                  f'## {task[\"id\"]} — {task[\"title\"]}',
+                  f'## {task["id"]} — {task["title"]}',
                   '',
-                  f'**Phase:** {task.get(\"phase\", \"?\")} | '
-                  f'**Priority:** {task.get(\"priority\", \"?\")} | '
-                  f'**Context Pack:** {task.get(\"context_pack\", \"?\")}',
-                  f'**Estimated tokens:** {task.get(\"estimated_tokens\", \"?\")} | '
-                  f'**Depends on:** {\", \".join(task.get(\"depends_on\", [])) or \"none\"}',
+                  f'**Phase:** {task.get("phase", "?")} | '
+                  f'**Priority:** {task.get("priority", "?")} | '
+                  f'**Context Pack:** {task.get("context_pack", "?")}',
+                  f'**Estimated tokens:** {task.get("estimated_tokens", "?")} | '
+                  f'**Depends on:** {", ".join(task.get("depends_on", [])) or "none"}',
                   '',
                   '## Context',
                   '',
                   task.get('description', '').strip(),
               ]
-              
+
               files = task.get('files', [])
               if files:
                   lines += ['', '## Files to Create/Modify', '']
                   for f in files:
-                      lines.append(f'- \`{f}\`')
+                      lines.append(f'- `{f}`')
                   lines.append('')
-              
+
               criteria = task.get('acceptance_criteria', [])
               if criteria:
                   lines += ['', '## Acceptance Criteria', '']
                   for c in criteria:
                       lines.append(f'- [ ] {c}')
                   lines.append('')
-              
+
               lines += [
                   '## Agent Instructions',
                   '',
@@ -133,27 +163,32 @@ jobs:
                   '2. Implement exactly as specified — no extra features',
                   '3. Run the verification commands listed in acceptance criteria',
                   '4. Check off all acceptance criteria above',
-                  f'5. Commit with: \`[feat/fix/config/test]({task.get(\"id\", \"scope\").lower()}): description\`',
-                  '6. Close this issue via \`complete_task()\` MCP tool or manually',
+                  f'5. Commit with: `[feat/fix/config/test]({task.get("id", "scope").lower()}): description`',
+                  '6. Close this issue via `complete_task()` MCP tool or manually',
               ]
-              
-              body = '\\n'.join(lines)
-              
+
+              body = '\n'.join(lines)
+
               # Determine milestone
               ms_title = phase_to_milestone.get(task.get('phase', ''))
               ms_arg = ['--milestone', ms_title] if ms_title else []
-              
+
               # Determine labels
               labels = task.get('labels', [])
               label_args = []
               for l in labels:
                   label_args.extend(['--label', l])
-              
+
               # Create issue
               cmd = ['gh', 'issue', 'create', '--title', title, '--body', body] + ms_arg + label_args
               result = subprocess.run(cmd, capture_output=True, text=True)
+
               if result.returncode == 0:
                   print(f'[OK] {title}')
+                  created += 1
               else:
-                  print(f'[ERR] {title} - {result.stderr}')
-          "
+                  print(f'[ERR] {title}')
+                  print(f'      {result.stderr[:200]}')
+
+          print(f'\nDone. Created: {created} | Skipped: {skipped}')
+          PYEOF
