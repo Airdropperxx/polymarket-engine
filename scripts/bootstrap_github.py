@@ -24,6 +24,34 @@ import yaml
 from github import Github, GithubException
 
 
+def _rate_limit_wait(g: Github) -> None:
+    """Check rate limit and wait if needed."""
+    rate_limit = g.get_rate_limit()
+    core = rate_limit.core
+    if core.remaining < 10:
+        wait_time = (core.reset - time.time()) + 1
+        if wait_time > 0:
+            print(f"  [RATE LIMIT] Waiting {wait_time:.0f}s for API limit reset...")
+            time.sleep(wait_time)
+
+
+def _safe_api_call(func, *args, max_retries: int = 3, **kwargs):
+    """Execute an API call with retry logic for rate limits."""
+    for attempt in range(max_retries):
+        try:
+            _rate_limit_wait(func.__self__ if hasattr(func, '__self__') else None)
+            return func(*args, **kwargs)
+        except GithubException as exc:
+            if exc.status == 403 and "rate limit" in str(exc.data).lower():
+                wait_time = int(exc.headers.get("X-RateLimit-Reset", 0)) - time.time() + 1
+                if wait_time > 0 and attempt < max_retries - 1:
+                    print(f"  [RATE LIMIT] Got 403, waiting {wait_time:.0f}s...")
+                    time.sleep(wait_time)
+                    continue
+            raise
+    return None
+
+
 def main() -> None:
     token = os.environ["GITHUB_TOKEN"]
     owner = os.environ["GITHUB_OWNER"]
@@ -50,9 +78,22 @@ def main() -> None:
                 description=label_def.get("description", ""),
             )
             print(f"  [OK]   label: {name}")
-            time.sleep(0.2)  # rate limit courtesy
+            time.sleep(0.5)  # rate limit courtesy
         except GithubException as exc:
-            print(f"  [ERR]  label: {name} — {exc.data.get('message', str(exc))}")
+            if exc.status == 403:
+                print(f"  [RATE LIMIT] Waiting 60s before retry...")
+                time.sleep(60)
+                try:
+                    repo.create_label(
+                        name=name,
+                        color=label_def.get("color", "ededed"),
+                        description=label_def.get("description", ""),
+                    )
+                    print(f"  [OK]   label: {name}")
+                except GithubException as exc2:
+                    print(f"  [ERR]  label: {name} — {exc2.data.get('message', str(exc2))}")
+            else:
+                print(f"  [ERR]  label: {name} — {exc.data.get('message', str(exc))}")
 
     # ── 2. Create milestones ──────────────────────────────────────────────────
     print("\nCreating milestones...")

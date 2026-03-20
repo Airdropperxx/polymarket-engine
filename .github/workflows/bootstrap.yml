@@ -10,8 +10,12 @@ on:
 jobs:
   bootstrap:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 15
     if: ${{ github.event.inputs.confirm == 'BOOTSTRAP' }}
+    permissions:
+      issues: write
+      milestones: write
+      repository-projects: write
 
     steps:
       - uses: actions/checkout@v4
@@ -20,11 +24,22 @@ jobs:
         with:
           python-version: '3.11'
 
-      - run: pip install PyGithub pyyaml
+      - name: Install dependencies
+        run: pip install PyGithub pyyaml
+
+      - name: Check rate limit before starting
+        run: |
+          pip install PyGithub
+          python -c "
+          from github import Github
+          g = Github()
+          rl = g.get_rate_limit().core
+          print(f'Rate limit: {rl.remaining}/{rl.limit}, resets at {rl.reset}')
+          "
 
       - name: Create labels, milestones, and issues
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           GITHUB_OWNER: ${{ github.repository_owner }}
-          GITHUB_REPO:  ${{ github.event.repository.name }}
+          GITHUB_REPO: ${{ github.event.repository.name }}
         run: python scripts/bootstrap_github.py
