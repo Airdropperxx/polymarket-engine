@@ -1,0 +1,9 @@
+[project]
+name = "polymarket-engine"
+version = "0.1.0"
+description = "Prediction market trading engine — GitHub Actions + AI learning loop"
+requires-python = ">=3.11"
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+asyncio_mode = "auto"

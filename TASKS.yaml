@@ -1,0 +1,1566 @@
+##############################################################################
+# POLYMARKET ENGINE v3 — MASTER TASK REGISTRY
+# GitHub Actions edition | $100 USDC | Public repo | Free tier
+#
+# HOW THIS FILE WORKS:
+#   1. Run scripts/bootstrap_github.py ONCE → creates all Issues + labels + milestones
+#   2. AI agents pull tasks from GitHub Issues via MCP server
+#   3. Each task is self-contained (no external context needed beyond this file)
+#   4. Agents mark issues done → progress is tracked in GitHub
+#   5. This file is the source of truth — never edit Issues directly
+##############################################################################
+
+metadata:
+  project: polymarket-engine
+  version: "3.0"
+  architecture: github-actions   # No VPS. No persistent process. GitHub Actions only.
+  capital: 100                   # USD starting capital
+  total_tasks: 28
+  phases: [MVP, P2, P3]
+
+##############################################################################
+# ARCHITECTURE NOTES FOR AI AGENTS
+# Read this before implementing any task.
+##############################################################################
+architecture_notes: |
+  This engine runs ENTIRELY on GitHub Actions free tier. There is NO persistent
+  process, NO VPS, NO WebSocket in the MVP phase.
+
+  SCAN CYCLE: GitHub Actions cron job every 30 minutes.
+    - Fetches markets via Polymarket REST API
+    - Runs all 3 strategy scanners
+    - Executes any opportunities found
+    - Commits state to repo
+
+  STATE PERSISTENCE: Everything committed to the repo.
+    - data/trades.db  → SQLite, committed after every trade
+    - data/lessons.json → committed after every ReviewEngine run
+    - configs/engine.yaml → committed when allocations change
+
+  CONCURRENCY: One job at a time (concurrency group: engine-state).
+    - scan.yml, resolve_check.yml, daily_review.yml all share this group
+    - Prevents double-execution of the same opportunity
+
+  THE ENTRY POINT: scripts/run_scan_cycle.py
+    - This is what scan.yml runs
+    - It imports all engines, runs one full cycle, exits
+    - No infinite loop — GitHub Actions handles the scheduling
+
+##############################################################################
+# LABELS
+##############################################################################
+labels:
+  - { name: "phase:mvp",      color: "0075ca", description: "MVP Phase - Week 1-2" }
+  - { name: "phase:p2",       color: "7057ff", description: "Phase 2 - Hardening" }
+  - { name: "phase:p3",       color: "e4e669", description: "Phase 3 - New Strategies" }
+  - { name: "scope:engine",   color: "006b75", description: "Core engine component" }
+  - { name: "scope:strategy", color: "e99695", description: "Trading strategy" }
+  - { name: "scope:workflow", color: "d4c5f9", description: "GitHub Actions workflow" }
+  - { name: "scope:test",     color: "f9d0c4", description: "Tests and validation" }
+  - { name: "scope:config",   color: "bfd4f2", description: "Configuration files" }
+  - { name: "scope:mcp",      color: "fef2c0", description: "MCP server component" }
+  - { name: "status:todo",    color: "ededed", description: "Not started" }
+  - { name: "status:in-progress", color: "fbca04", description: "AI agent claimed this" }
+  - { name: "status:done",    color: "0e8a16", description: "Completed and verified" }
+  - { name: "size:small",     color: "c2e0c6", description: "< 1000 tokens context" }
+  - { name: "size:medium",    color: "fef2c0", description: "1000-3000 tokens context" }
+  - { name: "size:large",     color: "f9d0c4", description: "3000-4000 tokens context (max)" }
+  - { name: "pack:A",         color: "e1d5e7", description: "Context Pack A: Strategy" }
+  - { name: "pack:B",         color: "dae8fc", description: "Context Pack B: Engine Core" }
+  - { name: "pack:C",         color: "d5e8d4", description: "Context Pack C: Tests" }
+  - { name: "pack:D",         color: "fff2cc", description: "Context Pack D: YAML Config" }
+  - { name: "pack:E",         color: "f8cecc", description: "Context Pack E: Reviewer" }
+
+##############################################################################
+# MILESTONES
+##############################################################################
+milestones:
+  - title: "v0.1.0-mvp"
+    description: "Three zero-infra strategies scanning on GitHub Actions cron"
+    due_date: "+14 days"
+  - title: "v0.2.0"
+    description: "Backtested, hardened, first real trades executed"
+    due_date: "+28 days"
+  - title: "v0.3.0"
+    description: "New strategies + enhanced ReviewEngine"
+    due_date: "+60 days"
+
+##############################################################################
+# TASKS — MVP PHASE
+##############################################################################
+tasks:
+
+  # ─── TASK-000: GitHub Memory MCP Server ───────────────────────────────────
+  - id: "TASK-000"
+    title: "Build GitHub Memory MCP Server"
+    phase: MVP
+    milestone: "v0.1.0-mvp"
+    labels: ["phase:mvp", "scope:mcp", "status:todo", "size:large", "pack:B"]
+    priority: 0
+    depends_on: []
+    estimated_tokens: 3500
+    files:
+      - "mcp_server/__init__.py"
+      - "mcp_server/server.py"
+      - "mcp_server/github_ops.py"
+      - "mcp_server/task_manager.py"
+      - "mcp_server/audit.py"
+      - "mcp_server/memory.py"
+    description: |
+      [CTX] Build the GitHub Memory MCP server. This is TASK-000 because all subsequent
+      tasks are pulled and tracked via this server. It exposes 10 tools over stdio transport.
+
+      ARCHITECTURE NOTE: This is a Model Context Protocol server using stdio transport.
+      It runs locally (or in Claude desktop) and gives AI agents tools to interact with
+      the GitHub repo and track their own progress.
+
+      MCP TOOLS TO EXPOSE (all 10):
+        1. get_next_task()              → Returns highest-priority unclaimed task as JSON
+        2. claim_task(task_id)          → Sets issue label to status:in-progress
+        3. complete_task(task_id, notes) → Closes issue, adds completion comment
+        4. read_lessons()              → Returns data/lessons.json content
+        5. write_lessons(content)      → Overwrites data/lessons.json, commits
+        6. read_progress()             → Returns PROGRESS.md content
+        7. update_progress(task_id, status, notes) → Updates PROGRESS.md
+        8. get_open_positions()        → Reads data/trades.db, returns open trades
+        9. get_balance()               → Reads data/trades.db balance table
+        10. log_audit(event, details)  → Appends to data/audit.jsonl
+
+      KEY IMPLEMENTATION NOTES:
+      - Use PyGithub library for GitHub API calls
+      - Read GITHUB_TOKEN, GITHUB_OWNER, GITHUB_REPO from environment
+      - mcp_server/server.py is the entry point (stdio transport)
+      - All tools must handle GitHub API errors gracefully (return error string, never crash)
+      - audit.py: every tool call gets logged to data/audit.jsonl with timestamp + args
+
+      FILE: mcp_server/server.py
+      ```python
+      import json, os, sys
+      from mcp_server.github_ops import GitHubOps
+      from mcp_server.task_manager import TaskManager
+      from mcp_server.audit import AuditLog
+      from mcp_server.memory import Memory
+
+      def main():
+          gh = GitHubOps(os.environ["GITHUB_TOKEN"], os.environ["GITHUB_OWNER"], os.environ["GITHUB_REPO"])
+          tm = TaskManager(gh)
+          audit = AuditLog("data/audit.jsonl")
+          memory = Memory("data/lessons.json", gh)
+
+          tools = {
+              "get_next_task":    tm.get_next_task,
+              "claim_task":       tm.claim_task,
+              "complete_task":    tm.complete_task,
+              "read_lessons":     memory.read,
+              "write_lessons":    memory.write,
+              "read_progress":    gh.read_file("PROGRESS.md"),
+              "update_progress":  gh.update_progress,
+              "get_open_positions": lambda: gh.read_db_query("SELECT * FROM trades WHERE status='open'"),
+              "get_balance":      lambda: gh.read_db_query("SELECT current_usdc FROM balance WHERE id=1"),
+              "log_audit":        audit.log,
+          }
+          # MCP stdio loop
+          for line in sys.stdin:
+              request = json.loads(line.strip())
+              tool = request.get("tool")
+              args = request.get("args", {})
+              audit.log(tool, args)
+              try:
+                  result = tools[tool](**args)
+              except Exception as e:
+                  result = {"error": str(e)}
+              print(json.dumps({"result": result}), flush=True)
+
+      if __name__ == "__main__":
+          main()
+      ```
+
+    acceptance_criteria:
+      - "mcp_server starts without errors"
+      - "get_next_task() returns highest-priority status:todo issue"
+      - "claim_task() changes issue label to status:in-progress"
+      - "complete_task() closes the issue"
+      - "All 10 tools respond without crashing on error input"
+      - "audit.jsonl gets an entry for every tool call"
+
+  # ─── TASK-001: Repository Setup ───────────────────────────────────────────
+  - id: "TASK-001"
+    title: "Repository setup, dependencies, and GitHub secrets documentation"
+    phase: MVP
+    milestone: "v0.1.0-mvp"
+    labels: ["phase:mvp", "scope:config", "status:todo", "size:small", "pack:D"]
+    priority: 1
+    depends_on: ["TASK-000"]
+    estimated_tokens: 900
+    files:
+      - "requirements.txt"
+      - "requirements-dev.txt"
+      - ".gitignore"
+      - ".env.example"
+      - "configs/engine.yaml"
+      - "pyproject.toml"
+      - "PROGRESS.md"
+      - "data/lessons.json"
+    description: |
+      [CTX] First real code task. Create all configuration and scaffolding files.
+      This engine runs on GitHub Actions (no VPS). The scan interval is 30 minutes.
+
+      CRITICAL VERSION PINS (never change these):
+        py-clob-client==0.16.0
+        web3==6.14.0            ← Newer versions break py-clob-client
+
+      requirements.txt EXACT CONTENT:
+        py-clob-client==0.16.0
+        web3==6.14.0
+        requests==2.31.0
+        aiohttp==3.9.3
+        anthropic==0.25.0
+        sqlalchemy==2.0.28
+        python-dotenv==1.0.1
+        pyyaml==6.0.1
+        tenacity==8.2.3
+        structlog==24.1.0
+        sentence-transformers==2.7.0
+        chromadb==0.4.24
+        python-telegram-bot==21.0
+        PyGithub==2.1.1
+
+      configs/engine.yaml EXACT CONTENT:
+        engine:
+          version: "0.1.0"
+          capital_usdc: 100.00
+          dry_run: false
+          poll_interval_seconds: 1800    # 30 minutes — GitHub Actions cron
+          max_per_cycle: 3              # Max new trades per scan run
+        risk:
+          max_position_pct: 0.15
+          max_daily_loss_pct: 0.05
+          max_open_positions: 5
+          min_edge_after_fees: 0.025
+        allocations:
+          s10_near_resolution: 0.40
+          s1_negrisk_arb:      0.40
+          s8_logical_arb:      0.20
+        monitoring:
+          telegram_alerts: true
+          alert_on: [trade_executed, daily_summary, risk_limit_hit, error, lesson_update]
+
+      data/lessons.json INITIAL CONTENT:
+        {
+          "version": 1, "last_updated": null,
+          "strategy_scores": {
+            "s1_negrisk_arb":    {"win_rate": null, "avg_roi": null, "trades": 0, "allocation": 0.40},
+            "s8_logical_arb":    {"win_rate": null, "avg_roi": null, "trades": 0, "allocation": 0.20},
+            "s10_near_resolution": {"win_rate": null, "avg_roi": null, "trades": 0, "allocation": 0.40}
+          },
+          "lessons": [
+            "Fee formula: 2.25 * 0.25 * (p*(1-p))^2. At p=0.50 fee is 1.56%. At p=0.95 fee is <0.1%.",
+            "ALWAYS fetch feeRateBps live before every order. Post-Feb-2026 stale rates = silent rejection.",
+            "S10 sports requires min_probability=0.93 (not 0.90). Late-reversal risk in last 5 min.",
+            "S1 NegRisk: buy_all_yes when sum(YES ask prices) < 1.00. Guaranteed one candidate wins.",
+            "S8: US politics subset markets have most logical violations. Scan politics/* first."
+          ],
+          "deprecated_lessons": [],
+          "capital_history": []
+        }
+
+      PROGRESS.md INITIAL CONTENT:
+        # Engine Progress Tracker
+        | Task | Status | Completed |
+        |---|---|---|
+        | TASK-000 MCP Server | ⏳ TODO | — |
+        | TASK-001 Repo Setup | ⏳ TODO | — |
+        ... (one row per task, agent updates this as they work)
+
+    acceptance_criteria:
+      - "pip install -r requirements.txt completes"
+      - "python -c \"from py_clob_client import ClobClient; print('OK')\" prints OK"
+      - "yaml.safe_load(open('configs/engine.yaml')) works"
+      - "allocations sum to exactly 1.0"
+      - "data/lessons.json has 5 initial lessons"
+      - ".gitignore includes .env and data/trades.db"
+
+  # ─── TASK-002: StateEngine ─────────────────────────────────────────────────
+  - id: "TASK-002"
+    title: "Implement engines/state_engine.py"
+    phase: MVP
+    milestone: "v0.1.0-mvp"
+    labels: ["phase:mvp", "scope:engine", "status:todo", "size:medium", "pack:B"]
+    priority: 2
+    depends_on: ["TASK-001"]
+    estimated_tokens: 2000
+    files:
+      - "engines/__init__.py"
+      - "engines/state_engine.py"
+      - "tests/test_state_engine.py"
+    description: |
+      [CTX] SQLite persistence layer. NEVER places orders. NEVER calls external APIs.
+      Used by all other engines to read/write state.
+
+      IMPORTANT FOR GITHUB ACTIONS: The database file lives at data/trades.db.
+      It is committed to the repo after every scan cycle that executes a trade.
+      The engine must handle "first run" gracefully (no existing DB = create it).
+
+      INTERFACE TO IMPLEMENT (all methods, exact signatures):
+        StateEngine.__init__(db_path: str, lessons_path: str, initial_balance: float = 100.0)
+        StateEngine.log_trade(trade: TradeRecord) -> int          # returns row_id
+        StateEngine.get_open_positions() -> list[dict]
+        StateEngine.get_open_position_count() -> int
+        StateEngine.mark_resolved(market_id: str, outcome: str, pnl_usdc: float) -> None
+        StateEngine.get_daily_pnl() -> float                      # returns 0.0 on empty, NEVER raises
+        StateEngine.get_current_balance() -> float
+        StateEngine.update_balance(new_balance: float) -> None
+        StateEngine.get_lessons() -> dict                         # reads lessons.json
+        StateEngine.save_lessons(lessons: dict) -> None
+        StateEngine.get_recent_resolved_trades(hours: int = 48) -> list[dict]
+
+      SQL SCHEMA (create these tables in __init__ if not exist):
+        trades: id, trade_id UNIQUE, strategy, market_id, market_question, side,
+                price, shares, cost_usdc, fee_usdc, status, outcome, pnl_usdc,
+                entry_time, resolution_time, notes
+        balance: id CHECK(id=1), current_usdc, updated_at
+        daily_summary: date PK, starting_balance, ending_balance, total_trades,
+                       wins, losses, net_pnl, fees_paid
+
+      DATACLASS (define in engines/state_engine.py):
+        @dataclass
+        class TradeRecord:
+            trade_id: str; strategy: str; market_id: str; market_question: str
+            side: str  # 'YES' | 'NO'
+            price: float; shares: float; cost_usdc: float; fee_usdc: float
+            status: str = 'open'  # 'open' | 'resolved' | 'cancelled'
+            outcome: Optional[str] = None  # 'win' | 'loss' | 'push'
+            pnl_usdc: Optional[float] = None
+            entry_time: Optional[str] = None
+            resolution_time: Optional[str] = None
+            notes: str = ""
+
+      TESTS TO WRITE in tests/test_state_engine.py:
+        test_creates_db_on_init
+        test_daily_pnl_zero_on_empty_db   ← MUST return 0.0, not raise
+        test_log_trade_returns_int_id
+        test_open_position_count_increments
+        test_mark_resolved_closes_position
+        test_balance_tracking
+        test_lessons_roundtrip
+
+    acceptance_criteria:
+      - "7 tests all pass"
+      - "get_daily_pnl() returns 0.0 on empty DB, never raises"
+      - "DB auto-created on first run (no manual setup)"
+      - "mark_resolved sets status='resolved' and stores pnl_usdc"
+
+  # ─── TASK-003: DataEngine ──────────────────────────────────────────────────
+  - id: "TASK-003"
+    title: "Implement engines/data_engine.py (REST polling)"
+    phase: MVP
+    milestone: "v0.1.0-mvp"
+    labels: ["phase:mvp", "scope:engine", "status:todo", "size:medium", "pack:B"]
+    priority: 3
+    depends_on: ["TASK-002"]
+    estimated_tokens: 2500
+    files:
+      - "engines/data_engine.py"
+      - "tests/test_data_engine.py"
+      - "tests/fixtures/sample_markets.json"
+    description: |
+      [CTX] Market data fetcher. REST API only (no WebSocket in MVP/GitHub Actions).
+      NEVER places orders. Fetches markets, caches, serves to strategies.
+
+      POLYMARKET REST ENDPOINTS:
+        GET https://gamma-api.polymarket.com/markets?active=true&closed=false&limit=500
+        GET https://clob.polymarket.com/markets/{token_id}  (single market detail)
+
+      DATACLASS TO IMPLEMENT:
+        @dataclass
+        class MarketState:
+            market_id: str; question: str
+            yes_token_id: str; no_token_id: str
+            yes_price: float; no_price: float   # clamped to (0.001, 0.999)
+            yes_bid: float; no_bid: float
+            volume_24h: float
+            end_date_iso: str
+            seconds_to_resolution: int
+            negrisk_group_id: Optional[str]
+            category: str  # 'crypto' | 'politics' | 'sports' | 'other'
+
+      CLASS TO IMPLEMENT:
+        DataEngine.__init__(config: dict)
+        DataEngine.fetch_all_markets() -> list[MarketState]
+           → Paginates through all active markets. Returns [] on error (never raises).
+        DataEngine.fetch_negrisk_groups() -> dict[str, list[MarketState]]
+           → Groups markets by negrisk_group_id. Only groups with 2+ markets included.
+        DataEngine.get_cached_markets() -> list[MarketState]
+           → Returns last fetched without a new API call.
+
+      RATE LIMIT (mandatory on every HTTP call):
+        @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
+        def _get(self, url, params=None): ...
+
+      CATEGORY DETECTION (helper function _categorise(tags, question)):
+        crypto:   btc, eth, bitcoin, ethereum, crypto, sol, solana in tags or question
+        politics: election, president, senate, congress, vote, political
+        sports:   nba, nfl, mlb, nhl, soccer, football, basketball, tennis, ufc, match, tournament
+        other:    everything else
+
+      tests/fixtures/sample_markets.json MUST CONTAIN 5 sample market dicts:
+        1. High-probability YES (0.94) crypto market, 15 min to resolution
+        2. Low-probability YES (0.55) politics market, 30 days to resolution
+        3. NegRisk group market A (0.33), politics, 10 days
+        4. NegRisk group market B (0.28), same group as A, 10 days
+        5. Sports market (0.89), 20 min to resolution
+
+      TESTS (all HTTP mocked with 'responses' library):
+        test_fetch_returns_market_state_objects
+        test_prices_clamped_to_valid_range
+        test_negrisk_grouping_correct
+        test_returns_stale_cache_on_api_error
+        test_categorise_crypto; test_categorise_politics; test_categorise_sports
+
+    acceptance_criteria:
+      - "7 tests pass"
+      - "Returns MarketState objects not raw dicts"
+      - "NegRisk groups have 2+ markets each"
+      - "API error returns stale cache, never raises"
+
+  # ─── TASK-004: BaseStrategy ────────────────────────────────────────────────
+  - id: "TASK-004"
+    title: "Implement strategies/base.py (BaseStrategy interface)"
+    phase: MVP
+    milestone: "v0.1.0-mvp"
+    labels: ["phase:mvp", "scope:strategy", "status:todo", "size:small", "pack:A"]
+    priority: 4
+    depends_on: ["TASK-003"]
+    estimated_tokens: 1000
+    files:
+      - "strategies/__init__.py"
+      - "strategies/base.py"
+    description: |
+      [CTX] Abstract base class ALL strategies must implement. 4 methods.
+      Once written, this file NEVER changes. Strategies subclass it; engines call it.
+
+      DATACLASSES TO DEFINE:
+        @dataclass
+        class Opportunity:
+            strategy: str; market_id: str; market_question: str
+            action: str  # 'buy_yes' | 'buy_no' | 'buy_all_yes' | 'sell_all_yes'
+            edge: float                # net profit fraction after fees (must be > 0)
+            win_probability: float     # 0.0–1.0 (1.0 for guaranteed arb)
+            max_payout: float          # payout per $1 invested on win (must be >= 1.0)
+            time_to_resolution_sec: int
+            metadata: dict = field(default_factory=dict)
+            score: float = 0.0         # filled by strategy.score()
+            # __post_init__ validation: raise ValueError if edge<=0, prob not in [0,1], payout<1
+
+        @dataclass
+        class Resolution:
+            trade_id: str; market_id: str; won: bool
+            cost_usdc: float; payout_usdc: float; pnl_usdc: float; roi: float
+            strategy: str; notes: str = ""
+
+      ABSTRACT CLASS:
+        class BaseStrategy(ABC):
+            @property @abstractmethod
+            def name(self) -> str: ...
+
+            @abstractmethod
+            def scan(self, markets: list, negrisk_groups: dict, config: dict) -> list[Opportunity]: ...
+
+            @abstractmethod
+            def score(self, opp: Opportunity, config: dict) -> float: ...
+
+            @abstractmethod
+            def size(self, opp: Opportunity, bankroll: float, config: dict) -> float: ...
+
+            @abstractmethod
+            def on_resolve(self, resolution: Resolution) -> dict: ...
+
+            @staticmethod
+            def calc_fee(p: float) -> float:
+                # Polymarket dynamic taker fee formula (post-Jan 2026)
+                # fee = 2.25 * 0.25 * (p * (1-p))^2
+                # At p=0.50: 0.140625 (1.4063%)
+                # At p=0.95: 0.000127... (~0.013%)
+                return 2.25 * 0.25 * (p * (1.0 - p)) ** 2
+
+            @staticmethod
+            def calc_kelly_size(win_prob, payout_ratio, bankroll, kelly_fraction, max_position_pct) -> float:
+                # Fractional Kelly with hard cap and $1 floor
+                if payout_ratio <= 1.0: return 1.0
+                kelly = win_prob - (1.0 - win_prob) / (payout_ratio - 1.0)
+                size = bankroll * max(0.0, kelly) * kelly_fraction
+                return max(1.0, min(size, bankroll * max_position_pct))
+
+      VERIFY calc_fee is correct:
+        assert abs(BaseStrategy.calc_fee(0.5) - 0.140625) < 0.0001   # 1.40625%
+        assert BaseStrategy.calc_fee(0.95) < 0.001                    # near zero
+
+    acceptance_criteria:
+      - "BaseStrategy cannot be instantiated directly (ABC enforced)"
+      - "calc_fee(0.5) == 0.140625"
+      - "Opportunity raises ValueError on edge <= 0"
+      - "Clean import: from strategies.base import BaseStrategy, Opportunity, Resolution"
+
+  # ─── TASK-005: S10 Strategy ────────────────────────────────────────────────
+  - id: "TASK-005"
+    title: "Implement strategies/s10_near_resolution.py"
+    phase: MVP
+    milestone: "v0.1.0-mvp"
+    labels: ["phase:mvp", "scope:strategy", "status:todo", "size:medium", "pack:A"]
+    priority: 5
+    depends_on: ["TASK-004"]
+    estimated_tokens: 2000
+    files:
+      - "strategies/s10_near_resolution.py"
+    description: |
+      [CTX] Near-resolution harvesting. Buy near-certain outcomes close to resolution.
+      Strategy: if yes_price >= min_probability AND time <= max_minutes → buy YES.
+      Fee approaches zero near p=1, so edge is almost pure profit.
+      Main risk: late sport reversals (~7% miss rate).
+
+      CLASS TO IMPLEMENT:
+        class NearResolutionStrategy(BaseStrategy):
+            name = "s10_near_resolution"
+
+            def scan(self, markets, negrisk_groups, config):
+                opps = []
+                for market in markets:
+                    if market.seconds_to_resolution > config['max_minutes_remaining'] * 60:
+                        continue
+                    cat_cfg = config.get('category_rules', {}).get(market.category, config)
+                    for side, p in [('buy_yes', market.yes_price), ('buy_no', market.no_price)]:
+                        if p < cat_cfg.get('min_probability', config['min_probability']):
+                            continue
+                        fee = self.calc_fee(p)
+                        edge = (1.0 - p) - fee
+                        if edge < config['min_edge_after_fees']:
+                            continue
+                        opps.append(Opportunity(
+                            strategy=self.name, market_id=market.market_id,
+                            market_question=market.question, action=side,
+                            edge=edge, win_probability=p,
+                            max_payout=1.0 / p,
+                            time_to_resolution_sec=market.seconds_to_resolution,
+                            metadata={'category': market.category, 'fee_rate': fee}
+                        ))
+                return opps
+
+            def score(self, opp, config):
+                max_secs = config['max_minutes_remaining'] * 60
+                time_urgency = 1.0 - (opp.time_to_resolution_sec / max_secs)
+                # volume from metadata or default 0
+                vol = opp.metadata.get('volume_24h', 0)
+                volume_score = min(vol / 10000, 1.0)
+                return opp.edge * 0.4 + time_urgency * 0.3 + volume_score * 0.3
+
+            def size(self, opp, bankroll, config):
+                return self.calc_kelly_size(
+                    opp.win_probability, opp.max_payout,
+                    bankroll, config['kelly_fraction'], config['max_position_pct']
+                )
+
+            def on_resolve(self, resolution):
+                lessons = []
+                if not resolution.won and resolution.roi < -0.05:
+                    lessons.append(f"S10 loss on {resolution.market_id}: review category thresholds")
+                return {'won': resolution.won, 'roi': resolution.roi,
+                        'notes': resolution.notes, 'lessons': lessons}
+
+    acceptance_criteria:
+      - "scan() returns Opportunity when p=0.94, time=15min"
+      - "scan() returns [] when p=0.85 (below threshold)"
+      - "scan() returns [] when time=45min (above max)"
+      - "Sports category uses stricter threshold from category_rules"
+      - "score() returns higher value when closer to resolution"
+      - "size() caps at max_position_pct * bankroll"
+
+  # ─── TASK-006: S10 Config ──────────────────────────────────────────────────
+  - id: "TASK-006"
+    title: "Create configs/s10_near_resolution.yaml"
+    phase: MVP
+    milestone: "v0.1.0-mvp"
+    labels: ["phase:mvp", "scope:config", "status:todo", "size:small", "pack:D"]
+    priority: 6
+    depends_on: ["TASK-005"]
+    estimated_tokens: 400
+    files:
+      - "configs/s10_near_resolution.yaml"
+    description: |
+      [CTX] YAML config for S10 near-resolution strategy.
+      First key must be: strategy: s10_near_resolution
+      Second key must be: enabled: true
+
+      REQUIRED VALUES:
+        min_probability: 0.90           # Default threshold
+        max_minutes_remaining: 30       # Only enter within 30 min of resolution
+        min_edge_after_fees: 0.025      # Min 2.5% net edge
+        max_position_pct: 0.15          # Max 15% of allocated capital per trade
+        kelly_fraction: 0.25            # Quarter-Kelly (conservative)
+        threshold: 0.50                 # Minimum score to execute (0.0-1.0)
+
+        category_rules:
+          sports:
+            min_probability: 0.93       # Higher due to late-reversal risk
+            max_minutes_remaining: 15
+          crypto:
+            min_probability: 0.90
+            max_minutes_remaining: 30
+          politics:
+            min_probability: 0.88       # Lower ok, slower-moving markets
+            max_minutes_remaining: 60
+
+        review:
+          track_metrics: [win_rate, avg_roi, fee_paid, category_breakdown]
+          rebalance_trigger: weekly
+
+      Add a COMMENT above each value explaining what it controls.
+
+    acceptance_criteria:
+      - "yaml.safe_load loads without errors"
+      - "strategy key == 's10_near_resolution'"
+      - "category_rules section present with sports, crypto, politics"
+      - "All probability values are decimals not percentages"
+
+  # ─── TASK-007: ExecutionEngine ─────────────────────────────────────────────
+  - id: "TASK-007"
+    title: "Implement engines/execution_engine.py (MVP)"
+    phase: MVP
+    milestone: "v0.1.0-mvp"
+    labels: ["phase:mvp", "scope:engine", "status:todo", "size:large", "pack:B"]
+    priority: 7
+    depends_on: ["TASK-004", "TASK-002"]
+    estimated_tokens: 3500
+    files:
+      - "engines/execution_engine.py"
+      - "tests/test_execution_engine.py"
+    description: |
+      [CTX] THE ONLY ENGINE THAT PLACES REAL ORDERS. All risk gates live here.
+      DRY_RUN mode: log everything, submit nothing.
+
+      CRITICAL RULES (violating any of these is a bug):
+        1. ALWAYS fetch feeRateBps fresh before every order. NEVER hardcode.
+        2. DRY_RUN=true → NEVER call any Polymarket order submission API.
+        3. Risk gates run in this exact order, stop at first failure.
+        4. Log every rejection with reason and strategy name.
+
+      5 RISK GATES (in order):
+        Gate 1 — Daily loss:     IF daily_pnl <= -(max_daily_loss_pct * balance): REJECT + halt
+        Gate 2 — Max positions:  IF open_count >= max_open_positions: REJECT
+        Gate 3 — Min trade size: IF calculated_size < 1.0: REJECT
+        Gate 4 — DRY_RUN check:  IF dry_run: log, return f"DRY_RUN_{market_id}"
+        Gate 5 — Live order:     fetch_fee_bps → sign → submit → log
+
+      CLASS TO IMPLEMENT:
+        class ExecutionEngine:
+            def __init__(self, clob_client, state_engine: StateEngine, config: dict, dry_run: bool = False)
+
+            def execute_opportunity(self, opp: Opportunity, strategy: BaseStrategy) -> Optional[str]:
+                # Returns trade_id if executed/dry-run, None if rejected
+                ...
+
+            def _fetch_fee_rate_bps(self, market_id: str) -> int:
+                # Calls clob_client.get_fee_rate_bps(market_id)
+                # Wraps in try/except, returns 200 (safe default) on failure + logs error
+                ...
+
+            def _build_order(self, opp: Opportunity, size_usdc: float, fee_bps: int) -> dict:
+                # Build order dict for py-clob-client
+                # action 'buy_yes'/'buy_no' → determine token_id and side
+                # order_type: 'FOK' for buy_all_yes, 'GTD' for others (MVP)
+                ...
+
+            def _submit_with_retry(self, order: dict) -> dict:
+                # Submit order. Retry up to 3 times on network error.
+                # Raise on API error (not network error).
+                ...
+
+            def _log_rejected(self, opp: Opportunity, reason: str) -> None:
+                # structlog warning: component=execution_engine, action=rejected,
+                #   reason=reason, strategy=opp.strategy, market_id=opp.market_id
+                ...
+
+      SIZE CALCULATION IN execute_opportunity:
+        strategy_allocation = config['allocations'][opp.strategy]
+        allocated_capital = state_engine.get_current_balance() * strategy_allocation
+        size_usdc = strategy.size(opp, allocated_capital, strategy_config)
+        max_size = config['risk']['max_position_pct'] * state_engine.get_current_balance()
+        size_usdc = min(size_usdc, max_size)   # Hard cap
+
+      TESTS:
+        test_dry_run_never_submits_order
+        test_gate1_daily_loss_rejects
+        test_gate2_max_positions_rejects
+        test_gate3_min_size_rejects
+        test_fee_rate_fetched_fresh_every_order   # Mock: verify _fetch_fee_rate_bps called N times for N orders
+        test_successful_execution_logs_trade
+
+    acceptance_criteria:
+      - "DRY_RUN=true: zero calls to any order submission API (assert mock not called)"
+      - "Gate 1 triggers at 5% daily loss"
+      - "feeRateBps mock called exactly once per execute_opportunity call"
+      - "All rejections logged with reason"
+      - "6 tests pass"
+
+  # ─── TASK-008: SignalEngine ────────────────────────────────────────────────
+  - id: "TASK-008"
+    title: "Implement engines/signal_engine.py (orchestrator)"
+    phase: MVP
+    milestone: "v0.1.0-mvp"
+    labels: ["phase:mvp", "scope:engine", "status:todo", "size:medium", "pack:B"]
+    priority: 8
+    depends_on: ["TASK-007", "TASK-003"]
+    estimated_tokens: 2000
+    files:
+      - "engines/signal_engine.py"
+    description: |
+      [CTX] Orchestrates one scan cycle. Does NOT loop (GitHub Actions handles scheduling).
+      Called once per run by scripts/run_scan_cycle.py, runs one full cycle, exits.
+
+      CLASS TO IMPLEMENT:
+        class SignalEngine:
+            def __init__(self, data_engine, execution_engine, state_engine, review_engine,
+                         monitor_engine, config: dict)
+
+            def register(self, strategy: BaseStrategy, config_path: str) -> None:
+                # Load YAML config from config_path, store (strategy, config) pair
+
+            def run_one_cycle(self) -> dict:
+                # Run exactly ONE scan cycle. Returns summary dict.
+                # 1. data_engine.fetch_all_markets() → markets
+                # 2. data_engine.fetch_negrisk_groups() → groups
+                # 3. For each registered strategy:
+                #    a. WRAP in try/except (log error, continue to next strategy if scan fails)
+                #    b. opps = strategy.scan(markets, groups, config)
+                #    c. opp.score = strategy.score(opp, config) for each opp
+                # 4. Merge, filter score >= threshold, sort descending
+                # 5. Execute top N (config['max_per_cycle'])
+                # 6. Check for resolved markets → trigger review_engine if any
+                # 7. Return {'cycles': 1, 'markets_scanned': len(markets),
+                #            'opportunities_found': total, 'trades_executed': executed,
+                #            'trades_rejected': rejected}
+
+            def _check_resolutions(self) -> list[str]:
+                # Compare open positions in state_engine against current market states
+                # If a market no longer appears in active markets → mark as resolved
+                # (Actual resolution outcome must be fetched from CLOB API)
+                # Returns list of market_ids that resolved this cycle
+                ...
+
+      EXCEPTION SAFETY: If strategy.scan() raises any exception:
+        log.error("signal_engine.scan_error", strategy=strategy.name, error=str(e))
+        continue  # Skip this strategy for this cycle. Never crash.
+
+    acceptance_criteria:
+      - "register() accepts multiple strategies"
+      - "scan() exception in one strategy doesn't stop others"
+      - "run_one_cycle() returns summary dict with all required keys"
+      - "max_per_cycle respected (never executes more than config['max_per_cycle'])"
+
+  # ─── TASK-009: run_scan_cycle.py (GitHub Actions entry point) ─────────────
+  - id: "TASK-009"
+    title: "Implement scripts/run_scan_cycle.py (GitHub Actions entry point)"
+    phase: MVP
+    milestone: "v0.1.0-mvp"
+    labels: ["phase:mvp", "scope:engine", "status:todo", "size:small", "pack:B"]
+    priority: 9
+    depends_on: ["TASK-008"]
+    estimated_tokens: 1000
+    files:
+      - "scripts/run_scan_cycle.py"
+    description: |
+      [CTX] The entry point that GitHub Actions runs every 30 minutes.
+      It imports all engines, wires them together, runs ONE cycle, exits.
+      No infinite loop — GitHub Actions cron handles the scheduling.
+
+      COMPLETE FILE CONTENT:
+        #!/usr/bin/env python3
+        """
+        scripts/run_scan_cycle.py
+        =========================
+        GitHub Actions entry point. Runs ONE scan cycle then exits.
+        Called by .github/workflows/scan.yml every 30 minutes.
+        """
+        import os, sys
+        from pathlib import Path
+        from dotenv import load_dotenv
+
+        load_dotenv()
+
+        # Add project root to path
+        sys.path.insert(0, str(Path(__file__).parent.parent))
+
+        from py_clob_client import ClobClient
+        from engines.state_engine import StateEngine
+        from engines.data_engine import DataEngine
+        from engines.execution_engine import ExecutionEngine
+        from engines.review_engine import ReviewEngine
+        from engines.monitor_engine import MonitorEngine
+        from engines.signal_engine import SignalEngine
+        from strategies.s10_near_resolution import NearResolutionStrategy
+        from strategies.s1_negrisk_arb import NegRiskArbStrategy
+        from strategies.s8_logical_arb import LogicalArbStrategy
+        import yaml, structlog
+
+        log = structlog.get_logger()
+
+        def main():
+            config = yaml.safe_load(open(os.environ.get('ENGINE_CONFIG', 'configs/engine.yaml')))
+            dry_run = os.environ.get('DRY_RUN', 'false').lower() == 'true'
+
+            # Wire up engines
+            clob = ClobClient(
+                host="https://clob.polymarket.com",
+                key=os.environ['POLYMARKET_PRIVATE_KEY'],
+                chain_id=137
+            )
+            state   = StateEngine(os.environ.get('DATABASE_PATH', 'data/trades.db'),
+                                   os.environ.get('LESSONS_PATH', 'data/lessons.json'))
+            data    = DataEngine(config)
+            monitor = MonitorEngine(config)
+            review  = ReviewEngine(state, config)
+            execution = ExecutionEngine(clob, state, config, dry_run=dry_run)
+
+            hub = SignalEngine(data, execution, state, review, monitor, config)
+            hub.register(NearResolutionStrategy(), 'configs/s10_near_resolution.yaml')
+            hub.register(NegRiskArbStrategy(),     'configs/s1_negrisk.yaml')
+            hub.register(LogicalArbStrategy(),     'configs/s8_logical.yaml')
+
+            result = hub.run_one_cycle()
+            log.info("cycle.complete", **result)
+            sys.exit(0)
+
+        if __name__ == '__main__':
+            main()
+
+    acceptance_criteria:
+      - "Script runs without error when DRY_RUN=true"
+      - "Exits with code 0 on success"
+      - "All 3 strategies registered"
+      - "Structured log output includes cycle summary"
+
+  # ─── TASK-010: Tests ───────────────────────────────────────────────────────
+  - id: "TASK-010"
+    title: "Write tests/test_strategies.py (S10 full test suite)"
+    phase: MVP
+    milestone: "v0.1.0-mvp"
+    labels: ["phase:mvp", "scope:test", "status:todo", "size:medium", "pack:C"]
+    priority: 10
+    depends_on: ["TASK-009"]
+    estimated_tokens: 1500
+    files:
+      - "tests/test_strategies.py"
+    description: |
+      [CTX] Tests for S10 strategy. Use fixtures from tests/fixtures/sample_markets.json.
+      All HTTP mocked. No real API calls. Use pytest fixtures.
+
+      TESTS TO WRITE (9 total):
+        test_s10_scan_generates_opportunity_when_p_above_threshold
+          → Use fixture market #1 (p=0.94, 15 min). Assert ≥1 Opportunity returned.
+        test_s10_scan_empty_when_p_below_threshold
+          → Use market with p=0.85. Assert scan() returns [].
+        test_s10_scan_empty_when_too_far_from_resolution
+          → Use market with 45-min remaining. Assert scan() returns [].
+        test_s10_sports_requires_higher_threshold
+          → Sports market p=0.91 should fail (threshold 0.93). p=0.94 should pass.
+        test_s10_score_higher_when_closer_to_resolution
+          → Two markets, same edge, different time remaining. Closer = higher score.
+        test_s10_size_caps_at_max_position_pct
+          → bankroll=100, max_position_pct=0.15 → size <= 15.0
+        test_s10_size_minimum_one_dollar
+          → Very high probability market → size >= 1.0
+        test_s10_on_resolve_win_returns_dict
+          → Won=True → returned dict has keys: won, roi, notes, lessons
+        test_s10_fee_formula_numerically_correct
+          → calc_fee(0.5) == 0.140625 (MUST pass; this is the canonical check)
+
+    acceptance_criteria:
+      - "9 tests all pass"
+      - "test_s10_fee_formula_numerically_correct passes"
+      - "No real HTTP calls in any test"
+
+  # ─── TASK-011: GitHub Actions Workflows ───────────────────────────────────
+  - id: "TASK-011"
+    title: "Create all GitHub Actions workflow files"
+    phase: MVP
+    milestone: "v0.1.0-mvp"
+    labels: ["phase:mvp", "scope:workflow", "status:todo", "size:medium", "pack:D"]
+    priority: 11
+    depends_on: ["TASK-009"]
+    estimated_tokens: 2000
+    files:
+      - ".github/workflows/scan.yml"
+      - ".github/workflows/resolve_check.yml"
+      - ".github/workflows/daily_review.yml"
+      - ".github/workflows/test.yml"
+      - ".github/workflows/bootstrap.yml"
+    description: |
+      [CTX] The engine runs ENTIRELY on GitHub Actions. These 5 workflows ARE the engine scheduler.
+
+      scan.yml — Runs every 30 minutes. Main engine cycle.
+        trigger: schedule cron '*/30 * * * *' + workflow_dispatch
+        concurrency: group engine-state, cancel-in-progress false
+        timeout-minutes: 8
+        steps: checkout → setup-python 3.11 → pip install → run scripts/run_scan_cycle.py → commit state
+
+      resolve_check.yml — Runs every 60 minutes. Checks for resolved positions.
+        trigger: schedule cron '0 * * * *'
+        concurrency: group engine-state, cancel-in-progress false
+        steps: checkout → setup-python → pip install → run scripts/check_resolutions.py → commit state
+
+      daily_review.yml — Runs at 00:00 UTC. Full AI review + Telegram summary.
+        trigger: schedule cron '0 0 * * *'
+        concurrency: group engine-state, cancel-in-progress false
+        steps: checkout → setup-python → pip install → run scripts/run_daily_review.py
+             → commit data/lessons.json configs/engine.yaml
+
+      test.yml — Runs on every push and PR.
+        trigger: push, pull_request
+        NO concurrency group (tests don't touch live state)
+        steps: checkout → setup-python → pip install -r requirements-dev.txt
+             → pytest tests/ -v --tb=short → verify allocations sum to 1.0
+
+      bootstrap.yml — Run ONCE manually to create GitHub Issues.
+        trigger: workflow_dispatch ONLY (never scheduled)
+        steps: checkout → setup-python → pip install PyGithub pyyaml
+             → python scripts/bootstrap_github.py
+
+      ALL WORKFLOWS NEED THESE ENV VARS (from GitHub Secrets):
+        POLYMARKET_API_KEY, POLYMARKET_API_SECRET, POLYMARKET_PASSPHRASE,
+        POLYMARKET_WALLET_ADDRESS, POLYMARKET_PRIVATE_KEY, POLYGON_RPC_URL,
+        ANTHROPIC_API_KEY, TELEGRAM_BOT_TOKEN, TELEGRAM_CHAT_ID
+
+      AND THESE VARS (from GitHub Variables, not Secrets):
+        DRY_RUN (set to 'true' until you confirm first cycles pass)
+
+      COMMIT STEP (all state-modifying workflows):
+        git config user.name "polymarket-engine[bot]"
+        git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+        git add data/trades.db data/lessons.json configs/engine.yaml || true
+        git diff --cached --quiet || git commit -m "auto([scope]): state $(date -u +%Y-%m-%dT%H:%M:%SZ)"
+        git push || true
+
+    acceptance_criteria:
+      - "scan.yml has concurrency group engine-state"
+      - "test.yml runs on push and pull_request"
+      - "bootstrap.yml is workflow_dispatch only"
+      - "All workflows use ubuntu-latest"
+      - "timeout-minutes set on scan.yml"
+
+  # ─── TASK-012: S1 NegRisk Strategy ────────────────────────────────────────
+  - id: "TASK-012"
+    title: "Implement strategies/s1_negrisk_arb.py + configs/s1_negrisk.yaml"
+    phase: MVP
+    milestone: "v0.1.0-mvp"
+    labels: ["phase:mvp", "scope:strategy", "status:todo", "size:medium", "pack:A"]
+    priority: 12
+    depends_on: ["TASK-005"]
+    estimated_tokens: 2500
+    files:
+      - "strategies/s1_negrisk_arb.py"
+      - "configs/s1_negrisk.yaml"
+    description: |
+      [CTX] NegRisk arbitrage. In multi-outcome markets (e.g. "Who wins governor?"),
+      ONE candidate MUST win. If sum(YES ask prices) < $1.00, buying all YES
+      guarantees $1.00 payout for less than $1.00 cost. win_probability = 1.0 always.
+
+      LONG ARB (buy_all_yes when total_cost < 1.0):
+        for group_id, group_markets in negrisk_groups.items():
+            if len(group_markets) < 2: continue
+            yes_prices = [m.yes_price for m in group_markets]
+            total_cost = sum(yes_prices)
+            if total_cost >= 1.0: continue
+            gross_spread = 1.0 - total_cost
+            # Fee: only winning leg pays fee. Use avg price as estimate.
+            avg_p = total_cost / len(group_markets)
+            fee = self.calc_fee(avg_p)
+            net_spread = gross_spread - fee
+            if net_spread < config['min_spread_after_fees']: continue
+            # → Opportunity(action='buy_all_yes', win_probability=1.0, edge=net_spread)
+            #   metadata: {'group_id': group_id, 'markets': [m.market_id for m in group_markets],
+            #              'yes_prices': yes_prices, 'total_cost': total_cost}
+
+      SHORT ARB (sell_all_yes when total YES bids > 1.0):
+        yes_bids = [m.yes_bid for m in group_markets]
+        total_revenue = sum(yes_bids)
+        if total_revenue > 1.0 + config['min_spread_after_fees']:
+            # → Opportunity(action='sell_all_yes', win_probability=1.0, edge=total_revenue - 1.0)
+
+      score() formula:
+        # NegRisk arb is always high priority. Score = edge * 2 (capped at 1.0)
+        return min(opp.edge * 2.0, 1.0)
+
+      size() formula:
+        # Win prob is 1.0 → Kelly says go all-in. Use half-Kelly as safety.
+        # size = bankroll * kelly_fraction (which should be 0.5 in YAML)
+        # But ALSO: total_cost of buying all legs
+        # If only $10 allocated and there are 5 legs at $0.20 each = $1.00 total: fine
+        # Size = min(kelly_size, config['max_position_pct'] * bankroll)
+        return min(bankroll * config['kelly_fraction'],
+                   bankroll * config['max_position_pct'])
+
+      configs/s1_negrisk.yaml:
+        strategy: s1_negrisk_arb
+        enabled: true
+        min_spread_after_fees: 0.03  # 3% min net edge
+        max_position_pct: 0.20       # 20% — safe since win_prob=1.0
+        kelly_fraction: 0.50         # Half-Kelly — arb is risk-free
+        threshold: 0.60              # Score threshold to execute
+        review:
+          track_metrics: [win_rate, avg_roi, group_size, category]
+          rebalance_trigger: weekly
+
+    acceptance_criteria:
+      - "Long arb detected when sum(YES) = 0.70 (30% spread → after fee should be ~28.5%)"
+      - "Long arb NOT found when net spread < min_spread_after_fees"
+      - "Short arb detected when sum(YES bids) = 1.05"
+      - "win_probability == 1.0 for ALL NegRisk opportunities"
+      - "metadata contains group_id and markets list"
+
+  # ─── TASK-013: S8 Logical Arb Strategy ────────────────────────────────────
+  - id: "TASK-013"
+    title: "Implement strategies/s8_logical_arb.py + configs/s8_logical.yaml"
+    phase: MVP
+    milestone: "v0.1.0-mvp"
+    labels: ["phase:mvp", "scope:strategy", "status:todo", "size:large", "pack:A"]
+    priority: 13
+    depends_on: ["TASK-005"]
+    estimated_tokens: 3000
+    files:
+      - "strategies/s8_logical_arb.py"
+      - "configs/s8_logical.yaml"
+      - "data/s8_direction_cache.json"
+    description: |
+      [CTX] Logical impossibility arbitrage. Finds market pairs where probabilities
+      violate logical constraints. E.g. P(Lakers win championship) > P(Western team wins)
+      is impossible (Lakers ARE a Western team, so P(Lakers) ≤ P(Western always)).
+
+      GITHUB ACTIONS NOTE: The classifier cache MUST be written to data/s8_direction_cache.json
+      and committed to the repo. Between runs the cache is loaded from this file.
+      Without this, every run re-classifies all pairs (wastes API budget).
+
+      TWO-PHASE SCAN:
+
+      PHASE 1 — Embedding similarity (local, free, no API):
+        model = SentenceTransformer('all-MiniLM-L6-v2')  # 80MB, runs on CPU in <5s
+        embeddings = model.encode([m.question for m in markets])
+        # Find pairs with cosine_similarity > config['min_similarity_threshold']
+        # Limit to config['max_pairs_per_scan'] pairs (control API cost)
+
+      PHASE 2 — LLM classification (Claude Haiku, cache mandatory):
+        Load cache: self._cache = json.load(open('data/s8_direction_cache.json')) or {}
+        For each candidate pair where |price_a - price_b| > min_probability_gap:
+            cache_key = f"{m_a.market_id}:{m_b.market_id}"
+            if cache_key in self._cache: direction = self._cache[cache_key]
+            else:
+                direction = self._call_claude_classifier(m_a.question, m_b.question)
+                self._cache[cache_key] = direction
+        Save cache: json.dump(self._cache, open('data/s8_direction_cache.json', 'w'))
+
+      CLASSIFIER PROMPT (exact — do not change):
+        """Are these two prediction markets logically related?
+        Market A: "{question_a}"
+        Market B: "{question_b}"
+
+        If winning market A GUARANTEES winning market B: output a_subset_of_b
+        If winning market B GUARANTEES winning market A: output b_subset_of_a
+        If they CANNOT both be true simultaneously: output mutually_exclusive
+        Otherwise: output none
+
+        Respond with ONLY one of: a_subset_of_b, b_subset_of_a, mutually_exclusive, none"""
+
+      VIOLATION DETECTION:
+        if direction == 'a_subset_of_b' and market_a.yes_price > market_b.yes_price:
+            # BUY market_b: P(A) > P(B) but A ⊂ B → market_b underpriced
+            edge = (market_a.yes_price - market_b.yes_price) - 0.02  # subtract 2% worst-case fee
+            if edge > config['min_edge_after_fees']:
+                → Opportunity(market_id=market_b.market_id, action='buy_yes', edge=edge,
+                              win_probability=market_a.yes_price,  # should converge to at least this
+                              max_payout=1.0/market_b.yes_price)
+
+        if direction == 'b_subset_of_a' and market_b.yes_price > market_a.yes_price:
+            # BUY market_a (mirror case)
+
+      ERROR HANDLING for Anthropic API:
+        On any exception from Claude API:
+            log.warning("s8.classifier_error", error=str(e))
+            return None  # Skip this pair. Never crash scan().
+
+      configs/s8_logical.yaml:
+        strategy: s8_logical_arb
+        enabled: true
+        min_similarity_threshold: 0.65  # Cosine similarity for candidate pairs
+        min_probability_gap: 0.04       # 4% min gap to bother classifying
+        min_edge_after_fees: 0.025      # 2.5% min net edge to trade
+        max_pairs_per_scan: 30          # Limit API cost per cycle
+        llm_model: "claude-haiku-4-5-20251001"
+        cache_path: "data/s8_direction_cache.json"
+        max_position_pct: 0.10          # Lower — uncertainty in window timing
+        kelly_fraction: 0.25
+        threshold: 0.50
+        review:
+          track_metrics: [win_rate, avg_roi, cache_hit_rate, pairs_scanned]
+          rebalance_trigger: weekly
+
+    acceptance_criteria:
+      - "cache loaded from JSON file at startup, saved at end of scan()"
+      - "Second call to same pair uses cache (mock: Anthropic API called 0 times for cached pair)"
+      - "Anthropic API error returns None for that pair, scan() continues"
+      - "Violation detected: when P(Lakers)=0.40 > P(Western team)=0.30 → buy Western"
+
+  # ─── TASK-014: ReviewEngine ────────────────────────────────────────────────
+  - id: "TASK-014"
+    title: "Implement engines/review_engine.py"
+    phase: MVP
+    milestone: "v0.1.0-mvp"
+    labels: ["phase:mvp", "scope:engine", "status:todo", "size:medium", "pack:E"]
+    priority: 14
+    depends_on: ["TASK-002"]
+    estimated_tokens: 2500
+    files:
+      - "engines/review_engine.py"
+      - "scripts/run_daily_review.py"
+    description: |
+      [CTX] AI-powered learning loop. Updates lessons.json after resolutions + daily.
+      Called by daily_review.yml GitHub Actions workflow.
+      Uses Claude Haiku (cheap) for daily review, Sonnet for weekly deep review.
+
+      SYSTEM PROMPT (exact — use verbatim):
+        You are a quantitative trading strategy reviewer for a Polymarket prediction market engine.
+        Analyze recent resolved trades and existing lessons. Output ONLY valid JSON.
+        Schema: {"strategy_score_updates": {...}, "new_lessons": [...],
+                 "deprecated_lesson_indices": [...], "reasoning": "..."}
+        Rules:
+        - Lessons must be specific and falsifiable. Vague = useless.
+          BAD: "S10 sometimes loses in sports"
+          GOOD: "S10 sports win rate 71% when margin < 2 goals AND time < 10 min. Tighten threshold."
+        - Allocation changes: max ±0.05 per cycle. Never change more than that.
+        - Min 5 trades before adjusting any strategy's allocation.
+        - Deprecate only with clear contradicting evidence.
+
+      METHODS:
+        ReviewEngine.run_after_resolution(market_id: str) -> dict
+          → If 0 recent resolved trades: return {'status': 'skipped', 'reason': 'no_trades'}
+          → Otherwise: call Claude, parse response, apply updates, return {'status': 'updated', ...}
+
+        ReviewEngine.run_daily_review() -> dict
+          → Same as above but always runs (even if 0 trades today)
+          → Uses last 7 days of resolved trades for weekly context
+
+        ReviewEngine._apply_lesson_updates(updates: dict, lessons: dict) -> None
+          → Add new_lessons to lessons['lessons'] (max 20, prune oldest if over)
+          → Deprecate indices in deprecated_lesson_indices
+          → Update strategy_scores with allocation_delta (enforce ±5% cap per cycle)
+          → state_engine.save_lessons(lessons)
+
+        ReviewEngine._parse_response(text: str) -> dict
+          → try: json.loads(text)
+          → except: regex search r'\{.*\}' with re.DOTALL → json.loads(match)
+          → except: log error, return {} (NEVER crash)
+
+      scripts/run_daily_review.py:
+        #!/usr/bin/env python3
+        """Entry point for daily_review.yml GitHub Actions workflow."""
+        import os, sys
+        sys.path.insert(0, '.')
+        from dotenv import load_dotenv; load_dotenv()
+        from engines.state_engine import StateEngine
+        from engines.review_engine import ReviewEngine
+        from engines.monitor_engine import MonitorEngine
+        import yaml
+
+        config = yaml.safe_load(open(os.environ.get('ENGINE_CONFIG', 'configs/engine.yaml')))
+        state = StateEngine(os.environ.get('DATABASE_PATH', 'data/trades.db'),
+                            os.environ.get('LESSONS_PATH', 'data/lessons.json'))
+        monitor = MonitorEngine(config)
+        review = ReviewEngine(state, config)
+
+        result = review.run_daily_review()
+        if result.get('new_lessons'):
+            for lesson in result['new_lessons']:
+                monitor.send('lesson_update', lesson=lesson)
+        monitor.send('daily_summary',
+                     pnl=state.get_daily_pnl(), balance=state.get_current_balance(),
+                     trades=len(state.get_recent_resolved_trades(24)))
+        sys.exit(0)
+
+    acceptance_criteria:
+      - "0 recent trades → returns status:skipped (not error)"
+      - "JSON parse fallback works (test with malformed response)"
+      - "Allocation delta capped at ±0.05"
+      - "Lessons list never exceeds 20 items"
+
+  # ─── TASK-015: MonitorEngine ───────────────────────────────────────────────
+  - id: "TASK-015"
+    title: "Implement engines/monitor_engine.py (Telegram alerts)"
+    phase: MVP
+    milestone: "v0.1.0-mvp"
+    labels: ["phase:mvp", "scope:engine", "status:todo", "size:small", "pack:B"]
+    priority: 15
+    depends_on: ["TASK-002"]
+    estimated_tokens: 1200
+    files:
+      - "engines/monitor_engine.py"
+    description: |
+      [CTX] Telegram notification engine. Sends alerts for all key events.
+      MUST fail silently if Telegram not configured — never crash the engine.
+
+      EVENT TEMPLATES (exact format):
+        trade_executed:  "✅ {strategy} | {action} {question[:40]} | ${size:.2f} @ ${price:.3f}"
+        trade_rejected:  "⚠️ REJECTED: {reason} | {strategy}"
+        daily_summary:   "📊 P&L ${pnl:+.2f} | Trades: {count} | Balance: ${balance:.2f}"
+        risk_limit_hit:  "🚨 RISK LIMIT: {limit_type} hit. Engine halted."
+        error:           "❌ ERROR: {component} | {error[:100]}"
+        lesson_update:   "🧠 LEARNED: {lesson[:120]}"
+
+      INTERFACE:
+        MonitorEngine.__init__(config: dict)
+            # Read TELEGRAM_BOT_TOKEN and TELEGRAM_CHAT_ID from os.environ
+            # If either is missing: set self._enabled = False, log warning
+
+        MonitorEngine.send(event_type: str, **kwargs) -> None
+            # Format message using templates above
+            # If not self._enabled: log locally only, return
+            # POST to https://api.telegram.org/bot{token}/sendMessage
+            # On any error: log warning, return (NEVER raise)
+
+      IMPORTANT: Messages must be < 200 chars. Truncate question/error fields as shown in templates.
+
+    acceptance_criteria:
+      - "Missing TELEGRAM_BOT_TOKEN → engine continues (no crash)"
+      - "All 6 event types format correctly"
+      - "Messages are < 200 chars"
+      - "Network error to Telegram → log warning, return (no crash)"
+
+  # ─── TASK-016: bootstrap_github.py ────────────────────────────────────────
+  - id: "TASK-016"
+    title: "Implement scripts/bootstrap_github.py"
+    phase: MVP
+    milestone: "v0.1.0-mvp"
+    labels: ["phase:mvp", "scope:mcp", "status:todo", "size:medium"]
+    priority: 16
+    depends_on: ["TASK-000"]
+    estimated_tokens: 2000
+    files:
+      - "scripts/bootstrap_github.py"
+    description: |
+      [CTX] Run ONCE to create all GitHub Issues, labels, and milestones from TASKS.yaml.
+      Triggered by bootstrap.yml workflow (workflow_dispatch only).
+
+      WHAT IT CREATES (in order):
+      1. Labels (from TASKS.yaml labels section)
+      2. Milestones (from TASKS.yaml milestones section)
+      3. Issues (one per task in TASKS.yaml tasks section)
+
+      ISSUE BODY TEMPLATE:
+        ## [TASK-{id}] — {title}
+        **Phase:** {phase} | **Priority:** {priority} | **Context Pack:** {pack}
+        **Estimated tokens:** {tokens} | **Depends on:** {depends_on}
+
+        ## Context
+        {description}
+
+        ## Files to Create/Modify
+        {files list}
+
+        ## Acceptance Criteria
+        - [ ] {criterion}
+        ...
+
+        ## Agent Instructions
+        1. Read the full task context above
+        2. Implement exactly as specified
+        3. Run the verification commands
+        4. Check off all acceptance criteria
+        5. Commit with: {commit_format_from_scope}
+        6. Close this issue via complete_task() MCP tool
+
+      SKIP RULE: If an issue with the same title already exists, skip it (no duplicates).
+      CHECK: github.get_repo().get_issues(state='all') and check titles before creating.
+
+      USAGE:
+        GITHUB_TOKEN=ghp_... GITHUB_OWNER=... GITHUB_REPO=... python scripts/bootstrap_github.py
+
+    acceptance_criteria:
+      - "All labels created in repo"
+      - "All milestones created"
+      - "All 28 issues created with correct labels"
+      - "Re-running does not create duplicate issues"
+
+  # ─── TASK-017: Integration Test ────────────────────────────────────────────
+  - id: "TASK-017"
+    title: "End-to-end integration test: 3 strategies, DRY_RUN"
+    phase: MVP
+    milestone: "v0.1.0-mvp"
+    labels: ["phase:mvp", "scope:test", "status:todo", "size:medium", "pack:C"]
+    priority: 17
+    depends_on: ["TASK-012", "TASK-013", "TASK-014", "TASK-015"]
+    estimated_tokens: 2000
+    files:
+      - "tests/test_integration.py"
+      - "scripts/check_resolutions.py"
+    description: |
+      [CTX] Integration test: wire all engines together, run 1 cycle in DRY_RUN mode,
+      verify correct behaviour end-to-end. All HTTP mocked.
+
+      TEST SCENARIOS:
+      1. test_full_cycle_dry_run_no_real_orders
+         → Run hub.run_one_cycle() with DRY_RUN=true
+         → Assert: no real Polymarket order API called
+         → Assert: cycle summary returned with all required keys
+         → Assert: state_engine.get_open_position_count() == 0 (dry run = no real positions)
+
+      2. test_all_three_strategies_scan_without_error
+         → Register all 3 strategies → run_one_cycle()
+         → Assert: no exceptions raised
+         → Assert: result['markets_scanned'] > 0
+
+      3. test_signal_engine_exception_isolation
+         → Register a 4th "broken" strategy that raises in scan()
+         → Assert: other 3 strategies still run
+         → Assert: result still returned (engine didn't crash)
+
+      4. test_review_engine_skips_on_no_trades
+         → review_engine.run_after_resolution("fake_market_id")
+         → Assert: returns {'status': 'skipped'}
+
+      scripts/check_resolutions.py:
+        #!/usr/bin/env python3
+        """Entry point for resolve_check.yml. Checks open positions for resolution."""
+        # For each open position: fetch market from CLOB API
+        # If market status == 'resolved': call state_engine.mark_resolved()
+        # If any resolution happened: call review_engine.run_after_resolution()
+        # Commit state
+
+    acceptance_criteria:
+      - "4 tests all pass"
+      - "DRY_RUN never touches order submission API"
+      - "Broken strategy doesn't crash engine"
+      - "check_resolutions.py runs without error (can mock CLOB)"
+
+  # ─── TASK-018: v0.1.0 Release ─────────────────────────────────────────────
+  - id: "TASK-018"
+    title: "Tag MVP release v0.1.0-mvp and document"
+    phase: MVP
+    milestone: "v0.1.0-mvp"
+    labels: ["phase:mvp", "scope:config", "status:todo", "size:small"]
+    priority: 18
+    depends_on: ["TASK-017"]
+    estimated_tokens: 400
+    files:
+      - "CHANGELOG.md"
+      - "README.md"
+    description: |
+      Create CHANGELOG.md with v0.1.0-mvp entry.
+      Update README.md with: quick-start, required secrets, DRY_RUN instructions.
+      Create git tag: git tag v0.1.0-mvp && git push origin v0.1.0-mvp
+
+    acceptance_criteria:
+      - "git tag v0.1.0-mvp exists"
+      - "README has secrets setup instructions"
+      - "README documents DRY_RUN=true for first runs"
+      - "CHANGELOG documents all 3 strategies"
+
+  ##############################################################################
+  # PHASE P2 — HARDENING + FIRST REAL TRADES
+  ##############################################################################
+
+  - id: "TASK-019"
+    title: "scripts/backtest.py — historical simulation"
+    phase: P2
+    milestone: "v0.2.0"
+    labels: ["phase:p2", "scope:engine", "status:todo", "size:large", "pack:B"]
+    priority: 19
+    depends_on: ["TASK-018"]
+    estimated_tokens: 3000
+    files: ["scripts/backtest.py"]
+    description: |
+      Historical backtester using Polymarket's public gamma API data.
+      Usage: python scripts/backtest.py --strategy s10 --days 90
+      No paid data required. gamma-api.polymarket.com has historical resolved markets.
+      Output: win_rate, total_roi, max_drawdown, trade_log table printed to stdout.
+    acceptance_criteria:
+      - "Loads historical data from gamma-api.polymarket.com"
+      - "Runs S10 and S1 strategies against historical data"
+      - "Outputs win_rate, total_roi, max_drawdown"
+      - "Results saved to data/backtest_results.json"
+
+  - id: "TASK-020"
+    title: "Run S10 90-day backtest and document results in lessons.json"
+    phase: P2
+    milestone: "v0.2.0"
+    labels: ["phase:p2", "scope:test", "status:todo", "size:small", "pack:C"]
+    priority: 20
+    depends_on: ["TASK-019"]
+    estimated_tokens: 500
+    files: ["data/lessons.json"]
+    description: |
+      Run: python scripts/backtest.py --strategy s10_near_resolution --days 90
+      Document results in data/lessons.json strategy_scores.s10_near_resolution.
+      If win_rate < 75%, add a lesson describing the failure conditions found.
+    acceptance_criteria:
+      - "Backtest completes without error"
+      - "Results in lessons.json strategy_scores.s10_near_resolution"
+      - "CHANGELOG.md updated with backtest findings"
+
+  - id: "TASK-021"
+    title: "Run S1 NegRisk 90-day backtest and document results"
+    phase: P2
+    milestone: "v0.2.0"
+    labels: ["phase:p2", "scope:test", "status:todo", "size:small", "pack:C"]
+    priority: 21
+    depends_on: ["TASK-019"]
+    estimated_tokens: 500
+    files: ["data/lessons.json"]
+    description: |
+      Run: python scripts/backtest.py --strategy s1_negrisk_arb --days 90
+      Expected: ~100% win rate. Document spread size distribution.
+      If avg spread < 3%, tighten min_spread_after_fees in s1_negrisk.yaml.
+    acceptance_criteria:
+      - "Backtest completes"
+      - "Results documented"
+
+  - id: "TASK-022"
+    title: "Error handling audit — all engines"
+    phase: P2
+    milestone: "v0.2.0"
+    labels: ["phase:p2", "scope:engine", "status:todo", "size:medium", "pack:B"]
+    priority: 22
+    depends_on: ["TASK-018"]
+    estimated_tokens: 2000
+    files: ["engines/*.py"]
+    description: |
+      Audit every external API call in every engine. Every call must have:
+        - try/except with structlog error logging (component, action, error fields)
+        - tenacity @retry for transient network errors
+        - Graceful degradation: engine continues, strategy skipped on failure
+
+      Specific failure modes to handle:
+        - Polymarket REST 429 rate limit → retry with backoff
+        - Alchemy RPC timeout → log error, skip resolution check
+        - Anthropic API failure in reviewer → log error, return skipped
+        - SQLite write failure → log error, raise (can't continue without state)
+        - Telegram send failure → log warning, return (never crash engine)
+    acceptance_criteria:
+      - "Polymarket 429 handled"
+      - "Anthropic API failure in reviewer handled gracefully"
+      - "Telegram failure never crashes engine"
+      - "All external calls have @retry"
+
+  - id: "TASK-023"
+    title: "scripts/health_check.py — verify all connections"
+    phase: P2
+    milestone: "v0.2.0"
+    labels: ["phase:p2", "scope:engine", "status:todo", "size:small", "pack:B"]
+    priority: 23
+    depends_on: ["TASK-022"]
+    estimated_tokens: 800
+    files: ["scripts/health_check.py"]
+    description: |
+      Diagnostic script. Checks all connections and prints current engine state.
+      Checks: Polymarket CLOB API, Alchemy RPC, Anthropic API, Telegram, wallet USDC balance.
+      Prints: current balance, open positions, last scan time, recent lessons.
+      Exit code 0 if all connections healthy, 1 if any fail.
+    acceptance_criteria:
+      - "All connections checked and status printed"
+      - "Current balance displayed"
+      - "Open positions listed"
+      - "Exit 0 if healthy, 1 if any connection fails"
+
+  - id: "TASK-024"
+    title: "Execute first real S10 trade (after DRY_RUN validation)"
+    phase: P2
+    milestone: "v0.2.0"
+    labels: ["phase:p2", "scope:test", "status:todo", "size:small"]
+    priority: 24
+    depends_on: ["TASK-023", "TASK-020"]
+    estimated_tokens: 400
+    description: |
+      PRE-CONDITIONS (all must be true):
+        □ 3+ dry-run cycles completed without error
+        □ S10 backtest win rate >= 80%
+        □ health_check.py exits 0
+        □ DRY_RUN variable set to 'false' in GitHub Variables
+
+      ACTION: Trigger scan.yml manually (workflow_dispatch) with DRY_RUN=false.
+      Watch Telegram for trade alert. Check GitHub Actions log for success.
+      Max trade size: $15 (15% of $100 capital).
+    acceptance_criteria:
+      - "First real trade executed and logged in trades.db"
+      - "Telegram alert received"
+      - "trade_id not starting with 'DRY_RUN_'"
+
+  - id: "TASK-025"
+    title: "Tag release v0.2.0"
+    phase: P2
+    milestone: "v0.2.0"
+    labels: ["phase:p2", "scope:config", "status:todo", "size:small"]
+    priority: 25
+    depends_on: ["TASK-024"]
+    estimated_tokens: 200
+    description: |
+      Create git tag v0.2.0. Update CHANGELOG with Phase 2 results:
+      backtest findings, first real trades, win rates observed so far.
+    acceptance_criteria:
+      - "Tag v0.2.0 created"
+      - "CHANGELOG updated"
+
+  ##############################################################################
+  # PHASE P3 — NEW STRATEGIES (when capital > $1,000)
+  ##############################################################################
+
+  - id: "TASK-026"
+    title: "Implement strategies/s4_chainlink_sniper.py"
+    phase: P3
+    milestone: "v0.3.0"
+    labels: ["phase:p3", "scope:strategy", "status:todo", "size:large", "pack:A"]
+    priority: 26
+    depends_on: ["TASK-025"]
+    estimated_tokens: 3500
+    description: |
+      PREREQUISITE: Capital must be > $1,000. Do not build before Checkpoint 2.
+
+      Chainlink oracle front-running. Monitors Chainlink BTC/USD price feed
+      (same oracle Polymarket uses for hourly BTC markets).
+      When price crosses hourly strike with < 2 min remaining → enter position.
+
+      NOTE FOR GITHUB ACTIONS: This strategy runs in the normal scan cycle.
+      It fetches current Chainlink price via REST (Alchemy RPC), not WebSocket.
+      Poll interval of 30 min is acceptable for hourly markets.
+    acceptance_criteria:
+      - "Chainlink price fetched via Alchemy RPC"
+      - "Strike crossing detected correctly"
+      - "Position only entered if < 2 min to hourly mark"
+
+  - id: "TASK-027"
+    title: "Implement strategies/s6_synth_ai.py (Bittensor SN50)"
+    phase: P3
+    milestone: "v0.3.0"
+    labels: ["phase:p3", "scope:strategy", "status:todo", "size:large", "pack:A"]
+    priority: 27
+    depends_on: ["TASK-025"]
+    estimated_tokens: 3500
+    description: |
+      PREREQUISITE: Capital > $1,000. Synth API costs ~$200/month.
+
+      Bittensor SN50 (Synth) signal integration. Queries Monte Carlo BTC/ETH/SOL
+      price forecasts. When Synth probability diverges >10% from Polymarket price:
+      enter maker order (zero fees).
+
+      Documented return: $2K → $4.2K in 4 weeks (110% ROI, 0 fees paid).
+    acceptance_criteria:
+      - "Synth API queried successfully"
+      - "10% divergence threshold respected"
+      - "Orders placed as MAKER only (GTD, not FOK)"
+
+  - id: "TASK-028"
+    title: "Tag release v0.3.0"
+    phase: P3
+    milestone: "v0.3.0"
+    labels: ["phase:p3", "scope:config", "status:todo", "size:small"]
+    priority: 28
+    depends_on: ["TASK-027", "TASK-026"]
+    estimated_tokens: 200
+    description: "Tag v0.3.0. Document Phase 3 strategy performance in CHANGELOG."
+    acceptance_criteria:
+      - "Tag v0.3.0 created"
+      - "CHANGELOG documents S4 and S6 results"

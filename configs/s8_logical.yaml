@@ -1,0 +1,48 @@
+strategy: s8_logical_arb
+enabled: true
+
+# --- SIGNAL PARAMETERS ---
+
+# Cosine similarity threshold for candidate pair selection (Phase 1: embedding).
+# Pairs below this are not sent to LLM classifier. Controls API cost.
+min_similarity_threshold: 0.65
+
+# Minimum price gap between two logically-related markets before classifying.
+# Below this gap, the edge (after fees) wouldn't be worth the API cost.
+min_probability_gap: 0.04
+
+# Minimum net edge after estimated 2% worst-case fee for entering the position.
+min_edge_after_fees: 0.025
+
+# Maximum NEW LLM classifications per scan cycle. Controls Anthropic API cost.
+# Cached pairs do NOT count toward this limit.
+# At 30/day × 30 days: ~900 classifications in month 1 (~$0.11). Month 2+: near zero.
+max_new_classifications_per_scan: 30
+
+# Claude Haiku for classification — cheapest model, sufficient for binary classification.
+llm_model: "claude-haiku-4-5-20251001"
+
+# Path to classifier result cache. Git-tracked. Persists between GitHub Actions runs.
+# chromadb REMOVED: state lost on ephemeral GHA runners. Pure JSON + numpy instead.
+cache_path: "data/s8_direction_cache.json"
+
+# --- RISK PARAMETERS ---
+
+# Lower than S1/S10 because logical violations may take days to converge.
+max_position_pct: 0.10
+
+# Quarter-Kelly. More uncertainty than NegRisk arb.
+kelly_fraction: 0.25
+
+threshold: 0.50
+
+# --- REVIEW ---
+review:
+  track_metrics:
+    - win_rate
+    - avg_roi
+    - cache_hit_rate        # should approach 90%+ after month 1
+    - pairs_scanned_per_cycle
+    - api_calls_per_cycle   # track cost
+    - avg_convergence_days  # how long violations take to close
+  rebalance_trigger: weekly

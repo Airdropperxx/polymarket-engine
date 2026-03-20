@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "last_updated": null,
+  "strategy_scores": {
+    "s1_negrisk_arb": {
+      "win_rate": null,
+      "avg_roi": null,
+      "trades": 0,
+      "allocation": 0.40
+    },
+    "s8_logical_arb": {
+      "win_rate": null,
+      "avg_roi": null,
+      "trades": 0,
+      "allocation": 0.20
+    },
+    "s10_near_resolution": {
+      "win_rate": null,
+      "avg_roi": null,
+      "trades": 0,
+      "allocation": 0.40
+    }
+  },
+  "lessons": [
+    "Fee formula: 2.25 * 0.25 * (p*(1-p))^2. At p=0.50 fee is 1.406%. At p=0.95 fee is <0.013%. Enter near certainty only.",
+    "ALWAYS read fee_rate_bps from MarketState or fresh clob_client.get_market(). NEVER hardcode. Post-Feb-2026 stale rates = silent rejection.",
+    "S10 sports markets require min_probability=0.93 (not 0.90). Late-reversal risk in last 5 min causes ~9% miss rate at lower threshold.",
+    "S1 NegRisk long arb: buy_all_yes when sum(YES ask prices) < 1.00. Exactly one candidate MUST win. win_probability=1.0 always.",
+    "S8 logical violations most common in US politics subset markets (candidate vs party). Scan politics/* first.",
+    "S8 classifier cache must be committed to repo (data/s8_direction_cache.json). GitHub Actions runners are ephemeral — in-memory cache lost every run.",
+    "max_minutes_remaining in S10 YAML must be > poll_interval_minutes + 15 min buffer. With 30-min GHA poll: use 60. With 60-min poll: use 90.",
+    "S4 Chainlink Sniper requires <2 min reaction time. Incompatible with 30-60 min cron polling. Only enable with persistent WebSocket process on VPS."
+  ],
+  "deprecated_lessons": [],
+  "capital_history": []
+}

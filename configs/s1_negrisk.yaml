@@ -1,0 +1,34 @@
+strategy: s1_negrisk_arb
+enabled: true
+
+# --- SIGNAL PARAMETERS ---
+
+# Minimum net spread after fees. NegRisk long arb: sum(YES ask) < $1.00.
+# 3% min ensures we cover slippage on the multi-leg execution.
+min_spread_after_fees: 0.03
+
+# --- RISK PARAMETERS ---
+
+# Higher than default (0.15) because win_probability = 1.0. Zero directional risk.
+max_position_pct: 0.20
+
+# Half-Kelly: arb is guaranteed, still conservative on execution slippage.
+kelly_fraction: 0.50
+
+# Score = min(edge * 2.0, 1.0). High threshold because these are rare but valuable.
+threshold: 0.60
+
+# Preferred categories for NegRisk groups (most violation opportunities historically).
+preferred_categories:
+  - politics
+  - sports
+
+# --- REVIEW ---
+review:
+  track_metrics:
+    - win_rate
+    - avg_roi
+    - avg_spread_captured
+    - group_size_distribution
+    - category_breakdown
+  rebalance_trigger: weekly

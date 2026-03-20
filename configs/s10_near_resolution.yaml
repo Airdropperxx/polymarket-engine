@@ -1,0 +1,54 @@
+strategy: s10_near_resolution
+enabled: true
+
+# --- SIGNAL PARAMETERS ---
+
+# Minimum probability to enter. Fee approaches zero near p=1, so edge is nearly pure profit.
+min_probability: 0.90
+
+# BUG FIX: max_minutes_remaining MUST be > poll_interval + 15 min buffer.
+# With 30-min poll: 60 min guarantees worst-case 30 min left when detected.
+# With 90-min poll: set to 120. With local 5-min cron: 35 is sufficient.
+max_minutes_remaining: 60
+
+# Minimum net edge after fees. At p=0.92: fee≈0.04%, so edge≈7.96% if p=1 is correct.
+min_edge_after_fees: 0.025
+
+# --- RISK PARAMETERS ---
+
+# Max fraction of strategy-allocated capital per single trade.
+max_position_pct: 0.15
+
+# Quarter-Kelly sizing. Conservative: risking 25% of what full Kelly says.
+kelly_fraction: 0.25
+
+# Minimum score (0.0–1.0) for execution. Score = edge*0.4 + time_urgency*0.3 + volume*0.3
+threshold: 0.50
+
+# --- CATEGORY-SPECIFIC OVERRIDES ---
+# Each category can override min_probability and max_minutes_remaining.
+category_rules:
+  sports:
+    # Sports: late reversals happen. Require higher certainty. Shorter window.
+    min_probability: 0.93
+    max_minutes_remaining: 30
+  crypto:
+    min_probability: 0.90
+    max_minutes_remaining: 60
+  politics:
+    # Politics: slow-moving markets, outcomes lock in early. Wider window OK.
+    min_probability: 0.88
+    max_minutes_remaining: 90
+  other:
+    min_probability: 0.90
+    max_minutes_remaining: 60
+
+# --- REVIEW ---
+review:
+  track_metrics:
+    - win_rate
+    - avg_roi
+    - fee_paid
+    - category_breakdown
+    - min_time_remaining_at_execution   # track this to tune max_minutes_remaining
+  rebalance_trigger: weekly

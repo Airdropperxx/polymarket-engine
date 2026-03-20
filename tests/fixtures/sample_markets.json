@@ -1,0 +1,82 @@
+[
+  {
+    "conditionId": "mkt-crypto-high-p",
+    "question": "Will BTC close above $85K at 14:30 UTC today?",
+    "active": true,
+    "closed": false,
+    "endDate": "2099-12-31T14:30:00Z",
+    "volume24hr": 18500.0,
+    "negRiskGroupId": null,
+    "feeRateBps": 13,
+    "tags": ["crypto", "bitcoin"],
+    "tokens": [
+      {"outcome": "YES", "token_id": "yes-crypto-1", "price": "0.94", "bid": "0.93"},
+      {"outcome": "NO",  "token_id": "no-crypto-1",  "price": "0.06", "bid": "0.05"}
+    ],
+    "_note": "High-probability crypto market near resolution (15 min). S10 should trigger."
+  },
+  {
+    "conditionId": "mkt-politics-low-p",
+    "question": "Will the Fed cut rates before June 2026?",
+    "active": true,
+    "closed": false,
+    "endDate": "2099-06-01T00:00:00Z",
+    "volume24hr": 45000.0,
+    "negRiskGroupId": null,
+    "feeRateBps": 140,
+    "tags": ["politics", "economics"],
+    "tokens": [
+      {"outcome": "YES", "token_id": "yes-pol-1", "price": "0.55", "bid": "0.54"},
+      {"outcome": "NO",  "token_id": "no-pol-1",  "price": "0.45", "bid": "0.44"}
+    ],
+    "_note": "Low probability (0.55), far from resolution. S10 should NOT trigger."
+  },
+  {
+    "conditionId": "mkt-negrisk-gov-a",
+    "question": "Who wins 2026 Vermont Governor? Candidate A",
+    "active": true,
+    "closed": false,
+    "endDate": "2099-11-05T00:00:00Z",
+    "volume24hr": 1200.0,
+    "negRiskGroupId": "neg-gov-vt-2026",
+    "feeRateBps": 200,
+    "tags": ["politics", "election"],
+    "tokens": [
+      {"outcome": "YES", "token_id": "yes-gov-a", "price": "0.22", "bid": "0.21"},
+      {"outcome": "NO",  "token_id": "no-gov-a",  "price": "0.78", "bid": "0.77"}
+    ],
+    "_note": "NegRisk group leg A. sum(YES) with B = 0.48 < 1.00. S1 long arb should trigger."
+  },
+  {
+    "conditionId": "mkt-negrisk-gov-b",
+    "question": "Who wins 2026 Vermont Governor? Candidate B",
+    "active": true,
+    "closed": false,
+    "endDate": "2099-11-05T00:00:00Z",
+    "volume24hr": 980.0,
+    "negRiskGroupId": "neg-gov-vt-2026",
+    "feeRateBps": 200,
+    "tags": ["politics", "election"],
+    "tokens": [
+      {"outcome": "YES", "token_id": "yes-gov-b", "price": "0.26", "bid": "0.25"},
+      {"outcome": "NO",  "token_id": "no-gov-b",  "price": "0.74", "bid": "0.73"}
+    ],
+    "_note": "NegRisk group leg B. Same group as A. S1 should find arb: sum = 0.48."
+  },
+  {
+    "conditionId": "mkt-sports-close",
+    "question": "Will the Lakers win tonight vs Warriors? (Game 4)",
+    "active": true,
+    "closed": false,
+    "endDate": "2099-03-20T23:59:00Z",
+    "volume24hr": 8200.0,
+    "negRiskGroupId": null,
+    "feeRateBps": 80,
+    "tags": ["nba", "basketball", "sports"],
+    "tokens": [
+      {"outcome": "YES", "token_id": "yes-sport-1", "price": "0.89", "bid": "0.88"},
+      {"outcome": "NO",  "token_id": "no-sport-1",  "price": "0.11", "bid": "0.10"}
+    ],
+    "_note": "Sports market p=0.89, 20 min remaining. Below sports threshold (0.93). S10 should NOT trigger."
+  }
+]

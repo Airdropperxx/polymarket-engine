@@ -1,0 +1,62 @@
+name: Test Suite
+
+on:
+  push:
+    branches: [main, develop]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+
+      - name: Install dev dependencies
+        run: pip install -r requirements-dev.txt
+
+      - name: Verify fee formula (canonical invariant)
+        run: |
+          python -c "
+          import sys
+          sys.path.insert(0, '.')
+          from strategies.base import BaseStrategy
+          fee = BaseStrategy.calc_fee(0.5)
+          assert abs(fee - 0.140625) < 0.0001, f'FAILED: calc_fee(0.5) = {fee}, expected 0.140625'
+          assert BaseStrategy.calc_fee(0.0) == 0.0, 'FAILED: calc_fee(0.0) != 0.0'
+          assert BaseStrategy.calc_fee(1.0) == 0.0, 'FAILED: calc_fee(1.0) != 0.0'
+          print(f'Fee formula OK: calc_fee(0.5) = {fee:.6f}')
+          "
+
+      - name: Verify allocations sum to 1.0
+        run: |
+          python -c "
+          import yaml
+          cfg = yaml.safe_load(open('configs/engine.yaml'))
+          total = sum(cfg['allocations'].values())
+          assert abs(total - 1.0) < 0.001, f'FAILED: allocations sum to {total}'
+          print(f'Allocations OK: {cfg[\"allocations\"]}')
+          "
+
+      - name: Check no hardcoded fee rates
+        run: |
+          if grep -rn 'feeRateBps\s*=\s*[0-9]' engines/ strategies/ 2>/dev/null; then
+            echo "FAILED: hardcoded feeRateBps found"
+            exit 1
+          fi
+          echo "fee_rate_bps check OK"
+
+      - name: Run test suite
+        run: python -m pytest tests/ -v --tb=short --cov=engines --cov=strategies --cov-report=term-missing
+        env:
+          DRY_RUN: "true"
+          DATABASE_PATH: "data/test_trades.db"
+          LESSONS_PATH:  "data/lessons.json"
+          ENGINE_CONFIG: "configs/engine.yaml"
