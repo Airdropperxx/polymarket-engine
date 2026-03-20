@@ -27,71 +27,80 @@ jobs:
       - name: Authenticate GitHub CLI
         run: |
           echo "${{ secrets.GITHUB_TOKEN }}" | gh auth login --with-token
+          gh auth status
 
-      - name: Create labels from TASKS.yaml
+      - name: Debug - Show TASKS.yaml structure
+        run: |
+          python3 << 'PYEOF'
+          import yaml
+          with open('TASKS.yaml', encoding='utf-8') as f:
+              data = yaml.safe_load(f)
+          print(f"Labels: {len(data.get('labels', []))}")
+          print(f"Milestones: {len(data.get('milestones', []))}")
+          print(f"Tasks: {len(data.get('tasks', []))}")
+          print("--- Milestones ---")
+          for ms in data.get('milestones', []):
+              print(f"  - {ms.get('title')}")
+          PYEOF
+
+      - name: Create labels
         run: |
           python3 << 'PYEOF'
           import yaml
           import subprocess
-          import json
 
           with open('TASKS.yaml', encoding='utf-8') as f:
               data = yaml.safe_load(f)
 
+          print(f"Creating {len(data.get('labels', []))} labels...")
           for label in data.get('labels', []):
               name = label['name']
               color = label.get('color', 'ededed')
               desc = label.get('description', '')
               
-              # Check if label exists using gh
+              # Just try to create - --force doesn't exist so we use || true
               result = subprocess.run(
-                  ['gh', 'label', 'list', '--json', 'name', '-q', f'.[] | select(.name == "{name}")'],
+                  ['gh', 'label', 'create', name, '--color', color, '--description', desc],
                   capture_output=True, text=True
               )
-              existing = result.stdout.strip()
-              
-              if not existing or existing == '[]':
-                  subprocess.run(
-                      ['gh', 'label', 'create', name, '--color', color, '--description', desc],
-                      check=False
-                  )
+              if result.returncode == 0:
                   print(f'[OK] Label: {name}')
               else:
-                  print(f'[SKIP] Label: {name}')
+                  # Already exists is fine
+                  if 'already exists' in result.stderr.lower():
+                      print(f'[SKIP] Label: {name} (already exists)')
+                  else:
+                      print(f'[ERR] Label: {name} - {result.stderr[:100]}')
           PYEOF
 
-      - name: Create milestones from TASKS.yaml
+      - name: Create milestones
         run: |
           python3 << 'PYEOF'
           import yaml
           import subprocess
-          import json
 
           with open('TASKS.yaml', encoding='utf-8') as f:
               data = yaml.safe_load(f)
 
+          print(f"Creating {len(data.get('milestones', []))} milestones...")
           for ms in data.get('milestones', []):
               title = ms['title']
               desc = ms.get('description', '')
               
-              # Check if milestone exists
               result = subprocess.run(
-                  ['gh', 'milestone', 'list', '--json', 'title', '-q', f'.[] | select(.title == "{title}")'],
+                  ['gh', 'milestone', 'create', title, '--description', desc],
                   capture_output=True, text=True
               )
-              existing = result.stdout.strip()
-              
-              if not existing or existing == '[]':
-                  subprocess.run(
-                      ['gh', 'milestone', 'create', title, '--description', desc],
-                      check=False
-                  )
+              if result.returncode == 0:
                   print(f'[OK] Milestone: {title}')
               else:
-                  print(f'[SKIP] Milestone: {title}')
+                  if 'already exists' in result.stderr.lower() or 'found' in result.stderr.lower():
+                      print(f'[SKIP] Milestone: {title} (already exists)')
+                  else:
+                      print(f'[ERR] Milestone: {title} - {result.stderr[:100]}')
           PYEOF
 
-      - name: Create issues from TASKS.yaml
+      - name: Create issues
         run: |
           python3 << 'PYEOF'
           import yaml
@@ -108,12 +117,20 @@ jobs:
               'P4': 'v1.0.0-production',
           }
 
+          print(f"Creating {len(data.get('tasks', []))} issues...")
+
           # Get existing issues
           result = subprocess.run(
-              ['gh', 'issue', 'list', '--json', 'title', '-q', '.[] | .title'],
+              ['gh', 'issue', 'list', '--json', 'title', '--state', 'all', '-q', '.[] | .title'],
               capture_output=True, text=True
           )
-          existing_titles = set(json.loads(result.stdout)) if result.stdout.strip() else set()
+          existing_titles = set()
+          if result.stdout.strip():
+              try:
+                  existing_titles = set(json.loads(result.stdout))
+              except:
+                  pass
+          print(f"Found {len(existing_titles)} existing issues")
 
           created = 0
           skipped = 0
