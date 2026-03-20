@@ -15,9 +15,6 @@ jobs:
     permissions:
       contents: read
       issues: write
-      milestones: write
-      repository-projects: read
-      pull-requests: read
 
     steps:
       - uses: actions/checkout@v4
