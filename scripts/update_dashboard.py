@@ -91,6 +91,10 @@ def get_engine_state():
 def parse_scan_log():
     """Parse last scan results from log file if available."""
     data = get_engine_state()
+    if data is None:
+        return None
+    
+    data["opportunities"] = []
     
     log_path = Path("data/last_scan.json")
     if log_path.exists():
@@ -103,6 +107,7 @@ def parse_scan_log():
                 data["strategies"] = scan_data.get("strategies", data["strategies"])
                 data["trades_executed"] = scan_data.get("trades_executed", 0)
                 data["trades_rejected"] = scan_data.get("trades_rejected", 0)
+                data["opportunities"] = scan_data.get("opportunities", [])
         except Exception:
             pass
     

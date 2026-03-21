@@ -194,7 +194,7 @@ class SignalEngine:
                 self._review.run_after_resolution(market_id)
 
             # 7. Save scan results for dashboard
-            self._save_scan_results(markets, summary)
+            self._save_scan_results(markets, summary, all_opps)
 
         except Exception as exc:
             # Outer safety net — should never reach here
@@ -229,7 +229,7 @@ class SignalEngine:
 
         return resolved_ids
 
-    def _save_scan_results(self, markets: list, summary: dict) -> None:
+    def _save_scan_results(self, markets: list, summary: dict, all_opps: list) -> None:
         """Save scan results for dashboard."""
         try:
             from pathlib import Path
@@ -240,6 +240,21 @@ class SignalEngine:
                 categories[cat] = categories.get(cat, 0) + 1
 
             markets_valid = sum(1 for m in markets if 0.01 <= getattr(m, "yes_price", 0.5) <= 0.99)
+
+            opportunities = []
+            for opp, strat, cfg in all_opps:
+                opportunities.append({
+                    "strategy": opp.strategy,
+                    "market_id": opp.market_id,
+                    "question": opp.market_question,
+                    "action": opp.action,
+                    "edge": round(opp.edge * 100, 2),
+                    "win_prob": round(opp.win_probability * 100, 1),
+                    "max_payout": round(opp.max_payout, 4),
+                    "score": round(opp.score, 3),
+                    "time_to_resolution": opp.time_to_resolution_sec,
+                    "category": opp.metadata.get("category", "unknown"),
+                })
 
             data = {
                 "ingestion": {
@@ -255,6 +270,7 @@ class SignalEngine:
                 }),
                 "trades_executed": summary.get("trades_executed", 0),
                 "trades_rejected": summary.get("trades_rejected", 0),
+                "opportunities": opportunities,
             }
 
             Path("data").mkdir(exist_ok=True)

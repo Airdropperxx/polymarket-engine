@@ -188,4 +188,4 @@ class BaseStrategy(ABC):
         kelly = win_probability - (1.0 - win_probability) / (payout_ratio - 1.0)
         kelly = max(0.0, kelly)
         size = bankroll * kelly * kelly_fraction
-        return max(1.0, min(size, bankroll * max_position_pct))
+        return min(size, bankroll * max_position_pct)

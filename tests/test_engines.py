@@ -277,7 +277,7 @@ class TestExecutionEngine:
             time_to_resolution_sec=900,
         )
 
-    def _make_market_state(self, market_id="mkt-001"):
+    def _make_market_state(self, market_id="mkt-001", negrisk_group_id=None):
         return MarketState(
             market_id=market_id,
             question="Test?",
@@ -290,6 +290,7 @@ class TestExecutionEngine:
             seconds_to_resolution=900,
             category="crypto",
             fee_rate_bps=15,
+            negrisk_group_id=negrisk_group_id,
             fetched_at=time.time(),
         )
 
@@ -319,9 +320,13 @@ class TestExecutionEngine:
         """DRY_RUN=true must NEVER call clob.create_order under any circumstances."""
         engine = self._make_engine(store, dry_run=True)
         opp = self._make_opp()
+        opp.win_probability = 0.60
+        opp.max_payout = 2.0
+        opp.edge = 0.40
         ms  = self._make_market_state()
+        strategy_config = {"kelly_fraction": 1.0, "max_position_pct": 0.15}
 
-        result = engine.execute_opportunity(opp, self._make_strategy(), ms, self._make_strategy_config())
+        result = engine.execute_opportunity(opp, self._make_strategy(), ms, strategy_config)
 
         assert result is not None
         assert result.startswith("DRY_RUN_")
@@ -363,11 +368,14 @@ class TestExecutionEngine:
         engine = self._make_engine(store, dry_run=False)
         opp    = self._make_opp()
         ms     = self._make_market_state()
+        strategy = self._make_strategy()
         # Give an allocation so tiny size < $1
         engine._config["allocations"]["s10_near_resolution"] = 0.001
+        # Mock size() to return < $1 (Kelly floor removed from base, Gate 3 enforces)
+        with patch.object(strategy, "size", return_value=0.50):
 
-        result = engine.execute_opportunity(opp, self._make_strategy(), ms, self._make_strategy_config())
-        assert result is None
+            result = engine.execute_opportunity(opp, strategy, ms, self._make_strategy_config())
+            assert result is None
 
     def test_fee_rate_read_from_market_state(self, store):
         """fee_rate_bps must be read from MarketState, not hardcoded."""
@@ -388,9 +396,13 @@ class TestExecutionEngine:
         """A successful live execution must log a TradeRecord to StateEngine."""
         engine = self._make_engine(store, dry_run=False)
         opp    = self._make_opp()
+        opp.win_probability = 0.60
+        opp.max_payout = 2.0
+        opp.edge = 0.40
         ms     = self._make_market_state()
+        strategy_config = {"kelly_fraction": 1.0, "max_position_pct": 0.15}
 
-        result = engine.execute_opportunity(opp, self._make_strategy(), ms, self._make_strategy_config())
+        result = engine.execute_opportunity(opp, self._make_strategy(), ms, strategy_config)
 
         assert result == "order-123"
         assert store.get_open_position_count() == 1

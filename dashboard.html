@@ -8,7 +8,7 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0d1117; color: #c9d1d9; padding: 20px; }
-        .container { max-width: 1200px; margin: 0 auto; }
+        .container { max-width: 1400px; margin: 0 auto; }
         h1 { color: #58a6ff; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
         h2 { color: #8b949e; font-size: 14px; font-weight: normal; margin: 20px 0 12px; border-bottom: 1px solid #30363d; padding-bottom: 8px; }
         .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #3fb950; animation: pulse 2s infinite; }
@@ -27,6 +27,12 @@
         .card .sub { font-size: 11px; color: #8b949e; margin-top: 4px; }
         .alloc-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #30363d; }
         .alloc-row:last-child { border-bottom: none; }
+        .tabs { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid #30363d; }
+        .tab { padding: 10px 20px; cursor: pointer; color: #8b949e; border-bottom: 2px solid transparent; font-size: 13px; }
+        .tab:hover { color: #c9d1d9; }
+        .tab.active { color: #58a6ff; border-bottom-color: #58a6ff; }
+        .tab-content { display: none; }
+        .tab-content.active { display: block; }
         table { width: 100%; border-collapse: collapse; margin-top: 12px; }
         th, td { text-align: left; padding: 10px; border-bottom: 1px solid #30363d; font-size: 13px; }
         th { color: #8b949e; font-weight: normal; font-size: 11px; text-transform: uppercase; }
@@ -43,6 +49,26 @@
         .data-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 13px; }
         .data-row .label { color: #8b949e; }
         .data-row .value { font-weight: 500; }
+        .opp-table { font-size: 12px; }
+        .opp-table th { background: #0d1117; position: sticky; top: 0; }
+        .opp-table tr:hover { background: #1c2128; }
+        .opp-question { max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        .opp-question:hover { white-space: normal; word-break: break-word; }
+        .action-badge { padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; }
+        .action-badge.buy_yes { background: #3fb95022; color: #3fb950; }
+        .action-badge.buy_no { background: #f8514922; color: #f85149; }
+        .action-badge.buy_all_yes { background: #58a6ff22; color: #58a6ff; }
+        .score-bar { width: 50px; height: 6px; background: #30363d; border-radius: 3px; display: inline-block; }
+        .score-bar-fill { height: 100%; background: #58a6ff; border-radius: 3px; }
+        .filter-row { display: flex; gap: 12px; margin-bottom: 12px; align-items: center; }
+        .filter-btn { padding: 4px 12px; border-radius: 4px; font-size: 11px; cursor: pointer; background: #21262d; border: 1px solid #30363d; color: #8b949e; }
+        .filter-btn:hover { border-color: #58a6ff; color: #c9d1d9; }
+        .filter-btn.active { background: #1f6feb22; border-color: #58a6ff; color: #58a6ff; }
+        .summary-badge { padding: 2px 8px; border-radius: 12px; font-size: 11px; margin-left: 8px; }
+        .summary-badge.s1 { background: #3fb95022; color: #3fb950; }
+        .summary-badge.s10 { background: #f0883e22; color: #f0883e; }
+        .summary-badge.s8 { background: #58a6ff22; color: #58a6ff; }
+        .time-left { font-size: 11px; color: #8b949e; }
     </style>
 </head>
 <body>
@@ -74,77 +100,122 @@
             </div>
         </div>
 
-        <!-- Data Ingestion -->
-        <h2>Data Ingestion (Last Scan)</h2>
-        <div class="grid-2">
-            <div class="card">
-                <h3>Markets</h3>
-                <div class="data-row"><span class="label">Total Active</span><span class="value" id="marketsTotal">--</span></div>
-                <div class="data-row"><span class="label">With Valid Prices</span><span class="value" id="marketsValid">--</span></div>
-                <div class="data-row"><span class="label">NegRisk Groups</span><span class="value" id="negriskGroups">--</span></div>
+        <!-- Tabs -->
+        <div class="tabs">
+            <div class="tab active" data-tab="overview">Overview</div>
+            <div class="tab" data-tab="opportunities">Opportunities <span id="oppCount" class="summary-badge s1">0</span></div>
+            <div class="tab" data-tab="trades">Recent Trades</div>
+        </div>
+
+        <!-- Overview Tab -->
+        <div class="tab-content active" id="tab-overview">
+            <!-- Data Ingestion -->
+            <h2>Data Ingestion (Last Scan)</h2>
+            <div class="grid-2">
+                <div class="card">
+                    <h3>Markets</h3>
+                    <div class="data-row"><span class="label">Total Active</span><span class="value" id="marketsTotal">--</span></div>
+                    <div class="data-row"><span class="label">With Valid Prices</span><span class="value" id="marketsValid">--</span></div>
+                    <div class="data-row"><span class="label">NegRisk Groups</span><span class="value" id="negriskGroups">--</span></div>
+                </div>
+                <div class="card">
+                    <h3>Categories</h3>
+                    <div class="data-row"><span class="label">Sports</span><span class="value" id="catSports">--</span></div>
+                    <div class="data-row"><span class="label">Politics</span><span class="value" id="catPolitics">--</span></div>
+                    <div class="data-row"><span class="label">Crypto</span><span class="value" id="catCrypto">--</span></div>
+                    <div class="data-row"><span class="label">Other</span><span class="value" id="catOther">--</span></div>
+                </div>
             </div>
-            <div class="card">
-                <h3>Categories</h3>
-                <div class="data-row"><span class="label">Sports</span><span class="value" id="catSports">--</span></div>
-                <div class="data-row"><span class="label">Politics</span><span class="value" id="catPolitics">--</span></div>
-                <div class="data-row"><span class="label">Crypto</span><span class="value" id="catCrypto">--</span></div>
-                <div class="data-row"><span class="label">Other</span><span class="value" id="catOther">--</span></div>
+
+            <!-- Strategy Results -->
+            <h2>Strategy Scan Results</h2>
+            <div class="grid">
+                <div class="card">
+                    <h3>S10 Near Resolution</h3>
+                    <div class="value" id="s10Opp">--</div>
+                    <div class="sub">opportunities</div>
+                </div>
+                <div class="card">
+                    <h3>S1 NegRisk Arb</h3>
+                    <div class="value" id="s1Opp">--</div>
+                    <div class="sub">opportunities</div>
+                </div>
+                <div class="card">
+                    <h3>S8 Logical Arb</h3>
+                    <div class="value" id="s8Opp">--</div>
+                    <div class="sub">opportunities</div>
+                </div>
+                <div class="card">
+                    <h3>Trades Executed</h3>
+                    <div class="value" id="tradesExec">--</div>
+                    <div class="sub" id="tradesRej">rejected: --</div>
+                </div>
+            </div>
+
+            <!-- Allocations & Risk -->
+            <div class="grid-2">
+                <div class="card">
+                    <h3>Allocations</h3>
+                    <div class="alloc-row"><span>s10_near_resolution</span><span>40%</span></div>
+                    <div class="alloc-row"><span>s1_negrisk_arb</span><span>40%</span></div>
+                    <div class="alloc-row"><span>s8_logical_arb</span><span>20%</span></div>
+                </div>
+                <div class="card">
+                    <h3>Risk Limits</h3>
+                    <div class="alloc-row"><span>Max Daily Loss</span><span>5% ($5)</span></div>
+                    <div class="alloc-row"><span>Max Positions</span><span>5</span></div>
+                    <div class="alloc-row"><span>Max Position %</span><span>15% ($15)</span></div>
+                    <div class="alloc-row"><span>Min Edge</span><span>2.5%</span></div>
+                </div>
             </div>
         </div>
 
-        <!-- Strategy Results -->
-        <h2>Strategy Scan Results</h2>
-        <div class="grid">
+        <!-- Opportunities Tab -->
+        <div class="tab-content" id="tab-opportunities">
+            <h2>Trading Opportunities</h2>
             <div class="card">
-                <h3>S10 Near Resolution</h3>
-                <div class="value" id="s10Opp">--</div>
-                <div class="sub">opportunities</div>
-            </div>
-            <div class="card">
-                <h3>S1 NegRisk Arb</h3>
-                <div class="value" id="s1Opp">--</div>
-                <div class="sub">opportunities</div>
-            </div>
-            <div class="card">
-                <h3>S8 Logical Arb</h3>
-                <div class="value" id="s8Opp">--</div>
-                <div class="sub">opportunities</div>
-            </div>
-            <div class="card">
-                <h3>Trades Executed</h3>
-                <div class="value" id="tradesExec">--</div>
-                <div class="sub" id="tradesRej">rejected: --</div>
-            </div>
-        </div>
-
-        <!-- Allocations & Risk -->
-        <div class="grid-2">
-            <div class="card">
-                <h3>Allocations</h3>
-                <div class="alloc-row"><span>s10_near_resolution</span><span>40%</span></div>
-                <div class="alloc-row"><span>s1_negrisk_arb</span><span>40%</span></div>
-                <div class="alloc-row"><span>s8_logical_arb</span><span>20%</span></div>
-            </div>
-            <div class="card">
-                <h3>Risk Limits</h3>
-                <div class="alloc-row"><span>Max Daily Loss</span><span>5% ($5)</span></div>
-                <div class="alloc-row"><span>Max Positions</span><span>5</span></div>
-                <div class="alloc-row"><span>Max Position %</span><span>15% ($15)</span></div>
-                <div class="alloc-row"><span>Min Edge</span><span>2.5%</span></div>
+                <div class="filter-row">
+                    <span style="color:#8b949e;font-size:12px;">Filter:</span>
+                    <button class="filter-btn active" data-filter="all">All <span id="fAll">0</span></button>
+                    <button class="filter-btn" data-filter="s1_negrisk_arb">S1 NegRisk Arb <span id="fS1">0</span></button>
+                    <button class="filter-btn" data-filter="s10_near_resolution">S10 Near Resolution <span id="fS10">0</span></button>
+                    <button class="filter-btn" data-filter="s8_logical_arb">S8 Logical Arb <span id="fS8">0</span></button>
+                    <span style="margin-left:auto;color:#8b949e;font-size:11px;">Sorted by score (highest first)</span>
+                </div>
+                <table class="opp-table">
+                    <thead>
+                        <tr>
+                            <th>Score</th>
+                            <th>Strategy</th>
+                            <th>Action</th>
+                            <th>Market Question</th>
+                            <th>Edge</th>
+                            <th>Win Prob</th>
+                            <th>Max Payout</th>
+                            <th>Time Left</th>
+                            <th>Category</th>
+                        </tr>
+                    </thead>
+                    <tbody id="opportunities">
+                        <tr><td colspan="9" style="text-align:center;color:#8b949e;">No opportunities found</td></tr>
+                    </tbody>
+                </table>
             </div>
         </div>
 
-        <!-- Recent Trades -->
-        <h2>Recent Trades</h2>
-        <div class="card">
-            <table>
-                <thead>
-                    <tr><th>Time</th><th>Strategy</th><th>Market</th><th>Side</th><th>Price</th><th>Size</th><th>P&L</th><th>Status</th></tr>
-                </thead>
-                <tbody id="trades">
-                    <tr><td colspan="8" style="text-align:center;color:#8b949e;">No recent trades</td></tr>
-                </tbody>
-            </table>
+        <!-- Trades Tab -->
+        <div class="tab-content" id="tab-trades">
+            <h2>Recent Trades</h2>
+            <div class="card">
+                <table>
+                    <thead>
+                        <tr><th>Time</th><th>Strategy</th><th>Market</th><th>Side</th><th>Price</th><th>Size</th><th>P&L</th><th>Status</th></tr>
+                    </thead>
+                    <tbody id="trades">
+                        <tr><td colspan="8" style="text-align:center;color:#8b949e;">No recent trades</td></tr>
+                    </tbody>
+                </table>
+            </div>
         </div>
 
         <div class="github-link">
@@ -155,7 +226,8 @@
     </div>
 
     <script>
-        var STATE_DATA = {"timestamp": "2026-03-21T16:28:00.314101+00:00Z", "balance": 100.0, "capital": 100.0, "daily_pnl": 0.0, "open_positions": 0, "max_positions": 5, "resolved_24h": 0, "wins_24h": 0, "dry_run": false, "trades_executed": 0, "trades_rejected": 3, "ingestion": {"markets_scanned": 483, "markets_valid": 235, "negrisk_groups": 78, "categories": {"sports": 220, "politics": 162, "crypto": 7, "other": 94}}, "strategies": {"s10_opportunities": 0, "s1_opportunities": 72, "s8_opportunities": 0}, "recent_trades": []};
+        var STATE_DATA = {"timestamp": "2026-03-21T16:47:20.718303+00:00Z", "balance": 100.0, "capital": 100.0, "daily_pnl": 0.0, "open_positions": 0, "max_positions": 5, "resolved_24h": 0, "wins_24h": 0, "dry_run": false, "trades_executed": 0, "trades_rejected": 3, "ingestion": {"markets_scanned": 483, "markets_valid": 235, "negrisk_groups": 78, "categories": {"sports": 220, "politics": 162, "crypto": 7, "other": 94}}, "strategies": {"s10_opportunities": 0, "s1_opportunities": 72, "s8_opportunities": 0}, "recent_trades": [], "opportunities": [{"strategy": "s1_negrisk_arb", "market_id": "Italy", "question": "NegRisk LONG: Will Italy qualify for the 2026 FIFA World Cup?\u2026", "action": "buy_all_yes", "edge": 32.92, "win_prob": 100.0, "max_payout": 1.5528, "score": 0.658, "time_to_resolution": 1840359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Oklahoma City Thunder", "question": "NegRisk LONG: Will the Oklahoma City Thunder win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 7.57, "win_prob": 100.0, "max_payout": 1.1236, "score": 0.151, "time_to_resolution": 7456359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Cleveland Cavaliers", "question": "NegRisk LONG: Will the Cleveland Cavaliers win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 73.02, "win_prob": 100.0, "max_payout": 3.8095, "score": 1.0, "time_to_resolution": 7197159, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "New York Knicks", "question": "NegRisk LONG: Will the New York Knicks win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 78.45, "win_prob": 100.0, "max_payout": 4.7506, "score": 1.0, "time_to_resolution": 7197159, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Minnesota Timberwolves", "question": "NegRisk LONG: Will the Minnesota Timberwolves win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 95.02, "win_prob": 100.0, "max_payout": 20.202, "score": 1.0, "time_to_resolution": 7456359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Houston Rockets", "question": "NegRisk LONG: Will the Houston Rockets win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 94.87, "win_prob": 100.0, "max_payout": 19.6078, "score": 1.0, "time_to_resolution": 7456359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Boston Celtics", "question": "NegRisk LONG: Will the Boston Celtics win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 51.34, "win_prob": 100.0, "max_payout": 2.1345, "score": 1.0, "time_to_resolution": 7197159, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Los Angeles Lakers", "question": "NegRisk LONG: Will the Los Angeles Lakers win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 88.33, "win_prob": 100.0, "max_payout": 8.6957, "score": 1.0, "time_to_resolution": 7456359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Orlando Magic", "question": "NegRisk LONG: Will the Orlando Magic win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 96.69, "win_prob": 100.0, "max_payout": 30.303, "score": 1.0, "time_to_resolution": 7197159, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Denver Nuggets", "question": "NegRisk LONG: Will the Denver Nuggets win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 79.02, "win_prob": 100.0, "max_payout": 4.878, "score": 1.0, "time_to_resolution": 7456359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "San Antonio Spurs", "question": "NegRisk LONG: Will the San Antonio Spurs win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 64.72, "win_prob": 100.0, "max_payout": 2.9283, "score": 1.0, "time_to_resolution": 7456359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Golden State Warriors", "question": "NegRisk LONG: Will the Golden State Warriors win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 98.6, "win_prob": 100.0, "max_payout": 71.4286, "score": 1.0, "time_to_resolution": 7456359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Los Angeles Clippers", "question": "NegRisk LONG: Will the Los Angeles Clippers win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 96.18, "win_prob": 100.0, "max_payout": 26.3158, "score": 1.0, "time_to_resolution": 7456359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Philadelphia 76ers", "question": "NegRisk LONG: Will the Philadelphia 76ers win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 97.99, "win_prob": 100.0, "max_payout": 50.0, "score": 1.0, "time_to_resolution": 7197159, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Dallas Mavericks", "question": "NegRisk LONG: Will the Dallas Mavericks win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 99.8, "win_prob": 100.0, "max_payout": 500.0, "score": 1.0, "time_to_resolution": 7456359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Detroit Pistons", "question": "NegRisk LONG: Will the Detroit Pistons win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 83.33, "win_prob": 100.0, "max_payout": 6.1162, "score": 1.0, "time_to_resolution": 7197159, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Milwaukee Bucks", "question": "NegRisk LONG: Will the Milwaukee Bucks win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 99.7, "win_prob": 100.0, "max_payout": 333.3333, "score": 1.0, "time_to_resolution": 7197159, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Miami Heat", "question": "NegRisk LONG: Will the Miami Heat win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 96.69, "win_prob": 100.0, "max_payout": 30.303, "score": 1.0, "time_to_resolution": 7197159, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Memphis Grizzlies", "question": "NegRisk LONG: Will the Memphis Grizzlies win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 99.7, "win_prob": 100.0, "max_payout": 333.3333, "score": 1.0, "time_to_resolution": 7456359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "New Orleans Pelicans", "question": "NegRisk LONG: Will the New Orleans Pelicans win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 99.8, "win_prob": 100.0, "max_payout": 500.0, "score": 1.0, "time_to_resolution": 7456359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Toronto Raptors", "question": "NegRisk LONG: Will the Toronto Raptors win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 96.18, "win_prob": 100.0, "max_payout": 26.3158, "score": 1.0, "time_to_resolution": 7197159, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Phoenix Suns", "question": "NegRisk LONG: Will the Phoenix Suns win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 98.1, "win_prob": 100.0, "max_payout": 52.6316, "score": 1.0, "time_to_resolution": 7456359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Chicago Bulls", "question": "NegRisk LONG: Will the Chicago Bulls win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 99.7, "win_prob": 100.0, "max_payout": 333.3333, "score": 1.0, "time_to_resolution": 7197159, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Portland Trail Blazers", "question": "NegRisk LONG: Will the Portland Trail Blazers win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 99.0, "win_prob": 100.0, "max_payout": 100.0, "score": 1.0, "time_to_resolution": 7456359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Atlanta Hawks", "question": "NegRisk LONG: Will the Atlanta Hawks win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 97.24, "win_prob": 100.0, "max_payout": 36.3636, "score": 1.0, "time_to_resolution": 7197159, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Charlotte Hornets", "question": "NegRisk LONG: Will the Charlotte Hornets win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 95.93, "win_prob": 100.0, "max_payout": 24.6914, "score": 1.0, "time_to_resolution": 7197159, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Gavin Newsom", "question": "NegRisk LONG: Will Gavin Newsom win the 2028 Democratic presidential nomin\u2026", "action": "buy_all_yes", "edge": 54.98, "win_prob": 100.0, "max_payout": 2.3041, "score": 1.0, "time_to_resolution": 83056359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Alexandria Ocasio-Cortez", "question": "NegRisk LONG: Will Alexandria Ocasio-Cortez win the 2028 Democratic presid\u2026", "action": "buy_all_yes", "edge": 86.69, "win_prob": 100.0, "max_payout": 7.6336, "score": 1.0, "time_to_resolution": 83056359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Pete Buttigieg", "question": "NegRisk LONG: Will Pete Buttigieg win the 2028 Democratic presidential nom\u2026", "action": "buy_all_yes", "edge": 93.85, "win_prob": 100.0, "max_payout": 16.3934, "score": 1.0, "time_to_resolution": 83056359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Josh Shapiro", "question": "NegRisk LONG: Will Josh Shapiro win the 2028 Democratic presidential nomin\u2026", "action": "buy_all_yes", "edge": 93.55, "win_prob": 100.0, "max_payout": 15.625, "score": 1.0, "time_to_resolution": 83056359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Wes Moore", "question": "NegRisk LONG: Will Wes Moore win the 2028 Democratic presidential nominati\u2026", "action": "buy_all_yes", "edge": 97.39, "win_prob": 100.0, "max_payout": 38.4615, "score": 1.0, "time_to_resolution": 83056359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Kamala Harris", "question": "NegRisk LONG: Will Kamala Harris win the 2028 Democratic presidential nomi\u2026", "action": "buy_all_yes", "edge": 91.82, "win_prob": 100.0, "max_payout": 12.3457, "score": 1.0, "time_to_resolution": 83056359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Gretchen Whitmer", "question": "NegRisk LONG: Will Gretchen Whitmer win the 2028 Democratic presidential n\u2026", "action": "buy_all_yes", "edge": 97.49, "win_prob": 100.0, "max_payout": 40.0, "score": 1.0, "time_to_resolution": 83056359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Andy Beshear", "question": "NegRisk LONG: Will Andy Beshear win the 2028 Democratic presidential nomin\u2026", "action": "buy_all_yes", "edge": 96.28, "win_prob": 100.0, "max_payout": 27.027, "score": 1.0, "time_to_resolution": 83056359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Jon Ossoff", "question": "NegRisk LONG: Will Jon Ossoff win the 2028 Democratic presidential nominat\u2026", "action": "buy_all_yes", "edge": 88.9, "win_prob": 100.0, "max_payout": 9.1324, "score": 1.0, "time_to_resolution": 83056359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Tim Walz", "question": "NegRisk LONG: Will Tim Walz win the 2028 Democratic presidential nominatio\u2026", "action": "buy_all_yes", "edge": 98.7, "win_prob": 100.0, "max_payout": 76.9231, "score": 1.0, "time_to_resolution": 83056359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Michelle Obama", "question": "NegRisk LONG: Will Michelle Obama win the 2028 Democratic presidential nom\u2026", "action": "buy_all_yes", "edge": 97.39, "win_prob": 100.0, "max_payout": 38.4615, "score": 1.0, "time_to_resolution": 83056359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Zohran Mamdani", "question": "NegRisk LONG: Will Zohran Mamdani win the 2028 Democratic presidential nom\u2026", "action": "buy_all_yes", "edge": 98.2, "win_prob": 100.0, "max_payout": 55.5556, "score": 1.0, "time_to_resolution": 83056359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "LeBron James", "question": "NegRisk LONG: Will LeBron James win the 2028 Democratic presidential nomin\u2026", "action": "buy_all_yes", "edge": 98.4, "win_prob": 100.0, "max_payout": 62.5, "score": 1.0, "time_to_resolution": 6937959, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Dwayne 'The Rock' Johnson", "question": "NegRisk LONG: Will Dwayne 'The Rock' Johnson win the 2028 Democratic presi\u2026", "action": "buy_all_yes", "edge": 97.29, "win_prob": 100.0, "max_payout": 37.037, "score": 1.0, "time_to_resolution": 83056359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Kim Kardashian", "question": "NegRisk LONG: Will Kim Kardashian win the 2028 Democratic presidential nom\u2026", "action": "buy_all_yes", "edge": 97.75, "win_prob": 100.0, "max_payout": 44.4444, "score": 1.0, "time_to_resolution": 83056359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Ro Khanna", "question": "NegRisk LONG: Will Ro Khanna win the 2028 Democratic presidential nominati\u2026", "action": "buy_all_yes", "edge": 97.89, "win_prob": 100.0, "max_payout": 47.619, "score": 1.0, "time_to_resolution": 83056359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "James Talarico", "question": "NegRisk LONG: Will James Talarico win the 2028 Democratic presidential nom\u2026", "action": "buy_all_yes", "edge": 96.84, "win_prob": 100.0, "max_payout": 31.746, "score": 1.0, "time_to_resolution": 83056359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Marco Rubio", "question": "NegRisk LONG: Will Marco Rubio win the 2028 US Presidential Election?\u2026", "action": "buy_all_yes", "edge": 58.72, "win_prob": 100.0, "max_payout": 2.5094, "score": 1.0, "time_to_resolution": 83056359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Glenn Youngkin", "question": "NegRisk LONG: Will Glenn Youngkin win the 2028 US Presidential Election?\u2026", "action": "buy_all_yes", "edge": 97.89, "win_prob": 100.0, "max_payout": 47.619, "score": 1.0, "time_to_resolution": 83056359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Tulsi Gabbard", "question": "NegRisk LONG: Will Tulsi Gabbard win the 2028 US Presidential Election?\u2026", "action": "buy_all_yes", "edge": 98.3, "win_prob": 100.0, "max_payout": 58.8235, "score": 1.0, "time_to_resolution": 83056359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Donald Trump", "question": "NegRisk LONG: Will Donald Trump win the 2028 US Presidential Election?\u2026", "action": "buy_all_yes", "edge": 95.83, "win_prob": 100.0, "max_payout": 24.0964, "score": 1.0, "time_to_resolution": 83056359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Donald Trump Jr.", "question": "NegRisk LONG: Will Donald Trump Jr. win the 2028 US Presidential Election?\u2026", "action": "buy_all_yes", "edge": 97.84, "win_prob": 100.0, "max_payout": 46.5116, "score": 1.0, "time_to_resolution": 83056359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Nikki Haley", "question": "NegRisk LONG: Will Nikki Haley win the 2028 US Presidential Election?\u2026", "action": "buy_all_yes", "edge": 97.99, "win_prob": 100.0, "max_payout": 50.0, "score": 1.0, "time_to_resolution": 83056359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Ron DeSantis", "question": "NegRisk LONG: Will Ron DeSantis win the 2028 US Presidential Election?\u2026", "action": "buy_all_yes", "edge": 95.27, "win_prob": 100.0, "max_payout": 21.2766, "score": 1.0, "time_to_resolution": 83056359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Vivek Ramaswamy", "question": "NegRisk LONG: Will Vivek Ramaswamy win the 2028 US Presidential Election?\u2026", "action": "buy_all_yes", "edge": 97.59, "win_prob": 100.0, "max_payout": 41.6667, "score": 1.0, "time_to_resolution": 83056359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Greg Abbott", "question": "NegRisk LONG: Will Greg Abbott win the 2028 US Presidential Election?\u2026", "action": "buy_all_yes", "edge": 98.2, "win_prob": 100.0, "max_payout": 55.5556, "score": 1.0, "time_to_resolution": 83056359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Elon Musk", "question": "NegRisk LONG: Will Elon Musk win the 2028 US Presidential Election?\u2026", "action": "buy_all_yes", "edge": 97.79, "win_prob": 100.0, "max_payout": 45.4545, "score": 1.0, "time_to_resolution": 83056359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Tucker Carlson", "question": "NegRisk LONG: Will Tucker Carlson win the 2028 US Presidential Election?\u2026", "action": "buy_all_yes", "edge": 92.99, "win_prob": 100.0, "max_payout": 14.3885, "score": 1.0, "time_to_resolution": 83056359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Ivanka Trump", "question": "NegRisk LONG: Will Ivanka Trump win the 2028 US Presidential Election?\u2026", "action": "buy_all_yes", "edge": 97.79, "win_prob": 100.0, "max_payout": 45.4545, "score": 1.0, "time_to_resolution": 83056359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Thomas Massie", "question": "NegRisk LONG: Will Thomas Massie win the 2028 US Presidential Election?\u2026", "action": "buy_all_yes", "edge": 97.39, "win_prob": 100.0, "max_payout": 38.4615, "score": 1.0, "time_to_resolution": 83056359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Eric Trump", "question": "NegRisk LONG: Will Eric Trump win the 2028 US Presidential Election?\u2026", "action": "buy_all_yes", "edge": 98.7, "win_prob": 100.0, "max_payout": 76.9231, "score": 1.0, "time_to_resolution": 83056359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Pete Hegseth", "question": "NegRisk LONG: Will Pete Hegseth win the 2028 US Presidential Election?\u2026", "action": "buy_all_yes", "edge": 98.75, "win_prob": 100.0, "max_payout": 80.0, "score": 1.0, "time_to_resolution": 83056359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Cooper Flagg", "question": "NegRisk LONG: Will Cooper Flagg win the 2025\u201326 NBA Rookie of the Year awa\u2026", "action": "buy_all_yes", "edge": 72.65, "win_prob": 100.0, "max_payout": 3.7594, "score": 1.0, "time_to_resolution": 4950759, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Republican Party", "question": "NegRisk LONG: Will the Republican Party control the Senate after the 2026 \u2026", "action": "buy_all_yes", "edge": 31.25, "win_prob": 100.0, "max_payout": 1.5152, "score": 0.625, "time_to_resolution": 19552359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Liverpool", "question": "NegRisk LONG: Will Liverpool win the 2025\u201326 Champions League?\u2026", "action": "buy_all_yes", "edge": 91.1, "win_prob": 100.0, "max_payout": 11.2994, "score": 1.0, "time_to_resolution": 5728359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Real Madrid", "question": "NegRisk LONG: Will Real Madrid win the 2025\u201326 Champions League?\u2026", "action": "buy_all_yes", "edge": 71.18, "win_prob": 100.0, "max_payout": 3.5714, "score": 1.0, "time_to_resolution": 5987559, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Atletico Madrid", "question": "NegRisk LONG: Will Atletico Madrid win the 2025\u201326 Champions League?\u2026", "action": "buy_all_yes", "edge": 96.13, "win_prob": 100.0, "max_payout": 25.974, "score": 1.0, "time_to_resolution": 5987559, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Man City", "question": "NegRisk LONG: Will Manchester City win the 2025\u201326 English Premier League?\u2026", "action": "buy_all_yes", "edge": 5.54, "win_prob": 100.0, "max_payout": 1.0989, "score": 0.111, "time_to_resolution": 5728359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Chelsea", "question": "NegRisk LONG: Will Chelsea win the 2025\u201326 English Premier League?\u2026", "action": "buy_all_yes", "edge": 98.65, "win_prob": 100.0, "max_payout": 74.0741, "score": 1.0, "time_to_resolution": 5728359, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Paloma Valencia", "question": "NegRisk LONG: Will Paloma Valencia win the 1st round of the 2026 Colombian\u2026", "action": "buy_all_yes", "edge": 40.09, "win_prob": 100.0, "max_payout": 1.7376, "score": 0.802, "time_to_resolution": 6131559, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Abelardo de la Espriella", "question": "NegRisk LONG: Will Abelardo de la Espriella win the 1st round of the 2026 \u2026", "action": "buy_all_yes", "edge": 80.12, "win_prob": 100.0, "max_payout": 5.1414, "score": 1.0, "time_to_resolution": 6131559, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Roy Barreras", "question": "NegRisk LONG: Will Roy Barreras win the 1st round of the 2026 Colombian pr\u2026", "action": "buy_all_yes", "edge": 99.35, "win_prob": 100.0, "max_payout": 153.8462, "score": 1.0, "time_to_resolution": 6131559, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Daniel Quintero", "question": "NegRisk LONG: Will Daniel Quintero win the 1st round of the 2026 Colombian\u2026", "action": "buy_all_yes", "edge": 99.7, "win_prob": 100.0, "max_payout": 333.3333, "score": 1.0, "time_to_resolution": 6131559, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Juan Carlos Pinz\u00f3n", "question": "NegRisk LONG: Will Juan Carlos Pinz\u00f3n win the 1st round of the 2026 Colomb\u2026", "action": "buy_all_yes", "edge": 99.6, "win_prob": 100.0, "max_payout": 250.0, "score": 1.0, "time_to_resolution": 6131559, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Mauricio C\u00e1rdenas", "question": "NegRisk LONG: Will Mauricio C\u00e1rdenas win the 1st round of the 2026 Colombi\u2026", "action": "buy_all_yes", "edge": 99.55, "win_prob": 100.0, "max_payout": 222.2222, "score": 1.0, "time_to_resolution": 6131559, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "Enrique Pe\u00f1alosa", "question": "NegRisk LONG: Will Enrique Pe\u00f1alosa win the 1st round of the 2026 Colombia\u2026", "action": "buy_all_yes", "edge": 99.75, "win_prob": 100.0, "max_payout": 400.0, "score": 1.0, "time_to_resolution": 6131559, "category": "unknown"}]};
+        var currentFilter = 'all';
 
         function renderDashboard() {
             var data = STATE_DATA;
@@ -214,6 +286,23 @@
             document.getElementById('tradesExec').textContent = data.trades_executed || 0;
             document.getElementById('tradesRej').textContent = 'rejected: ' + (data.trades_rejected || 0);
             
+            // Opportunities count badge
+            var opps = data.opportunities || [];
+            var totalOpps = opps.length;
+            document.getElementById('oppCount').textContent = totalOpps;
+            
+            // Filter counts
+            var s1Count = opps.filter(function(o) { return o.strategy === 's1_negrisk_arb'; }).length;
+            var s10Count = opps.filter(function(o) { return o.strategy === 's10_near_resolution'; }).length;
+            var s8Count = opps.filter(function(o) { return o.strategy === 's8_logical_arb'; }).length;
+            document.getElementById('fAll').textContent = totalOpps;
+            document.getElementById('fS1').textContent = s1Count;
+            document.getElementById('fS10').textContent = s10Count;
+            document.getElementById('fS8').textContent = s8Count;
+            
+            // Render opportunities
+            renderOpportunities(opps);
+            
             // Trades
             var tradesEl = document.getElementById('trades');
             var trades = data.recent_trades || [];
@@ -237,6 +326,67 @@
                 }).join('');
             }
         }
+
+        function formatTimeLeft(seconds) {
+            if (seconds < 0) return 'Resolved';
+            if (seconds < 60) return seconds + 's';
+            if (seconds < 3600) return Math.floor(seconds / 60) + 'm';
+            if (seconds < 86400) return Math.floor(seconds / 3600) + 'h';
+            return Math.floor(seconds / 86400) + 'd';
+        }
+
+        function renderOpportunities(opps) {
+            var tbody = document.getElementById('opportunities');
+            var filtered = currentFilter === 'all' ? opps : opps.filter(function(o) { return o.strategy === currentFilter; });
+            
+            // Sort by score descending
+            filtered.sort(function(a, b) { return b.score - a.score; });
+            
+            if (filtered.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#8b949e;">No opportunities found</td></tr>';
+                return;
+            }
+            
+            tbody.innerHTML = filtered.map(function(o) {
+                var actionClass = o.action.replace(/_/g, '-');
+                var stratBadge = o.strategy === 's1_negrisk_arb' ? 'S1' : (o.strategy === 's10_near_resolution' ? 'S10' : 'S8');
+                var stratClass = o.strategy === 's1_negrisk_arb' ? 's1' : (o.strategy === 's10_near_resolution' ? 's10' : 's8');
+                var scoreWidth = Math.round(o.score * 100);
+                var edgeClass = o.edge >= 5 ? 'positive' : (o.edge < 2 ? 'negative' : '');
+                
+                return '<tr>' +
+                    '<td><div class="score-bar"><div class="score-bar-fill" style="width:' + scoreWidth + '%"></div></div> ' + (o.score * 100).toFixed(1) + '%</td>' +
+                    '<td><span class="summary-badge ' + stratClass + '">' + stratBadge + '</span></td>' +
+                    '<td><span class="action-badge ' + actionClass + '">' + o.action.replace(/_/g, ' ') + '</span></td>' +
+                    '<td class="opp-question" title="' + (o.question || '') + '">' + (o.question || 'N/A').substring(0, 50) + '</td>' +
+                    '<td class="' + edgeClass + '">' + o.edge.toFixed(2) + '%</td>' +
+                    '<td>' + o.win_prob.toFixed(1) + '%</td>' +
+                    '<td>' + o.max_payout.toFixed(4) + 'x</td>' +
+                    '<td><span class="time-left">' + formatTimeLeft(o.time_to_resolution) + '</span></td>' +
+                    '<td>' + (o.category || 'unknown') + '</td>' +
+                '</tr>';
+            }).join('');
+        }
+
+        // Tab switching
+        document.querySelectorAll('.tab').forEach(function(tab) {
+            tab.addEventListener('click', function() {
+                document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
+                document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
+                tab.classList.add('active');
+                document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
+            });
+        });
+
+        // Filter buttons
+        document.querySelectorAll('.filter-btn').forEach(function(btn) {
+            btn.addEventListener('click', function() {
+                document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
+                btn.classList.add('active');
+                currentFilter = btn.dataset.filter;
+                renderOpportunities(STATE_DATA.opportunities || []);
+            });
+        });
 
         renderDashboard();
     </script>
