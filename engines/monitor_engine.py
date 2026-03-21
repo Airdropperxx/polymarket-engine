@@ -20,12 +20,12 @@ log = structlog.get_logger()
 _TELEGRAM_API = "https://api.telegram.org/bot{token}/sendMessage"
 
 _TEMPLATES = {
-    "trade_executed":  "✅ {strategy} | {action} {question} | ${size:.2f} @ ${price:.3f}",
-    "trade_rejected":  "⚠️ REJECTED: {reason} | {strategy}",
-    "daily_summary":   "📊 P&L ${pnl:+.2f} | Trades: {trades} | Balance: ${balance:.2f}",
-    "risk_limit_hit":  "🚨 RISK LIMIT: {limit_type} hit. Engine halted.",
-    "error":           "❌ ERROR: {component} | {error}",
-    "lesson_update":   "🧠 LEARNED: {lesson}",
+    "trade_executed":  "[TRADE] {strategy} | {action} {question} | ${size:.2f} @ ${price:.3f}",
+    "trade_rejected":  "[REJECTED] {reason} | {strategy}",
+    "daily_summary":   "[SUMMARY] P&L ${pnl:+.2f} | Trades: {trades} | Balance: ${balance:.2f}",
+    "risk_limit_hit":  "[ALERT] RISK LIMIT: {limit_type} hit. Engine halted.",
+    "error":           "[ERROR] {component} | {error}",
+    "lesson_update":   "[LEARNED] {lesson}",
 }
 
 

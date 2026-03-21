@@ -64,16 +64,13 @@ def main() -> None:
             log.warning("run_scan_cycle.clob_init_error", error=str(e))
             clob = None
 
-        if clob:
-            execute = ExecutionEngine(clob, state, config, dry_run=dry_run)
+        # Always create ExecutionEngine - DRY_RUN mode works without CLOB client
+        execute = ExecutionEngine(clob, state, config, dry_run=dry_run)
     except ImportError:
         log.warning("run_scan_cycle.execution_engine_unavailable")
-
-    # Mock execution if not available
-    if execute is None:
-        from unittest.mock import MagicMock
-        execute = MagicMock()
-        execute.execute_opportunity = lambda *args, **kwargs: None
+        # Fallback: create minimal execution engine
+        from engines.execution_engine import ExecutionEngine
+        execute = ExecutionEngine(None, state, config, dry_run=dry_run)
 
     hub = SignalEngine(data, execute, state, review, monitor, config)
 

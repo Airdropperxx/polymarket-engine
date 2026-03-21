@@ -58,7 +58,7 @@ class NegRiskArbStrategy(BaseStrategy):
                 if net >= min_spread:
                     opps.append(Opportunity(
                         strategy=self.name,
-                        market_id=group_id,
+                        market_id=group_markets[0].market_id,  # Use first market's ID
                         market_question=(
                             f"NegRisk LONG: {group_markets[0].question[:60]}…"
                         ),
@@ -94,7 +94,7 @@ class NegRiskArbStrategy(BaseStrategy):
                 if net >= min_spread:
                     opps.append(Opportunity(
                         strategy=self.name,
-                        market_id=f"{group_id}_short",
+                        market_id=group_markets[0].market_id,  # Use first market's ID
                         market_question=(
                             f"NegRisk SHORT: {group_markets[0].question[:60]}…"
                         ),
