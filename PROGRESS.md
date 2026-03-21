@@ -24,6 +24,6 @@
 | TASK-023 | scripts/health_check.py | ✅ DONE | Mar 21, 2026 |
 | TASK-024 | First real S10 trade | ⏳ TODO | — |
 | TASK-025 | Tag v0.2.0 | ✅ DONE | Mar 21, 2026 |
-| TASK-026 | strategies/s4_chainlink_sniper.py | ⏳ TODO | — |
-| TASK-027 | strategies/s6_synth_ai.py | ⏳ TODO | — |
-| TASK-028 | Tag v0.3.0 | ⏳ TODO | — |
+| TASK-026 | strategies/s4_chainlink_sniper.py | ✅ DONE | Mar 21, 2026 |
+| TASK-027 | strategies/s6_synth_ai.py | ✅ DONE | Mar 21, 2026 |
+| TASK-028 | Tag v0.3.0 | ✅ DONE | Mar 21, 2026 |
