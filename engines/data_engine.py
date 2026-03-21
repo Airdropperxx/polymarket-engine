@@ -177,9 +177,24 @@ class DataEngine:
     def _parse_market(self, raw: dict) -> Optional[MarketState]:
         """Convert a raw API dict into a MarketState. Returns None if data is invalid."""
         try:
-            tokens   = raw.get("tokens", [])
-            yes_tok  = next((t for t in tokens if t.get("outcome", "").upper() == "YES"), {})
-            no_tok   = next((t for t in tokens if t.get("outcome", "").upper() == "NO"),  {})
+            # Handle both formats: tokens array (CLOB API) and outcomePrices (Gamma API)
+            tokens = raw.get("tokens", [])
+            if tokens:
+                yes_tok = next((t for t in tokens if t.get("outcome", "").upper() == "YES"), {})
+                no_tok = next((t for t in tokens if t.get("outcome", "").upper() == "NO"), {})
+            else:
+                # Gamma API format: outcomePrices and outcomes as JSON strings
+                import json
+                try:
+                    outcome_prices = json.loads(raw.get("outcomePrices", "[]"))
+                    outcomes = json.loads(raw.get("outcomes", "[]"))
+                    yes_idx = outcomes.index("Yes") if "Yes" in outcomes else 0
+                    no_idx = outcomes.index("No") if "No" in outcomes else 1
+                    yes_tok = {"price": str(outcome_prices[yes_idx]), "bid": "0"}
+                    no_tok = {"price": str(outcome_prices[no_idx]), "bid": "0"}
+                except (json.JSONDecodeError, ValueError, IndexError):
+                    yes_tok = {"price": "0.5", "bid": "0"}
+                    no_tok = {"price": "0.5", "bid": "0"}
 
             end_date = raw.get("endDate") or raw.get("end_date_iso", "")
             secs_left = _seconds_until(end_date)
