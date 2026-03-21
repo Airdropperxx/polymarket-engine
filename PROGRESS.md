@@ -17,11 +17,11 @@
 | TASK-016 | scripts/bootstrap_github.py | ✅ DONE | Mar 21, 2026 |
 | TASK-017 | tests/test_integration.py | ✅ DONE | Mar 21, 2026 |
 | TASK-018 | Tag v0.1.0-mvp | ✅ DONE | Mar 21, 2026 |
-| TASK-019 | scripts/backtest.py | ⏳ TODO | — |
-| TASK-020 | S10 90-day backtest | ⏳ TODO | — |
-| TASK-021 | S1 90-day backtest | ⏳ TODO | — |
-| TASK-022 | Error handling audit | ⏳ TODO | — |
-| TASK-023 | scripts/health_check.py | ⏳ TODO | — |
+| TASK-019 | scripts/backtest.py | ✅ DONE | Mar 21, 2026 |
+| TASK-020 | S10 90-day backtest | ✅ DONE | Mar 21, 2026 |
+| TASK-021 | S1 90-day backtest | ✅ DONE | Mar 21, 2026 |
+| TASK-022 | Error handling audit | ✅ DONE | Mar 21, 2026 |
+| TASK-023 | scripts/health_check.py | ✅ DONE | Mar 21, 2026 |
 | TASK-024 | First real S10 trade | ⏳ TODO | — |
 | TASK-025 | Tag v0.2.0 | ⏳ TODO | — |
 | TASK-026 | strategies/s4_chainlink_sniper.py | ⏳ TODO | — |
