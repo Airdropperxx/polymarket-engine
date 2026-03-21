@@ -122,9 +122,12 @@ def update_dashboard_html(data: dict) -> bool:
 
     json_str = json.dumps(data)
 
-    pattern = r'var STATE_DATA = \{[^}]*\};'
-    if re.search(pattern, html_content):
-        html_content = re.sub(pattern, f'var STATE_DATA = {json_str};', html_content)
+    # Replace STATE_DATA with new data
+    if 'var STATE_DATA = ' in html_content:
+        start = html_content.find('var STATE_DATA = ')
+        start_line_end = html_content.find(';', start)
+        if start != -1 and start_line_end != -1:
+            html_content = html_content[:start] + f'var STATE_DATA = {json_str};' + html_content[start_line_end+1:]
     else:
         html_content = html_content.replace("var STATE_DATA = null;", f"var STATE_DATA = {json_str};")
 

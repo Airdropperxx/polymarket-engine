@@ -1,1 +1,1 @@
-{"ingestion": {"markets_scanned": 483, "markets_valid": 234, "negrisk_groups": 78, "categories": {"sports": 220, "politics": 162, "crypto": 7, "other": 94}}, "strategies": {"s10_opportunities": 0, "s1_opportunities": 72, "s8_opportunities": 0}, "trades_executed": 0, "trades_rejected": 3}
+{"ingestion": {"markets_scanned": 483, "markets_valid": 235, "negrisk_groups": 78, "categories": {"sports": 220, "politics": 162, "crypto": 7, "other": 94}}, "strategies": {"s10_opportunities": 0, "s1_opportunities": 72, "s8_opportunities": 0}, "trades_executed": 0, "trades_rejected": 3}
