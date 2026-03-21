@@ -8,20 +8,27 @@
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; }
         body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0d1117; color: #c9d1d9; padding: 20px; }
-        .container { max-width: 1000px; margin: 0 auto; }
+        .container { max-width: 1200px; margin: 0 auto; }
         h1 { color: #58a6ff; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
+        h2 { color: #8b949e; font-size: 14px; font-weight: normal; margin: 20px 0 12px; border-bottom: 1px solid #30363d; padding-bottom: 8px; }
         .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #3fb950; animation: pulse 2s infinite; }
+        .status-dot.dry-run { background: #f0883e; }
+        .status-dot.error { background: #f85149; }
         @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
         .timestamp { color: #8b949e; font-size: 12px; margin-bottom: 20px; }
-        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-        .card { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px; }
+        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 16px; }
+        .card { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 16px; }
         .card h3 { color: #8b949e; font-size: 11px; text-transform: uppercase; margin-bottom: 8px; }
-        .card .value { font-size: 28px; font-weight: bold; }
+        .card .value { font-size: 24px; font-weight: bold; }
         .card .value.positive { color: #3fb950; }
         .card .value.negative { color: #f85149; }
-        .alloc-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #30363d; }
-        table { width: 100%; border-collapse: collapse; }
-        th, td { text-align: left; padding: 10px; border-bottom: 1px solid #30363d; }
+        .card .value.warning { color: #f0883e; }
+        .card .sub { font-size: 11px; color: #8b949e; margin-top: 4px; }
+        .alloc-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #30363d; }
+        .alloc-row:last-child { border-bottom: none; }
+        table { width: 100%; border-collapse: collapse; margin-top: 12px; }
+        th, td { text-align: left; padding: 10px; border-bottom: 1px solid #30363d; font-size: 13px; }
         th { color: #8b949e; font-weight: normal; font-size: 11px; text-transform: uppercase; }
         td.positive { color: #3fb950; }
         td.negative { color: #f85149; }
@@ -29,59 +36,113 @@
         .status.win { background: #3fb95022; color: #3fb950; }
         .status.loss { background: #f8514922; color: #f85149; }
         .status.open { background: #1f6feb22; color: #58a6ff; }
-        .github-link { text-align: center; margin-top: 20px; }
+        .status.pending { background: #f0883e22; color: #f0883e; }
+        .github-link { text-align: center; margin-top: 20px; font-size: 12px; }
         .github-link a { color: #58a6ff; text-decoration: none; }
         .github-link a:hover { text-decoration: underline; }
+        .data-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 13px; }
+        .data-row .label { color: #8b949e; }
+        .data-row .value { font-weight: 500; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>Polymarket Engine <span class="status-dot"></span></h1>
+        <h1>Polymarket Engine <span class="status-dot" id="statusDot"></span></h1>
         <div class="timestamp" id="timestamp">Loading...</div>
 
+        <!-- Account Overview -->
         <div class="grid">
             <div class="card">
                 <h3>Balance</h3>
                 <div class="value" id="balance">--</div>
+                <div class="sub" id="capital">Capital: $100.00</div>
             </div>
             <div class="card">
                 <h3>Daily P&L</h3>
-                <div class="value" id="daily_pnl">--</div>
+                <div class="value" id="dailyPnl">--</div>
+                <div class="sub" id="dailyPnlPct">--</div>
             </div>
             <div class="card">
                 <h3>Open Positions</h3>
-                <div class="value" id="open_positions">--</div>
+                <div class="value" id="openPositions">--</div>
+                <div class="sub" id="maxPositions">Max: 5</div>
             </div>
             <div class="card">
                 <h3>Resolved (24h)</h3>
-                <div class="value" id="resolved_24h">--</div>
+                <div class="value" id="resolved24h">--</div>
+                <div class="sub" id="winRate">Win Rate: --</div>
             </div>
         </div>
 
+        <!-- Data Ingestion -->
+        <h2>Data Ingestion (Last Scan)</h2>
+        <div class="grid-2">
+            <div class="card">
+                <h3>Markets</h3>
+                <div class="data-row"><span class="label">Total Active</span><span class="value" id="marketsTotal">--</span></div>
+                <div class="data-row"><span class="label">With Valid Prices</span><span class="value" id="marketsValid">--</span></div>
+                <div class="data-row"><span class="label">NegRisk Groups</span><span class="value" id="negriskGroups">--</span></div>
+            </div>
+            <div class="card">
+                <h3>Categories</h3>
+                <div class="data-row"><span class="label">Sports</span><span class="value" id="catSports">--</span></div>
+                <div class="data-row"><span class="label">Politics</span><span class="value" id="catPolitics">--</span></div>
+                <div class="data-row"><span class="label">Crypto</span><span class="value" id="catCrypto">--</span></div>
+                <div class="data-row"><span class="label">Other</span><span class="value" id="catOther">--</span></div>
+            </div>
+        </div>
+
+        <!-- Strategy Results -->
+        <h2>Strategy Scan Results</h2>
         <div class="grid">
+            <div class="card">
+                <h3>S10 Near Resolution</h3>
+                <div class="value" id="s10Opp">--</div>
+                <div class="sub">opportunities</div>
+            </div>
+            <div class="card">
+                <h3>S1 NegRisk Arb</h3>
+                <div class="value" id="s1Opp">--</div>
+                <div class="sub">opportunities</div>
+            </div>
+            <div class="card">
+                <h3>S8 Logical Arb</h3>
+                <div class="value" id="s8Opp">--</div>
+                <div class="sub">opportunities</div>
+            </div>
+            <div class="card">
+                <h3>Trades Executed</h3>
+                <div class="value" id="tradesExec">--</div>
+                <div class="sub" id="tradesRej">rejected: --</div>
+            </div>
+        </div>
+
+        <!-- Allocations & Risk -->
+        <div class="grid-2">
             <div class="card">
                 <h3>Allocations</h3>
                 <div class="alloc-row"><span>s10_near_resolution</span><span>40%</span></div>
                 <div class="alloc-row"><span>s1_negrisk_arb</span><span>40%</span></div>
                 <div class="alloc-row"><span>s8_logical_arb</span><span>20%</span></div>
             </div>
-            <div class="card" style="grid-column: span 3;">
+            <div class="card">
                 <h3>Risk Limits</h3>
-                <div class="alloc-row"><span>Max Daily Loss</span><span>5%</span></div>
+                <div class="alloc-row"><span>Max Daily Loss</span><span>5% ($5)</span></div>
                 <div class="alloc-row"><span>Max Positions</span><span>5</span></div>
-                <div class="alloc-row"><span>Max Position %</span><span>15%</span></div>
+                <div class="alloc-row"><span>Max Position %</span><span>15% ($15)</span></div>
                 <div class="alloc-row"><span>Min Edge</span><span>2.5%</span></div>
             </div>
         </div>
 
+        <!-- Recent Trades -->
+        <h2>Recent Trades</h2>
         <div class="card">
-            <h3>Recent Trades</h3>
             <table>
                 <thead>
-                    <tr><th>Strategy</th><th>Market</th><th>Side</th><th>Price</th><th>P&L</th><th>Outcome</th></tr>
+                    <tr><th>Time</th><th>Strategy</th><th>Market</th><th>Side</th><th>Price</th><th>Size</th><th>P&L</th><th>Status</th></tr>
                 </thead>
                 <tbody id="trades">
-                    <tr><td colspan="6" style="text-align:center;color:#8b949e;">Loading...</td></tr>
+                    <tr><td colspan="8" style="text-align:center;color:#8b949e;">No recent trades</td></tr>
                 </tbody>
             </table>
         </div>
@@ -89,48 +150,87 @@
         <div class="github-link">
             <a href="https://github.com/Airdropperxx/polymarket-engine/actions" target="_blank">GitHub Actions</a> | 
             <a href="https://github.com/Airdropperxx/polymarket-engine" target="_blank">Repository</a> |
-            <a href="https://gist.github.com/Airdropperxx/196ba8619117901f5a54f02012a53f71" target="_blank">Data Source</a>
+            <a href="https://github.com/Airdropperxx/polymarket-engine/actions/workflows/scan.yml" target="_blank">Scan Workflow</a>
         </div>
     </div>
 
     <script>
-        var STATE_DATA = {"timestamp": "2026-03-21T15:39:18.239618+00:00Z", "balance": 100.0, "daily_pnl": 0.0, "open_positions": 0, "resolved_24h": 0, "dry_run": false, "recent_trades": []};
+        var STATE_DATA = {"timestamp": "2026-03-21T15:49:20.597775+00:00Z", "balance": 100.0, "capital": 100.0, "daily_pnl": 0.0, "open_positions": 0, "max_positions": 5, "resolved_24h": 0, "wins_24h": 0, "dry_run": false, "trades_executed": 0, "trades_rejected": 3, "ingestion": {"markets_scanned": 483, "markets_valid": 235, "negrisk_groups": 78, "categories": {"sports": 220, "politics": 162, "crypto": 7, "other": 94}}, "strategies": {"s10_opportunities": 0, "s1_opportunities": 0, "s8_opportunities": 0}, "recent_trades": []};
 
         function renderDashboard() {
             var data = STATE_DATA;
             
             if (!data) {
-                document.getElementById('timestamp').textContent = 'No data available';
+                document.getElementById('timestamp').textContent = 'No data - run scan cycle';
                 return;
             }
             
-            document.getElementById('timestamp').textContent = 
-                'Last updated: ' + (data.timestamp || 'N/A') + ' | DRY RUN: ' + (data.dry_run ? 'true' : 'false');
+            var dot = document.getElementById('statusDot');
+            if (data.dry_run) {
+                dot.className = 'status-dot dry-run';
+            } else {
+                dot.className = 'status-dot';
+            }
             
+            document.getElementById('timestamp').textContent = 
+                'Last scan: ' + (data.timestamp || 'N/A') + ' | DRY RUN: ' + (data.dry_run ? 'ON' : 'OFF');
+            
+            // Account
             document.getElementById('balance').textContent = '$' + (data.balance || 0).toFixed(2);
+            document.getElementById('capital').textContent = 'Capital: $' + (data.capital || 100).toFixed(2);
             
             var pnl = data.daily_pnl || 0;
-            var pnlEl = document.getElementById('daily_pnl');
+            var pnlEl = document.getElementById('dailyPnl');
             pnlEl.textContent = (pnl >= 0 ? '+$' : '-$') + Math.abs(pnl).toFixed(2);
             pnlEl.className = 'value ' + (pnl >= 0 ? 'positive' : 'negative');
             
-            document.getElementById('open_positions').textContent = data.open_positions || 0;
-            document.getElementById('resolved_24h').textContent = data.resolved_24h || 0;
+            var pct = data.capital ? (pnl / data.capital * 100).toFixed(1) : '0.0';
+            document.getElementById('dailyPnlPct').textContent = pct + '% of capital';
             
+            document.getElementById('openPositions').textContent = data.open_positions || 0;
+            document.getElementById('maxPositions').textContent = 'Max: ' + (data.max_positions || 5);
+            
+            document.getElementById('resolved24h').textContent = data.resolved_24h || 0;
+            var wr = data.resolved_24h && data.wins_24h !== undefined ? (data.wins_24h / data.resolved_24h * 100).toFixed(0) : '--';
+            document.getElementById('winRate').textContent = 'Win Rate: ' + wr + '%';
+            
+            // Data ingestion
+            var ingestion = data.ingestion || {};
+            document.getElementById('marketsTotal').textContent = ingestion.markets_scanned || 0;
+            document.getElementById('marketsValid').textContent = ingestion.markets_valid || 0;
+            document.getElementById('negriskGroups').textContent = ingestion.negrisk_groups || 0;
+            
+            var cats = ingestion.categories || {};
+            document.getElementById('catSports').textContent = cats.sports || 0;
+            document.getElementById('catPolitics').textContent = cats.politics || 0;
+            document.getElementById('catCrypto').textContent = cats.crypto || 0;
+            document.getElementById('catOther').textContent = cats.other || 0;
+            
+            // Strategy results
+            var strategies = data.strategies || {};
+            document.getElementById('s10Opp').textContent = strategies.s10_opportunities || 0;
+            document.getElementById('s1Opp').textContent = strategies.s1_opportunities || 0;
+            document.getElementById('s8Opp').textContent = strategies.s8_opportunities || 0;
+            document.getElementById('tradesExec').textContent = data.trades_executed || 0;
+            document.getElementById('tradesRej').textContent = 'rejected: ' + (data.trades_rejected || 0);
+            
+            // Trades
             var tradesEl = document.getElementById('trades');
             var trades = data.recent_trades || [];
             
             if (trades.length === 0) {
-                tradesEl.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#8b949e;">No recent trades</td></tr>';
+                tradesEl.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#8b949e;">No recent trades</td></tr>';
             } else {
                 tradesEl.innerHTML = trades.map(function(t) {
                     var pnl = t.pnl || 0;
                     var pnlClass = pnl > 0 ? 'positive' : (pnl < 0 ? 'negative' : '');
                     return '<tr>' +
+                        '<td>' + (t.time || '').substring(11, 19) + '</td>' +
                         '<td>' + (t.strategy || 'N/A') + '</td>' +
-                        '<td>' + (t.market || 'N/A').substring(0, 30) + '</td>' +
+                        '<td>' + (t.market || 'N/A').substring(0, 25) + '</td>' +
                         '<td>' + (t.side || 'N/A') + '</td>' +
                         '<td>$' + (t.price || 0).toFixed(2) + '</td>' +
+                        '<td>$' + (t.size || 0).toFixed(2) + '</td>' +
                         '<td class="' + pnlClass + '">$' + pnl.toFixed(2) + '</td>' +
                         '<td><span class="status ' + (t.outcome || 'open') + '">' + (t.outcome || 'open') + '</span></td>' +
                     '</tr>';

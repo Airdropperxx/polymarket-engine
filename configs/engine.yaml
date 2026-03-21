@@ -1,7 +1,7 @@
 engine:
   version: "0.1.0"
   capital_usdc: 100.00
-  dry_run: false
+  dry_run: true
   # GitHub Actions: 30-min poll (public repo, unlimited minutes)
   # Private repo free tier: use 90 min (fits 2,000 min/month limit)
   # Local cron: use 5 min for tighter S10 windows

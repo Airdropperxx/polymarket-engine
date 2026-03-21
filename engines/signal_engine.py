@@ -12,6 +12,7 @@ No exception propagates to the caller.
 
 from __future__ import annotations
 
+import json
 import time
 from pathlib import Path
 from typing import Optional
@@ -178,6 +179,9 @@ class SignalEngine:
             for market_id in resolved:
                 self._review.run_after_resolution(market_id)
 
+            # 7. Save scan results for dashboard
+            self._save_scan_results(markets, summary)
+
         except Exception as exc:
             # Outer safety net — should never reach here
             log.error("signal_engine.cycle_error", error=str(exc))
@@ -210,3 +214,41 @@ class SignalEngine:
                 resolved_ids.append(mid)
 
         return resolved_ids
+
+    def _save_scan_results(self, markets: list, summary: dict) -> None:
+        """Save scan results for dashboard."""
+        try:
+            from pathlib import Path
+
+            categories = {"sports": 0, "politics": 0, "crypto": 0, "other": 0}
+            for m in markets:
+                cat = getattr(m, "category", "other") if hasattr(m, "category") else "other"
+                categories[cat] = categories.get(cat, 0) + 1
+
+            markets_valid = sum(1 for m in markets if 0.01 <= getattr(m, "yes_price", 0.5) <= 0.99)
+
+            strategy_opps = {
+                "s10_opportunities": 0,
+                "s1_opportunities": 0,
+                "s8_opportunities": 0,
+            }
+
+            data = {
+                "ingestion": {
+                    "markets_scanned": summary.get("markets_scanned", 0),
+                    "markets_valid": markets_valid,
+                    "negrisk_groups": summary.get("negrisk_groups", 0),
+                    "categories": categories,
+                },
+                "strategies": strategy_opps,
+                "trades_executed": summary.get("trades_executed", 0),
+                "trades_rejected": summary.get("trades_rejected", 0),
+            }
+
+            Path("data").mkdir(exist_ok=True)
+            with open("data/last_scan.json", "w") as f:
+                json.dump(data, f)
+
+            log.info("signal_engine.scan_results_saved")
+        except Exception as exc:
+            log.error("signal_engine.save_scan_error", error=str(exc))
