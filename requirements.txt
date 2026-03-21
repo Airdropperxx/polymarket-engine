@@ -12,3 +12,4 @@ sentence-transformers==2.7.0
 numpy>=1.24.0
 python-telegram-bot==21.0
 PyGithub==2.1.1
+flask>=3.0.0
