@@ -12,7 +12,7 @@ concurrency:
 jobs:
   scan:
     runs-on: ubuntu-latest
-    timeout-minutes: 15         # FIXED: was 8 — model download needs ~4 min
+    timeout-minutes: 10
 
     steps:
       - name: Checkout
@@ -40,8 +40,8 @@ jobs:
 
       - name: Install dependencies
         run: |
-          pip install --upgrade pip setuptools wheel
-          pip install --use-deprecated=legacy-resolver -r requirements.txt || pip install -r requirements.txt --no-cache-dir || true
+          pip install --upgrade pip
+          pip install -r requirements.txt
 
       - name: Run scan cycle
         env:
