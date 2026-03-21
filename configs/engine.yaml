@@ -6,7 +6,7 @@ engine:
   # Production: use 30 min (public repo, unlimited minutes)
   poll_interval_seconds: 300         # 5 minutes
 
-  max_per_cycle: 3                   # Max new trades per scan cycle
+  max_per_cycle: 20                  # Max new trades per scan cycle
 
 risk:
   max_position_pct: 0.15             # Max 15% of total capital per trade ($15 at $100)
