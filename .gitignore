@@ -2,6 +2,7 @@
 .env
 
 # SQLite database (binary, tracked separately; WAL/SHM are temp files — NEVER commit)
+data/trades.db
 data/trades.db-wal
 data/trades.db-shm
 data/market_cache/

@@ -2,8 +2,8 @@
 
 | Task | Title | Status | Completed |
 |---|---|---|---|
-| TASK-000 | GitHub Memory MCP Server | ⏳ TODO | — |
-| TASK-001 | Repository setup & dependencies | ⏳ TODO | — |
+| TASK-000 | GitHub Memory MCP Server | ✅ DONE | Mar 21, 2026 |
+| TASK-001 | Repository setup & dependencies | ✅ DONE | Mar 21, 2026 |
 | TASK-002 | engines/state_engine.py | ⏳ TODO | — |
 | TASK-003 | engines/data_engine.py | ⏳ TODO | — |
 | TASK-004 | strategies/base.py | ⏳ TODO | — |
