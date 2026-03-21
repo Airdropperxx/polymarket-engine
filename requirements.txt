@@ -16,7 +16,7 @@ web3>=6.0.0,<7.0.0
 
 # AI features (optional - S8 strategy needs this)
 sentence-transformers>=2.7.0
-anthropic>=0.25.0
+anthropic>=0.18.0,<0.30.0
 
 # Notifications
 python-telegram-bot>=21.0
