@@ -231,6 +231,7 @@ class TestDataEngine:
             yes_price=0.5, no_price=0.5, yes_bid=0.49, no_bid=0.49,
             volume_24h=100, end_date_iso="2099-01-01T00:00:00Z",
             seconds_to_resolution=99999, category="other", fee_rate_bps=200,
+            negrisk_group_id=None,
         )]
         with patch.object(bus, "_fetch_markets_paginated", side_effect=Exception("network error")):
             result = bus.fetch_all_markets()
