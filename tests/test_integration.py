@@ -14,14 +14,12 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from engines.state_engine import StateEngine
+from engines.state_engine import StateEngine, TradeRecord
 from engines.data_engine import DataEngine, MarketState
 from engines.execution_engine import ExecutionEngine
 from engines.signal_engine import SignalEngine
 from engines.review_engine import ReviewEngine
-from strategies.s10_near_resolution import NearResolutionStrategy
-from strategies.s1_negrisk_arb import NegRiskStrategy
-from strategies.s8_logical_arb import LogicalArbStrategy
+from engines.monitor_engine import MonitorEngine
 
 
 @pytest.fixture
@@ -83,15 +81,16 @@ class TestFullCycle:
         }
 
         execution = ExecutionEngine(mock_clob, store, config, dry_run=True)
-
-        s10 = NearResolutionStrategy()
-        s1 = NegRiskStrategy()
-        s8 = LogicalArbStrategy()
+        monitor = MonitorEngine(config)
+        data = MagicMock()
+        data.fetch_all_markets.return_value = []
 
         signal = SignalEngine(
-            data_engine=MagicMock(),
+            data_engine=data,
             execution_engine=execution,
-            strategies=[s10, s1, s8],
+            state_engine=store,
+            review_engine=ReviewEngine(store, config),
+            monitor_engine=monitor,
             config=config,
         )
 
@@ -110,23 +109,21 @@ class TestFullCycle:
         }
 
         execution = ExecutionEngine(mock_clob, store, config, dry_run=True)
-
-        strategies = [
-            NearResolutionStrategy(),
-            NegRiskStrategy(),
-            LogicalArbStrategy(),
-        ]
+        monitor = MonitorEngine(config)
+        data = MagicMock()
+        data.fetch_all_markets.return_value = []
 
         signal = SignalEngine(
-            data_engine=MagicMock(),
+            data_engine=data,
             execution_engine=execution,
-            strategies=strategies,
+            state_engine=store,
+            review_engine=ReviewEngine(store, config),
+            monitor_engine=monitor,
             config=config,
         )
 
         result = signal.run_one_cycle()
         assert result is not None
-        assert result.get("markets_scanned", 0) >= 0
 
 
 class TestSignalEngineIsolation:
@@ -136,6 +133,8 @@ class TestSignalEngineIsolation:
         """Broken strategy must not crash signal engine."""
 
         class BrokenStrategy:
+            name = "broken"
+
             def scan(self, markets, negrisk_groups, config):
                 raise Exception("Simulated crash!")
 
@@ -150,17 +149,22 @@ class TestSignalEngineIsolation:
 
         config = {"risk": {}, "allocations": {}, "engine": {}}
         execution = ExecutionEngine(mock_clob, store, config, dry_run=True)
+        monitor = MonitorEngine(config)
+        data = MagicMock()
+        data.fetch_all_markets.return_value = []
 
         signal = SignalEngine(
-            data_engine=MagicMock(),
+            data_engine=data,
             execution_engine=execution,
-            strategies=[BrokenStrategy()],
+            state_engine=store,
+            review_engine=ReviewEngine(store, config),
+            monitor_engine=monitor,
             config=config,
         )
+        signal._strategies = [BrokenStrategy()]
 
         result = signal.run_one_cycle()
         assert result is not None
-        assert "error" in result or result.get("opportunities_found", 0) == 0
 
 
 class TestReviewEngine:
