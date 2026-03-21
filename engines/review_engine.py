@@ -17,12 +17,18 @@ import re
 from datetime import datetime, timedelta, timezone
 from typing import Optional
 
-import anthropic
 import structlog
 
 from engines.state_engine import StateEngine
 
 log = structlog.get_logger()
+
+try:
+    import anthropic
+    ANTHROPIC_AVAILABLE = True
+except ImportError:
+    ANTHROPIC_AVAILABLE = False
+    log.warning("review_engine.anthropic_unavailable")
 
 _SYSTEM_PROMPT = """You are a quantitative trading strategy reviewer for a Polymarket prediction market engine.
 
@@ -56,7 +62,15 @@ class ReviewEngine:
     def __init__(self, state_engine: StateEngine, config: dict) -> None:
         self._state  = state_engine
         self._config = config
-        self._client = anthropic.Anthropic()
+        self._client = None
+        if ANTHROPIC_AVAILABLE:
+            try:
+                self._client = anthropic.Anthropic()
+            except Exception as e:
+                log.warning("review_engine.anthropic_init_failed", error=str(e))
+                self._client = None
+        else:
+            log.warning("review_engine.anthropic_not_installed")
 
     def run_after_resolution(self, market_id: str) -> dict:
         """
@@ -82,6 +96,9 @@ class ReviewEngine:
     # -----------------------------------------------------------------------
 
     def _run(self, trades: list[dict], context: str) -> dict:
+        if not self._client:
+            return {"status": "skipped", "reason": "anthropic_not_available"}
+        
         lessons = self._state.get_lessons()
 
         user_content = json.dumps({
