@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Polymarket Engine Dashboard</title>
+    <meta http-equiv="refresh" content="60">
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0d1117; color: #c9d1d9; padding: 20px; }
+        .container { max-width: 1000px; margin: 0 auto; }
+        h1 { color: #58a6ff; margin-bottom: 8px; }
+        .timestamp { color: #8b949e; font-size: 12px; margin-bottom: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+        .card { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 20px; }
+        .card h3 { color: #8b949e; font-size: 11px; text-transform: uppercase; margin-bottom: 8px; }
+        .card .value { font-size: 28px; font-weight: bold; }
+        .card .value.positive { color: #3fb950; }
+        .card .value.negative { color: #f85149; }
+        .alloc-row { display: flex; justify-content: space-between; padding: 4px 0; border-bottom: 1px solid #30363d; }
+        table { width: 100%; border-collapse: collapse; }
+        th, td { text-align: left; padding: 10px; border-bottom: 1px solid #30363d; }
+        th { color: #8b949e; font-weight: normal; font-size: 11px; text-transform: uppercase; }
+        td.positive { color: #3fb950; }
+        td.negative { color: #f85149; }
+        .status { padding: 2px 6px; border-radius: 4px; font-size: 10px; text-transform: uppercase; }
+        .status.win { background: #3fb95022; color: #3fb950; }
+        .status.loss { background: #f8514922; color: #f85149; }
+        .status.open { background: #1f6feb22; color: #58a6ff; }
+        .loading { text-align: center; color: #8b949e; padding: 40px; }
+        .error { color: #f85149; text-align: center; padding: 20px; }
+        .github-link { text-align: center; margin-top: 20px; }
+        .github-link a { color: #58a6ff; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Polymarket Engine</h1>
+        <div class="timestamp" id="timestamp">Loading...</div>
+
+        <div class="grid">
+            <div class="card">
+                <h3>Balance</h3>
+                <div class="value" id="balance">--</div>
+            </div>
+            <div class="card">
+                <h3>Daily P&L</h3>
+                <div class="value" id="daily_pnl">--</div>
+            </div>
+            <div class="card">
+                <h3>Open Positions</h3>
+                <div class="value" id="open_positions">--</div>
+            </div>
+            <div class="card">
+                <h3>Resolved (24h)</h3>
+                <div class="value" id="resolved_24h">--</div>
+            </div>
+        </div>
+
+        <div class="grid">
+            <div class="card">
+                <h3>Allocations</h3>
+                <div class="alloc-row"><span>s10_near_resolution</span><span>40%</span></div>
+                <div class="alloc-row"><span>s1_negrisk_arb</span><span>40%</span></div>
+                <div class="alloc-row"><span>s8_logical_arb</span><span>20%</span></div>
+            </div>
+            <div class="card" style="grid-column: span 3;">
+                <h3>Risk Limits</h3>
+                <div class="alloc-row"><span>Max Daily Loss</span><span>5%</span></div>
+                <div class="alloc-row"><span>Max Positions</span><span>5</span></div>
+                <div class="alloc-row"><span>Max Position %</span><span>15%</span></div>
+                <div class="alloc-row"><span>Min Edge</span><span>2.5%</span></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h3>Recent Trades</h3>
+            <table>
+                <thead>
+                    <tr><th>Strategy</th><th>Market</th><th>Side</th><th>Price</th><th>P&L</th><th>Outcome</th></tr>
+                </thead>
+                <tbody id="trades">
+                    <tr><td colspan="6" class="loading">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="github-link">
+            <a href="https://github.com/Airdropperxx/polymarket-engine/actions" target="_blank">View GitHub Actions</a> | 
+            <a href="https://gist.github.com/Airdropperxx/196ba8619117901f5a54f02012a53f71" target="_blank">View Source Gist</a>
+        </div>
+    </div>
+
+    <script>
+        const GIST_ID = '196ba8619117901f5a54f02012a53f71';
+        const GIST_RAW_URL = `https://gist.githubusercontent.com/Airdropperxx/${GIST_ID}/raw/state.json`;
+
+        async function loadDashboard() {
+            try {
+                const response = await fetch(GIST_RAW_URL + '?t=' + Date.now());
+                if (!response.ok) throw new Error('Failed to fetch');
+                
+                const data = await response.json();
+                
+                document.getElementById('timestamp').textContent = 
+                    `Last updated: ${data.timestamp || 'N/A'} | DRY RUN: false`;
+                
+                document.getElementById('balance').textContent = 
+                    `$${(data.balance || 0).toFixed(2)}`;
+                
+                const pnl = data.daily_pnl || 0;
+                const pnlEl = document.getElementById('daily_pnl');
+                pnlEl.textContent = `$${pnl >= 0 ? '+' : ''}${pnl.toFixed(2)}`;
+                pnlEl.className = 'value ' + (pnl >= 0 ? 'positive' : 'negative');
+                
+                document.getElementById('open_positions').textContent = data.open_positions || 0;
+                document.getElementById('resolved_24h').textContent = data.resolved_24h || 0;
+                
+                const tradesEl = document.getElementById('trades');
+                const trades = data.recent_trades || [];
+                
+                if (trades.length === 0) {
+                    tradesEl.innerHTML = '<tr><td colspan="6" style="text-align:center;color:#8b949e;">No recent trades</td></tr>';
+                } else {
+                    tradesEl.innerHTML = trades.map(t => {
+                        const pnl = t.pnl || 0;
+                        return `<tr>
+                            <td>${t.strategy || 'N/A'}</td>
+                            <td>${(t.market || 'N/A').substring(0, 30)}</td>
+                            <td>${t.side || 'N/A'}</td>
+                            <td>$${(t.price || 0).toFixed(2)}</td>
+                            <td class="${pnl > 0 ? 'positive' : pnl < 0 ? 'negative' : ''}">$${pnl.toFixed(2)}</td>
+                            <td><span class="status ${t.outcome || 'open'}">${t.outcome || 'open'}</span></td>
+                        </tr>`;
+                    }).join('');
+                }
+            } catch (e) {
+                console.error(e);
+                document.getElementById('timestamp').textContent = 'Error loading data: ' + e.message;
+            }
+        }
+
+        loadDashboard();
+        setInterval(loadDashboard, 60000);
+    </script>
+</body>
+</html>
