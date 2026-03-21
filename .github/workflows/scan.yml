@@ -57,10 +57,7 @@ jobs:
           DRY_RUN:                   ${{ vars.DRY_RUN || 'true' }}
         run: python scripts/run_scan_cycle.py
 
-      - name: Update Dashboard Gist
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-          DASHBOARD_GIST_ID: ${{ vars.DASHBOARD_GIST_ID }}
+      - name: Update Dashboard
         run: |
           python scripts/update_dashboard.py || true
 
