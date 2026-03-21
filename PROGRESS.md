@@ -16,7 +16,7 @@
 | TASK-011 | GitHub Actions workflows | ✅ DONE | Mar 21, 2026 |
 | TASK-016 | scripts/bootstrap_github.py | ✅ DONE | Mar 21, 2026 |
 | TASK-017 | tests/test_integration.py | ✅ DONE | Mar 21, 2026 |
-| TASK-018 | Tag v0.1.0-mvp | ⏳ TODO | — |
+| TASK-018 | Tag v0.1.0-mvp | ✅ DONE | Mar 21, 2026 |
 | TASK-019 | scripts/backtest.py | ⏳ TODO | — |
 | TASK-020 | S10 90-day backtest | ⏳ TODO | — |
 | TASK-021 | S1 90-day backtest | ⏳ TODO | — |
