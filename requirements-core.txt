@@ -1,0 +1,19 @@
+# Core dependencies - minimal install for scan cycle (~5 seconds)
+requests>=2.31.0
+pyyaml>=6.0.1
+python-dotenv>=1.0.1
+tenacity>=8.2.3
+structlog>=24.1.0
+sqlalchemy>=2.0.0
+
+# Optional: Uncomment for full features
+# ai requirements
+# sentence-transformers>=2.7.0
+# anthropic>=0.18.0,<0.30.0
+
+# Trading (requires compiled deps - slow)
+# py-clob-client>=0.16.0
+# web3>=6.0.0,<7.0.0
+
+# Notifications
+# python-telegram-bot>=21.0
