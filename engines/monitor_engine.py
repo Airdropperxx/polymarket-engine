@@ -66,7 +66,7 @@ class MonitorEngine:
         if len(msg) > 200:
             msg = msg[:197] + "…"
 
-        log.info("monitor_engine.alert", event=event_type, message=msg)
+        log.info("monitor_engine.alert", event_type=event_type, message=msg)
 
         if not self._enabled:
             return  # Log-only mode
