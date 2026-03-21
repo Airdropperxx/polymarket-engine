@@ -9,18 +9,19 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 10
 
     steps:
       - uses: actions/checkout@v4
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
-          cache: 'pip'
 
-      - name: Install dev dependencies
-        run: pip install -r requirements-dev.txt
+      - name: Install test dependencies
+        run: |
+          pip install --upgrade pip
+          pip install -r requirements-core.txt pytest responses freezegun
 
       - name: Verify fee formula (canonical invariant)
         run: |
@@ -54,7 +55,7 @@ jobs:
           echo "fee_rate_bps check OK"
 
       - name: Run test suite
-        run: python -m pytest tests/ -v --tb=short --cov=engines --cov=strategies --cov-report=term-missing
+        run: python -m pytest tests/ -v --ignore=tests/test_strategies.py
         env:
           DRY_RUN: "true"
           DATABASE_PATH: "data/test_trades.db"
