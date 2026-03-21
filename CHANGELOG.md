@@ -1,5 +1,26 @@
 # Changelog
 
+## v0.3.0 (March 21, 2026)
+
+### Added
+- **S4 Chainlink Sniper** - Chainlink oracle front-running strategy
+  - Monitors Chainlink BTC/USD price feed via Alchemy RPC
+  - Enter when price crosses hourly strike with < 2 min remaining
+  - Requires capital > $1,000
+  - Config: `configs/s4_chainlink_sniper.yaml`
+- **S6 Synth AI** - Bittensor SN50 (Synth) signal integration
+  - Queries Monte Carlo price forecasts from Synth API
+  - Enter when divergence > 10% from Polymarket price
+  - MAKER orders only (GTD, not FOK) for zero fees
+  - Requires capital > $1,000, Synth API costs ~$200/month
+  - Config: `configs/s6_synth_ai.yaml`
+
+### Phase 3 Complete
+- All 6 strategies implemented
+- Ready for capital scaling beyond $1,000
+
+---
+
 ## v0.2.0 (March 21, 2026)
 
 ### Added

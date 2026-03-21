@@ -1,0 +1,10 @@
+strategy: s4_chainlink_sniper
+enabled: false
+max_position_pct: 0.05
+kelly_fraction: 0.25
+max_minutes_remaining: 2
+strike_interval: 500
+min_edge_after_fees: 0.03
+review:
+  track_metrics: [win_rate, avg_roi, strikes_tracked]
+  rebalance_trigger: weekly

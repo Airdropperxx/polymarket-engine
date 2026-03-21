@@ -1,0 +1,9 @@
+strategy: s6_synth_ai
+enabled: false
+max_position_pct: 0.10
+kelly_fraction: 0.25
+min_divergence: 0.10
+synth_api_key: ${SYNTH_API_KEY}
+review:
+  track_metrics: [win_rate, avg_roi, divergence_detected]
+  rebalance_trigger: weekly
