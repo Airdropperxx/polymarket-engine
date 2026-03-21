@@ -99,6 +99,11 @@ class SignalEngine:
             "strategies_errored":     0,
             "resolved_this_cycle":    0,
             "duration_seconds":       0.0,
+            "strategy_opps": {
+                "s10_opportunities": 0,
+                "s1_opportunities": 0,
+                "s8_opportunities": 0,
+            },
         }
 
         try:
@@ -126,6 +131,15 @@ class SignalEngine:
                         opp.score = strategy.score(opp, s_cfg)
                     all_opps.extend((opp, strategy, s_cfg) for opp in opps)
                     summary["opportunities_found"] += len(opps)
+                    
+                    # Track per-strategy opportunities
+                    strat_name = strategy.name
+                    if "s10" in strat_name:
+                        summary["strategy_opps"]["s10_opportunities"] += len(opps)
+                    elif "s1" in strat_name:
+                        summary["strategy_opps"]["s1_opportunities"] += len(opps)
+                    elif "s8" in strat_name:
+                        summary["strategy_opps"]["s8_opportunities"] += len(opps)
                 except Exception as exc:
                     log.error("signal_engine.scan_error",
                               strategy=strategy.name, error=str(exc))
@@ -227,12 +241,6 @@ class SignalEngine:
 
             markets_valid = sum(1 for m in markets if 0.01 <= getattr(m, "yes_price", 0.5) <= 0.99)
 
-            strategy_opps = {
-                "s10_opportunities": 0,
-                "s1_opportunities": 0,
-                "s8_opportunities": 0,
-            }
-
             data = {
                 "ingestion": {
                     "markets_scanned": summary.get("markets_scanned", 0),
@@ -240,7 +248,11 @@ class SignalEngine:
                     "negrisk_groups": summary.get("negrisk_groups", 0),
                     "categories": categories,
                 },
-                "strategies": strategy_opps,
+                "strategies": summary.get("strategy_opps", {
+                    "s10_opportunities": 0,
+                    "s1_opportunities": 0,
+                    "s8_opportunities": 0,
+                }),
                 "trades_executed": summary.get("trades_executed", 0),
                 "trades_rejected": summary.get("trades_rejected", 0),
             }
