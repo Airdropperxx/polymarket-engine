@@ -11,14 +11,10 @@
 | TASK-006 | configs/s10_near_resolution.yaml | ✅ DONE | Mar 21, 2026 |
 | TASK-007 | engines/execution_engine.py | ✅ DONE | Mar 21, 2026 |
 | TASK-008 | engines/signal_engine.py | ✅ DONE | Mar 21, 2026 |
-| TASK-009 | scripts/run_scan_cycle.py | ⏳ TODO | — |
-| TASK-010 | tests/test_strategies.py (S10) | ⏳ TODO | — |
-| TASK-011 | GitHub Actions workflows | ⏳ TODO | — |
-| TASK-012 | strategies/s1_negrisk_arb.py | ✅ DONE | Mar 21, 2026 |
-| TASK-013 | strategies/s8_logical_arb.py | ✅ DONE | Mar 21, 2026 |
-| TASK-014 | engines/review_engine.py | ✅ DONE | Mar 21, 2026 |
-| TASK-015 | engines/monitor_engine.py | ✅ DONE | Mar 21, 2026 |
-| TASK-016 | scripts/bootstrap_github.py | ⏳ TODO | — |
+| TASK-009 | scripts/run_scan_cycle.py | ✅ DONE | Mar 21, 2026 |
+| TASK-010 | tests/test_strategies.py (S10) | ✅ DONE | Mar 21, 2026 |
+| TASK-011 | GitHub Actions workflows | ✅ DONE | Mar 21, 2026 |
+| TASK-016 | scripts/bootstrap_github.py | ✅ DONE | Mar 21, 2026 |
 | TASK-017 | tests/test_integration.py | ⏳ TODO | — |
 | TASK-018 | Tag v0.1.0-mvp | ⏳ TODO | — |
 | TASK-019 | scripts/backtest.py | ⏳ TODO | — |
