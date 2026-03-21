@@ -1,0 +1,10 @@
+# S12 BTC Momentum Strategy Config
+# Trades BTC prediction markets based on Binance price momentum
+
+max_position_pct: 0.10      # 10% max position
+kelly_fraction: 0.25        # Quarter Kelly
+threshold: 0.50             # Minimum score to execute
+
+# BTC momentum settings
+momentum_threshold_pct: 2.0  # Only trade if BTC moved >2% in 24h
+edge_min_pct: 5.0            # Require 5% edge before fees

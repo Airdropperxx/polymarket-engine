@@ -103,6 +103,8 @@ class SignalEngine:
                 "s10_opportunities": 0,
                 "s1_opportunities": 0,
                 "s8_opportunities": 0,
+                "s11_opportunities": 0,
+                "s12_opportunities": 0,
             },
         }
 
@@ -140,6 +142,10 @@ class SignalEngine:
                         summary["strategy_opps"]["s1_opportunities"] += len(opps)
                     elif "s8" in strat_name:
                         summary["strategy_opps"]["s8_opportunities"] += len(opps)
+                    elif "s11" in strat_name:
+                        summary["strategy_opps"]["s11_opportunities"] += len(opps)
+                    elif "s12" in strat_name:
+                        summary["strategy_opps"]["s12_opportunities"] += len(opps)
                 except Exception as exc:
                     log.error("signal_engine.scan_error",
                               strategy=strategy.name, error=str(exc))

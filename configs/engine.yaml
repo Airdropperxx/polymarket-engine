@@ -1,5 +1,5 @@
 engine:
-  version: "0.1.0"
+  version: "0.3.0"
   capital_usdc: 100.00
   dry_run: true
   # GitHub Actions: 5-min poll for faster dry-run testing
@@ -15,9 +15,10 @@ risk:
   min_edge_after_fees: 0.025         # Minimum 2.5% net edge required after fees to enter
 
 allocations:                         # Must sum to exactly 1.0
-  s10_near_resolution: 0.40          # $40 — safest, fastest resolution
-  s1_negrisk_arb:      0.40          # $40 — guaranteed arb, zero directional risk
-  s8_logical_arb:      0.20          # $20 — slower windows, LLM-dependent
+  s10_near_resolution: 0.20          # $20 — near-term sports/political markets
+  s1_negrisk_arb:      0.30          # $30 — guaranteed arb, zero directional risk
+  s11_short_duration:  0.25          # $25 — same-day/short-duration markets
+  s12_btc_momentum:    0.25          # $25 — BTC price momentum trading
 
 monitoring:
   telegram_alerts: true

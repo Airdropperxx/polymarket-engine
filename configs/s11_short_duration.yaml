@@ -1,0 +1,11 @@
+# S11 Short Duration Monitor Config
+# Alerts on markets resolving within 24 hours
+
+max_position_pct: 0.10      # Conservative 10% max
+kelly_fraction: 0.25       # Quarter Kelly
+threshold: 0.50             # Minimum score to execute
+
+# Short-duration specific
+max_hours: 24              # Only markets resolving within 24h
+min_volume_24h: 100        # Minimum $100 volume
+min_edge_after_fees: 0.02   # Minimum 2% edge

@@ -93,6 +93,20 @@ def main() -> None:
     except ImportError:
         log.warning("run_scan_cycle.s8_unavailable")
 
+    # S11: Short Duration Monitor
+    try:
+        from strategies.s11_short_duration_monitor import ShortDurationMonitor
+        hub.register(ShortDurationMonitor(), "configs/s11_short_duration.yaml")
+    except ImportError:
+        log.warning("run_scan_cycle.s11_unavailable")
+
+    # S12: BTC Momentum
+    try:
+        from strategies.s12_btc_momentum import BTCMomentumStrategy
+        hub.register(BTCMomentumStrategy(), "configs/s12_btc_momentum.yaml")
+    except ImportError:
+        log.warning("run_scan_cycle.s12_unavailable")
+
     result = hub.run_one_cycle()
 
     log.info("run_scan_cycle.done", **result)
