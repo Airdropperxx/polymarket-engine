@@ -1,7 +1,7 @@
 # Polymarket Engine v3.1
 
 A Polymarket prediction market trading engine. Runs on GitHub Actions free tier.
-No VPS. Three zero-infra strategies: S1 (NegRisk arb), S8 (logical arb), S10 (near-resolution).
+No VPS. Five strategies: S1 (NegRisk arb), S4 (Chainlink sniper), S6 (Synth AI), S8 (logical arb), S10 (near-resolution).
 
 ## Quick start
 
@@ -12,6 +12,19 @@ No VPS. Three zero-infra strategies: S1 (NegRisk arb), S8 (logical arb), S10 (ne
 5. Actions → Bootstrap GitHub Issues → BOOTSTRAP (creates task queue)
 6. Actions → Market Scanner → Run workflow × 3 (dry-run verification)
 7. Set DRY_RUN = false when ready for real trades
+
+## Dashboard
+
+View the live dashboard at:
+- **GitHub Pages**: `https://<your-username>.github.io/polymarket-engine/dashboard.html`
+
+Enable GitHub Pages: Settings → Pages → Deploy from branch (main, /)
+
+The dashboard shows:
+- Current balance and daily P&L
+- Open positions and resolved trades
+- Allocations and risk limits
+- Recent trade history
 
 ## Required GitHub Secrets
 

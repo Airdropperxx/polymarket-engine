@@ -1,5 +1,17 @@
 # Changelog
 
+## v0.3.1 (March 21, 2026)
+
+### Fixed
+- Dashboard: Embedded state data directly (XSS-safe with html.escape)
+- Dashboard: No CORS issues - works standalone on GitHub Pages
+
+### Added
+- dashboard.html: Live dashboard with embedded state
+- update_dashboard.py: Embeds state into HTML after each scan cycle
+
+---
+
 ## v0.3.0 (March 21, 2026)
 
 ### Added
