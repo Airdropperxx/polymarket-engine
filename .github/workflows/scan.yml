@@ -25,7 +25,8 @@ jobs:
         uses: actions/setup-python@v4
         with:
           python-version: '3.11'
-          cache: 'pip'           # Caches pip packages between runs
+          cache: 'pip'
+          cache-dependency-path: 'requirements.txt'
 
       # ADDED: Cache HuggingFace model (~80MB all-MiniLM-L6-v2)
       # Without this, the model downloads fresh every run (~2-4 min wasted)
@@ -38,7 +39,13 @@ jobs:
             hf-all-MiniLM-L6-v2-
 
       - name: Install dependencies
-        run: pip install -r requirements.txt
+        run: |
+          pip install --upgrade pip setuptools wheel
+          pip install numpy>=1.24.0 requests==2.31.0 pyyaml==6.0.1 python-dotenv==1.0.1 tenacity==8.2.3 structlog==24.1.0
+          pip install sqlalchemy==2.0.28 PyGithub==2.1.1
+          pip install py-clob-client==0.16.0 --no-deps
+          pip install web3==6.14.0 --no-deps
+          pip install aiohttp==3.9.3 anthropic==0.25.0 python-telegram-bot==21.0 || true
 
       - name: Run scan cycle
         env:
