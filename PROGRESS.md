@@ -16,8 +16,8 @@
 | TASK-011 | GitHub Actions workflows | ⏳ TODO | — |
 | TASK-012 | strategies/s1_negrisk_arb.py | ⏳ TODO | — |
 | TASK-013 | strategies/s8_logical_arb.py | ⏳ TODO | — |
-| TASK-014 | engines/review_engine.py | ⏳ TODO | — |
-| TASK-015 | engines/monitor_engine.py | ⏳ TODO | — |
+| TASK-014 | engines/review_engine.py | ✅ DONE | Mar 21, 2026 |
+| TASK-015 | engines/monitor_engine.py | ✅ DONE | Mar 21, 2026 |
 | TASK-016 | scripts/bootstrap_github.py | ⏳ TODO | — |
 | TASK-017 | tests/test_integration.py | ⏳ TODO | — |
 | TASK-018 | Tag v0.1.0-mvp | ⏳ TODO | — |
