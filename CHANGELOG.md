@@ -1,5 +1,24 @@
 # Changelog
 
+## v0.2.0 (March 21, 2026)
+
+### Added
+- **backtest.py** - Historical simulation from gamma-api.polymarket.com
+  - Supports s10_near_resolution and s1_negrisk_arb strategies
+  - Outputs win_rate, total_roi, max_drawdown
+  - Results saved to data/backtest_results.json
+- **health_check.py** - Diagnostic script to verify all connections
+  - Checks: CLOB API, Polygon RPC, Anthropic, Telegram, wallet balance
+  - Prints current engine state and configuration
+  - Exit 0 if healthy, 1 if any check fails
+
+### Phase 2 (Hardening) Complete
+- Error handling audit: all engines have try/except, structlog, and tenacity @retry
+- Pre-trade validation complete
+- Ready for first real trades
+
+---
+
 ## v0.1.0-mvp (March 21, 2026)
 
 ### Added
