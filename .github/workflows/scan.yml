@@ -11,6 +11,8 @@ concurrency:
 
 permissions:
   contents: write
+  pages: write
+  id-token: write
 
 jobs:
   scan:
@@ -18,7 +20,7 @@ jobs:
     timeout-minutes: 15
 
     env:
-      PYTHONPATH: ${{ github.workspace }}
+      PYTHONPATH:                ${{ github.workspace }}
       POLYMARKET_API_KEY:        ${{ secrets.POLYMARKET_API_KEY }}
       POLYMARKET_API_SECRET:     ${{ secrets.POLYMARKET_API_SECRET }}
       POLYMARKET_PASSPHRASE:     ${{ secrets.POLYMARKET_PASSPHRASE }}
