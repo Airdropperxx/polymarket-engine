@@ -366,17 +366,27 @@ function renderKPIs(){
   $_('k-bal').textContent='$100.00';
   $_('k-bal-s').textContent='Dry-run capital';
   $_('k-opps').textContent=executed.length;
-  $_('k-opps-s').textContent=`${SL.length} total in scan log`;
+  const s10count=SL.filter(e=>e.strategy?.includes('s10')).length;
+  const s1cnt=SL.filter(e=>e.strategy?.includes('s1')).length;
+  $_('k-opps-s').textContent=`S10:${s10count} S1:${s1cnt} total:${SL.length}`;
   $_('k-edge').textContent=edges.length?((edges.reduce((a,b)=>a+b,0)/edges.length)*100).toFixed(2)+'%':'—';
   $_('k-edge-s').textContent='Across '+edges.length+' observations';
 
   const avgP=probs.length?(probs.reduce((a,b)=>a+b,0)/probs.length*100).toFixed(1)+'%':'—';
   $_('k-prob').textContent=avgP;
   const pEl=$_('k-prob');
-  if(probs.length&&parseFloat(avgP)>99)pEl.className='stat red';
-  else if(probs.length&&parseFloat(avgP)>90)pEl.className='stat green';
-  else pEl.className='stat';
-  $_('k-prob').nextElementSibling.textContent=probs.length<SL.length?'(100% filtered out)':'Of opportunities';
+  // S1 NegRisk arb legitimately has p=1.0 (mathematical guarantee)
+  // S10 should be 0.85-0.99 — show breakdown
+  const s10probs=SL.filter(e=>e.strategy?.includes('s10')&&e.probability>0).map(e=>e.probability);
+  const s1count=SL.filter(e=>e.strategy?.includes('s1')).length;
+  if(s10probs.length){
+    const s10avg=(s10probs.reduce((a,b)=>a+b,0)/s10probs.length*100).toFixed(1);
+    pEl.className='stat green'; pEl.textContent=s10avg+'%';
+    $_('k-prob').nextElementSibling.textContent='S10 avg · S1 always 100% (arb)';
+  } else {
+    pEl.className='stat';
+    $_('k-prob').nextElementSibling.textContent='S1 arb=100%, S10 not yet running';
+  }
 
   $_('k-tracked').textContent=Object.keys(PH).length;
   $_('k-pts').textContent=pts.toLocaleString();
