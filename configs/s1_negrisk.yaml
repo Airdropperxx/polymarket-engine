@@ -1,34 +1,33 @@
-strategy: s1_negrisk_arb
-enabled: true
+# configs/s1_negrisk.yaml
+# S1: NegRisk multi-outcome arbitrage
+# Capital: $40 (40% of $100 bankroll)
+# True risk-free arb: sum(YES ask) < 1.00 in a NegRisk group
 
-# --- SIGNAL PARAMETERS ---
+s1_negrisk_arb:
+  enabled: true
 
-# Minimum net spread after fees. NegRisk long arb: sum(YES ask) < $1.00.
-# 3% min ensures we cover slippage on the multi-leg execution.
-min_spread_after_fees: 0.03
+  # ── Arb threshold ─────────────────────────────────────────────────────────
+  min_edge_after_fees: 0.020      # 2% minimum net edge (after buying all YES legs)
+  # Lower bound exists because execution slippage can eat thin edges
 
-# --- RISK PARAMETERS ---
+  # ── Leg quality filters (FIX: these were missing) ────────────────────────
+  min_leg_volume_24h: 200.0       # each leg must have ≥ $200 24h volume
+  min_leg_bid: 0.02               # each leg YES bid must be ≥ $0.02 (not stale)
+  # If bid = 0.00 → no buyers → stale market → phantom arb
 
-# Higher than default (0.15) because win_probability = 1.0. Zero directional risk.
-max_position_pct: 0.20
+  # ── Group constraints ──────────────────────────────────────────────────────
+  max_group_legs: 10              # refuse groups with >10 markets (exec risk)
+  # 10 legs × $4 each = $40 per share set — fits within bankroll
 
-# Half-Kelly: arb is guaranteed, still conservative on execution slippage.
-kelly_fraction: 0.50
+  # ── Position sizing ────────────────────────────────────────────────────────
+  max_position_pct: 0.15          # 15% of bankroll = $15 max total outlay
+  # Note: for S1 we target buying 1 share set across all legs
+  # share set cost = total_ask USDC; max_sets = max_position / total_ask
 
-# Score = min(edge * 2.0, 1.0). High threshold because these are rare but valuable.
-threshold: 0.60
+  # ── Execution gate ────────────────────────────────────────────────────────
+  threshold: 0.60                 # high threshold — only clean arbs
 
-# Preferred categories for NegRisk groups (most violation opportunities historically).
-preferred_categories:
-  - politics
-  - sports
-
-# --- REVIEW ---
-review:
-  track_metrics:
-    - win_rate
-    - avg_roi
-    - avg_spread_captured
-    - group_size_distribution
-    - category_breakdown
-  rebalance_trigger: weekly
+  # ── ReviewEngine tracking ─────────────────────────────────────────────────
+  review:
+    track_metrics: [win_rate, avg_edge, avg_num_legs, fill_rate]
+    rebalance_trigger: weekly

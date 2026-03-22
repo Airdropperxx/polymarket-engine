@@ -1,48 +1,42 @@
-strategy: s8_logical_arb
-enabled: true
+# configs/s8_logical.yaml
+# S8: Logical impossibility arbitrage
+# Capital: $20 (20% of $100 bankroll)
+# Uses embeddings + LLM to find mutually exclusive markets priced as if independent
 
-# --- SIGNAL PARAMETERS ---
+s8_logical_arb:
+  # DISABLED at MVP — sentence-transformers requires torch (~1.5GB)
+  # Enable when: capital > $500 AND running locally or on a VPS
+  enabled: false
 
-# Cosine similarity threshold for candidate pair selection (Phase 1: embedding).
-# Pairs below this are not sent to LLM classifier. Controls API cost.
-min_similarity_threshold: 0.65
+  # ── Embedding similarity gate ─────────────────────────────────────────────
+  similarity_threshold: 0.75      # cosine similarity to consider pair for LLM review
+  # Lower = more pairs reviewed (more LLM cost), Higher = fewer pairs but surer
 
-# Minimum price gap between two logically-related markets before classifying.
-# Below this gap, the edge (after fees) wouldn't be worth the API cost.
-min_probability_gap: 0.04
+  # ── Price arb threshold ───────────────────────────────────────────────────
+  min_edge_after_fees: 0.030      # 3% — higher than S10 because LLM can be wrong
 
-# Minimum net edge after estimated 2% worst-case fee for entering the position.
-min_edge_after_fees: 0.025
+  # ── Liquidity ─────────────────────────────────────────────────────────────
+  min_volume_24h: 300.0           # USDC
 
-# Maximum NEW LLM classifications per scan cycle. Controls Anthropic API cost.
-# Cached pairs do NOT count toward this limit.
-# At 30/day × 30 days: ~900 classifications in month 1 (~$0.11). Month 2+: near zero.
-max_new_classifications_per_scan: 30
+  # ── LLM usage control ─────────────────────────────────────────────────────
+  max_llm_calls_per_scan: 5       # Haiku ≈ $0.001/call → $0.005/scan = $7/month
+  # New pairs only — cached pairs never re-classified (cache in data/s8_direction_cache.json)
 
-# Claude Haiku for classification — cheapest model, sufficient for binary classification.
-llm_model: "claude-haiku-4-5-20251001"
+  # ── Category priority ─────────────────────────────────────────────────────
+  priority_categories:            # scan order — politics has most logical violations
+    - politics
+    - other
+    - crypto
+    - sports
 
-# Path to classifier result cache. Git-tracked. Persists between GitHub Actions runs.
-# chromadb REMOVED: state lost on ephemeral GHA runners. Pure JSON + numpy instead.
-cache_path: "data/s8_direction_cache.json"
+  # ── Position sizing ────────────────────────────────────────────────────────
+  max_position_pct: 0.15          # 15% of bankroll = $15
+  kelly_fraction: 0.25            # quarter-Kelly
 
-# --- RISK PARAMETERS ---
+  # ── Execution gate ────────────────────────────────────────────────────────
+  threshold: 0.65                 # highest threshold — LLM can err, need strong signal
 
-# Lower than S1/S10 because logical violations may take days to converge.
-max_position_pct: 0.10
-
-# Quarter-Kelly. More uncertainty than NegRisk arb.
-kelly_fraction: 0.25
-
-threshold: 0.50
-
-# --- REVIEW ---
-review:
-  track_metrics:
-    - win_rate
-    - avg_roi
-    - cache_hit_rate        # should approach 90%+ after month 1
-    - pairs_scanned_per_cycle
-    - api_calls_per_cycle   # track cost
-    - avg_convergence_days  # how long violations take to close
-  rebalance_trigger: weekly
+  # ── ReviewEngine tracking ─────────────────────────────────────────────────
+  review:
+    track_metrics: [win_rate, avg_yes_sum, avg_similarity, category_breakdown]
+    rebalance_trigger: weekly
