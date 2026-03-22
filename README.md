@@ -1,169 +1,142 @@
-# Polymarket Engine v3.1
+# Polymarket Engine v3.2
 
-A Polymarket prediction market trading engine. Runs on GitHub Actions free tier.
-No VPS. Five strategies: S1 (NegRisk arb), S4 (Chainlink sniper), S6 (Synth AI), S8 (logical arb), S10 (near-resolution).
+A zero-infrastructure Polymarket prediction market trading engine.
+Runs entirely on **GitHub Actions free tier** — no VPS, no WebSocket, no paid subscriptions.
 
-## Quick start
-
-1. Fork repo, set to Public (unlimited Actions minutes)
-2. Add 9 GitHub Secrets (see .env.example for names)
-3. Add Variable: DRY_RUN = true
-4. Actions → Test Suite → Run workflow (all must pass)
-5. Actions → Bootstrap GitHub Issues → BOOTSTRAP (creates task queue)
-6. Actions → Market Scanner → Run workflow × 3 (dry-run verification)
-7. Set DRY_RUN = false when ready for real trades
-
-## Dashboard
-
-View the live dashboard at:
-- **GitHub Pages**: `https://<your-username>.github.io/polymarket-engine/dashboard.html`
-
-Enable GitHub Pages: Settings → Pages → Deploy from branch (main, /)
-
-The dashboard shows:
-- Current balance and daily P&L
-- Open positions and resolved trades
-- Allocations and risk limits
-- Recent trade history
-
-## Required GitHub Secrets
-
-| Secret | Source |
-|---|---|
-| POLYMARKET_API_KEY | polymarket.com → connect wallet → API settings |
-| POLYMARKET_API_SECRET | same |
-| POLYMARKET_PASSPHRASE | same |
-| POLYMARKET_WALLET_ADDRESS | your Polygon wallet address (0x...) |
-| POLYMARKET_PRIVATE_KEY | your wallet private key (no 0x prefix) |
-| POLYGON_RPC_URL | alchemy.com → create free Polygon Mainnet app |
-| ANTHROPIC_API_KEY | console.anthropic.com |
-| TELEGRAM_BOT_TOKEN | message @BotFather on Telegram |
-| TELEGRAM_CHAT_ID | message @userinfobot on Telegram |
-
-## For AI agents working on tasks
-
-Use `AGENT_SYSTEM_PROMPT.md` as your system prompt.
-Then paste the GitHub Issue body for the task you are working on as your first message.
-Match the context pack label on the issue to the pack below.
+**Current capital:** $100 USDC (dry-run data collection phase)
+**Dashboard:** https://airdropperxx.github.io/polymarket-engine/
+**Status:** Scanning every 30 min, collecting pattern data
 
 ---
 
-## Context Pack A — Strategy Implementation
+## Active Strategies
 
-```
-You are implementing ONE trading strategy class that subclasses BaseStrategy.
-The engine calls your 4 methods. You do NOT modify any engine file.
+| ID | Name | Status | Win Rate | Capital |
+|----|------|--------|----------|---------|
+| S1 | NegRisk Arbitrage | ✅ Active | ~100% (mathematical arb) | $30 |
+| S10 | Near-Resolution Harvest | ✅ Active | 88–95% target | $60 |
+| S8 | Logical Impossibility Arb | ⏸ Disabled (MVP) | 80–90% target | $10 |
 
-KEY TYPES (import from strategies.base and engines.data_engine):
-  MarketState: market_id, question, yes_price, no_price, yes_bid, no_bid,
-               volume_24h, seconds_to_resolution, category, negrisk_group_id, fee_rate_bps
-  Opportunity: strategy, market_id, market_question, action, edge, win_probability,
-               max_payout, time_to_resolution_sec, metadata, score
-  Resolution:  trade_id, market_id, won, cost_usdc, payout_usdc, pnl_usdc, roi, strategy
-
-RULES:
-  scan()       → pure function, no side effects, no API calls (S8 LLM classifier: ok)
-  score()      → returns float 0.0–1.0 ONLY
-  size()       → MUST cap at config['max_position_pct'] * bankroll, floor at 1.0
-  on_resolve() → returns {'won': bool, 'roi': float, 'notes': str, 'lessons': list[str]}
-  calc_fee(p)  → ALWAYS use BaseStrategy.calc_fee(p), never hardcode fee values
-  FEE FORMULA: 2.25 * 0.25 * (p * (1-p)) ** 2
-  calc_fee(0.5) == 0.140625  ← verify this in your tests
-```
+**Removed/deferred:** S4 (Chainlink — needs WebSocket), S6 (Synth AI — needs $1k capital)
 
 ---
 
-## Context Pack B — Engine Core Component
+## Quick Start
+
+1. Fork repo → set to **Public** (unlimited Actions minutes)
+2. Settings → Secrets → add all 9 secrets (see table below)
+3. Settings → Variables → add `DRY_RUN = true`
+4. Actions → **Market Scanner** → Run workflow × 3 (verify dry-run works)
+5. Check dashboard at `https://<your-username>.github.io/polymarket-engine/`
+6. After 10+ dry-run cycles with opportunities found → set `DRY_RUN = false`
+
+### Required Secrets
+
+| Secret | Where to get it |
+|--------|----------------|
+| `POLYMARKET_API_KEY` | polymarket.com → connect wallet → API settings |
+| `POLYMARKET_API_SECRET` | same |
+| `POLYMARKET_PASSPHRASE` | same |
+| `POLYMARKET_WALLET_ADDRESS` | your Polygon wallet (0x...) |
+| `POLYMARKET_PRIVATE_KEY` | wallet private key (no 0x prefix) |
+| `POLYGON_RPC_URL` | alchemy.com → create free Polygon Mainnet app |
+| `ANTHROPIC_API_KEY` | console.anthropic.com |
+| `TELEGRAM_BOT_TOKEN` | @BotFather on Telegram |
+| `TELEGRAM_CHAT_ID` | @userinfobot on Telegram |
+
+---
+
+## Architecture
 
 ```
-You are implementing a core engine component.
-
-THE SIX ENGINES AND THEIR ROLES:
-  data_engine.py       → fetches market data, NEVER trades
-  signal_engine.py     → orchestrates scan/score/filter, NEVER trades
-  execution_engine.py  → THE ONLY engine that submits orders
-  state_engine.py      → SQLite persistence, NEVER trades
-  review_engine.py     → Claude API learning loop, NEVER trades
-  monitor_engine.py    → Telegram alerts, NEVER trades
-
-CRITICAL:
-  Never call order APIs from any engine except execution_engine.py.
-  execution_engine.py reads fee_rate_bps from MarketState.fee_rate_bps (set by DataEngine).
-  If MarketState is stale (>5 min), re-fetch: clob_client.get_market(token_id)['feeRateBps'].
-  There is NO get_fee_rate_bps() method in py-clob-client 0.16 — do not call it.
-  All monetary values: USDC. All probabilities: float [0.0, 1.0].
-  All external HTTP calls: @retry(stop=stop_after_attempt(3), wait=wait_exponential(min=2, max=10))
-  All log calls: use structlog with keys: component, action, and relevant context fields.
+GitHub Actions (every 30 min)
+        │
+        ▼
+run_scan_cycle.py
+        │
+        ├── DataEngine          → Fetches all active Polymarket markets via Gamma API
+        │   └── market_snapshot.json.gz  (compressed, committed to repo)
+        │
+        ├── MarketObserver      → Records price history for top 200 markets
+        │   └── price_history.json  (time-series, committed to repo)
+        │
+        ├── SignalEngine        → Runs S1 + S10 scanners
+        │   ├── S1: NegRisk groups where sum(YES ask) < 1.0
+        │   └── S10: High-prob markets (0.85–0.989) resolving within 7 days
+        │
+        ├── ExecutionEngine     → Logs all opportunities to scan_log.json
+        │   └── scan_log.json   (pattern mining dataset, committed to repo)
+        │
+        ├── StateEngine         → SQLite trade log
+        │   └── trades.db + lessons.json
+        │
+        └── git push data/      → All state persists across ephemeral GHA runners
 ```
 
 ---
 
-## Context Pack C — Test Writing
+## Data Collection (Dry-Run Phase)
 
-```
-You are writing tests for the Polymarket engine.
+Every scan cycle collects:
 
-RULES:
-  Never make real HTTP calls. Mock all HTTP with the 'responses' library.
-  Use fixtures from tests/fixtures/sample_markets.json for market data.
-  For every strategy, write these 3 scan() test cases:
-    a) Market that SHOULD produce an Opportunity (correct thresholds)
-    b) Market that should NOT (edge too small / probability below threshold)
-    c) Market that should NOT (too far from resolution window)
-  Use @freeze_time for any time-sensitive logic.
-  Naming: test_[component]_[method]_[scenario]
+| File | Contents | Size |
+|------|----------|------|
+| `data/scan_log.json` | All opportunities seen (edge, prob, category, score, timing) | ~100KB+ |
+| `data/price_history.json` | Price time-series for 200 top markets | ~73KB+ |
+| `data/market_snapshot.json.gz` | Full market state snapshot | ~390KB compressed |
+| `data/trades.db` | All dry-run trade records (SQLite) | ~45KB |
+| `data/lessons.json` | ReviewEngine learnings | ~1KB |
 
-REQUIRED test for every strategy:
-  def test_fee_formula_correct():
-      assert abs(BaseStrategy.calc_fee(0.5) - 0.140625) < 0.0001
-```
+The **MarketObserver** detects: momentum (consistent price movement), sharp reversals,
+volume spikes (smart-money entry), and resolution drift (high-prob near-expiry).
+After 20–30 cycles the dataset is large enough to identify reliable patterns.
 
 ---
 
-## Context Pack D — YAML Config Writing
+## Fee Formula
 
+```python
+fee = 2.25 * (p * (1 - p)) ** 2
+# calc_fee(0.5)  = 0.140625  ← peak
+# calc_fee(0.95) = 0.005077
+# calc_fee(0.0)  = 0.0
 ```
-You are writing a strategy YAML config file.
 
-REQUIRED structure:
-  strategy: [must match strategy.name exactly]
-  enabled: true
-  [signal parameters — each with a comment]
-  max_position_pct: [default 0.15]
-  kelly_fraction: [default 0.25]
-  threshold: [min score to execute, float 0.0–1.0]
-  review:
-    track_metrics: [list]
-    rebalance_trigger: weekly
-
-RULES:
-  Probabilities: ALWAYS decimals 0.0–1.0, never write "90%", write 0.90.
-  Capital: ALWAYS USDC dollars.
-  Every value MUST have a comment explaining what it controls.
-  S10 max_minutes_remaining: must be > poll_interval_minutes + 15 min buffer.
-    With 30-min GHA poll → use 60. With 60-min poll → use 90.
-```
+Always multiply by position size for actual dollar fee. Never hardcode fee values.
 
 ---
 
-## Context Pack E — ReviewEngine
+## Config Files
+
+| File | Purpose |
+|------|---------|
+| `configs/engine.yaml` | Capital, risk limits, allocations |
+| `configs/s10_near_resolution.yaml` | S10 thresholds |
+| `configs/s1_negrisk.yaml` | S1 thresholds |
+| `configs/s8_logical.yaml` | S8 thresholds (disabled) |
+
+---
+
+## GitHub Pages Dashboard
+
+Enable at: Settings → Pages → Deploy from branch → main → / (root)
+
+Dashboard URL: `https://<username>.github.io/polymarket-engine/`
+
+Tabs: Overview · Trades · Data Collected · Pattern Analysis · Observer Signals · Strategy Refinement
+
+Reads live from `data/scan_log.json`, `data/price_history.json`, `data/lessons.json` via GitHub raw.
+Auto-refreshes every 5 minutes.
+
+---
+
+## Capital Progression
 
 ```
-You are working on engines/review_engine.py.
-
-THE REVIEWER'S CONTRACT:
-  Input:   list of recently resolved trades + current lessons.json
-  Output:  JSON only: {strategy_score_updates, new_lessons, deprecated_lesson_indices, reasoning}
-  Model:   claude-haiku-4-5-20251001 (cost-efficient)
-
-SYSTEM PROMPT RULES (what Claude receives):
-  Output ONLY valid JSON — no prose, no markdown
-  allocation_delta: max ±0.05 per strategy per cycle
-  Min 5 trades before adjusting any allocation
-  Lessons must be specific: "S10 sports at p=0.91 loses 29%" not "S10 is risky"
-
-JSON PARSE (mandatory fallback):
-  try: updates = json.loads(response_text)
-  except: match = re.search(r'\{.*\}', text, re.DOTALL); json.loads(match.group())
-  except: return {'status': 'error'}   ← NEVER crash
+Phase   Capital    Strategies          Condition to advance
+──────────────────────────────────────────────────────────────
+MVP     $100       S1 + S10           10+ dry-run cycles, opps found, patterns identified
+P2      $150–500   S1 + S10           10+ real trades, win rate ≥ 85%, reviewer running
+P3      $1,000+    Add S8             Backtest complete, lessons.json has 10+ entries
+P4      $2,500+    Add S6 (Synth AI)  $200/mo infra justified
 ```
