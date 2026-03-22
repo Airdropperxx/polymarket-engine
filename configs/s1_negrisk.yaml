@@ -4,8 +4,8 @@ s1_negrisk_arb:
   min_leg_volume_24h: 50.0
   min_leg_bid: 0.01
   max_group_legs: 20
-  max_position_pct: 0.15
-  threshold: 0.40
+  max_position_pct: 0.40
+  threshold: 0.30
   review:
     track_metrics: [win_rate, avg_edge, avg_num_legs, fill_rate]
     rebalance_trigger: weekly
