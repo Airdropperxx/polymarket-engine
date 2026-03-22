@@ -96,7 +96,8 @@ class S10NearResolution(BaseStrategy):
                 continue  # wide spread = illiquid = dangerous near resolution
 
             # ── Filter 5: edge after fees ──────────────────────────────────
-            fee  = self.calc_fee(buy_price)
+            # calc_fee returns fee as fraction of $1 notional; multiply by buy_price for per-share
+            fee  = self.calc_fee(buy_price) * buy_price
             edge = probability - buy_price - fee
 
             if edge < min_edge:
@@ -119,7 +120,7 @@ class S10NearResolution(BaseStrategy):
                     "buy_price":      round(buy_price, 4),
                     "probability":    round(probability, 4),
                     "spread":         round(spread, 4),
-                    "fee":            round(fee, 6),
+                    "fee":            round(fee, 6),  # per-share fee
                     "volume_24h":     market.volume_24h,
                     "minutes_left":   minutes_left,
                     "category":       market.category,

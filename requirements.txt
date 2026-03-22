@@ -1,20 +1,29 @@
-# Polymarket Engine v3.1 — pinned requirements
-# CRITICAL: Do NOT upgrade web3 past 6.14.0 — breaks py-clob-client 0.16.0
+# requirements.txt — LOCAL DEV ONLY
+# Do NOT use this in GitHub Actions — use requirements-scan.txt instead.
+# This is the full stack for running everything locally.
 
+# Scan core (same as requirements-scan.txt)
+requests>=2.28.0
+pyyaml>=6.0
+sqlalchemy>=2.0.0
+structlog>=23.0.0
+tenacity>=8.0.0
+python-dotenv>=1.0.0
+anthropic>=0.25.0
+
+# Real trade execution (only needed when DRY_RUN=false)
+# CRITICAL: web3 must be exactly 6.14.0 — newer versions break py-clob-client
 py-clob-client==0.16.0
 web3==6.14.0
 
-requests==2.31.0
-aiohttp==3.9.3
-anthropic==0.25.0
-sqlalchemy==2.0.28
-python-dotenv==1.0.1
-pyyaml==6.0.1
-tenacity==8.2.3
-structlog==24.1.0
-sentence-transformers==2.7.0
-# chromadb REMOVED — state lost between ephemeral GHA runners
-# Using pure numpy cosine similarity instead (already bundled with sentence-transformers)
-python-telegram-bot==21.0
-PyGithub==2.1.1
-numpy>=1.24.0        # bundled with sentence-transformers, listed explicitly
+# S8 logical arb embeddings (disabled at MVP — enable at capital > $500)
+# sentence-transformers==2.7.0
+
+# MCP server (runs locally only, never on GHA)
+PyGithub>=2.1.1
+
+# Dev / testing
+pytest>=8.0.0
+pytest-cov>=4.0.0
+responses>=0.25.0
+freezegun>=1.4.0

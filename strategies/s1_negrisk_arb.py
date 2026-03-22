@@ -114,7 +114,8 @@ class S1NegRiskArb(BaseStrategy):
 
         # Compute arb metrics using ASK prices (taker cost)
         total_ask   = sum(m.yes_ask for m in valid_legs)
-        total_fees  = sum(self.calc_fee(m.yes_ask) for m in valid_legs)
+        # calc_fee returns fee as fraction of $1 notional; multiply by ask for per-share
+        total_fees  = sum(self.calc_fee(m.yes_ask) * m.yes_ask for m in valid_legs)
         edge        = 1.0 - total_ask - total_fees
 
         if edge < min_edge:
@@ -145,7 +146,7 @@ class S1NegRiskArb(BaseStrategy):
                         "yes_bid":       round(m.yes_bid, 4),
                         "yes_token_id":  m.yes_token_id,
                         "volume_24h":    m.volume_24h,
-                        "fee":           round(self.calc_fee(m.yes_ask), 6),
+                        "fee":           round(self.calc_fee(m.yes_ask) * m.yes_ask, 6),
                     }
                     for m in valid_legs
                 ],

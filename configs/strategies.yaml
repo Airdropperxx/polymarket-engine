@@ -85,7 +85,9 @@ s1_negrisk_arb:
 # Uses embeddings + LLM to find mutually exclusive markets priced as if independent
 
 s8_logical_arb:
-  enabled: true
+  # DISABLED at MVP — sentence-transformers requires torch (~1.5GB)
+  # Enable when: capital > $500 AND running locally or on a VPS
+  enabled: false
 
   # ── Embedding similarity gate ─────────────────────────────────────────────
   similarity_threshold: 0.75      # cosine similarity to consider pair for LLM review
