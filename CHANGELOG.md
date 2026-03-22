@@ -1,93 +1,76 @@
 # Changelog
 
-## v0.3.1 (March 21, 2026)
+## v3.2.0 (March 2026) — Data Collection & Observability
+
+### Added
+- **MarketObserver engine** (`engines/market_observer.py`)
+  - Polls top 200 markets every scan cycle (every 30 min)
+  - Records price time-series to `data/price_history.json` (committed to repo)
+  - Detects signals: momentum_up, momentum_down, sharp_move, resolution_drift, volume_spike
+  - No separate workflow needed — runs embedded in scan cycle
+  - After 20+ cycles builds dataset for: momentum trading, mean-reversion fading,
+    smart-money following, NegRisk divergence early detection
+
+- **scan_log.json pattern dataset**
+  - Every opportunity (executed or skipped) logged with: edge, probability, category,
+    volume_24h, spread, fee, days_to_resolution, hour_utc, weekday
+  - Enables: time-of-day analysis, category edge curves, optimal probability range detection
+
+- **6-tab dashboard** at `index.html` (GitHub Pages)
+  - Overview, Trades, Data Collected, Pattern Analysis, Observer Signals, Strategy Refinement
+  - Reads live from GitHub raw — no backend needed
+  - Category colour-coded pills, full question text on hover
 
 ### Fixed
-- Dashboard: Embedded state data directly (XSS-safe with html.escape)
-- Dashboard: No CORS issues - works standalone on GitHub Pages
-
-### Added
-- dashboard.html: Live dashboard with embedded state
-- update_dashboard.py: Embeds state into HTML after each scan cycle
-
----
-
-## v0.3.0 (March 21, 2026)
-
-### Added
-- **S4 Chainlink Sniper** - Chainlink oracle front-running strategy
-  - Monitors Chainlink BTC/USD price feed via Alchemy RPC
-  - Enter when price crosses hourly strike with < 2 min remaining
-  - Requires capital > $1,000
-  - Config: `configs/s4_chainlink_sniper.yaml`
-- **S6 Synth AI** - Bittensor SN50 (Synth) signal integration
-  - Queries Monte Carlo price forecasts from Synth API
-  - Enter when divergence > 10% from Polymarket price
-  - MAKER orders only (GTD, not FOK) for zero fees
-  - Requires capital > $1,000, Synth API costs ~$200/month
-  - Config: `configs/s6_synth_ai.yaml`
-
-### Phase 3 Complete
-- All 6 strategies implemented
-- Ready for capital scaling beyond $1,000
+- **categories now populated** — S1 NegRisk calculates dominant category from legs
+- **resolved markets filtered** — data_engine skips outcomePrices >= 0.999
+- **multi-doc YAML removed** — strategies.yaml deleted, individual s*.yaml files used
+- **Dashboard .nojekyll** — renamed from `nojekyll` to `.nojekyll` (dot prefix required)
+- **S1 win_probability=1.0** — correct for NegRisk arb (mathematical guarantee), dashboard handles it
+- **PYTHONPATH** — added to scan.yml so engines/ and strategies/ are importable
 
 ---
 
-## v0.2.0 (March 21, 2026)
+## v3.1.0 (March 2026) — Pipeline Fixes
 
-### Added
-- **backtest.py** - Historical simulation from gamma-api.polymarket.com
-  - Supports s10_near_resolution and s1_negrisk_arb strategies
-  - Outputs win_rate, total_roi, max_drawdown
-  - Results saved to data/backtest_results.json
-- **health_check.py** - Diagnostic script to verify all connections
-  - Checks: CLOB API, Polygon RPC, Anthropic, Telegram, wallet balance
-  - Prints current engine state and configuration
-  - Exit 0 if healthy, 1 if any check fails
+### Fixed
+- **Dependency resolution** — replaced full requirements.txt with requirements-scan.txt (7 packages)
+- **ModuleNotFoundError** — added PYTHONPATH=${{ github.workspace }} to scan.yml
+- **Gamma API parsing** — outcomePrices is JSON string, not array; clobTokenIds same
+- **Fee formula** — corrected to `2.25 * (p*(1-p))^2`, was `2.25*0.25*...`
+- **Fee application** — fee is position-level, must multiply by buy_price for per-share
+- **S10 time filter** — max_minutes_remaining compared as seconds not minutes (×60 fix)
 
-### Phase 2 (Hardening) Complete
-- Error handling audit: all engines have try/except, structlog, and tenacity @retry
-- Pre-trade validation complete
-- Ready for first real trades
+### Changed
+- Data engine fetches all active markets (no end_date_max filter — was too restrictive)
+- S10 window widened to 7 days, min_probability lowered to 0.85 to capture real opportunities
+- max_per_cycle raised to 10, open position cap to 50 for dry-run data collection
 
 ---
 
-## v0.1.0-mvp (March 21, 2026)
+## v0.3.0 (March 21, 2026) — Strategy Expansion
 
 ### Added
-- **MCP Server** - GitHub Memory MCP Server for AI agent task management (10 tools)
-- **StateEngine** - SQLite persistence for trades, balance, lessons
-- **DataEngine** - REST polling for Polymarket markets with fee_rate_bps
-- **ExecutionEngine** - Order submission with 5 risk gates
-- **SignalEngine** - Orchestrates scan/score/filter pipeline
-- **MonitorEngine** - Telegram alerts for key events
-- **ReviewEngine** - AI-powered learning loop with Claude Haiku
-
-### Strategies
-- **S10 Near Resolution** - Trade markets within 60 min of resolution
-- **S1 NegRisk Arb** - Guaranteed arbitrage on NegRisk group markets
-- **S8 Logical Arb** - Cross-market logical violation detection with LLM
-
-### Configuration
-- `engine.yaml` - Global engine config with allocations (sum to 1.0)
-- Strategy configs: `s10_near_resolution.yaml`, `s1_negrisk.yaml`, `s8_logical.yaml`
-- Initial capital: $100 USDC
-- Risk limits: 5% daily loss, 5 max positions, 15% max per trade
-
-### GitHub Actions
-- `scan.yml` - Market scanning (30-min poll)
-- `resolve_check.yml` - Check for market resolutions
-- `daily_review.yml` - Daily AI review of trades
-- `test.yml` - Run test suite
-- `bootstrap.yml` - Bootstrap GitHub issues from TASKS.yaml
-
-### Initial Lessons
-1. Fee formula: 2.25 * 0.25 * (p*(1-p))^2
-2. NEVER hardcode fee_rate_bps - always read from MarketState
-3. S10 sports: min_probability=0.93
-4. S1 NegRisk: buy_all_yes when sum(YES prices) < 1.00
-5. S8 classifier cache must be committed to repo
+- S4 Chainlink Sniper (deferred — requires WebSocket, incompatible with GHA polling)
+- S6 Synth AI / Bittensor SN50 (deferred — requires $1k capital + $200/mo infra)
 
 ---
 
-For older releases, see [release tags](https://github.com/Airdropperxx/polymarket-engine/tags).
+## v0.2.0 (March 21, 2026) — Hardening
+
+### Added
+- Backtest scripts for S1 and S10
+- Health check script
+- Error handling audit
+- Tag v0.2.0
+
+---
+
+## v0.1.0 (March 21, 2026) — MVP
+
+### Added
+- All six engines: data, signal, execution, state, review, monitor
+- Three MVP strategies: S10, S1 (partial), S8 (disabled)
+- GitHub Actions workflows: scan, resolve_check, daily_review, test, bootstrap
+- MCP server for GitHub Issues task management
+- Bootstrap script creating all task queue issues
