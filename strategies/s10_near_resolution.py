@@ -1,24 +1,12 @@
 """
-strategies/s10_near_resolution.py -- Near-resolution harvest.
+strategies/s10_near_resolution.py
 
-Based on live Polymarket data (March 2026):
-  - Apple AAPL close above $210 end of March: 98%
-  - Israel launches Lebanon ground offensive by March 31: 98%  
-  - Bitcoin price milestones already hit: 100%
-  - Many end-of-month binary markets at 90-99%
+Near-resolution harvest. Buys high-probability outcomes resolving within N days.
 
-These markets have very low fee impact at high p, but the key insight is:
-  The REAL edge comes from the SPREAD, not a theoretical probability gap.
-  We BUY at the ASK price. If yes_price=0.98 and we can buy at ask=0.982,
-  we pay 0.982 to collect 1.00 -- that's 1.8% gross, minus fees.
-
-For S10 to find opportunities at the current $100 bankroll level:
-  1. Lower min_probability to 0.85 (many real markets sit here)
-  2. Widen time window to 7 days (end-of-month markets are the target)
-  3. Lower min_edge to 0.001 (fees are tiny at p>0.85)
-  4. Use volume_24h > 100 USDC (not 500)
-
-KEY FIX: seconds_to_resolution is compared against max_minutes * 60.
+KEY FIXES:
+  - max_probability: rejects already-resolved markets (price >= 0.989)
+  - category now pulled from MarketState (fixed in data_engine)
+  - Logs full question text for pattern analysis
 """
 
 from __future__ import annotations
@@ -36,36 +24,32 @@ class S10NearResolution(BaseStrategy):
     def scan(self, markets: list, groups: dict, config: dict) -> list[Opportunity]:
         cfg = config.get("s10_near_resolution", {})
 
-        max_minutes  = int(cfg.get("max_minutes_remaining", 10080))  # 7 days default
-        max_seconds  = max_minutes * 60   # CORRECT: compare seconds to seconds
-        min_prob     = float(cfg.get("min_probability", 0.85))
-        min_volume   = float(cfg.get("min_volume_24h", 100.0))
-        max_spread   = float(cfg.get("max_spread", 0.05))
-        min_edge     = float(cfg.get("min_edge_after_fees", 0.001))
+        max_minutes   = int(cfg.get("max_minutes_remaining", 10080))
+        max_seconds   = max_minutes * 60
+        min_prob      = float(cfg.get("min_probability", 0.85))
+        max_prob      = float(cfg.get("max_probability", 0.989))   # exclude resolved
+        min_volume    = float(cfg.get("min_volume_24h", 100.0))
+        max_spread    = float(cfg.get("max_spread", 0.05))
+        min_edge      = float(cfg.get("min_edge_after_fees", 0.001))
 
         opps = []
 
         for market in markets:
-            # Must have time remaining
             if market.seconds_to_resolution <= 0:
                 continue
-
-            # Must be within time window
             if market.seconds_to_resolution > max_seconds:
                 continue
-
-            # Must have volume
             if market.volume_24h < min_volume:
                 continue
 
-            # Find the high-probability side
-            if market.yes_price >= min_prob:
+            # Find high-probability side
+            if min_prob <= market.yes_price <= max_prob:
                 side        = "YES"
                 buy_price   = market.yes_ask
                 probability = market.yes_price
                 token_id    = market.yes_token_id
                 spread      = market.yes_ask - market.yes_bid
-            elif market.no_price >= min_prob:
+            elif min_prob <= market.no_price <= max_prob:
                 side        = "NO"
                 buy_price   = market.no_ask
                 probability = market.no_price
@@ -74,19 +58,13 @@ class S10NearResolution(BaseStrategy):
             else:
                 continue
 
-            # Spread filter
             if spread > max_spread:
                 continue
 
-            # Edge calculation: fee is position-level, multiply by buy_price for per-share
             fee  = self.calc_fee(buy_price) * buy_price
             edge = probability - buy_price - fee
-
             if edge < min_edge:
                 continue
-
-            days_left    = market.seconds_to_resolution / 86400
-            minutes_left = market.seconds_to_resolution // 60
 
             opps.append(Opportunity(
                 strategy              = self.name,
@@ -104,45 +82,44 @@ class S10NearResolution(BaseStrategy):
                     "spread":       round(spread, 4),
                     "fee":          round(fee, 6),
                     "volume_24h":   market.volume_24h,
-                    "minutes_left": minutes_left,
-                    "days_left":    round(days_left, 2),
+                    "minutes_left": market.seconds_to_resolution // 60,
+                    "days_left":    round(market.seconds_to_resolution / 86400, 2),
                     "category":     market.category,
                     "fee_rate_bps": market.fee_rate_bps,
+                    "end_date":     market.end_date_iso,
+                    "negrisk_group": market.negrisk_group_id,
                 },
             ))
 
         log.info("s10_scan_complete",
                  markets_scanned=len(markets),
+                 opportunities_found=len(opps),
                  max_seconds=max_seconds,
                  min_prob=min_prob,
-                 opportunities_found=len(opps))
+                 max_prob=max_prob)
         return opps
 
     def score(self, opp: Opportunity, config: dict) -> float:
-        meta = opp.metadata
-        cfg  = config.get("s10_near_resolution", {})
+        meta   = opp.metadata
+        cfg    = config.get("s10_near_resolution", {})
+        max_sec = int(cfg.get("max_minutes_remaining", 10080)) * 60
 
-        max_sec    = int(cfg.get("max_minutes_remaining", 10080)) * 60
-        # Time urgency: closer to resolution = higher score
-        time_frac  = 1.0 - (opp.time_to_resolution_sec / max(max_sec, 1))
-        time_score = min(1.0, max(0.0, time_frac))
-
-        # Probability score: maps [0.85, 1.0] -> [0.0, 1.0]
-        prob_score = min(1.0, max(0.0, (opp.win_probability - 0.85) / 0.15))
-
-        # Edge score
-        edge_score = min(1.0, max(0.0, opp.edge / 0.05))
-
-        # Volume score (log scale)
+        time_score = min(1.0, max(0.0,
+            1.0 - opp.time_to_resolution_sec / max(max_sec, 1)))
+        prob_score = min(1.0, max(0.0,
+            (opp.win_probability - 0.85) / 0.15))
+        edge_score = min(1.0, opp.edge / 0.05)
         vol = meta.get("volume_24h", 100)
-        vol_score = min(1.0, math.log10(max(vol, 100)) / math.log10(100000))
+        vol_score  = min(1.0, math.log10(max(vol, 100)) / math.log10(100000))
 
-        # Category bonus: crypto/stock price markets resolve cleanly
         cat_bonus = {
-            "crypto":   0.05,
-            "sports":   0.03,
-            "politics": -0.02,
-            "other":    0.0,
+            "finance":     0.08,   # stock/ETF price bets: clean binary
+            "crypto":      0.06,   # price milestones: reliable
+            "sports":      0.04,   # game outcomes: clear resolution
+            "tech":        0.03,
+            "other":       0.0,
+            "politics":   -0.02,   # disputed/late-resolving
+            "geopolitics":-0.04,   # uncertain resolution criteria
         }.get(meta.get("category", "other"), 0.0)
 
         raw = (time_score * 0.35
@@ -150,56 +127,35 @@ class S10NearResolution(BaseStrategy):
              + edge_score * 0.20
              + vol_score  * 0.15
              + cat_bonus)
-
         return round(min(1.0, max(0.0, raw)), 4)
 
     def size(self, opp: Opportunity, bankroll: float, config: dict) -> float:
         cfg        = config.get("s10_near_resolution", {})
-        max_pct    = float(cfg.get("max_position_pct", 0.15))
+        max_pct    = float(cfg.get("max_position_pct", 0.40))
         kelly_frac = float(cfg.get("kelly_fraction", 0.25))
-
-        buy_price = opp.metadata.get("buy_price", opp.win_probability)
-        b         = (1.0 - buy_price) / buy_price if buy_price > 0 else 0
-        p         = opp.win_probability
-        q         = 1.0 - p
-        kelly     = (b * p - q) / b if b > 0 else 0.0
-        position  = kelly * kelly_frac * bankroll
-
-        return round(max(1.0, min(max_pct * bankroll, position)), 2)
+        buy_price  = opp.metadata.get("buy_price", opp.win_probability)
+        b = (1.0 - buy_price) / buy_price if buy_price > 0 else 0
+        p = opp.win_probability
+        kelly = max(0, (b * p - (1 - p)) / b) if b > 0 else 0
+        return round(max(1.0, min(max_pct * bankroll, kelly * kelly_frac * bankroll)), 2)
 
     def on_resolve(self, trade: dict, outcome: str, config: dict) -> Resolution:
-        cost     = trade.get("cost_usdc", 0.0)
-        fee      = trade.get("fee_usdc", 0.0)
-        shares   = trade.get("shares", 0.0)
-        meta     = trade.get("metadata", {})
-        won      = (outcome == "win")
-        payout   = shares * 1.0 if won else 0.0
-        pnl      = payout - cost - fee
-        roi      = pnl / cost if cost > 0 else 0.0
-        cat      = meta.get("category", "unknown")
-        prob     = meta.get("probability", 0)
-        days     = meta.get("days_left", 0)
-
-        lessons = []
-        if won:
-            lessons.append(
-                f"S10 WIN: {cat} p={prob:.2f} {days:.1f}d left ROI={roi:.1%}"
-            )
-        else:
-            lessons.append(
-                f"S10 LOSS: {cat} p={prob:.2f} {days:.1f}d left. "
-                "Consider raising min_probability or reducing days window."
-            )
-
+        cost    = trade.get("cost_usdc", 0.0)
+        fee     = trade.get("fee_usdc", 0.0)
+        shares  = trade.get("shares", 0.0)
+        meta    = trade.get("metadata", {})
+        won     = outcome == "win"
+        payout  = shares if won else 0.0
+        pnl     = payout - cost - fee
+        roi     = pnl / cost if cost > 0 else 0.0
+        lessons = [
+            f"S10 {'WIN' if won else 'LOSS'}: {meta.get('category','?')} "
+            f"p={meta.get('probability',0):.2f} "
+            f"{meta.get('days_left',0):.1f}d ROI={roi:.1%}"
+        ]
         return Resolution(
-            trade_id    = trade.get("trade_id", ""),
-            market_id   = trade.get("market_id", ""),
-            won         = won,
-            cost_usdc   = round(cost, 4),
-            payout_usdc = round(payout, 4),
-            pnl_usdc    = round(pnl, 4),
-            roi         = round(roi, 4),
-            strategy    = self.name,
-            notes       = f"{'WIN' if won else 'LOSS'}: {cat} p={prob:.2f} ROI={roi:.1%}",
-            lessons     = lessons,
+            trade_id=trade.get("trade_id",""), market_id=trade.get("market_id",""),
+            won=won, cost_usdc=round(cost,4), payout_usdc=round(payout,4),
+            pnl_usdc=round(pnl,4), roi=round(roi,4), strategy=self.name,
+            notes=lessons[0], lessons=lessons,
         )

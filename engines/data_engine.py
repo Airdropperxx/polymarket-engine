@@ -1,15 +1,12 @@
 """
-engines/data_engine.py
+engines/data_engine.py — Fetches and parses Polymarket Gamma API markets.
 
-Fetches markets from Polymarket Gamma API using the CORRECT field names:
-  outcomePrices  -> JSON string like '["0.94", "0.06"]'
-  clobTokenIds   -> JSON string like '["tokenId1", "tokenId2"]'  
-  volume24hr     -> float (24h volume)
-  endDateIso     -> ISO date string
-  takerBaseFee   -> taker fee bps
-  
-Saves compressed snapshot to data/market_snapshot.json.gz after each fetch.
-NEVER places orders. Returns stale cache on any error.
+Key fixes vs previous version:
+  1. Filters out already-resolved markets (price = 1.0 or 0.0 exactly)
+  2. Category detection reads from Gamma's own 'category' field first,
+     then falls back to keyword matching on question text
+  3. NegRisk group ID correctly parsed from nested events structure
+  4. Logs category distribution after every fetch for debugging
 """
 
 from __future__ import annotations
@@ -30,17 +27,86 @@ log = structlog.get_logger(component="data_engine")
 GAMMA_URL  = "https://gamma-api.polymarket.com/markets"
 SNAPSHOT   = Path("data/market_snapshot.json.gz")
 PAGE_SIZE  = 500
-MIN_VOLUME = 10.0   # very low floor — let strategies filter
+MIN_VOLUME = 10.0
 
-_CRYPTO   = {"btc","eth","bitcoin","ethereum","crypto","sol","solana","xrp","doge",
-              "bnb","usdc","defi","nft","blockchain","coinbase","binance"}
+# Keyword sets for fallback category detection
+_CRYPTO   = {"btc","eth","bitcoin","ethereum","crypto","sol","solana","xrp",
+              "doge","bnb","coinbase","binance","defi","nft","blockchain",
+              "token","altcoin","stablecoin"}
 _POLITICS = {"election","president","senate","congress","vote","political",
              "governor","minister","parliament","trump","biden","harris",
-             "republican","democrat","tariff","tariffs","fed","federal"}
+             "republican","democrat","tariff","fed","federal","white house",
+             "supreme court","legislation","policy"}
 _SPORTS   = {"nba","nfl","mlb","nhl","soccer","football","basketball","tennis",
              "ufc","match","tournament","championship","league","playoff",
              "world cup","super bowl","finals","mls","ncaa","pga","golf",
-             "formula","f1","wimbledon","premier league"}
+             "formula","f1","wimbledon","premier","serie a","bundesliga",
+             "champions league","boxing","wrestling","cricket","rugby"}
+_FINANCE  = {"stock","nasdaq","s&p","dow","ipo","earnings","gdp","inflation",
+             "interest rate","fed rate","cpi","unemployment","recession",
+             "market cap","aapl","tsla","nvda","msft","amzn","googl","meta"}
+_TECH     = {"ai","artificial intelligence","openai","anthropic","google",
+             "microsoft","apple","samsung","iphone","android","chatgpt",
+             "spacex","tesla","neuralink"}
+_GEO      = {"war","ceasefire","invasion","military","ukraine","russia","china",
+             "taiwan","israel","gaza","nato","sanctions","conflict","nuclear"}
+
+
+def _categorise(question: str, gamma_category: str = "") -> str:
+    """
+    Determine market category.
+    Priority: Gamma's own category field -> keyword matching -> 'other'
+    """
+    # Use Gamma's category field if it looks meaningful
+    gc = gamma_category.lower().strip() if gamma_category else ""
+    if gc:
+        if any(k in gc for k in ["crypto","bitcoin","ethereum","blockchain"]): return "crypto"
+        if any(k in gc for k in ["sport","nba","nfl","soccer","football","tennis"]): return "sports"
+        if any(k in gc for k in ["politic","election","government"]): return "politics"
+        if any(k in gc for k in ["financ","stock","market","econom"]): return "finance"
+        if any(k in gc for k in ["tech","ai","software"]): return "tech"
+        if any(k in gc for k in ["world","geo","war","conflict"]): return "geopolitics"
+        # Map common Gamma category strings
+        known = {
+            "us politics": "politics", "world politics": "politics",
+            "crypto": "crypto", "sports": "sports", "science": "science",
+            "entertainment": "entertainment", "business": "finance",
+            "economics": "finance", "technology": "tech",
+        }
+        for k, v in known.items():
+            if k in gc: return v
+        # If gamma has any non-empty category, use it directly (capitalised)
+        if len(gc) < 30:
+            return gc.title()
+
+    # Keyword fallback on question text
+    q = question.lower()
+    words = set(q.split())
+    if words & _CRYPTO   or any(k in q for k in _CRYPTO):   return "crypto"
+    if words & _SPORTS   or any(k in q for k in _SPORTS):   return "sports"
+    if words & _FINANCE  or any(k in q for k in _FINANCE):  return "finance"
+    if words & _TECH     or any(k in q for k in _TECH):     return "tech"
+    if words & _POLITICS or any(k in q for k in _POLITICS): return "politics"
+    if words & _GEO      or any(k in q for k in _GEO):      return "geopolitics"
+    return "other"
+
+
+def _parse_iso(s: str) -> Optional[int]:
+    if not s:
+        return None
+    for fmt in ("%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%dT%H:%M:%S.%fZ"):
+        try:
+            return int(datetime.strptime(s, fmt).replace(tzinfo=timezone.utc).timestamp())
+        except ValueError:
+            continue
+    try:
+        return int(datetime.fromisoformat(s).timestamp())
+    except Exception:
+        pass
+    try:
+        return int(datetime.strptime(s[:10], "%Y-%m-%d").replace(tzinfo=timezone.utc).timestamp())
+    except Exception:
+        return None
 
 
 @dataclass
@@ -75,50 +141,12 @@ class MarketState:
         return cls(**valid)
 
 
-def _categorise(question: str, category_field: str = "") -> str:
-    text = (question + " " + category_field).lower()
-    words = set(text.split())
-    if words & _CRYPTO:   return "crypto"
-    if words & _POLITICS: return "politics"
-    if words & _SPORTS:   return "sports"
-    # Also check substrings for compound words
-    for kw in _CRYPTO:
-        if kw in text: return "crypto"
-    for kw in _SPORTS:
-        if kw in text: return "sports"
-    for kw in _POLITICS:
-        if kw in text: return "politics"
-    return "other"
-
-
-def _parse_iso(s: str) -> Optional[int]:
-    if not s:
-        return None
-    # Try multiple formats
-    for fmt in ("%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%dT%H:%M:%S.%fZ",
-                "%Y-%m-%dT%H:%M:%S%z"):
-        try:
-            if fmt.endswith("%z"):
-                dt = datetime.fromisoformat(s)
-                return int(dt.timestamp())
-            dt = datetime.strptime(s, fmt)
-            return int(dt.replace(tzinfo=timezone.utc).timestamp())
-        except ValueError:
-            continue
-    # Fallback: parse first 10 chars as date
-    try:
-        dt = datetime.strptime(s[:10], "%Y-%m-%d")
-        return int(dt.replace(tzinfo=timezone.utc).timestamp())
-    except Exception:
-        return None
-
-
 def save_snapshot(markets: list, path: Path = SNAPSHOT) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     payload = {
         "saved_at": datetime.now(timezone.utc).isoformat(),
-        "count":    len(markets),
-        "markets":  [m.to_dict() for m in markets],
+        "count": len(markets),
+        "markets": [m.to_dict() for m in markets],
     }
     with gzip.open(path, "wt", encoding="utf-8") as f:
         json.dump(payload, f, separators=(",", ":"))
@@ -131,9 +159,7 @@ def load_snapshot(path: Path = SNAPSHOT) -> list:
     try:
         with gzip.open(path, "rt", encoding="utf-8") as f:
             data = json.load(f)
-        markets = [MarketState.from_dict(m) for m in data.get("markets", [])]
-        log.info("snapshot_loaded", count=len(markets))
-        return markets
+        return [MarketState.from_dict(m) for m in data.get("markets", [])]
     except Exception as e:
         log.warning("snapshot_load_failed", error=str(e))
         return []
@@ -145,72 +171,44 @@ class DataEngine:
         self.config  = config
         self._cache: list = []
         self._groups: dict = {}
-        # Warm up from previous snapshot
         prev = load_snapshot()
         if prev:
-            now = time.time()
-            # Keep markets that haven't clearly expired (give 1hr buffer)
-            self._cache = [m for m in prev if m.seconds_to_resolution > -3600]
+            self._cache  = [m for m in prev if m.seconds_to_resolution > -3600]
             self._groups = self._build_groups(self._cache)
             log.info("warm_cache", count=len(self._cache))
 
-    # ------------------------------------------------------------------ #
-    #  Public                                                              #
-    # ------------------------------------------------------------------ #
-
     def fetch_all_markets(self) -> list:
-        """Fetch all active markets. Falls back to cache on any error."""
         try:
             raw_markets = self._paginate()
             if not raw_markets:
                 log.warning("gamma_returned_empty_using_cache")
                 return self._cache
 
-            # Log a sample of raw data for debugging
+            # Log sample for debugging
             if raw_markets:
-                sample = raw_markets[0]
-                log.info("raw_sample_fields", fields=list(sample.keys())[:15])
-                log.info("raw_sample_outcomePrices",
-                         val=str(sample.get("outcomePrices",""))[:60])
-                log.info("raw_sample_clobTokenIds",
-                         val=str(sample.get("clobTokenIds",""))[:60])
+                s = raw_markets[0]
+                log.info("api_sample",
+                         outcomePrices=str(s.get("outcomePrices",""))[:50],
+                         clobTokenIds=str(s.get("clobTokenIds",""))[:50],
+                         category=str(s.get("category",""))[:30],
+                         endDateIso=str(s.get("endDateIso",""))[:30])
 
-            markets = []
-            parse_errors = 0
-            for raw in raw_markets:
-                m = self._parse(raw)
-                if m:
-                    markets.append(m)
-                else:
-                    parse_errors += 1
-
-            log.info("parse_results",
-                     raw=len(raw_markets),
-                     parsed=len(markets),
-                     errors=parse_errors)
-
-            if not markets:
-                log.warning("zero_markets_parsed_using_cache",
-                            hint="Check raw_sample_fields log above")
-                return self._cache
-
-            # Apply minimum volume filter
-            filtered = [m for m in markets if m.volume_24h >= MIN_VOLUME]
-            log.info("volume_filter",
-                     before=len(markets),
-                     after=len(filtered),
-                     min_volume=MIN_VOLUME)
-
+            markets     = [m for m in (self._parse(r) for r in raw_markets) if m]
+            filtered    = [m for m in markets if m.volume_24h >= MIN_VOLUME]
             if not filtered:
-                filtered = markets  # use all if volume filter removes everything
+                filtered = markets
 
             self._cache  = filtered
             self._groups = self._build_groups(filtered)
             save_snapshot(filtered)
 
+            # Log category distribution
+            from collections import Counter
+            cats = Counter(m.category for m in filtered)
             log.info("fetch_complete",
                      total=len(filtered),
-                     negrisk_groups=len(self._groups))
+                     negrisk_groups=len(self._groups),
+                     categories=dict(cats.most_common(8)))
             return filtered
 
         except Exception as e:
@@ -230,12 +228,7 @@ class DataEngine:
             None
         )
 
-    # ------------------------------------------------------------------ #
-    #  Internal                                                            #
-    # ------------------------------------------------------------------ #
-
     def _paginate(self) -> list:
-        """Page through Gamma API. Stops at 3000 markets."""
         results = []
         offset  = 0
         session = requests.Session()
@@ -246,36 +239,24 @@ class DataEngine:
                 resp = session.get(
                     GAMMA_URL,
                     params={
-                        "active":    "true",
-                        "closed":    "false",
-                        "limit":     PAGE_SIZE,
-                        "offset":    offset,
-                        "order":     "volume24hr",
-                        "ascending": "false",
+                        "active": "true", "closed": "false",
+                        "limit": PAGE_SIZE, "offset": offset,
+                        "order": "volume24hr", "ascending": "false",
                     },
                     timeout=25,
                 )
                 resp.raise_for_status()
                 page = resp.json()
-
                 if not page:
                     break
-
                 results.extend(page)
-                log.info("gamma_page_fetched",
-                         offset=offset,
-                         page_size=len(page),
-                         total_so_far=len(results))
-
+                log.info("gamma_page", offset=offset, count=len(page))
                 if len(page) < PAGE_SIZE:
-                    break   # last page
-
+                    break
                 offset += PAGE_SIZE
                 if offset >= 3000:
-                    break   # safety cap
-
+                    break
                 time.sleep(0.25)
-
             except Exception as e:
                 log.warning("gamma_page_error", offset=offset, error=str(e))
                 break
@@ -283,136 +264,87 @@ class DataEngine:
         return results
 
     def _parse(self, raw: dict) -> Optional[MarketState]:
-        """
-        Parse a single Gamma API market dict into MarketState.
-
-        Real Gamma API fields (verified against docs):
-          outcomePrices  -> string: '["0.94", "0.06"]'
-          clobTokenIds   -> string: '["tokenA", "tokenB"]'  (YES=index 0, NO=index 1)
-          volume24hr     -> number
-          endDateIso     -> string ISO date (PREFERRED - always ISO format)
-          endDate        -> string (fallback)
-          takerBaseFee   -> number (fee in bps)
-          category       -> string (Gamma's own category)
-          negRiskGroupId -> string (for NegRisk markets)
-        """
         try:
-            question = str(raw.get("question") or raw.get("title") or "")
+            question = str(raw.get("question") or raw.get("title") or "").strip()
             if not question:
                 return None
 
-            # --- Parse outcomePrices (JSON string "["0.6","0.4"]") ---
+            # Parse outcomePrices — always a JSON string like '["0.94","0.06"]'
             op_raw = raw.get("outcomePrices")
             if not op_raw:
                 return None
-
-            if isinstance(op_raw, str):
-                try:
-                    prices = json.loads(op_raw)
-                except (json.JSONDecodeError, ValueError):
-                    return None
-            elif isinstance(op_raw, list):
-                prices = op_raw
-            else:
-                return None
-
+            prices = json.loads(op_raw) if isinstance(op_raw, str) else op_raw
             if len(prices) < 2:
                 return None
+            yes_price = max(0.001, min(0.999, float(prices[0])))
+            no_price  = max(0.001, min(0.999, float(prices[1])))
 
-            try:
-                yes_price = float(prices[0])
-                no_price  = float(prices[1])
-            except (TypeError, ValueError):
-                return None
+            # KEY FIX: Skip markets that are already resolved (price = exactly 1 or 0)
+            # These are NOT opportunities — they've already paid out
+            raw_yes = float(prices[0])
+            raw_no  = float(prices[1])
+            if raw_yes >= 0.999 or raw_no >= 0.999:
+                return None   # already resolved
+            if raw_yes <= 0.001 and raw_no <= 0.001:
+                return None   # invalid/broken market
 
-            # Clamp
-            yes_price = max(0.001, min(0.999, yes_price))
-            no_price  = max(0.001, min(0.999, no_price))
+            # Parse clobTokenIds — JSON string like '["tokenA","tokenB"]'
+            ctids = raw.get("clobTokenIds")
+            token_ids  = json.loads(ctids) if isinstance(ctids, str) else (ctids or [])
+            cid        = str(raw.get("conditionId") or raw.get("id") or "")
+            yes_token_id = str(token_ids[0]) if len(token_ids) > 0 else cid + "_yes"
+            no_token_id  = str(token_ids[1]) if len(token_ids) > 1 else cid + "_no"
 
-            # --- Parse clobTokenIds (JSON string "["tokenA","tokenB"]") ---
-            ctids_raw = raw.get("clobTokenIds")
-            yes_token_id = ""
-            no_token_id  = ""
-
-            if ctids_raw:
-                if isinstance(ctids_raw, str):
-                    try:
-                        token_ids = json.loads(ctids_raw)
-                    except (json.JSONDecodeError, ValueError):
-                        token_ids = []
-                elif isinstance(ctids_raw, list):
-                    token_ids = ctids_raw
-                else:
-                    token_ids = []
-
-                if len(token_ids) >= 2:
-                    yes_token_id = str(token_ids[0])
-                    no_token_id  = str(token_ids[1])
-                elif len(token_ids) == 1:
-                    yes_token_id = str(token_ids[0])
-                    no_token_id  = str(token_ids[0]) + "_no"
-
-            # Fallback token IDs from conditionId
-            if not yes_token_id:
-                cid = str(raw.get("conditionId") or raw.get("id") or "")
-                yes_token_id = cid + "_yes"
-                no_token_id  = cid + "_no"
-
-            # --- Time to resolution ---
-            # Prefer endDateIso (always ISO), fallback to endDate
-            end_str = (raw.get("endDateIso") or
-                       raw.get("endDate") or
-                       raw.get("umaEndDateIso") or "")
+            # Time to resolution — prefer endDateIso
+            end_str     = (raw.get("endDateIso") or raw.get("endDate") or "")
             end_ts      = _parse_iso(end_str)
             now_ts      = int(time.time())
             seconds_left = max(0, (end_ts - now_ts)) if end_ts else 0
 
-            # --- Volume ---
-            vol = float(raw.get("volume24hr") or
-                        raw.get("volume24hrClob") or
-                        raw.get("volume_24h") or 0.0)
+            # Skip markets with no end date that resolve in the past
+            if seconds_left == 0 and not end_str:
+                return None
 
-            # --- Fees ---
-            # takerBaseFee is in bps (e.g. 200 = 2%)
-            fee_bps = int(raw.get("takerBaseFee") or
-                          raw.get("fee_rate_bps") or 0)
-            if fee_bps == 0:
-                # Estimate from formula if not provided
-                fee_bps = int(2.25 * (yes_price * (1 - yes_price)) ** 2 * 10000)
+            # Volume
+            vol = float(raw.get("volume24hr") or raw.get("volume24hrClob") or 0.0)
 
-            # --- Category ---
+            # Category — use Gamma's field first
             gamma_cat = str(raw.get("category") or "")
-            category  = _categorise(question, gamma_cat)
+            # Also check nested events for category
+            if not gamma_cat:
+                events = raw.get("events") or []
+                if isinstance(events, list) and events:
+                    first = events[0] if isinstance(events[0], dict) else {}
+                    gamma_cat = str(first.get("category") or "")
+            category = _categorise(question, gamma_cat)
 
-            # --- NegRisk group ---
-            neg_risk_id = (raw.get("negRiskGroupId") or
-                           raw.get("negRiskMarketID") or None)
-            # Also check nested events for negRisk
+            # NegRisk group
+            neg_risk_id = raw.get("negRiskGroupId")
             if not neg_risk_id:
                 events = raw.get("events") or []
                 if isinstance(events, list) and events:
-                    first_event = events[0] if isinstance(events[0], dict) else {}
-                    if first_event.get("negRisk"):
-                        neg_risk_id = first_event.get("negRiskMarketID") or first_event.get("id")
+                    first = events[0] if isinstance(events[0], dict) else {}
+                    if first.get("negRisk"):
+                        neg_risk_id = first.get("negRiskMarketID") or first.get("id")
 
-            # --- Synthetic bid/ask (1% spread around mid) ---
-            spread   = 0.01
-            yes_bid  = max(0.001, yes_price - spread)
-            yes_ask  = min(0.999, yes_price + spread)
-            no_bid   = max(0.001, no_price  - spread)
-            no_ask   = min(0.999, no_price  + spread)
+            # Fees
+            fee_bps = int(raw.get("takerBaseFee") or 0)
+            if fee_bps == 0:
+                fee_bps = int(2.25 * (yes_price * (1 - yes_price)) ** 2 * 10000)
 
+            # Synthetic spread (1%)
+            spread = 0.01
             return MarketState(
-                market_id             = str(raw.get("id") or raw.get("conditionId") or ""),
+                market_id             = str(raw.get("id") or cid),
                 question              = question,
                 yes_token_id          = yes_token_id,
                 no_token_id           = no_token_id,
                 yes_price             = yes_price,
                 no_price              = no_price,
-                yes_bid               = yes_bid,
-                yes_ask               = yes_ask,
-                no_bid                = no_bid,
-                no_ask                = no_ask,
+                yes_bid               = max(0.001, yes_price - spread),
+                yes_ask               = min(0.999, yes_price + spread),
+                no_bid                = max(0.001, no_price  - spread),
+                no_ask                = min(0.999, no_price  + spread),
                 volume_24h            = vol,
                 end_date_iso          = end_str,
                 seconds_to_resolution = seconds_left,
@@ -423,9 +355,8 @@ class DataEngine:
             )
 
         except Exception as e:
-            log.debug("parse_exception",
-                      error=str(e),
-                      q=str(raw.get("question",""))[:50])
+            log.debug("parse_skip", error=str(e),
+                      q=str(raw.get("question", ""))[:50])
             return None
 
     def _build_groups(self, markets: list) -> dict:
@@ -435,7 +366,6 @@ class DataEngine:
                 groups.setdefault(m.negrisk_group_id, []).append(m)
         return {gid: ms for gid, ms in groups.items() if len(ms) >= 2}
 
-    # Kept for test compatibility
     @staticmethod
     def _parse_iso_to_ts(s: str) -> Optional[int]:
         return _parse_iso(s)

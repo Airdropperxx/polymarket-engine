@@ -2,740 +2,850 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Polymarket Engine — Dashboard</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
-  :root {
-    --bg: #0d0f14;
-    --surface: #161920;
-    --surface2: #1e222d;
-    --border: #2a2f3d;
-    --text: #e2e8f0;
-    --muted: #64748b;
-    --green: #22c55e;
-    --red: #ef4444;
-    --amber: #f59e0b;
-    --blue: #3b82f6;
-    --purple: #a855f7;
-    --teal: #14b8a6;
-    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-  }
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; }
-  header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
-  header h1 { font-size: 18px; font-weight: 600; letter-spacing: -0.3px; }
-  .badge { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 4px 10px; font-size: 12px; color: var(--muted); }
-  .badge.dry { border-color: var(--amber); color: var(--amber); }
-  .badge.live { border-color: var(--green); color: var(--green); }
-  #status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); display: inline-block; margin-right: 6px; }
-  #status-dot.ok { background: var(--green); box-shadow: 0 0 6px var(--green); }
-  main { padding: 24px; max-width: 1400px; margin: 0 auto; }
-  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
-  .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px; }
-  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
-  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
-  .card h2 { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
-  .stat-val { font-size: 28px; font-weight: 700; line-height: 1; }
-  .stat-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
-  .green { color: var(--green); }
-  .red { color: var(--red); }
-  .amber { color: var(--amber); }
-  .blue { color: var(--blue); }
-  .purple { color: var(--purple); }
-  .section-title { font-size: 15px; font-weight: 600; margin-bottom: 16px; color: var(--text); }
-  table { width: 100%; border-collapse: collapse; font-size: 13px; }
-  th { text-align: left; padding: 10px 12px; color: var(--muted); font-weight: 500; border-bottom: 1px solid var(--border); font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px; }
-  td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
-  tr:last-child td { border-bottom: none; }
-  tr:hover td { background: var(--surface2); }
-  .pill { display: inline-block; border-radius: 4px; padding: 2px 8px; font-size: 11px; font-weight: 500; }
-  .pill-dry { background: rgba(245,158,11,0.15); color: var(--amber); }
-  .pill-open { background: rgba(59,130,246,0.15); color: var(--blue); }
-  .pill-win { background: rgba(34,197,94,0.15); color: var(--green); }
-  .pill-loss { background: rgba(239,68,68,0.15); color: var(--red); }
-  .pill-s10 { background: rgba(168,85,247,0.15); color: var(--purple); }
-  .pill-s1 { background: rgba(20,184,166,0.15); color: var(--teal); }
-  .pill-s8 { background: rgba(59,130,246,0.15); color: var(--blue); }
-  .chart-wrap { position: relative; height: 220px; }
-  .chart-wrap-tall { position: relative; height: 280px; }
-  .loading { color: var(--muted); font-size: 13px; text-align: center; padding: 40px; }
-  .error-msg { color: var(--red); font-size: 12px; text-align: center; padding: 20px; }
-  #refresh-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 6px 14px; border-radius: 6px; font-size: 13px; cursor: pointer; }
-  #refresh-btn:hover { border-color: var(--blue); }
-  .prog-bar { background: var(--surface2); border-radius: 4px; height: 6px; overflow: hidden; }
-  .prog-fill { height: 100%; border-radius: 4px; }
-  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
-  .mini-stat { padding: 12px; background: var(--surface2); border-radius: 8px; }
-  .mini-stat label { font-size: 11px; color: var(--muted); display: block; margin-bottom: 4px; }
-  .mini-stat span { font-size: 16px; font-weight: 600; }
-  .heatmap { display: grid; grid-template-columns: repeat(24, 1fr); gap: 3px; }
-  .heatmap-cell { height: 28px; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 9px; color: rgba(255,255,255,0.5); cursor: default; }
-  .heatmap-label { font-size: 10px; color: var(--muted); text-align: center; margin-top: 4px; }
-  @media (max-width: 900px) { .grid-4 { grid-template-columns: repeat(2, 1fr); } .grid-3 { grid-template-columns: 1fr 1fr; } }
-  @media (max-width: 600px) { .grid-4, .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+:root{--bg:#0d0f14;--s1:#161920;--s2:#1e222d;--bd:#2a2f3d;--tx:#e2e8f0;--mu:#64748b;
+--green:#22c55e;--red:#ef4444;--amber:#f59e0b;--blue:#3b82f6;--purple:#a855f7;
+--teal:#14b8a6;--pink:#ec4899;--fn:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--bg);color:var(--tx);font-family:var(--fn);font-size:14px}
+header{background:var(--s1);border-bottom:1px solid var(--bd);padding:14px 24px;
+display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+header h1{font-size:17px;font-weight:600}
+.tabs{display:flex;gap:2px;padding:0 24px;background:var(--s1);border-bottom:1px solid var(--bd)}
+.tab{padding:10px 18px;cursor:pointer;font-size:13px;color:var(--mu);border-bottom:2px solid transparent;
+transition:all .15s;white-space:nowrap}
+.tab.active{color:var(--tx);border-bottom-color:var(--blue)}
+.tab:hover{color:var(--tx)}
+.tab-content{display:none;padding:24px;max-width:1400px;margin:0 auto}
+.tab-content.active{display:block}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
+.g2l{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:20px}
+.card{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:18px}
+.card h2{font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.stat{font-size:26px;font-weight:700;line-height:1.1}
+.sub{font-size:11px;color:var(--mu);margin-top:3px}
+.sec{font-size:14px;font-weight:600;margin-bottom:14px}
+.green{color:var(--green)}.red{color:var(--red)}.amber{color:var(--amber)}
+.blue{color:var(--blue)}.purple{color:var(--purple)}.teal{color:var(--teal)}
+.ch{position:relative;height:200px}
+.ch-lg{position:relative;height:280px}
+.ch-xl{position:relative;height:340px}
+table{width:100%;border-collapse:collapse;font-size:12px}
+th{text-align:left;padding:8px 10px;color:var(--mu);font-weight:500;
+border-bottom:1px solid var(--bd);font-size:10px;text-transform:uppercase;letter-spacing:.4px}
+td{padding:8px 10px;border-bottom:1px solid var(--bd);vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:var(--s2)}
+.q-cell{max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.pill{display:inline-block;border-radius:4px;padding:1px 7px;font-size:11px;font-weight:500}
+.p-s10{background:rgba(168,85,247,.15);color:var(--purple)}
+.p-s1{background:rgba(20,184,166,.15);color:var(--teal)}
+.p-s8{background:rgba(59,130,246,.15);color:var(--blue)}
+.p-obs{background:rgba(236,72,153,.15);color:var(--pink)}
+.p-open{background:rgba(59,130,246,.15);color:var(--blue)}
+.p-win{background:rgba(34,197,94,.15);color:var(--green)}
+.p-loss{background:rgba(239,68,68,.15);color:var(--red)}
+.p-dry{background:rgba(100,116,139,.15);color:var(--mu)}
+.cat-pill{display:inline-block;border-radius:4px;padding:1px 7px;font-size:11px}
+.loading{color:var(--mu);text-align:center;padding:32px;font-size:13px}
+#dot{width:8px;height:8px;border-radius:50%;background:var(--mu);display:inline-block;margin-right:8px}
+#dot.ok{background:var(--green);box-shadow:0 0 6px var(--green)}
+.mode{border:1px solid var(--amber);color:var(--amber);border-radius:6px;
+padding:3px 10px;font-size:12px}
+btn{background:var(--s2);border:1px solid var(--bd);color:var(--tx);
+padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer}
+.prog{background:var(--s2);border-radius:3px;height:5px;overflow:hidden;margin-top:5px}
+.prog-f{height:100%;border-radius:3px}
+.hm{display:grid;grid-template-columns:repeat(24,1fr);gap:2px}
+.hm-c{height:26px;border-radius:2px;display:flex;align-items:center;
+justify-content:center;font-size:9px;color:rgba(255,255,255,.4)}
+.insight{background:var(--s2);border-radius:8px;padding:14px;margin-bottom:10px;
+border-left:3px solid var(--bd)}
+.insight.up{border-left-color:var(--green)}
+.insight.down{border-left-color:var(--red)}
+.insight.spike{border-left-color:var(--amber)}
+.insight.drift{border-left-color:var(--blue)}
+.insight.sharp{border-left-color:var(--purple)}
+.insight-type{font-size:10px;text-transform:uppercase;letter-spacing:.4px;
+font-weight:600;margin-bottom:4px}
+.insight-q{font-size:13px;margin-bottom:6px;color:var(--tx)}
+.insight-note{font-size:12px;color:var(--mu);line-height:1.5}
+.tag{display:inline-block;border-radius:4px;padding:1px 6px;font-size:10px;
+background:var(--s2);color:var(--mu);margin-right:4px}
+@media(max-width:900px){.g4{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr}}
+@media(max-width:600px){.g4,.g3,.g2,.g2l{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
 <header>
-  <div style="display:flex;align-items:center;gap:12px">
-    <span id="status-dot"></span>
+  <div style="display:flex;align-items:center;gap:10px">
+    <span id="dot"></span>
     <h1>Polymarket Engine</h1>
-    <span id="mode-badge" class="badge dry">DRY RUN</span>
+    <span class="mode" id="mode-badge">DRY RUN</span>
   </div>
   <div style="display:flex;gap:10px;align-items:center">
-    <span id="last-updated" style="font-size:12px;color:var(--muted)">Loading...</span>
-    <button id="refresh-btn" onclick="loadAll()">Refresh</button>
+    <span id="updated" style="font-size:11px;color:var(--mu)">—</span>
+    <button onclick="loadAll()" style="background:var(--s2);border:1px solid var(--bd);
+      color:var(--tx);padding:5px 12px;border-radius:6px;font-size:12px;cursor:pointer">
+      Refresh
+    </button>
   </div>
 </header>
 
-<main>
-  <!-- KPI Row -->
-  <div class="grid-4" id="kpi-row">
-    <div class="card"><h2>Balance</h2><div class="stat-val" id="kpi-balance">—</div><div class="stat-sub" id="kpi-balance-sub">Starting capital</div></div>
-    <div class="card"><h2>Daily P&L</h2><div class="stat-val" id="kpi-pnl">—</div><div class="stat-sub" id="kpi-pnl-sub">Today's result</div></div>
-    <div class="card"><h2>Total Trades</h2><div class="stat-val" id="kpi-trades">—</div><div class="stat-sub" id="kpi-trades-sub">Dry + live</div></div>
-    <div class="card"><h2>Win Rate</h2><div class="stat-val" id="kpi-winrate">—</div><div class="stat-sub" id="kpi-winrate-sub">Resolved trades</div></div>
-  </div>
+<div class="tabs">
+  <div class="tab active" onclick="switchTab('overview')">Overview</div>
+  <div class="tab" onclick="switchTab('trades')">Trades</div>
+  <div class="tab" onclick="switchTab('data')">Data Collected</div>
+  <div class="tab" onclick="switchTab('analysis')">Pattern Analysis</div>
+  <div class="tab" onclick="switchTab('signals')">Observer Signals</div>
+  <div class="tab" onclick="switchTab('strategy')">Strategy Refinement</div>
+</div>
 
-  <!-- Second KPI Row -->
-  <div class="grid-4">
-    <div class="card"><h2>Open Positions</h2><div class="stat-val blue" id="kpi-open">—</div><div class="stat-sub">Active dry-run trades</div></div>
-    <div class="card"><h2>Opportunities Seen</h2><div class="stat-val purple" id="kpi-opps">—</div><div class="stat-sub">Total logged in scan_log</div></div>
-    <div class="card"><h2>Avg Edge</h2><div class="stat-val amber" id="kpi-edge">—</div><div class="stat-sub">Across all opportunities</div></div>
-    <div class="card"><h2>Avg Probability</h2><div class="stat-val" id="kpi-prob">—</div><div class="stat-sub">When opportunity found</div></div>
+<!-- ══ TAB 1: OVERVIEW ══════════════════════════════════════════════════ -->
+<div class="tab-content active" id="tab-overview">
+  <div class="g4" id="kpis">
+    <div class="card"><h2>Balance</h2><div class="stat" id="k-bal">—</div><div class="sub" id="k-bal-s">—</div></div>
+    <div class="card"><h2>Opportunities Seen</h2><div class="stat purple" id="k-opps">—</div><div class="sub" id="k-opps-s">—</div></div>
+    <div class="card"><h2>Avg Edge</h2><div class="stat amber" id="k-edge">—</div><div class="sub" id="k-edge-s">—</div></div>
+    <div class="card"><h2>Avg Probability</h2><div class="stat" id="k-prob">—</div><div class="sub" id="k-prob-s">—</div></div>
   </div>
+  <div class="g4">
+    <div class="card"><h2>Markets Tracked</h2><div class="stat blue" id="k-tracked">—</div><div class="sub">By observer</div></div>
+    <div class="card"><h2>Data Points</h2><div class="stat teal" id="k-pts">—</div><div class="sub">Price history records</div></div>
+    <div class="card"><h2>Active Signals</h2><div class="stat" id="k-sigs">—</div><div class="sub">From observer engine</div></div>
+    <div class="card"><h2>Win Rate</h2><div class="stat green" id="k-wr">—</div><div class="sub" id="k-wr-s">Resolved trades</div></div>
+  </div>
+  <div class="g2">
+    <div class="card"><div class="sec">Cumulative edge captured (dry-run)</div><div class="ch-lg"><canvas id="c-pnl"></canvas></div></div>
+    <div class="card"><div class="sec">Opportunities by hour (UTC)</div>
+      <div class="hm" id="heatmap" style="margin-top:8px"></div>
+      <div style="display:flex;justify-content:space-between;margin-top:4px">
+        <span style="font-size:9px;color:var(--mu)">00h</span>
+        <span style="font-size:9px;color:var(--mu)">23h</span>
+      </div>
+      <div style="margin-top:12px" class="sec" style="font-size:12px">Category breakdown</div>
+      <div class="ch" style="margin-top:8px"><canvas id="c-cat"></canvas></div>
+    </div>
+  </div>
+  <div class="g3">
+    <div class="card"><div class="sec">Edge distribution</div><div class="ch"><canvas id="c-edge"></canvas></div></div>
+    <div class="card"><div class="sec">Probability buckets</div><div class="ch"><canvas id="c-prob"></canvas></div></div>
+    <div class="card"><div class="sec">Days to resolution</div><div class="ch"><canvas id="c-days"></canvas></div></div>
+  </div>
+</div>
 
-  <!-- Charts Row 1 -->
-  <div class="grid-2">
+<!-- ══ TAB 2: TRADES ════════════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-trades">
+  <div class="g4" style="margin-bottom:20px">
+    <div class="card"><h2>Total Dry Trades</h2><div class="stat purple" id="t-total">—</div></div>
+    <div class="card"><h2>Open Positions</h2><div class="stat blue" id="t-open">—</div></div>
+    <div class="card"><h2>Resolved</h2><div class="stat teal" id="t-resolved">—</div></div>
+    <div class="card"><h2>Win Rate</h2><div class="stat green" id="t-wr">—</div></div>
+  </div>
+  <div class="card" style="margin-bottom:20px">
+    <div class="sec">All trades (newest first)</div>
+    <div id="trades-table" style="overflow-x:auto"><div class="loading">Loading...</div></div>
+  </div>
+</div>
+
+<!-- ══ TAB 3: DATA COLLECTED ════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-data">
+  <div class="g4" style="margin-bottom:20px">
+    <div class="card"><h2>Scan Log Entries</h2><div class="stat purple" id="d-entries">—</div><div class="sub">All opportunities ever seen</div></div>
+    <div class="card"><h2>Price History Points</h2><div class="stat teal" id="d-pts">—</div><div class="sub">Time-series data points</div></div>
+    <div class="card"><h2>Markets in History</h2><div class="stat blue" id="d-mkts">—</div><div class="sub">Unique markets tracked</div></div>
+    <div class="card"><h2>Data Span</h2><div class="stat amber" id="d-span">—</div><div class="sub">Oldest to newest</div></div>
+  </div>
+  <div class="g2">
     <div class="card">
-      <div class="section-title">Cumulative P&L (dry-run)</div>
-      <div class="chart-wrap"><canvas id="chart-pnl"></canvas></div>
+      <div class="sec">Data by category</div>
+      <div id="d-cats"><div class="loading">Loading...</div></div>
     </div>
     <div class="card">
-      <div class="section-title">Edge Distribution</div>
-      <div class="chart-wrap"><canvas id="chart-edge"></canvas></div>
+      <div class="sec">Volume distribution of tracked markets</div>
+      <div class="ch-lg"><canvas id="c-vol"></canvas></div>
+    </div>
+  </div>
+  <div class="card" style="margin-bottom:20px">
+    <div class="sec">Recent scan log (last 40 entries, all fields visible)</div>
+    <div id="scanlog-full" style="overflow-x:auto"><div class="loading">Loading...</div></div>
+  </div>
+</div>
+
+<!-- ══ TAB 4: PATTERN ANALYSIS ══════════════════════════════════════════ -->
+<div class="tab-content" id="tab-analysis">
+  <div style="background:var(--s2);border-radius:10px;padding:16px;margin-bottom:20px;
+    border:1px solid var(--bd)">
+    <div style="font-size:13px;font-weight:600;margin-bottom:8px">What patterns can we detect from this data?</div>
+    <div style="font-size:12px;color:var(--mu);line-height:1.7">
+      <b style="color:var(--tx)">1. Time-of-day alpha</b> — Certain hours produce more high-edge opportunities. 
+      US market open (13-16 UTC) tends to move crypto/finance markets. Sports create spikes at game times.<br>
+      <b style="color:var(--tx)">2. Category edge curves</b> — Finance/crypto markets at p=0.90-0.95 have historically 
+      higher resolution accuracy than politics at same probability.<br>
+      <b style="color:var(--tx)">3. Volume-to-probability correlation</b> — High volume + high probability = 
+      confident market, lower reversal risk. Low volume + high probability = dangerous.<br>
+      <b style="color:var(--tx)">4. Days-to-resolution curve</b> — Edge is highest 2-5 days before resolution, 
+      not day-of (when spreads widen and liquidity drains).<br>
+      <b style="color:var(--tx)">5. Price momentum</b> — Markets moving consistently in one direction for 3+ 
+      scans tend to continue. Observer engine tracks this per-market.<br>
+      <b style="color:var(--tx)">6. NegRisk group drift</b> — Groups where YES prices sum to 0.92-0.98 
+      (not 1.00) present real arb. Rare but high confidence when found.
     </div>
   </div>
 
-  <!-- Charts Row 2 -->
-  <div class="grid-3">
+  <div class="g2">
     <div class="card">
-      <div class="section-title">Opportunities by Category</div>
-      <div class="chart-wrap"><canvas id="chart-cat"></canvas></div>
-    </div>
-    <div class="card">
-      <div class="section-title">Strategy Breakdown</div>
-      <div class="chart-wrap"><canvas id="chart-strat"></canvas></div>
+      <div class="sec">Edge by category (are some categories more profitable?)</div>
+      <div class="ch-lg"><canvas id="a-cat-edge"></canvas></div>
     </div>
     <div class="card">
-      <div class="section-title">Probability Buckets</div>
-      <div class="chart-wrap"><canvas id="chart-prob"></canvas></div>
+      <div class="sec">Edge vs probability (optimal probability range)</div>
+      <div class="ch-lg"><canvas id="a-edge-prob"></canvas></div>
     </div>
   </div>
-
-  <!-- Heatmap -->
-  <div class="card" style="margin-bottom:24px">
-    <div class="section-title">Opportunity Frequency by Hour (UTC)</div>
-    <div class="heatmap" id="heatmap"></div>
-    <div style="display:flex;justify-content:space-between;margin-top:6px">
-      <span style="font-size:10px;color:var(--muted)">00:00 UTC</span>
-      <span style="font-size:10px;color:var(--muted)">23:00 UTC</span>
-    </div>
-  </div>
-
-  <!-- Pattern Analysis -->
-  <div class="grid-2" style="margin-bottom:24px">
+  <div class="g2">
     <div class="card">
-      <div class="section-title">Best Performing Categories</div>
-      <div id="cat-analysis"><div class="loading">Loading...</div></div>
+      <div class="sec">Opportunities by day of week</div>
+      <div class="ch"><canvas id="a-dow"></canvas></div>
     </div>
     <div class="card">
-      <div class="section-title">Days-to-Resolution Buckets</div>
-      <div class="chart-wrap"><canvas id="chart-days"></canvas></div>
+      <div class="sec">Edge vs days to resolution</div>
+      <div class="ch"><canvas id="a-edge-days"></canvas></div>
     </div>
   </div>
-
-  <!-- Open Positions -->
-  <div class="card" style="margin-bottom:24px">
-    <div class="section-title">Open Positions</div>
-    <div id="open-positions"><div class="loading">Loading...</div></div>
+  <div class="card" style="margin-bottom:20px">
+    <div class="sec">Top questions by edge (best-looking opportunities collected so far)</div>
+    <div id="a-top-opps" style="overflow-x:auto"><div class="loading">Loading...</div></div>
   </div>
+</div>
 
-  <!-- Recent Trades -->
-  <div class="card" style="margin-bottom:24px">
-    <div class="section-title">Recent Trades (last 50)</div>
-    <div id="recent-trades" style="overflow-x:auto"><div class="loading">Loading...</div></div>
+<!-- ══ TAB 5: OBSERVER SIGNALS ══════════════════════════════════════════ -->
+<div class="tab-content" id="tab-signals">
+  <div style="background:var(--s2);border-radius:10px;padding:16px;margin-bottom:20px;border:1px solid var(--bd)">
+    <div style="font-size:13px;font-weight:600;margin-bottom:8px">About the Market Observer Engine</div>
+    <div style="font-size:12px;color:var(--mu);line-height:1.7">
+      The observer polls the top 200 markets by volume every scan cycle (every 30 min) and stores a price snapshot.
+      Over time this builds a time-series that reveals how Polymarket prices move, not just what they are right now.<br><br>
+      <b style="color:var(--tx)">Useful for trading:</b>
+      Momentum signals (prices moving consistently) often precede full-price convergence — buying at 0.88 while it's 
+      moving to 0.95 captures more edge than waiting for 0.95. Volume spikes indicate smart-money entry — 
+      following the direction is usually profitable. Sharp single-scan jumps (>8%) often revert within 1-3 scans 
+      and can be faded (bet opposite direction). NegRisk group sum divergence alerts S1 arb before it's fully priced in.
+    </div>
   </div>
+  <div class="g4" style="margin-bottom:20px">
+    <div class="card"><h2>Momentum Up</h2><div class="stat green" id="s-mu">—</div><div class="sub">Consistent YES price increase</div></div>
+    <div class="card"><h2>Momentum Down</h2><div class="stat red" id="s-md">—</div><div class="sub">Consistent NO price increase</div></div>
+    <div class="card"><h2>Sharp Moves</h2><div class="stat amber" id="s-sm">—</div><div class="sub">Single-scan jumps >8%</div></div>
+    <div class="card"><h2>Resolution Drift</h2><div class="stat blue" id="s-rd">—</div><div class="sub">High-prob near-expiry</div></div>
+  </div>
+  <div id="signals-list"><div class="loading">Loading observer signals...</div></div>
+</div>
 
-  <!-- Scan Log Table -->
+<!-- ══ TAB 6: STRATEGY REFINEMENT ═══════════════════════════════════════ -->
+<div class="tab-content" id="tab-strategy">
+  <div style="background:var(--s2);border-radius:10px;padding:16px;margin-bottom:20px;border:1px solid var(--bd)">
+    <div style="font-size:13px;font-weight:600;margin-bottom:10px">
+      How to use collected data to improve strategies
+    </div>
+    <div style="font-size:12px;color:var(--mu);line-height:1.8" id="refinement-insights">
+      Loading analysis...
+    </div>
+  </div>
+  <div class="g2" style="margin-bottom:20px">
+    <div class="card">
+      <div class="sec">S10 threshold recommendations</div>
+      <div id="s10-reco"><div class="loading">Analysing...</div></div>
+    </div>
+    <div class="card">
+      <div class="sec">S1 NegRisk group quality</div>
+      <div id="s1-reco"><div class="loading">Analysing...</div></div>
+    </div>
+  </div>
   <div class="card">
-    <div class="section-title">Recent Opportunities from Scan Log (last 30)</div>
-    <div id="scan-log-table" style="overflow-x:auto"><div class="loading">Loading...</div></div>
+    <div class="sec">Lessons from scan log patterns</div>
+    <div id="lessons-table"><div class="loading">Loading...</div></div>
   </div>
-</main>
+</div>
 
 <script>
-// ── Config ─────────────────────────────────────────────────────────────────
-const OWNER  = 'Airdropperxx';
-const REPO   = 'polymarket-engine';
-const BRANCH = 'main';
-const RAW    = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}`;
+const OWNER='Airdropperxx',REPO='polymarket-engine',BR='main';
+const RAW=`https://raw.githubusercontent.com/${OWNER}/${REPO}/${BR}`;
+Chart.defaults.color='#64748b';Chart.defaults.borderColor='#2a2f3d';
+Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif';
+Chart.defaults.font.size=11;
 
-let scanLog  = [];
-let trades   = [];
-let lessons  = {};
+let SL=[],PH={},LS={};
+const charts={};
 
-async function fetchRaw(path) {
-  const r = await fetch(`${RAW}/${path}?_=${Date.now()}`);
-  if (!r.ok) throw new Error(`${path}: ${r.status}`);
+function switchTab(id){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  event.target.classList.add('active');
+}
+
+async function gj(path){
+  const r=await fetch(`${RAW}/${path}?_=${Date.now()}`);
+  if(!r.ok)throw new Error(path+':'+r.status);
   return r.json();
 }
 
-async function fetchText(path) {
-  const r = await fetch(`${RAW}/${path}?_=${Date.now()}`);
-  if (!r.ok) throw new Error(`${path}: ${r.status}`);
-  return r.text();
+function dc(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
+function $_(id){return document.getElementById(id);}
+function fmt(n,d=2){return isNaN(+n)?'—':(+n).toFixed(d);}
+function tAgo(iso){
+  if(!iso)return'—';
+  const d=(Date.now()-new Date(iso).getTime())/1000;
+  if(d<60)return Math.round(d)+'s ago';
+  if(d<3600)return Math.round(d/60)+'m ago';
+  if(d<86400)return Math.round(d/3600)+'h ago';
+  return Math.round(d/86400)+'d ago';
 }
 
-// ── Helpers ────────────────────────────────────────────────────────────────
-function fmt(n, dec=2) {
-  if (n === null || n === undefined || isNaN(n)) return '—';
-  return Number(n).toFixed(dec);
-}
-function fmtUSD(n) {
-  if (n === null || n === undefined) return '—';
-  const v = Number(n);
-  const sign = v >= 0 ? '+' : '';
-  return sign + '$' + Math.abs(v).toFixed(2);
-}
-function cls(n) { return Number(n) >= 0 ? 'green' : 'red'; }
-function stratPill(s) {
-  if (!s) return '';
-  if (s.includes('s10')) return `<span class="pill pill-s10">S10</span>`;
-  if (s.includes('s1'))  return `<span class="pill pill-s1">S1</span>`;
-  if (s.includes('s8'))  return `<span class="pill pill-s8">S8</span>`;
-  return `<span class="pill pill-dry">${s}</span>`;
-}
-function statusPill(s) {
-  if (s === 'open') return `<span class="pill pill-open">open</span>`;
-  if (s === 'resolved' || s === 'win') return `<span class="pill pill-win">win</span>`;
-  if (s === 'loss') return `<span class="pill pill-loss">loss</span>`;
-  return `<span class="pill pill-dry">${s||''}</span>`;
-}
-function timeAgo(iso) {
-  if (!iso) return '—';
-  const diff = (Date.now() - new Date(iso).getTime()) / 1000;
-  if (diff < 60) return `${Math.round(diff)}s ago`;
-  if (diff < 3600) return `${Math.round(diff/60)}m ago`;
-  if (diff < 86400) return `${Math.round(diff/3600)}h ago`;
-  return `${Math.round(diff/86400)}d ago`;
+const CAT_COLORS={
+  crypto:'#f59e0b',sports:'#22c55e',politics:'#ef4444',finance:'#3b82f6',
+  tech:'#a855f7',geopolitics:'#14b8a6',other:'#64748b',entertainment:'#ec4899',
+  science:'#84cc16'
+};
+function catColor(c){return CAT_COLORS[c?.toLowerCase()]||'#64748b';}
+
+function catPill(c){
+  const col=catColor(c);
+  return `<span style="display:inline-block;border-radius:4px;padding:1px 7px;
+    font-size:11px;background:${col}22;color:${col}">${c||'—'}</span>`;
 }
 
-// ── Chart defaults ──────────────────────────────────────────────────────────
-Chart.defaults.color = '#64748b';
-Chart.defaults.borderColor = '#2a2f3d';
-Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-Chart.defaults.font.size = 11;
+function stratPill(s){
+  if(!s)return'—';
+  if(s.includes('s10'))return`<span class="pill p-s10">S10</span>`;
+  if(s.includes('s1'))return`<span class="pill p-s1">S1</span>`;
+  if(s.includes('s8'))return`<span class="pill p-s8">S8</span>`;
+  if(s.includes('observer'))return`<span class="pill p-obs">OBS</span>`;
+  return`<span class="pill p-dry">${s}</span>`;
+}
 
-const charts = {};
-function destroyChart(id) { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
-
-// ── Load scan_log.json ─────────────────────────────────────────────────────
-async function loadScanLog() {
-  try {
-    scanLog = await fetchRaw('data/scan_log.json');
-    if (!Array.isArray(scanLog)) scanLog = [];
-  } catch(e) {
-    scanLog = [];
+// ── Load data ──────────────────────────────────────────────────────────
+async function loadAll(){
+  $_('updated').textContent='Loading...';
+  try{
+    [SL,PH,LS]=await Promise.all([
+      gj('data/scan_log.json').catch(()=>[]),
+      gj('data/price_history.json').catch(()=>({})),
+      gj('data/lessons.json').catch(()=>({})),
+    ]);
+    if(!Array.isArray(SL))SL=[];
+    renderAll();
+    $_('updated').textContent='Updated '+new Date().toLocaleTimeString();
+    $_('dot').className=SL.length>0?'ok':'';
+  }catch(e){
+    $_('updated').textContent='Error: '+e.message;
   }
 }
 
-// ── Load trades from lessons.json (we don't have SQLite access in browser) ──
-// trades.db is binary so we read what we can from lessons.json and scan_log
-async function loadLessons() {
-  try {
-    lessons = await fetchRaw('data/lessons.json');
-  } catch(e) {
-    lessons = {};
+function renderAll(){
+  renderKPIs();renderOverviewCharts();
+  renderTrades();renderData();renderAnalysis();
+  renderSignals();renderStrategy();
+}
+
+// ── KPIs ───────────────────────────────────────────────────────────────
+function renderKPIs(){
+  const executed=SL.filter(e=>e.executed&&!e.strategy?.includes('observer'));
+  const probs=SL.map(e=>e.probability).filter(p=>p>0&&p<0.99);
+  const edges=SL.map(e=>e.edge).filter(e=>e>0);
+  const pts=Object.values(PH).reduce((a,d)=>a+(d.points?.length||0),0);
+  const sigs=SL.filter(e=>e.strategy?.includes('observer'));
+
+  $_('k-bal').textContent='$100.00';
+  $_('k-bal-s').textContent='Dry-run capital';
+  $_('k-opps').textContent=executed.length;
+  $_('k-opps-s').textContent=`${SL.length} total in scan log`;
+  $_('k-edge').textContent=edges.length?((edges.reduce((a,b)=>a+b,0)/edges.length)*100).toFixed(2)+'%':'—';
+  $_('k-edge-s').textContent='Across '+edges.length+' observations';
+
+  const avgP=probs.length?(probs.reduce((a,b)=>a+b,0)/probs.length*100).toFixed(1)+'%':'—';
+  $_('k-prob').textContent=avgP;
+  const pEl=$_('k-prob');
+  if(probs.length&&parseFloat(avgP)>99)pEl.className='stat red';
+  else if(probs.length&&parseFloat(avgP)>90)pEl.className='stat green';
+  else pEl.className='stat';
+  $_('k-prob').nextElementSibling.textContent=probs.length<SL.length?'(100% filtered out)':'Of opportunities';
+
+  $_('k-tracked').textContent=Object.keys(PH).length;
+  $_('k-pts').textContent=pts.toLocaleString();
+  $_('k-sigs').textContent=sigs.length;
+  $_('k-wr').textContent='—';
+  $_('k-wr-s').textContent='Awaiting resolutions';
+}
+
+// ── Overview charts ────────────────────────────────────────────────────
+function renderOverviewCharts(){
+  // P&L curve
+  dc('c-pnl');
+  const exo=SL.filter(e=>e.executed&&!e.strategy?.includes('observer'))
+              .sort((a,b)=>a.ts_unix-b.ts_unix);
+  if(exo.length>1){
+    let cum=0;const labels=[],data=[];
+    exo.forEach((e,i)=>{cum+=(e.edge||0)*(e.buy_price||0.9)*40;labels.push(i+1);data.push(+cum.toFixed(3));});
+    charts['c-pnl']=new Chart($_('c-pnl'),{type:'line',data:{labels,datasets:[{
+      data,borderColor:data[data.length-1]>=0?'#22c55e':'#ef4444',
+      backgroundColor:data[data.length-1]>=0?'rgba(34,197,94,.08)':'rgba(239,68,68,.08)',
+      borderWidth:2,fill:true,tension:.3,pointRadius:0}]},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false}},
+        scales:{x:{grid:{color:'#1e222d'},ticks:{maxTicksLimit:8}},
+                y:{grid:{color:'#1e222d'},ticks:{callback:v=>'$'+v.toFixed(2)}}}}
+    });
   }
-}
 
-// ── KPIs ───────────────────────────────────────────────────────────────────
-function renderKPIs() {
-  const executed = scanLog.filter(e => e.executed);
-  const resolved = executed.filter(e => e.outcome);
-  const wins     = resolved.filter(e => e.outcome === 'win');
-
-  // Balance from lessons
-  const scores   = lessons.strategy_scores || {};
-  const allocs   = Object.values(scores);
-
-  document.getElementById('kpi-balance').textContent = '$100.00';
-  document.getElementById('kpi-balance-sub').textContent = 'Starting capital (dry-run)';
-
-  const pnlEl = document.getElementById('kpi-pnl');
-  pnlEl.textContent = '+$0.00';
-  pnlEl.className = 'stat-val green';
-
-  document.getElementById('kpi-trades').textContent = executed.length;
-  document.getElementById('kpi-trades-sub').textContent =
-    `${executed.filter(e=>e.strategy?.includes('s10')).length} S10 · ` +
-    `${executed.filter(e=>e.strategy?.includes('s1')).length} S1`;
-
-  const wr = resolved.length > 0 ? (wins.length / resolved.length * 100).toFixed(0) + '%' : '—';
-  const wrEl = document.getElementById('kpi-winrate');
-  wrEl.textContent = wr;
-  wrEl.className = 'stat-val ' + (wins.length >= resolved.length/2 ? 'green' : 'red');
-  document.getElementById('kpi-winrate-sub').textContent =
-    `${wins.length}W / ${resolved.length - wins.length}L of ${resolved.length} resolved`;
-
-  document.getElementById('kpi-open').textContent =
-    executed.filter(e => !e.outcome).length;
-
-  document.getElementById('kpi-opps').textContent = scanLog.length;
-
-  const edges  = scanLog.map(e => e.edge).filter(e => e > 0);
-  const avgEdge = edges.length ? (edges.reduce((a,b)=>a+b,0)/edges.length*100).toFixed(2) : '—';
-  document.getElementById('kpi-edge').textContent = avgEdge !== '—' ? avgEdge + '%' : '—';
-
-  const probs  = scanLog.map(e => e.probability).filter(p => p > 0);
-  const avgProb = probs.length ? (probs.reduce((a,b)=>a+b,0)/probs.length*100).toFixed(1) : '—';
-  document.getElementById('kpi-prob').textContent = avgProb !== '—' ? avgProb + '%' : '—';
-
-  // Mode badge
-  const isDry = executed.some(e => e.trade_id?.startsWith('DRY'));
-  const badge = document.getElementById('mode-badge');
-  badge.textContent = 'DRY RUN';
-  badge.className = 'badge dry';
-  document.getElementById('status-dot').className = scanLog.length > 0 ? 'ok' : '';
-}
-
-// ── P&L Chart ───────────────────────────────────────────────────────────────
-function renderPnLChart() {
-  destroyChart('pnl');
-  const executed = scanLog.filter(e => e.executed).sort((a,b) => a.ts_unix - b.ts_unix);
-  if (executed.length < 2) return;
-
-  // Fake cumulative P&L based on edge (for pattern visibility)
-  let cum = 0;
-  const labels = [];
-  const data   = [];
-  executed.forEach((e, i) => {
-    cum += (e.edge || 0) * (e.buy_price || 0.9) * 40; // ~$40 position
-    labels.push(i + 1);
-    data.push(parseFloat(cum.toFixed(3)));
+  // Heatmap
+  const hourC=Array(24).fill(0);
+  SL.filter(e=>!e.strategy?.includes('observer')).forEach(e=>{
+    if(e.hour_utc>=0&&e.hour_utc<24)hourC[e.hour_utc]++;
+  });
+  const maxH=Math.max(...hourC,1);
+  const hm=$_('heatmap');hm.innerHTML='';
+  hourC.forEach((c,h)=>{
+    const a=0.08+c/maxH*0.92;
+    const el=document.createElement('div');
+    el.className='hm-c';
+    el.style.background=`rgba(168,85,247,${a.toFixed(2)})`;
+    el.title=`${String(h).padStart(2,'0')}:00 UTC — ${c} opps`;
+    el.textContent=c>0?c:'';
+    hm.appendChild(el);
   });
 
-  const ctx = document.getElementById('chart-pnl').getContext('2d');
-  const positive = data[data.length-1] >= 0;
-  charts.pnl = new Chart(ctx, {
-    type: 'line',
-    data: {
-      labels,
-      datasets: [{
-        data,
-        borderColor: positive ? '#22c55e' : '#ef4444',
-        backgroundColor: positive ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)',
-        borderWidth: 2,
-        fill: true,
-        tension: 0.3,
-        pointRadius: 0,
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { grid: { color: '#1e222d' }, ticks: { maxTicksLimit: 8 } },
-        y: { grid: { color: '#1e222d' },
-             ticks: { callback: v => '$' + v.toFixed(2) } }
-      }
-    }
+  // Category donut
+  dc('c-cat');
+  const cats={};
+  SL.filter(e=>!e.strategy?.includes('observer')).forEach(e=>{
+    const c=e.category||'other';cats[c]=(cats[c]||0)+1;
+  });
+  if(Object.keys(cats).length){
+    const labels=Object.keys(cats),data=labels.map(l=>cats[l]);
+    charts['c-cat']=new Chart($_('c-cat'),{type:'doughnut',data:{labels,datasets:[{
+      data,backgroundColor:labels.map(catColor),borderColor:'#161920',borderWidth:2}]},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{position:'right',labels:{boxWidth:10,padding:10,font:{size:11}}}}}
+    });
+  }
+
+  // Edge distribution
+  dc('c-edge');
+  const eBuckets={};
+  SL.filter(e=>e.edge>0&&!e.strategy?.includes('observer')).forEach(e=>{
+    const b=(Math.floor(e.edge*100)).toString()+'%';eBuckets[b]=(eBuckets[b]||0)+1;
+  });
+  if(Object.keys(eBuckets).length){
+    const ks=Object.keys(eBuckets).sort((a,b)=>+a-+b);
+    dc('c-edge');
+    charts['c-edge']=new Chart($_('c-edge'),{type:'bar',data:{labels:ks,datasets:[{
+      data:ks.map(k=>eBuckets[k]),backgroundColor:'rgba(168,85,247,.65)',
+      borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false}},
+        scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'}}}}
+    });
+  }
+
+  // Probability buckets
+  dc('c-prob');
+  const pb={'<85%':0,'85-90%':0,'90-95%':0,'95-99%':0,'99%+':0};
+  SL.filter(e=>!e.strategy?.includes('observer')).forEach(e=>{
+    const p=(e.probability||0)*100;
+    if(p>=99)pb['99%+']++;
+    else if(p>=95)pb['95-99%']++;
+    else if(p>=90)pb['90-95%']++;
+    else if(p>=85)pb['85-90%']++;
+    else pb['<85%']++;
+  });
+  charts['c-prob']=new Chart($_('c-prob'),{type:'bar',data:{
+    labels:Object.keys(pb),datasets:[{data:Object.values(pb),
+    backgroundColor:['#64748b','rgba(59,130,246,.7)','rgba(34,197,94,.7)','rgba(34,197,94,.9)','rgba(239,68,68,.7)'],
+    borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'}}}}
+  });
+
+  // Days to resolution
+  dc('c-days');
+  const db={'<1d':0,'1-3d':0,'3-7d':0,'7d+':0};
+  SL.filter(e=>!e.strategy?.includes('observer')).forEach(e=>{
+    const d=e.days_to_res||0;
+    if(d<1)db['<1d']++;else if(d<3)db['1-3d']++;else if(d<7)db['3-7d']++;else db['7d+']++;
+  });
+  charts['c-days']=new Chart($_('c-days'),{type:'bar',data:{
+    labels:Object.keys(db),datasets:[{data:Object.values(db),
+    backgroundColor:['#ef444499','#f59e0b99','#3b82f699','#64748b66'],borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'}}}}
   });
 }
 
-// ── Edge Distribution ──────────────────────────────────────────────────────
-function renderEdgeChart() {
-  destroyChart('edge');
-  if (!scanLog.length) return;
+// ── Trades tab ─────────────────────────────────────────────────────────
+function renderTrades(){
+  const ex=SL.filter(e=>e.executed&&!e.strategy?.includes('observer'));
+  $_('t-total').textContent=ex.length;
+  $_('t-open').textContent=ex.filter(e=>!e.outcome).length;
+  const res=ex.filter(e=>e.outcome);
+  $_('t-resolved').textContent=res.length;
+  $_('t-wr').textContent=res.length?Math.round(res.filter(e=>e.outcome==='win').length/res.length*100)+'%':'—';
 
-  const buckets = {};
-  scanLog.forEach(e => {
-    const b = Math.floor((e.edge || 0) * 100).toString();
-    buckets[b] = (buckets[b] || 0) + 1;
-  });
-  const keys   = Object.keys(buckets).sort((a,b) => +a - +b);
-  const labels = keys.map(k => k + '%');
-  const data   = keys.map(k => buckets[k]);
-
-  const ctx = document.getElementById('chart-edge').getContext('2d');
-  charts.edge = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels,
-      datasets: [{
-        data,
-        backgroundColor: 'rgba(168,85,247,0.6)',
-        borderColor: 'rgba(168,85,247,0.9)',
-        borderWidth: 1,
-        borderRadius: 4,
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { grid: { display: false } },
-        y: { grid: { color: '#1e222d' }, ticks: { stepSize: 1 } }
-      }
-    }
-  });
+  const sorted=[...ex].sort((a,b)=>b.ts_unix-a.ts_unix);
+  if(!sorted.length){
+    $_('trades-table').innerHTML='<div class="loading">No trades yet</div>';return;
+  }
+  $_('trades-table').innerHTML=`<table>
+    <thead><tr><th>Time</th><th>Strategy</th><th>Question</th><th>Category</th>
+    <th>Action</th><th>Prob</th><th>Edge</th><th>Score</th><th>Days</th><th>Vol</th><th>Status</th></tr></thead>
+    <tbody>${sorted.map(e=>`<tr>
+      <td style="white-space:nowrap;color:var(--mu)">${tAgo(e.ts)}</td>
+      <td>${stratPill(e.strategy)}</td>
+      <td title="${e.question}" style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.question}</td>
+      <td>${catPill(e.category)}</td>
+      <td><span class="pill p-open">${e.action||'BUY'}</span></td>
+      <td>${((e.probability||0)*100).toFixed(1)}%</td>
+      <td class="green">${((e.edge||0)*100).toFixed(2)}%</td>
+      <td>${(e.score||0).toFixed(3)}</td>
+      <td>${(e.days_to_res||0).toFixed(1)}d</td>
+      <td>$${Number(e.volume_24h||0).toLocaleString(undefined,{maximumFractionDigits:0})}</td>
+      <td><span class="pill ${e.outcome==='win'?'p-win':e.outcome==='loss'?'p-loss':'p-open'}">${e.outcome||'open'}</span></td>
+    </tr>`).join('')}</tbody></table>`;
 }
 
-// ── Category Chart ─────────────────────────────────────────────────────────
-function renderCatChart() {
-  destroyChart('cat');
-  if (!scanLog.length) return;
+// ── Data Collected tab ─────────────────────────────────────────────────
+function renderData(){
+  const pts=Object.values(PH).reduce((a,d)=>a+(d.points?.length||0),0);
+  $_('d-entries').textContent=SL.length.toLocaleString();
+  $_('d-pts').textContent=pts.toLocaleString();
+  $_('d-mkts').textContent=Object.keys(PH).length.toLocaleString();
 
-  const cats = {};
-  scanLog.forEach(e => {
-    const c = e.category || 'other';
-    cats[c] = (cats[c] || 0) + 1;
+  // Date span
+  const allTs=SL.map(e=>e.ts_unix).filter(Boolean).sort((a,b)=>a-b);
+  if(allTs.length>=2){
+    const days=Math.round((allTs[allTs.length-1]-allTs[0])/86400*10)/10;
+    $_('d-span').textContent=days+'d';
+  }else $_('d-span').textContent='—';
+
+  // By category
+  const catData={};
+  SL.forEach(e=>{
+    const c=e.category||'other';
+    if(!catData[c])catData[c]={total:0,executed:0,edges:[]};
+    catData[c].total++;
+    if(e.executed)catData[c].executed++;
+    if(e.edge>0)catData[c].edges.push(e.edge);
   });
-  const labels = Object.keys(cats);
-  const data   = labels.map(l => cats[l]);
-  const colors = ['#3b82f6','#22c55e','#f59e0b','#a855f7','#14b8a6','#ef4444'];
-
-  const ctx = document.getElementById('chart-cat').getContext('2d');
-  charts.cat = new Chart(ctx, {
-    type: 'doughnut',
-    data: {
-      labels,
-      datasets: [{
-        data,
-        backgroundColor: colors,
-        borderColor: '#161920',
-        borderWidth: 2,
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: {
-        legend: { position: 'right', labels: { boxWidth: 12, padding: 12 } }
-      }
-    }
-  });
-}
-
-// ── Strategy Chart ─────────────────────────────────────────────────────────
-function renderStratChart() {
-  destroyChart('strat');
-  if (!scanLog.length) return;
-
-  const strats = {};
-  scanLog.forEach(e => {
-    const s = e.strategy || 'unknown';
-    strats[s] = (strats[s] || 0) + 1;
-  });
-
-  const ctx = document.getElementById('chart-strat').getContext('2d');
-  charts.strat = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: Object.keys(strats),
-      datasets: [{
-        data: Object.values(strats),
-        backgroundColor: ['rgba(168,85,247,0.7)','rgba(20,184,166,0.7)','rgba(59,130,246,0.7)'],
-        borderRadius: 6,
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      indexAxis: 'y',
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { grid: { color: '#1e222d' } },
-        y: { grid: { display: false } }
-      }
-    }
-  });
-}
-
-// ── Probability Buckets ────────────────────────────────────────────────────
-function renderProbChart() {
-  destroyChart('prob');
-  if (!scanLog.length) return;
-
-  const b = {'85-90%':0,'90-95%':0,'95-99%':0,'99%+':0};
-  scanLog.forEach(e => {
-    const p = (e.probability||0)*100;
-    if (p >= 99)      b['99%+']++;
-    else if (p >= 95) b['95-99%']++;
-    else if (p >= 90) b['90-95%']++;
-    else if (p >= 85) b['85-90%']++;
-  });
-
-  const ctx = document.getElementById('chart-prob').getContext('2d');
-  charts.prob = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: Object.keys(b),
-      datasets: [{
-        data: Object.values(b),
-        backgroundColor: ['rgba(59,130,246,0.7)','rgba(34,197,94,0.6)','rgba(34,197,94,0.8)','rgba(34,197,94,1.0)'],
-        borderRadius: 6,
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { grid: { display: false } },
-        y: { grid: { color: '#1e222d' } }
-      }
-    }
-  });
-}
-
-// ── Days-to-Resolution Chart ───────────────────────────────────────────────
-function renderDaysChart() {
-  destroyChart('days');
-  if (!scanLog.length) return;
-
-  const b = {'<1d':0,'1-3d':0,'3-7d':0,'7d+':0};
-  scanLog.forEach(e => {
-    const d = e.days_to_res || 0;
-    if (d < 1)      b['<1d']++;
-    else if (d < 3) b['1-3d']++;
-    else if (d < 7) b['3-7d']++;
-    else            b['7d+']++;
-  });
-
-  const ctx = document.getElementById('chart-days').getContext('2d');
-  charts.days = new Chart(ctx, {
-    type: 'bar',
-    data: {
-      labels: Object.keys(b),
-      datasets: [{
-        data: Object.values(b),
-        backgroundColor: ['rgba(239,68,68,0.8)','rgba(245,158,11,0.7)','rgba(59,130,246,0.7)','rgba(100,116,139,0.5)'],
-        borderRadius: 6,
-      }]
-    },
-    options: {
-      responsive: true, maintainAspectRatio: false,
-      plugins: { legend: { display: false } },
-      scales: {
-        x: { grid: { display: false } },
-        y: { grid: { color: '#1e222d' } }
-      }
-    }
-  });
-}
-
-// ── Heatmap ────────────────────────────────────────────────────────────────
-function renderHeatmap() {
-  const hourCounts = Array(24).fill(0);
-  scanLog.forEach(e => {
-    const h = e.hour_utc;
-    if (h >= 0 && h < 24) hourCounts[h]++;
-  });
-  const max = Math.max(...hourCounts, 1);
-  const container = document.getElementById('heatmap');
-  container.innerHTML = '';
-  hourCounts.forEach((count, h) => {
-    const intensity = count / max;
-    const alpha = 0.1 + intensity * 0.9;
-    const cell = document.createElement('div');
-    cell.className = 'heatmap-cell';
-    cell.style.background = `rgba(168,85,247,${alpha.toFixed(2)})`;
-    cell.title = `${h.toString().padStart(2,'0')}:00 UTC — ${count} opportunities`;
-    cell.textContent = count > 0 ? count : '';
-    container.appendChild(cell);
-  });
-}
-
-// ── Category Analysis ──────────────────────────────────────────────────────
-function renderCatAnalysis() {
-  const el = document.getElementById('cat-analysis');
-  if (!scanLog.length) { el.innerHTML = '<div class="loading">No data yet</div>'; return; }
-
-  const cats = {};
-  scanLog.forEach(e => {
-    const c = e.category || 'other';
-    if (!cats[c]) cats[c] = { count: 0, edges: [], probs: [], executed: 0 };
-    cats[c].count++;
-    cats[c].edges.push(e.edge || 0);
-    cats[c].probs.push(e.probability || 0);
-    if (e.executed) cats[c].executed++;
-  });
-
-  const sorted = Object.entries(cats).sort((a,b) => b[1].count - a[1].count);
-  const colorMap = { crypto:'#3b82f6', sports:'#22c55e', politics:'#f59e0b', other:'#64748b' };
-
-  el.innerHTML = sorted.map(([cat, d]) => {
-    const avgEdge = (d.edges.reduce((a,b)=>a+b,0)/d.edges.length*100).toFixed(2);
-    const avgProb = (d.probs.reduce((a,b)=>a+b,0)/d.probs.length*100).toFixed(1);
-    const execRate = (d.executed / d.count * 100).toFixed(0);
-    const pct = (d.count / scanLog.length * 100).toFixed(0);
-    const color = colorMap[cat] || '#64748b';
-    return `
-      <div style="margin-bottom:16px">
-        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-          <span style="font-weight:500;color:${color}">${cat}</span>
-          <span style="font-size:12px;color:var(--muted)">${d.count} opps (${pct}%)</span>
-        </div>
-        <div class="prog-bar" style="margin-bottom:6px">
-          <div class="prog-fill" style="width:${pct}%;background:${color}"></div>
-        </div>
-        <div style="display:flex;gap:16px;font-size:12px;color:var(--muted)">
-          <span>Avg edge <b style="color:var(--text)">${avgEdge}%</b></span>
-          <span>Avg prob <b style="color:var(--text)">${avgProb}%</b></span>
-          <span>Exec rate <b style="color:var(--text)">${execRate}%</b></span>
-        </div>
+  const sorted=Object.entries(catData).sort((a,b)=>b[1].total-a[1].total);
+  $_('d-cats').innerHTML=sorted.map(([cat,d])=>{
+    const pct=Math.round(d.total/SL.length*100);
+    const avgE=d.edges.length?(d.edges.reduce((a,b)=>a+b,0)/d.edges.length*100).toFixed(2):'0.00';
+    const col=catColor(cat);
+    return`<div style="margin-bottom:14px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
+        ${catPill(cat)}
+        <span style="font-size:11px;color:var(--mu)">${d.total} entries (${pct}%) · avg edge ${avgE}%</span>
       </div>
-    `;
+      <div class="prog"><div class="prog-f" style="width:${pct}%;background:${col}"></div></div>
+    </div>`;
+  }).join('');
+
+  // Volume chart
+  dc('c-vol');
+  const vBuckets={'$0-100':0,'$100-1k':0,'$1k-10k':0,'$10k+':0};
+  SL.forEach(e=>{
+    const v=e.volume_24h||0;
+    if(v<100)vBuckets['$0-100']++;
+    else if(v<1000)vBuckets['$100-1k']++;
+    else if(v<10000)vBuckets['$1k-10k']++;
+    else vBuckets['$10k+']++;
+  });
+  charts['c-vol']=new Chart($_('c-vol'),{type:'bar',data:{
+    labels:Object.keys(vBuckets),datasets:[{data:Object.values(vBuckets),
+    backgroundColor:['#64748b66','#3b82f699','#22c55e99','#f59e0b99'],borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
+      plugins:{legend:{display:false}},
+      scales:{x:{grid:{color:'#1e222d'}},y:{grid:{display:false}}}}
+  });
+
+  // Full scan log table
+  const recent=[...SL].sort((a,b)=>b.ts_unix-a.ts_unix).slice(0,40);
+  $_('scanlog-full').innerHTML=`<table>
+    <thead><tr><th>Time</th><th>Strategy</th><th>Question</th><th>Category</th>
+    <th>Edge</th><th>Prob</th><th>Score</th><th>Days</th><th>Vol 24h</th>
+    <th>Spread</th><th>Executed</th></tr></thead>
+    <tbody>${recent.map(e=>`<tr>
+      <td style="white-space:nowrap;color:var(--mu);font-size:11px">${tAgo(e.ts)}</td>
+      <td>${stratPill(e.strategy)}</td>
+      <td title="${e.question}" style="max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.question}</td>
+      <td>${catPill(e.category)}</td>
+      <td class="green">${((e.edge||0)*100).toFixed(2)}%</td>
+      <td>${((e.probability||0)*100).toFixed(1)}%</td>
+      <td>${(e.score||0).toFixed(3)}</td>
+      <td>${(e.days_to_res||0).toFixed(1)}d</td>
+      <td>$${Number(e.volume_24h||0).toLocaleString(undefined,{maximumFractionDigits:0})}</td>
+      <td>${((e.spread||0)*100).toFixed(1)}%</td>
+      <td>${e.executed?'<span class="pill p-win">yes</span>':
+        `<span class="pill p-dry" title="${e.skipped_reason||''}" style="cursor:help">no</span>`}</td>
+    </tr>`).join('')}</tbody></table>`;
+}
+
+// ── Pattern Analysis tab ───────────────────────────────────────────────
+function renderAnalysis(){
+  const clean=SL.filter(e=>!e.strategy?.includes('observer'));
+
+  // Edge by category
+  dc('a-cat-edge');
+  const catE={};
+  clean.forEach(e=>{
+    const c=e.category||'other';
+    if(!catE[c])catE[c]=[];
+    if(e.edge>0)catE[c].push(e.edge*100);
+  });
+  const catKeys=Object.keys(catE).filter(k=>catE[k].length>0);
+  const catAvgs=catKeys.map(k=>+(catE[k].reduce((a,b)=>a+b,0)/catE[k].length).toFixed(3));
+  charts['a-cat-edge']=new Chart($_('a-cat-edge'),{type:'bar',data:{
+    labels:catKeys,datasets:[{data:catAvgs,
+    backgroundColor:catKeys.map(k=>catColor(k)+'99'),
+    borderColor:catKeys.map(catColor),borderWidth:1,borderRadius:6}]},
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
+      plugins:{legend:{display:false},
+        tooltip:{callbacks:{label:c=>`Avg edge: ${c.raw.toFixed(2)}%`}}},
+      scales:{x:{grid:{color:'#1e222d'},ticks:{callback:v=>v+'%'}},
+              y:{grid:{display:false}}}}
+  });
+
+  // Edge vs probability scatter (bucketed)
+  dc('a-edge-prob');
+  const probBuckets={};
+  clean.forEach(e=>{
+    if(e.edge>0&&e.probability>0){
+      const b=(Math.floor(e.probability*20)/20).toFixed(2);
+      if(!probBuckets[b])probBuckets[b]=[];
+      probBuckets[b].push(e.edge*100);
+    }
+  });
+  const pbKeys=Object.keys(probBuckets).sort();
+  const pbAvgs=pbKeys.map(k=>+(probBuckets[k].reduce((a,b)=>a+b,0)/probBuckets[k].length).toFixed(3));
+  charts['a-edge-prob']=new Chart($_('a-edge-prob'),{type:'line',data:{
+    labels:pbKeys.map(k=>Math.round(+k*100)+'%'),datasets:[{
+      data:pbAvgs,borderColor:'#a855f7',backgroundColor:'rgba(168,85,247,.1)',
+      borderWidth:2,fill:true,tension:.3,pointRadius:4,
+      pointBackgroundColor:'#a855f7'}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{x:{grid:{color:'#1e222d'},title:{display:true,text:'Probability bucket',color:'#64748b'}},
+              y:{grid:{color:'#1e222d'},ticks:{callback:v=>v+'%'},
+                 title:{display:true,text:'Avg edge %',color:'#64748b'}}}}
+  });
+
+  // Day of week
+  dc('a-dow');
+  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const dowC=Array(7).fill(0);
+  clean.forEach(e=>{if(e.weekday>=0&&e.weekday<7)dowC[e.weekday]++;});
+  charts['a-dow']=new Chart($_('a-dow'),{type:'bar',data:{
+    labels:days,datasets:[{data:dowC,
+    backgroundColor:dowC.map((_,i)=>i<5?'rgba(59,130,246,.7)':'rgba(168,85,247,.7)'),
+    borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'}}}}
+  });
+
+  // Edge vs days
+  dc('a-edge-days');
+  const dayBuckets={'<1d':[],'1-3d':[],'3-7d':[],'7d+':[]};
+  clean.forEach(e=>{
+    if(e.edge>0){
+      const d=e.days_to_res||0;
+      if(d<1)dayBuckets['<1d'].push(e.edge*100);
+      else if(d<3)dayBuckets['1-3d'].push(e.edge*100);
+      else if(d<7)dayBuckets['3-7d'].push(e.edge*100);
+      else dayBuckets['7d+'].push(e.edge*100);
+    }
+  });
+  const dbKeys=Object.keys(dayBuckets);
+  const dbAvgs=dbKeys.map(k=>dayBuckets[k].length?
+    +(dayBuckets[k].reduce((a,b)=>a+b,0)/dayBuckets[k].length).toFixed(3):0);
+  charts['a-edge-days']=new Chart($_('a-edge-days'),{type:'bar',data:{
+    labels:dbKeys,datasets:[{data:dbAvgs,
+    backgroundColor:['#ef444499','#f59e0b99','#3b82f699','#64748b66'],borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{display:false}},
+      scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'},
+              ticks:{callback:v=>v+'%'}}}}
+  });
+
+  // Top opportunities by edge
+  const topOpps=[...clean].sort((a,b)=>b.edge-a.edge).slice(0,20);
+  $_('a-top-opps').innerHTML=`<table>
+    <thead><tr><th>Question</th><th>Category</th><th>Edge</th><th>Prob</th>
+    <th>Score</th><th>Days</th><th>Volume</th><th>Strategy</th></tr></thead>
+    <tbody>${topOpps.map(e=>`<tr>
+      <td title="${e.question}" style="max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.question}</td>
+      <td>${catPill(e.category)}</td>
+      <td class="green"><b>${((e.edge||0)*100).toFixed(2)}%</b></td>
+      <td>${((e.probability||0)*100).toFixed(1)}%</td>
+      <td>${(e.score||0).toFixed(3)}</td>
+      <td>${(e.days_to_res||0).toFixed(1)}d</td>
+      <td>$${Number(e.volume_24h||0).toLocaleString(undefined,{maximumFractionDigits:0})}</td>
+      <td>${stratPill(e.strategy)}</td>
+    </tr>`).join('')}</tbody></table>`;
+}
+
+// ── Observer Signals tab ───────────────────────────────────────────────
+function renderSignals(){
+  const obs=SL.filter(e=>e.strategy?.includes('observer'));
+  const byType={};
+  obs.forEach(e=>{
+    const t=e.metadata?.signal_type||e.strategy?.split('_').slice(1).join('_')||'unknown';
+    byType[t]=(byType[t]||0)+1;
+  });
+  $_('s-mu').textContent=byType.momentum_up||0;
+  $_('s-md').textContent=byType.momentum_down||0;
+  $_('s-sm').textContent=byType.sharp_move||0;
+  $_('s-rd').textContent=byType.resolution_drift||0;
+
+  if(!obs.length){
+    $_('signals-list').innerHTML='<div class="loading">No observer signals yet — observer needs a few scan cycles to build history</div>';
+    return;
+  }
+
+  const typeClass={momentum_up:'up',momentum_down:'down',sharp_move:'sharp',
+                   resolution_drift:'drift',volume_spike:'spike'};
+  const typeColor={momentum_up:'var(--green)',momentum_down:'var(--red)',
+                   sharp_move:'var(--purple)',resolution_drift:'var(--blue)',
+                   volume_spike:'var(--amber)'};
+
+  const sorted=[...obs].sort((a,b)=>b.edge-a.edge).slice(0,30);
+  $_('signals-list').innerHTML=sorted.map(e=>{
+    const t=e.metadata?.signal_type||'signal';
+    const note=e.metadata?.signal_note||e.skipped_reason||'';
+    return`<div class="insight ${typeClass[t]||''}">
+      <div class="insight-type" style="color:${typeColor[t]||'var(--mu)'}">${t.replace(/_/g,' ')}</div>
+      <div class="insight-q">${e.question}</div>
+      <div style="display:flex;gap:8px;margin-bottom:6px">
+        ${catPill(e.category)}
+        <span class="tag">p=${((e.probability||0)*100).toFixed(1)}%</span>
+        <span class="tag">strength=${((e.edge||0)).toFixed(3)}</span>
+        <span class="tag">${tAgo(e.ts)}</span>
+      </div>
+      <div class="insight-note">${note}</div>
+    </div>`;
   }).join('');
 }
 
-// ── Open Positions ─────────────────────────────────────────────────────────
-function renderOpenPositions() {
-  const el = document.getElementById('open-positions');
-  const open = scanLog.filter(e => e.executed && !e.outcome);
-  if (!open.length) {
-    el.innerHTML = '<div class="loading" style="padding:20px">No open positions</div>';
+// ── Strategy Refinement tab ────────────────────────────────────────────
+function renderStrategy(){
+  const clean=SL.filter(e=>!e.strategy?.includes('observer'));
+  if(!clean.length){
+    $_('refinement-insights').innerHTML='No data collected yet. Run a few scan cycles first.';
+    $_('s10-reco').innerHTML='<div class="loading">Needs data</div>';
+    $_('s1-reco').innerHTML='<div class="loading">Needs data</div>';
+    $_('lessons-table').innerHTML='<div class="loading">Needs data</div>';
     return;
   }
-  el.innerHTML = `
-    <table>
-      <thead><tr>
-        <th>Strategy</th><th>Question</th><th>Action</th>
-        <th>Probability</th><th>Edge</th><th>Days Left</th>
-        <th>Category</th><th>Volume 24h</th>
-      </tr></thead>
-      <tbody>
-        ${open.slice(0,20).map(e => `
-          <tr>
-            <td>${stratPill(e.strategy)}</td>
-            <td style="max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${e.question}</td>
-            <td><span class="pill pill-open">${e.action||'BUY'}</span></td>
-            <td>${((e.probability||0)*100).toFixed(1)}%</td>
-            <td class="green">${((e.edge||0)*100).toFixed(2)}%</td>
-            <td>${(e.days_to_res||0).toFixed(1)}d</td>
-            <td>${e.category||'—'}</td>
-            <td>$${Number(e.volume_24h||0).toLocaleString()}</td>
-          </tr>
-        `).join('')}
-      </tbody>
-    </table>
-  `;
-}
 
-// ── Recent Trades ──────────────────────────────────────────────────────────
-function renderRecentTrades() {
-  const el = document.getElementById('recent-trades');
-  const executed = scanLog.filter(e => e.executed)
-                          .sort((a,b) => b.ts_unix - a.ts_unix)
-                          .slice(0, 50);
-  if (!executed.length) {
-    el.innerHTML = '<div class="loading" style="padding:20px">No trades yet — waiting for scan cycles</div>';
-    return;
+  // Insights
+  const insights=[];
+  const catE={};
+  clean.forEach(e=>{
+    const c=e.category||'other';
+    if(!catE[c])catE[c]=[];
+    if(e.edge>0)catE[c].push(e.edge);
+  });
+  const bestCat=Object.entries(catE).sort((a,b)=>
+    b[1].reduce((x,y)=>x+y,0)/b[1].length - a[1].reduce((x,y)=>x+y,0)/a[1].length
+  )[0];
+  if(bestCat)insights.push(
+    `<b style="color:var(--green)">${bestCat[0]}</b> markets have the highest average edge 
+    (${(bestCat[1].reduce((a,b)=>a+b,0)/bestCat[1].length*100).toFixed(2)}%) — 
+    increase S10 allocation to ${bestCat[0]} markets.`
+  );
+
+  const highProbOpps=clean.filter(e=>e.probability>=0.95&&e.probability<0.99);
+  if(highProbOpps.length>5)insights.push(
+    `${highProbOpps.length} opportunities found at p=0.95-0.99 range. 
+    This is the sweet spot: high certainty, fees still tiny, spread manageable. 
+    Consider lowering S10 <b>min_probability</b> threshold if currently above 0.90.`
+  );
+
+  const p99=clean.filter(e=>e.probability>=0.99);
+  if(p99.length>0)insights.push(
+    `<b style="color:var(--red)">${p99.length}</b> opportunities had probability ≥ 99% — 
+    these are already-resolved markets. The <b>max_probability: 0.989</b> filter should block these. 
+    If still appearing, check that the latest data_engine.py is deployed.`
+  );
+
+  const lowVol=clean.filter(e=>e.volume_24h<200&&e.executed);
+  if(lowVol.length>0)insights.push(
+    `${lowVol.length} executed trades had volume < $200. In live trading, low-volume 
+    markets have wide real spreads that eat edge. Consider raising <b>min_volume_24h to 200</b>.`
+  );
+
+  $_('refinement-insights').innerHTML='<ul style="list-style:none">'+
+    insights.map(i=>`<li style="padding:8px 0;border-bottom:1px solid var(--bd);
+      font-size:12px;color:var(--mu);line-height:1.6">${i}</li>`).join('')+
+    '</ul>';
+
+  // S10 recommendations
+  const s10=clean.filter(e=>e.strategy?.includes('s10'));
+  if(s10.length>0){
+    const avgProb=(s10.map(e=>e.probability).reduce((a,b)=>a+b,0)/s10.length*100).toFixed(1);
+    const avgEdge=(s10.map(e=>e.edge).filter(e=>e>0).reduce((a,b,_,arr)=>a+b/arr.length,0)*100).toFixed(3);
+    const avgDays=(s10.map(e=>e.days_to_res).reduce((a,b)=>a+b,0)/s10.length).toFixed(1);
+    $_('s10-reco').innerHTML=`
+      <div style="font-size:12px;color:var(--mu);line-height:1.8">
+        Based on <b style="color:var(--tx)">${s10.length} S10 opportunities</b> collected:<br>
+        Average probability: <b style="color:var(--tx)">${avgProb}%</b><br>
+        Average edge: <b style="color:var(--green)">${avgEdge}%</b><br>
+        Average days to resolution: <b style="color:var(--tx)">${avgDays}d</b><br><br>
+        ${parseFloat(avgProb)>99?
+          '<b style="color:var(--red)">Warning:</b> avg prob >99% means resolved markets leaking through. Deploy latest data_engine.py.':
+          parseFloat(avgProb)<88?
+          'Consider raising min_probability to 0.88+ to improve signal quality.':
+          '<b style="color:var(--green)">Probability range looks healthy.</b>'}
+      </div>`;
+  }else{
+    $_('s10-reco').innerHTML='<div class="loading">No S10 data yet</div>';
   }
-  el.innerHTML = `
-    <table>
-      <thead><tr>
-        <th>Time</th><th>Strategy</th><th>Question</th>
-        <th>Action</th><th>Probability</th><th>Edge</th>
-        <th>Score</th><th>Days Left</th><th>Category</th><th>Status</th>
-      </tr></thead>
-      <tbody>
-        ${executed.map(e => `
-          <tr>
-            <td style="white-space:nowrap;color:var(--muted)">${timeAgo(e.ts)}</td>
-            <td>${stratPill(e.strategy)}</td>
-            <td style="max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"
-                title="${e.question}">${e.question}</td>
-            <td><span class="pill pill-open">${e.action||'BUY'}</span></td>
-            <td>${((e.probability||0)*100).toFixed(1)}%</td>
-            <td class="green">${((e.edge||0)*100).toFixed(2)}%</td>
-            <td>${((e.score||0)).toFixed(3)}</td>
-            <td>${(e.days_to_res||0).toFixed(1)}d</td>
-            <td>${e.category||'—'}</td>
-            <td>${statusPill(e.outcome||'open')}</td>
-          </tr>
-        `).join('')}
-      </tbody>
-    </table>
-  `;
-}
 
-// ── Scan Log Table ─────────────────────────────────────────────────────────
-function renderScanLogTable() {
-  const el = document.getElementById('scan-log-table');
-  const recent = [...scanLog].sort((a,b) => b.ts_unix - a.ts_unix).slice(0, 30);
-  if (!recent.length) {
-    el.innerHTML = '<div class="loading" style="padding:20px">No scan log data yet</div>';
-    return;
+  // S1 recommendations
+  const s1=clean.filter(e=>e.strategy?.includes('s1'));
+  if(s1.length>0){
+    $_('s1-reco').innerHTML=`<div style="font-size:12px;color:var(--mu);line-height:1.8">
+      <b style="color:var(--tx)">${s1.length} S1 NegRisk</b> opportunities found.<br>
+      Average edge: <b style="color:var(--green)">${(s1.filter(e=>e.edge>0).reduce((a,b,_,arr)=>a+b.edge/arr.length,0)*100).toFixed(3)}%</b><br>
+      Avg legs per group: <b style="color:var(--tx)">${(s1.reduce((a,b)=>a+(b.num_legs||0),0)/s1.length).toFixed(1)}</b><br><br>
+      NegRisk arb is rare but mathematically guaranteed. Keep scanning.
+    </div>`;
+  }else{
+    $_('s1-reco').innerHTML='<div class="loading">No S1 data yet — NegRisk arb is rare</div>';
   }
-  el.innerHTML = `
-    <table>
-      <thead><tr>
-        <th>Time</th><th>Strategy</th><th>Question</th>
-        <th>Edge</th><th>Prob</th><th>Score</th>
-        <th>Days</th><th>Vol 24h</th><th>Executed</th>
-      </tr></thead>
-      <tbody>
-        ${recent.map(e => `
-          <tr>
-            <td style="white-space:nowrap;color:var(--muted)">${timeAgo(e.ts)}</td>
-            <td>${stratPill(e.strategy)}</td>
-            <td style="max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"
-                title="${e.question}">${e.question}</td>
-            <td class="green">${((e.edge||0)*100).toFixed(2)}%</td>
-            <td>${((e.probability||0)*100).toFixed(1)}%</td>
-            <td>${(e.score||0).toFixed(3)}</td>
-            <td>${(e.days_to_res||0).toFixed(1)}d</td>
-            <td>$${Number(e.volume_24h||0).toLocaleString()}</td>
-            <td>${e.executed
-              ? '<span class="pill pill-win">yes</span>'
-              : `<span class="pill pill-loss" title="${e.skipped_reason||''}">no</span>`}</td>
-          </tr>
-        `).join('')}
-      </tbody>
-    </table>
-  `;
-}
 
-// ── Main load ──────────────────────────────────────────────────────────────
-async function loadAll() {
-  document.getElementById('last-updated').textContent = 'Loading...';
-  try {
-    await Promise.all([loadScanLog(), loadLessons()]);
-    renderKPIs();
-    renderPnLChart();
-    renderEdgeChart();
-    renderCatChart();
-    renderStratChart();
-    renderProbChart();
-    renderDaysChart();
-    renderHeatmap();
-    renderCatAnalysis();
-    renderOpenPositions();
-    renderRecentTrades();
-    renderScanLogTable();
-    document.getElementById('last-updated').textContent =
-      'Updated ' + new Date().toLocaleTimeString();
-  } catch(e) {
-    console.error(e);
-    document.getElementById('last-updated').textContent = 'Error: ' + e.message;
+  // Lessons from lessons.json
+  const lessons=LS.lessons||[];
+  if(lessons.length){
+    $_('lessons-table').innerHTML=`<table>
+      <thead><tr><th>#</th><th>Lesson (from ReviewEngine)</th></tr></thead>
+      <tbody>${lessons.map((l,i)=>`<tr>
+        <td style="color:var(--mu);font-size:11px">${i+1}</td>
+        <td style="font-size:12px;line-height:1.5">${l}</td>
+      </tr>`).join('')}</tbody></table>`;
+  }else{
+    $_('lessons-table').innerHTML='<div class="loading">No lessons yet — ReviewEngine runs after first resolved trade</div>';
   }
 }
 
-// Auto-refresh every 5 minutes
 loadAll();
-setInterval(loadAll, 300000);
+setInterval(loadAll,300000);
 </script>
 </body>
 </html>
