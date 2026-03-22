@@ -86,11 +86,13 @@ def main():
     from strategies.s10_near_resolution import S10NearResolution
     from strategies.s1_negrisk_arb import S1NegRiskArb
     from strategies.s8_logical_arb import S8LogicalArb
+    from strategies.s11_inplay_momentum import S11InplayMomentum
 
     signal_engine = SignalEngine(config)
     signal_engine.register(S10NearResolution())
     signal_engine.register(S1NegRiskArb())
     signal_engine.register(S8LogicalArb())
+    signal_engine.register(S11InplayMomentum())
 
     cycle    = signal_engine.run_one_cycle(markets, groups)
     all_opps = cycle.get("opportunities", [])
