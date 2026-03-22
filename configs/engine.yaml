@@ -1,21 +1,19 @@
 engine:
   version: "3.1"
   capital_usdc: 100.00
-  dry_run: false          # overridden by DRY_RUN env var
+  dry_run: false
 
-  # Dry run collects as many data points as possible per cycle
-  max_per_cycle: 10       # up from 3 - more trades = more pattern data
-
+  max_per_cycle: 10
   poll_interval_seconds: 1800
 
   risk:
-    max_position_pct: 0.40      # 40% per trade in dry-run for data collection
-    max_daily_loss_pct: 0.99    # effectively no halt in dry-run - collect all data
-    max_open_positions: 50      # high cap - we want to log everything
+    max_position_pct: 0.40
+    max_daily_loss_pct: 0.99
+    max_open_positions: 50
     min_edge_after_fees: 0.001
 
   allocations:
-    s10_near_resolution: 0.60   # S10 is producing hits - weight it higher
+    s10_near_resolution: 0.60
     s1_negrisk_arb: 0.30
     s8_logical_arb: 0.10
 
