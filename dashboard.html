@@ -1,410 +1,741 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>Polymarket Engine Dashboard</title>
-    <meta http-equiv="refresh" content="60">
-    <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #0d1117; color: #c9d1d9; padding: 20px; }
-        .container { max-width: 1400px; margin: 0 auto; }
-        h1 { color: #58a6ff; margin-bottom: 8px; display: flex; align-items: center; gap: 12px; }
-        h2 { color: #8b949e; font-size: 14px; font-weight: normal; margin: 20px 0 12px; border-bottom: 1px solid #30363d; padding-bottom: 8px; }
-        .status-dot { width: 10px; height: 10px; border-radius: 50%; background: #3fb950; animation: pulse 2s infinite; }
-        .status-dot.dry-run { background: #f0883e; }
-        .status-dot.error { background: #f85149; }
-        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.5; } }
-        .timestamp { color: #8b949e; font-size: 12px; margin-bottom: 20px; }
-        .grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 16px; }
-        .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 16px; }
-        .card { background: #161b22; border: 1px solid #30363d; border-radius: 6px; padding: 16px; }
-        .card h3 { color: #8b949e; font-size: 11px; text-transform: uppercase; margin-bottom: 8px; }
-        .card .value { font-size: 24px; font-weight: bold; }
-        .card .value.positive { color: #3fb950; }
-        .card .value.negative { color: #f85149; }
-        .card .value.warning { color: #f0883e; }
-        .card .sub { font-size: 11px; color: #8b949e; margin-top: 4px; }
-        .alloc-row { display: flex; justify-content: space-between; padding: 6px 0; border-bottom: 1px solid #30363d; }
-        .alloc-row:last-child { border-bottom: none; }
-        .tabs { display: flex; gap: 4px; margin-bottom: 16px; border-bottom: 1px solid #30363d; }
-        .tab { padding: 10px 20px; cursor: pointer; color: #8b949e; border-bottom: 2px solid transparent; font-size: 13px; }
-        .tab:hover { color: #c9d1d9; }
-        .tab.active { color: #58a6ff; border-bottom-color: #58a6ff; }
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-        table { width: 100%; border-collapse: collapse; margin-top: 12px; }
-        th, td { text-align: left; padding: 10px; border-bottom: 1px solid #30363d; font-size: 13px; }
-        th { color: #8b949e; font-weight: normal; font-size: 11px; text-transform: uppercase; }
-        td.positive { color: #3fb950; }
-        td.negative { color: #f85149; }
-        .status { padding: 2px 6px; border-radius: 4px; font-size: 10px; text-transform: uppercase; }
-        .status.win { background: #3fb95022; color: #3fb950; }
-        .status.loss { background: #f8514922; color: #f85149; }
-        .status.open { background: #1f6feb22; color: #58a6ff; }
-        .status.pending { background: #f0883e22; color: #f0883e; }
-        .github-link { text-align: center; margin-top: 20px; font-size: 12px; }
-        .github-link a { color: #58a6ff; text-decoration: none; }
-        .github-link a:hover { text-decoration: underline; }
-        .data-row { display: flex; justify-content: space-between; padding: 4px 0; font-size: 13px; }
-        .data-row .label { color: #8b949e; }
-        .data-row .value { font-weight: 500; }
-        .opp-table { font-size: 12px; }
-        .opp-table th { background: #0d1117; position: sticky; top: 0; }
-        .opp-table tr:hover { background: #1c2128; }
-        .opp-question { max-width: 300px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-        .opp-question:hover { white-space: normal; word-break: break-word; }
-        .action-badge { padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; }
-        .action-badge.buy_yes { background: #3fb95022; color: #3fb950; }
-        .action-badge.buy_no { background: #f8514922; color: #f85149; }
-        .action-badge.buy_all_yes { background: #58a6ff22; color: #58a6ff; }
-        .score-bar { width: 50px; height: 6px; background: #30363d; border-radius: 3px; display: inline-block; }
-        .score-bar-fill { height: 100%; background: #58a6ff; border-radius: 3px; }
-        .filter-row { display: flex; gap: 12px; margin-bottom: 12px; align-items: center; }
-        .filter-btn { padding: 4px 12px; border-radius: 4px; font-size: 11px; cursor: pointer; background: #21262d; border: 1px solid #30363d; color: #8b949e; }
-        .filter-btn:hover { border-color: #58a6ff; color: #c9d1d9; }
-        .filter-btn.active { background: #1f6feb22; border-color: #58a6ff; color: #58a6ff; }
-        .summary-badge { padding: 2px 8px; border-radius: 12px; font-size: 11px; margin-left: 8px; }
-        .summary-badge.s1 { background: #3fb95022; color: #3fb950; }
-        .summary-badge.s10 { background: #f0883e22; color: #f0883e; }
-        .summary-badge.s8 { background: #58a6ff22; color: #58a6ff; }
-        .time-left { font-size: 11px; color: #8b949e; }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Polymarket Engine — Dashboard</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
+<style>
+  :root {
+    --bg: #0d0f14;
+    --surface: #161920;
+    --surface2: #1e222d;
+    --border: #2a2f3d;
+    --text: #e2e8f0;
+    --muted: #64748b;
+    --green: #22c55e;
+    --red: #ef4444;
+    --amber: #f59e0b;
+    --blue: #3b82f6;
+    --purple: #a855f7;
+    --teal: #14b8a6;
+    --font: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; }
+  header { background: var(--surface); border-bottom: 1px solid var(--border); padding: 16px 24px; display: flex; align-items: center; justify-content: space-between; }
+  header h1 { font-size: 18px; font-weight: 600; letter-spacing: -0.3px; }
+  .badge { background: var(--surface2); border: 1px solid var(--border); border-radius: 6px; padding: 4px 10px; font-size: 12px; color: var(--muted); }
+  .badge.dry { border-color: var(--amber); color: var(--amber); }
+  .badge.live { border-color: var(--green); color: var(--green); }
+  #status-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--muted); display: inline-block; margin-right: 6px; }
+  #status-dot.ok { background: var(--green); box-shadow: 0 0 6px var(--green); }
+  main { padding: 24px; max-width: 1400px; margin: 0 auto; }
+  .grid-4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 24px; }
+  .grid-2 { display: grid; grid-template-columns: repeat(2, 1fr); gap: 16px; margin-bottom: 24px; }
+  .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-bottom: 24px; }
+  .card { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 20px; }
+  .card h2 { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 8px; }
+  .stat-val { font-size: 28px; font-weight: 700; line-height: 1; }
+  .stat-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+  .green { color: var(--green); }
+  .red { color: var(--red); }
+  .amber { color: var(--amber); }
+  .blue { color: var(--blue); }
+  .purple { color: var(--purple); }
+  .section-title { font-size: 15px; font-weight: 600; margin-bottom: 16px; color: var(--text); }
+  table { width: 100%; border-collapse: collapse; font-size: 13px; }
+  th { text-align: left; padding: 10px 12px; color: var(--muted); font-weight: 500; border-bottom: 1px solid var(--border); font-size: 11px; text-transform: uppercase; letter-spacing: 0.4px; }
+  td { padding: 10px 12px; border-bottom: 1px solid var(--border); }
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: var(--surface2); }
+  .pill { display: inline-block; border-radius: 4px; padding: 2px 8px; font-size: 11px; font-weight: 500; }
+  .pill-dry { background: rgba(245,158,11,0.15); color: var(--amber); }
+  .pill-open { background: rgba(59,130,246,0.15); color: var(--blue); }
+  .pill-win { background: rgba(34,197,94,0.15); color: var(--green); }
+  .pill-loss { background: rgba(239,68,68,0.15); color: var(--red); }
+  .pill-s10 { background: rgba(168,85,247,0.15); color: var(--purple); }
+  .pill-s1 { background: rgba(20,184,166,0.15); color: var(--teal); }
+  .pill-s8 { background: rgba(59,130,246,0.15); color: var(--blue); }
+  .chart-wrap { position: relative; height: 220px; }
+  .chart-wrap-tall { position: relative; height: 280px; }
+  .loading { color: var(--muted); font-size: 13px; text-align: center; padding: 40px; }
+  .error-msg { color: var(--red); font-size: 12px; text-align: center; padding: 20px; }
+  #refresh-btn { background: var(--surface2); border: 1px solid var(--border); color: var(--text); padding: 6px 14px; border-radius: 6px; font-size: 13px; cursor: pointer; }
+  #refresh-btn:hover { border-color: var(--blue); }
+  .prog-bar { background: var(--surface2); border-radius: 4px; height: 6px; overflow: hidden; }
+  .prog-fill { height: 100%; border-radius: 4px; }
+  .two-col { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .mini-stat { padding: 12px; background: var(--surface2); border-radius: 8px; }
+  .mini-stat label { font-size: 11px; color: var(--muted); display: block; margin-bottom: 4px; }
+  .mini-stat span { font-size: 16px; font-weight: 600; }
+  .heatmap { display: grid; grid-template-columns: repeat(24, 1fr); gap: 3px; }
+  .heatmap-cell { height: 28px; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 9px; color: rgba(255,255,255,0.5); cursor: default; }
+  .heatmap-label { font-size: 10px; color: var(--muted); text-align: center; margin-top: 4px; }
+  @media (max-width: 900px) { .grid-4 { grid-template-columns: repeat(2, 1fr); } .grid-3 { grid-template-columns: 1fr 1fr; } }
+  @media (max-width: 600px) { .grid-4, .grid-2, .grid-3 { grid-template-columns: 1fr; } }
+</style>
 </head>
 <body>
-    <div class="container">
-        <h1>Polymarket Engine <span class="status-dot" id="statusDot"></span></h1>
-        <div class="timestamp" id="timestamp">Loading...</div>
 
-        <!-- Account Overview -->
-        <div class="grid">
-            <div class="card">
-                <h3>Balance</h3>
-                <div class="value" id="balance">--</div>
-                <div class="sub" id="capital">Capital: $100.00</div>
-            </div>
-            <div class="card">
-                <h3>Daily P&L</h3>
-                <div class="value" id="dailyPnl">--</div>
-                <div class="sub" id="dailyPnlPct">--</div>
-            </div>
-            <div class="card">
-                <h3>Open Positions</h3>
-                <div class="value" id="openPositions">--</div>
-                <div class="sub" id="maxPositions">Max: 5</div>
-            </div>
-            <div class="card">
-                <h3>Resolved (24h)</h3>
-                <div class="value" id="resolved24h">--</div>
-                <div class="sub" id="winRate">Win Rate: --</div>
-            </div>
-        </div>
+<header>
+  <div style="display:flex;align-items:center;gap:12px">
+    <span id="status-dot"></span>
+    <h1>Polymarket Engine</h1>
+    <span id="mode-badge" class="badge dry">DRY RUN</span>
+  </div>
+  <div style="display:flex;gap:10px;align-items:center">
+    <span id="last-updated" style="font-size:12px;color:var(--muted)">Loading...</span>
+    <button id="refresh-btn" onclick="loadAll()">Refresh</button>
+  </div>
+</header>
 
-        <!-- Tabs -->
-        <div class="tabs">
-            <div class="tab active" data-tab="overview">Overview</div>
-            <div class="tab" data-tab="opportunities">Opportunities <span id="oppCount" class="summary-badge s1">0</span></div>
-            <div class="tab" data-tab="trades">Recent Trades</div>
-        </div>
+<main>
+  <!-- KPI Row -->
+  <div class="grid-4" id="kpi-row">
+    <div class="card"><h2>Balance</h2><div class="stat-val" id="kpi-balance">—</div><div class="stat-sub" id="kpi-balance-sub">Starting capital</div></div>
+    <div class="card"><h2>Daily P&L</h2><div class="stat-val" id="kpi-pnl">—</div><div class="stat-sub" id="kpi-pnl-sub">Today's result</div></div>
+    <div class="card"><h2>Total Trades</h2><div class="stat-val" id="kpi-trades">—</div><div class="stat-sub" id="kpi-trades-sub">Dry + live</div></div>
+    <div class="card"><h2>Win Rate</h2><div class="stat-val" id="kpi-winrate">—</div><div class="stat-sub" id="kpi-winrate-sub">Resolved trades</div></div>
+  </div>
 
-        <!-- Overview Tab -->
-        <div class="tab-content active" id="tab-overview">
-            <!-- Data Ingestion -->
-            <h2>Data Ingestion (Last Scan)</h2>
-            <div class="grid-2">
-                <div class="card">
-                    <h3>Markets</h3>
-                    <div class="data-row"><span class="label">Total Active</span><span class="value" id="marketsTotal">--</span></div>
-                    <div class="data-row"><span class="label">With Valid Prices</span><span class="value" id="marketsValid">--</span></div>
-                    <div class="data-row"><span class="label">NegRisk Groups</span><span class="value" id="negriskGroups">--</span></div>
-                </div>
-                <div class="card">
-                    <h3>Categories</h3>
-                    <div class="data-row"><span class="label">Sports</span><span class="value" id="catSports">--</span></div>
-                    <div class="data-row"><span class="label">Politics</span><span class="value" id="catPolitics">--</span></div>
-                    <div class="data-row"><span class="label">Crypto</span><span class="value" id="catCrypto">--</span></div>
-                    <div class="data-row"><span class="label">Other</span><span class="value" id="catOther">--</span></div>
-                </div>
-            </div>
+  <!-- Second KPI Row -->
+  <div class="grid-4">
+    <div class="card"><h2>Open Positions</h2><div class="stat-val blue" id="kpi-open">—</div><div class="stat-sub">Active dry-run trades</div></div>
+    <div class="card"><h2>Opportunities Seen</h2><div class="stat-val purple" id="kpi-opps">—</div><div class="stat-sub">Total logged in scan_log</div></div>
+    <div class="card"><h2>Avg Edge</h2><div class="stat-val amber" id="kpi-edge">—</div><div class="stat-sub">Across all opportunities</div></div>
+    <div class="card"><h2>Avg Probability</h2><div class="stat-val" id="kpi-prob">—</div><div class="stat-sub">When opportunity found</div></div>
+  </div>
 
-        <!-- Strategy Results -->
-            <h2>Strategy Scan Results</h2>
-            <div class="grid">
-                <div class="card">
-                    <h3>S1 NegRisk Arb</h3>
-                    <div class="value" id="s1Opp">--</div>
-                    <div class="sub">guaranteed arb</div>
-                </div>
-                <div class="card">
-                    <h3>S10 Near Resolution</h3>
-                    <div class="value" id="s10Opp">--</div>
-                    <div class="sub">hours/days</div>
-                </div>
-                <div class="card">
-                    <h3>S11 Short Duration</h3>
-                    <div class="value" id="s11Opp">--</div>
-                    <div class="sub">same-day</div>
-                </div>
-                <div class="card">
-                    <h3>S12 BTC Momentum</h3>
-                    <div class="value" id="s12Opp">--</div>
-                    <div class="sub" id="btcPrice">BTC: --</div>
-                </div>
-            </div>
-            <div class="grid-2">
-                <div class="card">
-                    <h3>S8 Logical Arb</h3>
-                    <div class="value" id="s8Opp">--</div>
-                    <div class="sub">LLM-dependent</div>
-                </div>
-                <div class="card">
-                    <h3>Trades</h3>
-                    <div class="value" id="tradesExec">--</div>
-                    <div class="sub" id="tradesRej">rejected: --</div>
-                </div>
-            </div>
-
-            <!-- Allocations & Risk -->
-            <div class="grid-2">
-                <div class="card">
-                    <h3>Allocations</h3>
-                    <div class="alloc-row"><span>s10_near_resolution</span><span>40%</span></div>
-                    <div class="alloc-row"><span>s1_negrisk_arb</span><span>40%</span></div>
-                    <div class="alloc-row"><span>s8_logical_arb</span><span>20%</span></div>
-                </div>
-                <div class="card">
-                    <h3>Risk Limits</h3>
-                    <div class="alloc-row"><span>Max Daily Loss</span><span>5% ($5)</span></div>
-                    <div class="alloc-row"><span>Max Positions</span><span>5</span></div>
-                    <div class="alloc-row"><span>Max Position %</span><span>15% ($15)</span></div>
-                    <div class="alloc-row"><span>Min Edge</span><span>2.5%</span></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Opportunities Tab -->
-        <div class="tab-content" id="tab-opportunities">
-            <h2>Trading Opportunities</h2>
-            <div class="card">
-                <div class="filter-row">
-                    <span style="color:#8b949e;font-size:12px;">Filter:</span>
-                    <button class="filter-btn active" data-filter="all">All <span id="fAll">0</span></button>
-                    <button class="filter-btn" data-filter="s1_negrisk_arb">S1 NegRisk Arb <span id="fS1">0</span></button>
-                    <button class="filter-btn" data-filter="s10_near_resolution">S10 Near Resolution <span id="fS10">0</span></button>
-                    <button class="filter-btn" data-filter="s8_logical_arb">S8 Logical Arb <span id="fS8">0</span></button>
-                    <span style="margin-left:auto;color:#8b949e;font-size:11px;">Sorted by score (highest first)</span>
-                </div>
-                <table class="opp-table">
-                    <thead>
-                        <tr>
-                            <th>Score</th>
-                            <th>Strategy</th>
-                            <th>Action</th>
-                            <th>Market Question</th>
-                            <th>Edge</th>
-                            <th>Win Prob</th>
-                            <th>Max Payout</th>
-                            <th>Time Left</th>
-                            <th>Category</th>
-                        </tr>
-                    </thead>
-                    <tbody id="opportunities">
-                        <tr><td colspan="9" style="text-align:center;color:#8b949e;">No opportunities found</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <!-- Trades Tab -->
-        <div class="tab-content" id="tab-trades">
-            <h2>Recent Trades</h2>
-            <div class="card">
-                <table>
-                    <thead>
-                        <tr><th>Time</th><th>Strategy</th><th>Market</th><th>Side</th><th>Price</th><th>Size</th><th>P&L</th><th>Status</th></tr>
-                    </thead>
-                    <tbody id="trades">
-                        <tr><td colspan="8" style="text-align:center;color:#8b949e;">No recent trades</td></tr>
-                    </tbody>
-                </table>
-            </div>
-        </div>
-
-        <div class="github-link">
-            <a href="https://github.com/Airdropperxx/polymarket-engine/actions" target="_blank">GitHub Actions</a> | 
-            <a href="https://github.com/Airdropperxx/polymarket-engine" target="_blank">Repository</a> |
-            <a href="https://github.com/Airdropperxx/polymarket-engine/actions/workflows/scan.yml" target="_blank">Scan Workflow</a>
-        </div>
+  <!-- Charts Row 1 -->
+  <div class="grid-2">
+    <div class="card">
+      <div class="section-title">Cumulative P&L (dry-run)</div>
+      <div class="chart-wrap"><canvas id="chart-pnl"></canvas></div>
     </div>
+    <div class="card">
+      <div class="section-title">Edge Distribution</div>
+      <div class="chart-wrap"><canvas id="chart-edge"></canvas></div>
+    </div>
+  </div>
 
-    <script>
-        var STATE_DATA = {"timestamp": "2026-03-22T08:35:23.141419+00:00Z", "balance": 100.0, "capital": 100.0, "daily_pnl": 0.0, "open_positions": 0, "max_positions": 5, "resolved_24h": 0, "wins_24h": 0, "dry_run": false, "trades_executed": 20, "trades_rejected": 0, "ingestion": {"markets_scanned": 483, "markets_valid": 234, "negrisk_groups": 78, "categories": {"sports": 220, "politics": 162, "crypto": 7, "other": 94}}, "strategies": {"s10_opportunities": 0, "s1_opportunities": 72, "s8_opportunities": 0, "s11_opportunities": 0, "s12_opportunities": 0}, "recent_trades": [], "opportunities": [{"strategy": "s1_negrisk_arb", "market_id": "0xd8c3fff562711af557abca5e7367dbb892b1d79419b039b6f185e49f21ec6f71", "question": "NegRisk LONG: Will Italy qualify for the 2026 FIFA World Cup?\u2026", "action": "buy_all_yes", "edge": 31.41, "win_prob": 100.0, "max_payout": 1.5186, "score": 0.628, "time_to_resolution": 1835678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x22e7b5e35423e76842dd3a5e1a21d13793811080d5e7b2896d0c001bd5e97d54", "question": "NegRisk LONG: Will the Oklahoma City Thunder win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 7.57, "win_prob": 100.0, "max_payout": 1.1236, "score": 0.151, "time_to_resolution": 7451678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x6b44bd667fad6cb5b3b68d8bd1055a038c77d9176dbd51f123879797cc3368a7", "question": "NegRisk LONG: Will the Cleveland Cavaliers win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 72.91, "win_prob": 100.0, "max_payout": 3.7951, "score": 1.0, "time_to_resolution": 7192478, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x713641f745d71f6ec61f906237ffca3c8583f251e49384429a63ceb0ccdb2d37", "question": "NegRisk LONG: Will the New York Knicks win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 78.24, "win_prob": 100.0, "max_payout": 4.7059, "score": 1.0, "time_to_resolution": 7192478, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x649ad05a2868343271fe82ea692031d567ca1af652e3529788933157e94aa088", "question": "NegRisk LONG: Will the Minnesota Timberwolves win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 95.02, "win_prob": 100.0, "max_payout": 20.202, "score": 1.0, "time_to_resolution": 7451678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x9b56568af78dd036b03c641e0673729d72cd7d63578eb0119cd23eb1f94f1b56", "question": "NegRisk LONG: Will the Houston Rockets win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 94.97, "win_prob": 100.0, "max_payout": 20.0, "score": 1.0, "time_to_resolution": 7451678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x13e1cc703a120883a709d3bb29707097952845d61ca6793ea2b4328bae2a7451", "question": "NegRisk LONG: Will the Boston Celtics win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 51.39, "win_prob": 100.0, "max_payout": 2.1368, "score": 1.0, "time_to_resolution": 7192478, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x796e791e7058571e460278814fc7a3183752285338f1400087b98bef3c447908", "question": "NegRisk LONG: Will the Los Angeles Lakers win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 88.85, "win_prob": 100.0, "max_payout": 9.0909, "score": 1.0, "time_to_resolution": 7451678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x7338d9dea0de820ed621abdff3de2d4b07a573bc0c1a6f7128941f4d0c5606e3", "question": "NegRisk LONG: Will the Orlando Magic win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 96.58, "win_prob": 100.0, "max_payout": 29.4118, "score": 1.0, "time_to_resolution": 7192478, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x4e65282819c98c6aed529f357fbf5983b1ae9407a3c25bd50fe97b2906df68f9", "question": "NegRisk LONG: Will the Denver Nuggets win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 79.02, "win_prob": 100.0, "max_payout": 4.878, "score": 1.0, "time_to_resolution": 7451678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0xb6b3d7a2037b3faa7e1306d741840d453432902d73cc9a146a035e40271eae73", "question": "NegRisk LONG: Will the San Antonio Spurs win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 64.72, "win_prob": 100.0, "max_payout": 2.9283, "score": 1.0, "time_to_resolution": 7451678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0xfbf7ab9e6b6d324ffe436bab8c7a1e10aeb8200e10c1e1dbb35d2959becebc1e", "question": "NegRisk LONG: Will the Golden State Warriors win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 98.6, "win_prob": 100.0, "max_payout": 71.4286, "score": 1.0, "time_to_resolution": 7451678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x543da007c2f149346cf9f9f21021f1b2e10c46c78fcd0c9297c0c21f10c94626", "question": "NegRisk LONG: Will the Los Angeles Clippers win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 96.18, "win_prob": 100.0, "max_payout": 26.3158, "score": 1.0, "time_to_resolution": 7451678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x567f1ff714731fafa702d454a105b064a7ec4d10f6fb71ad3221f4918681c709", "question": "NegRisk LONG: Will the Philadelphia 76ers win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 98.04, "win_prob": 100.0, "max_payout": 51.2821, "score": 1.0, "time_to_resolution": 7192478, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0xf523e45d6bfe49d30e45e4e7794fd6e5f621b0304e07044fef156e6dd4d4b249", "question": "NegRisk LONG: Will the Dallas Mavericks win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 99.8, "win_prob": 100.0, "max_payout": 500.0, "score": 1.0, "time_to_resolution": 7451678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0xe202539dfbeced92dc4112f134a205c80ca6cf4db32bd82f05b291c297219fd8", "question": "NegRisk LONG: Will the Detroit Pistons win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 82.71, "win_prob": 100.0, "max_payout": 5.8997, "score": 1.0, "time_to_resolution": 7192478, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x7a18c03e9dd79943a25c65a5b696378e54b5b7d236140edb5d157685ce96476a", "question": "NegRisk LONG: Will the Milwaukee Bucks win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 99.7, "win_prob": 100.0, "max_payout": 333.3333, "score": 1.0, "time_to_resolution": 7192478, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0xb76183fb9e7e80c5a8f983a87ceefd35c9c177f684dd001d7387dc7b70d596d6", "question": "NegRisk LONG: Will the Miami Heat win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 96.69, "win_prob": 100.0, "max_payout": 30.303, "score": 1.0, "time_to_resolution": 7192478, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0xc094fd60c0a09ba0df48a086ef91e12390fa8777fcd9cb63c154e9622cb1d497", "question": "NegRisk LONG: Will the Memphis Grizzlies win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 99.6, "win_prob": 100.0, "max_payout": 250.0, "score": 1.0, "time_to_resolution": 7451678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0xe709dcb12986139fa5b4cc793069d0c64bde1bfb351914c95bdd6149ec91a3ee", "question": "NegRisk LONG: Will the New Orleans Pelicans win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 99.8, "win_prob": 100.0, "max_payout": 500.0, "score": 1.0, "time_to_resolution": 7451678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x4405c62496c4fdd275d17ec31567a01534013c518c314ce61bb633b5e7cb6426", "question": "NegRisk LONG: Will the Toronto Raptors win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 96.18, "win_prob": 100.0, "max_payout": 26.3158, "score": 1.0, "time_to_resolution": 7192478, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0xa49fc89bfb87bb302bfc43567709850565161bdaed5bc506bff4b85fd3c5c2ee", "question": "NegRisk LONG: Will the Phoenix Suns win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 98.1, "win_prob": 100.0, "max_payout": 52.6316, "score": 1.0, "time_to_resolution": 7451678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0xf374fb58698bccedf29399f9f5548a70370a11c0fece34f2570fb9b3885e8e5a", "question": "NegRisk LONG: Will the Chicago Bulls win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 99.7, "win_prob": 100.0, "max_payout": 333.3333, "score": 1.0, "time_to_resolution": 7192478, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x6331a779482df72d904c3c1e12b6409ff836bc06f8c97945cba9b25ada2c605c", "question": "NegRisk LONG: Will the Portland Trail Blazers win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 99.0, "win_prob": 100.0, "max_payout": 100.0, "score": 1.0, "time_to_resolution": 7451678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0xfda648d24cdad32dfe959195bd75ef4c81fbea5130eb6c7a4a0c18607a11ce63", "question": "NegRisk LONG: Will the Atlanta Hawks win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 97.24, "win_prob": 100.0, "max_payout": 36.3636, "score": 1.0, "time_to_resolution": 7192478, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0xc58cfb7397c4f3f803f5c20135cafa7f6d2c87cf3bb1e6138042b95d828e1866", "question": "NegRisk LONG: Will the Charlotte Hornets win the 2026 NBA Finals?\u2026", "action": "buy_all_yes", "edge": 95.98, "win_prob": 100.0, "max_payout": 25.0, "score": 1.0, "time_to_resolution": 7192478, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x0f49db97f71c68b1e42a6d16e3de93d85dbf7d4148e3f018eb79e88554be9f75", "question": "NegRisk LONG: Will Gavin Newsom win the 2028 Democratic presidential nomin\u2026", "action": "buy_all_yes", "edge": 54.98, "win_prob": 100.0, "max_payout": 2.3041, "score": 1.0, "time_to_resolution": 83051678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0xe6bcc2f1dd025ce5e1833190f7c60a71171c94f805df55b9ab0ded695ec93565", "question": "NegRisk LONG: Will Alexandria Ocasio-Cortez win the 2028 Democratic presid\u2026", "action": "buy_all_yes", "edge": 86.74, "win_prob": 100.0, "max_payout": 7.6628, "score": 1.0, "time_to_resolution": 83051678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x4c325469d9b516ef4e6b8f73a81a12607dec075e3c2fd454f91765aaeafc4760", "question": "NegRisk LONG: Will Pete Buttigieg win the 2028 Democratic presidential nom\u2026", "action": "buy_all_yes", "edge": 93.85, "win_prob": 100.0, "max_payout": 16.3934, "score": 1.0, "time_to_resolution": 83051678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0xd65891729ce093cc12236856837eba1a0872fc7998fd4294c21346f7db68079c", "question": "NegRisk LONG: Will Josh Shapiro win the 2028 Democratic presidential nomin\u2026", "action": "buy_all_yes", "edge": 93.55, "win_prob": 100.0, "max_payout": 15.625, "score": 1.0, "time_to_resolution": 83051678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x61d9486c0f7e14ed98f3b177b6adcb3cd45646c92e8bbfbf209789b86472d4b6", "question": "NegRisk LONG: Will Wes Moore win the 2028 Democratic presidential nominati\u2026", "action": "buy_all_yes", "edge": 97.39, "win_prob": 100.0, "max_payout": 38.4615, "score": 1.0, "time_to_resolution": 83051678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x909659c9436228e2be56d5582ba6188166f2f8bf3c596335512c8f2e380d01ec", "question": "NegRisk LONG: Will Kamala Harris win the 2028 Democratic presidential nomi\u2026", "action": "buy_all_yes", "edge": 91.82, "win_prob": 100.0, "max_payout": 12.3457, "score": 1.0, "time_to_resolution": 83051678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0xe39adea057926dc197fe30a441f57a340b2a232d5a687010f78bba9b6e02620f", "question": "NegRisk LONG: Will Gretchen Whitmer win the 2028 Democratic presidential n\u2026", "action": "buy_all_yes", "edge": 97.49, "win_prob": 100.0, "max_payout": 40.0, "score": 1.0, "time_to_resolution": 83051678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x1d519b87999e3d4e90e1e8f57b5eee73a0ba488ff3fdb70867f294733aba84a9", "question": "NegRisk LONG: Will Andy Beshear win the 2028 Democratic presidential nomin\u2026", "action": "buy_all_yes", "edge": 96.28, "win_prob": 100.0, "max_payout": 27.027, "score": 1.0, "time_to_resolution": 83051678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x74dba1ce1ae9dd535414e85f2d9ab5ea32c0fb1acc9b7130b67e6d91217e24e1", "question": "NegRisk LONG: Will Jon Ossoff win the 2028 Democratic presidential nominat\u2026", "action": "buy_all_yes", "edge": 88.69, "win_prob": 100.0, "max_payout": 8.9686, "score": 1.0, "time_to_resolution": 83051678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x3265b10daeb30dbcc3214bd02e488551d0a5d3028392f4152e4750b943fbfc91", "question": "NegRisk LONG: Will Tim Walz win the 2028 Democratic presidential nominatio\u2026", "action": "buy_all_yes", "edge": 98.7, "win_prob": 100.0, "max_payout": 76.9231, "score": 1.0, "time_to_resolution": 83051678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x3e218c99a1335641b3a5ee6c887521d19b0c28fddd6b99c254a07968e35c0b1b", "question": "NegRisk LONG: Will Michelle Obama win the 2028 Democratic presidential nom\u2026", "action": "buy_all_yes", "edge": 97.39, "win_prob": 100.0, "max_payout": 38.4615, "score": 1.0, "time_to_resolution": 83051678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x3535fb2f4aef6619dde8b367cb5e5d209526bb496d5d9778428c58a0252435e3", "question": "NegRisk LONG: Will Zohran Mamdani win the 2028 Democratic presidential nom\u2026", "action": "buy_all_yes", "edge": 98.2, "win_prob": 100.0, "max_payout": 55.5556, "score": 1.0, "time_to_resolution": 83051678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x8b203037c7c0e21b500314f8398d2a8ea294b7ce1f4f9185f426425a3505bc45", "question": "NegRisk LONG: Will LeBron James win the 2028 Democratic presidential nomin\u2026", "action": "buy_all_yes", "edge": 98.4, "win_prob": 100.0, "max_payout": 62.5, "score": 1.0, "time_to_resolution": 6933278, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x8dbf6b51f302fd401065706245c144e93fe209abce183199433d4484b3ed8aff", "question": "NegRisk LONG: Will Dwayne 'The Rock' Johnson win the 2028 Democratic presi\u2026", "action": "buy_all_yes", "edge": 97.29, "win_prob": 100.0, "max_payout": 37.037, "score": 1.0, "time_to_resolution": 83051678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x0f8ef3cc906ba7ba94a44724738df44bdd5f73e59e40c9c8b4ff8569e349643c", "question": "NegRisk LONG: Will Kim Kardashian win the 2028 Democratic presidential nom\u2026", "action": "buy_all_yes", "edge": 97.75, "win_prob": 100.0, "max_payout": 44.4444, "score": 1.0, "time_to_resolution": 83051678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x20d0bc282552ac5ec6f61cd7101cb42a5948cae07e7651bdf40ede1a8b2c5eac", "question": "NegRisk LONG: Will Ro Khanna win the 2028 Democratic presidential nominati\u2026", "action": "buy_all_yes", "edge": 97.89, "win_prob": 100.0, "max_payout": 47.619, "score": 1.0, "time_to_resolution": 83051678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0xb91be12388b3d4079c3ed9b5783cb42d8c33051d37746a49300227e0f45fc089", "question": "NegRisk LONG: Will James Talarico win the 2028 Democratic presidential nom\u2026", "action": "buy_all_yes", "edge": 96.84, "win_prob": 100.0, "max_payout": 31.746, "score": 1.0, "time_to_resolution": 83051678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x2053d8515f1b8cbeea4ccdb56e60e89c2617e43a8660d95166b8e71d27865277", "question": "NegRisk LONG: Will Marco Rubio win the 2028 US Presidential Election?\u2026", "action": "buy_all_yes", "edge": 58.93, "win_prob": 100.0, "max_payout": 2.5221, "score": 1.0, "time_to_resolution": 83051678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0xc4435df23facee8c4cd86090310c7835c2a0425646b2588b0a02e67fa42f444e", "question": "NegRisk LONG: Will Glenn Youngkin win the 2028 US Presidential Election?\u2026", "action": "buy_all_yes", "edge": 97.89, "win_prob": 100.0, "max_payout": 47.619, "score": 1.0, "time_to_resolution": 83051678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x8fc141205ebce5adf437bfdf4d0c5ff58ff24293b79c9431991346c208bb48ed", "question": "NegRisk LONG: Will Tulsi Gabbard win the 2028 US Presidential Election?\u2026", "action": "buy_all_yes", "edge": 98.3, "win_prob": 100.0, "max_payout": 58.8235, "score": 1.0, "time_to_resolution": 83051678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0xce9a5fa30fe74e323b4a8f15afbb0b7a41a537aa880779ddf7dee22223b2f34a", "question": "NegRisk LONG: Will Donald Trump win the 2028 US Presidential Election?\u2026", "action": "buy_all_yes", "edge": 95.83, "win_prob": 100.0, "max_payout": 24.0964, "score": 1.0, "time_to_resolution": 83051678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x23481b811978194fa175143ed7cd8d0000878ca59c408fd552e33535f7aa771e", "question": "NegRisk LONG: Will Donald Trump Jr. win the 2028 US Presidential Election?\u2026", "action": "buy_all_yes", "edge": 97.84, "win_prob": 100.0, "max_payout": 46.5116, "score": 1.0, "time_to_resolution": 83051678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0xe0173375b7eaccb836f7b92d28a9a2d1cc69e54e5a65fae89a5d7e49aadd332e", "question": "NegRisk LONG: Will Nikki Haley win the 2028 US Presidential Election?\u2026", "action": "buy_all_yes", "edge": 97.99, "win_prob": 100.0, "max_payout": 50.0, "score": 1.0, "time_to_resolution": 83051678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x3367d22cd2a673014f1960742afdf8601040a8ad856dc0a98bd1a44ee99504e2", "question": "NegRisk LONG: Will Ron DeSantis win the 2028 US Presidential Election?\u2026", "action": "buy_all_yes", "edge": 95.27, "win_prob": 100.0, "max_payout": 21.2766, "score": 1.0, "time_to_resolution": 83051678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x64396449b471b10b006285fa49dd9a5df535694de7b4c703fdeb0d88d5c4cd33", "question": "NegRisk LONG: Will Vivek Ramaswamy win the 2028 US Presidential Election?\u2026", "action": "buy_all_yes", "edge": 97.59, "win_prob": 100.0, "max_payout": 41.6667, "score": 1.0, "time_to_resolution": 83051678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x01dffa7abae7e5d9b7fb44b06d537c5ac932e2ca422ab4b53366672f5e2dc7d6", "question": "NegRisk LONG: Will Greg Abbott win the 2028 US Presidential Election?\u2026", "action": "buy_all_yes", "edge": 98.2, "win_prob": 100.0, "max_payout": 55.5556, "score": 1.0, "time_to_resolution": 83051678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x68e3c4e0dd8f82d010060032006fd157401b0bd8e04bd2953ae293e31eb99bf6", "question": "NegRisk LONG: Will Elon Musk win the 2028 US Presidential Election?\u2026", "action": "buy_all_yes", "edge": 97.79, "win_prob": 100.0, "max_payout": 45.4545, "score": 1.0, "time_to_resolution": 83051678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0xd94b47bdeba16ae948bfb147bda059f3543d6fca73291644dfff5268bba7a797", "question": "NegRisk LONG: Will Tucker Carlson win the 2028 US Presidential Election?\u2026", "action": "buy_all_yes", "edge": 93.09, "win_prob": 100.0, "max_payout": 14.5985, "score": 1.0, "time_to_resolution": 83051678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0xc586d15be76278848a26c761c2fcf70f8cebca71815cfab83e656ff5c6ec13a9", "question": "NegRisk LONG: Will Ivanka Trump win the 2028 US Presidential Election?\u2026", "action": "buy_all_yes", "edge": 97.79, "win_prob": 100.0, "max_payout": 45.4545, "score": 1.0, "time_to_resolution": 83051678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x32903694997a5c09afee30904970f9fab2a5fb4ec45f572f194341185574f1a4", "question": "NegRisk LONG: Will Thomas Massie win the 2028 US Presidential Election?\u2026", "action": "buy_all_yes", "edge": 97.39, "win_prob": 100.0, "max_payout": 38.4615, "score": 1.0, "time_to_resolution": 83051678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x2d3c4fc5cde6dfb43448402b912e41bd4453e3f030448ed026bff8f1a0bc072e", "question": "NegRisk LONG: Will Eric Trump win the 2028 US Presidential Election?\u2026", "action": "buy_all_yes", "edge": 98.7, "win_prob": 100.0, "max_payout": 76.9231, "score": 1.0, "time_to_resolution": 83051678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0xea649be6ea3447f3c145a173883c68a89faf4edda1f85109b76baa93b3ee7a87", "question": "NegRisk LONG: Will Pete Hegseth win the 2028 US Presidential Election?\u2026", "action": "buy_all_yes", "edge": 98.75, "win_prob": 100.0, "max_payout": 80.0, "score": 1.0, "time_to_resolution": 83051678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x2096cd3bedb878cbfb5d30308968616a1dfd80e17b278ca6bdc72f9dde4776a7", "question": "NegRisk LONG: Will Cooper Flagg win the 2025\u201326 NBA Rookie of the Year awa\u2026", "action": "buy_all_yes", "edge": 71.6, "win_prob": 100.0, "max_payout": 3.6232, "score": 1.0, "time_to_resolution": 4946078, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x86bfb53af7250a40928975c551d12c185b762fa4ce0b40c6a64a50c946d72587", "question": "NegRisk LONG: Will the Republican Party control the Senate after the 2026 \u2026", "action": "buy_all_yes", "edge": 31.25, "win_prob": 100.0, "max_payout": 1.5152, "score": 0.625, "time_to_resolution": 19547678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x4c7db7768547a220d3e26359952d8b2eb9094f5ad02fcc32e70d9361d8491ab5", "question": "NegRisk LONG: Will Liverpool win the 2025\u201326 Champions League?\u2026", "action": "buy_all_yes", "edge": 91.31, "win_prob": 100.0, "max_payout": 11.5607, "score": 1.0, "time_to_resolution": 5723678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x52a5ce595e0f0816e17e5f40dbd5967c88beb4b9f21000bfdd9a1ff26c281fdd", "question": "NegRisk LONG: Will Real Madrid win the 2025\u201326 Champions League?\u2026", "action": "buy_all_yes", "edge": 71.18, "win_prob": 100.0, "max_payout": 3.5714, "score": 1.0, "time_to_resolution": 5982878, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0xcb06319aa9e029904c93c1df7d10b7ce7d6aab2b25b8f661e0cf57ea048a1567", "question": "NegRisk LONG: Will Atletico Madrid win the 2025\u201326 Champions League?\u2026", "action": "buy_all_yes", "edge": 96.13, "win_prob": 100.0, "max_payout": 25.974, "score": 1.0, "time_to_resolution": 5982878, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0xfb1835b887c33862f5749c619e612d1244ab6e66115f0ef43d373485dc3a1573", "question": "NegRisk LONG: Will Manchester City win the 2025\u201326 English Premier League?\u2026", "action": "buy_all_yes", "edge": 5.03, "win_prob": 100.0, "max_payout": 1.0929, "score": 0.101, "time_to_resolution": 5723678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0xd02f8e3b72040d933427396f9f0a9cb740a0adefcec46e345211fa0fc5b975e9", "question": "NegRisk LONG: Will Chelsea win the 2025\u201326 English Premier League?\u2026", "action": "buy_all_yes", "edge": 98.75, "win_prob": 100.0, "max_payout": 80.0, "score": 1.0, "time_to_resolution": 5723678, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x04e73caf81ef64ce0c612699049d295e18dfe9bdd60d898fd3d8a64cac723661", "question": "NegRisk LONG: Will Paloma Valencia win the 1st round of the 2026 Colombian\u2026", "action": "buy_all_yes", "edge": 40.19, "win_prob": 100.0, "max_payout": 1.7406, "score": 0.804, "time_to_resolution": 6126878, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0xb611b3a7173f69e412b55561ed265d849e36693c248ff620d0e981c5b3f2e325", "question": "NegRisk LONG: Will Abelardo de la Espriella win the 1st round of the 2026 \u2026", "action": "buy_all_yes", "edge": 80.64, "win_prob": 100.0, "max_payout": 5.277, "score": 1.0, "time_to_resolution": 6126878, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0xeae8d09170bc56ee8ba9676b4a2f6d1a45c69084172ee7cc8a022197c2db191a", "question": "NegRisk LONG: Will Roy Barreras win the 1st round of the 2026 Colombian pr\u2026", "action": "buy_all_yes", "edge": 99.35, "win_prob": 100.0, "max_payout": 153.8462, "score": 1.0, "time_to_resolution": 6126878, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x7ce21332ecca3948da5ecf5e626b16938ba1487ce07d1579d869f25045002200", "question": "NegRisk LONG: Will Daniel Quintero win the 1st round of the 2026 Colombian\u2026", "action": "buy_all_yes", "edge": 99.7, "win_prob": 100.0, "max_payout": 333.3333, "score": 1.0, "time_to_resolution": 6126878, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x56d3614b2a31f92909d6c8d9674b8a4b642ed8a84e54f44023327cb31c30a6fc", "question": "NegRisk LONG: Will Juan Carlos Pinz\u00f3n win the 1st round of the 2026 Colomb\u2026", "action": "buy_all_yes", "edge": 99.6, "win_prob": 100.0, "max_payout": 250.0, "score": 1.0, "time_to_resolution": 6126878, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x0d2496544913dd1efdc093d296e366b4de344adeecc45d84cb4ab26433f335d1", "question": "NegRisk LONG: Will Mauricio C\u00e1rdenas win the 1st round of the 2026 Colombi\u2026", "action": "buy_all_yes", "edge": 99.55, "win_prob": 100.0, "max_payout": 222.2222, "score": 1.0, "time_to_resolution": 6126878, "category": "unknown"}, {"strategy": "s1_negrisk_arb", "market_id": "0x5037195eafd98f9d50ef8d5700abcaaa7351cc53bfdb1df23fd28fd35eb94e9b", "question": "NegRisk LONG: Will Enrique Pe\u00f1alosa win the 1st round of the 2026 Colombia\u2026", "action": "buy_all_yes", "edge": 99.75, "win_prob": 100.0, "max_payout": 400.0, "score": 1.0, "time_to_resolution": 6126878, "category": "unknown"}]};
-        var currentFilter = 'all';
+  <!-- Charts Row 2 -->
+  <div class="grid-3">
+    <div class="card">
+      <div class="section-title">Opportunities by Category</div>
+      <div class="chart-wrap"><canvas id="chart-cat"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="section-title">Strategy Breakdown</div>
+      <div class="chart-wrap"><canvas id="chart-strat"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="section-title">Probability Buckets</div>
+      <div class="chart-wrap"><canvas id="chart-prob"></canvas></div>
+    </div>
+  </div>
 
-        function renderDashboard() {
-            var data = STATE_DATA;
-            
-            if (!data) {
-                document.getElementById('timestamp').textContent = 'No data - run scan cycle';
-                return;
-            }
-            
-            var dot = document.getElementById('statusDot');
-            if (data.dry_run) {
-                dot.className = 'status-dot dry-run';
-            } else {
-                dot.className = 'status-dot';
-            }
-            
-            document.getElementById('timestamp').textContent = 
-                'Last scan: ' + (data.timestamp || 'N/A') + ' | DRY RUN: ' + (data.dry_run ? 'ON' : 'OFF');
-            
-            // Account
-            document.getElementById('balance').textContent = '$' + (data.balance || 0).toFixed(2);
-            document.getElementById('capital').textContent = 'Capital: $' + (data.capital || 100).toFixed(2);
-            
-            var pnl = data.daily_pnl || 0;
-            var pnlEl = document.getElementById('dailyPnl');
-            pnlEl.textContent = (pnl >= 0 ? '+$' : '-$') + Math.abs(pnl).toFixed(2);
-            pnlEl.className = 'value ' + (pnl >= 0 ? 'positive' : 'negative');
-            
-            var pct = data.capital ? (pnl / data.capital * 100).toFixed(1) : '0.0';
-            document.getElementById('dailyPnlPct').textContent = pct + '% of capital';
-            
-            document.getElementById('openPositions').textContent = data.open_positions || 0;
-            document.getElementById('maxPositions').textContent = 'Max: ' + (data.max_positions || 5);
-            
-            document.getElementById('resolved24h').textContent = data.resolved_24h || 0;
-            var wr = data.resolved_24h && data.wins_24h !== undefined ? (data.wins_24h / data.resolved_24h * 100).toFixed(0) : '--';
-            document.getElementById('winRate').textContent = 'Win Rate: ' + wr + '%';
-            
-            // Data ingestion
-            var ingestion = data.ingestion || {};
-            document.getElementById('marketsTotal').textContent = ingestion.markets_scanned || 0;
-            document.getElementById('marketsValid').textContent = ingestion.markets_valid || 0;
-            document.getElementById('negriskGroups').textContent = ingestion.negrisk_groups || 0;
-            
-            var cats = ingestion.categories || {};
-            document.getElementById('catSports').textContent = cats.sports || 0;
-            document.getElementById('catPolitics').textContent = cats.politics || 0;
-            document.getElementById('catCrypto').textContent = cats.crypto || 0;
-            document.getElementById('catOther').textContent = cats.other || 0;
-            
-            // Strategy results
-            var strategies = data.strategies || {};
-            document.getElementById('s1Opp').textContent = strategies.s1_opportunities || 0;
-            document.getElementById('s10Opp').textContent = strategies.s10_opportunities || 0;
-            document.getElementById('s11Opp').textContent = strategies.s11_opportunities || 0;
-            document.getElementById('s12Opp').textContent = strategies.s12_opportunities || 0;
-            document.getElementById('s8Opp').textContent = strategies.s8_opportunities || 0;
-            document.getElementById('tradesExec').textContent = data.trades_executed || 0;
-            document.getElementById('tradesRej').textContent = 'rejected: ' + (data.trades_rejected || 0);
-            
-            // Opportunities count badge
-            var opps = data.opportunities || [];
-            var totalOpps = opps.length;
-            document.getElementById('oppCount').textContent = totalOpps;
-            
-            // Filter counts
-            var s1Count = opps.filter(function(o) { return o.strategy === 's1_negrisk_arb'; }).length;
-            var s10Count = opps.filter(function(o) { return o.strategy === 's10_near_resolution'; }).length;
-            var s11Count = opps.filter(function(o) { return o.strategy === 's11_short_duration_monitor'; }).length;
-            var s12Count = opps.filter(function(o) { return o.strategy === 's12_btc_momentum'; }).length;
-            var s8Count = opps.filter(function(o) { return o.strategy === 's8_logical_arb'; }).length;
-            document.getElementById('fAll').textContent = totalOpps;
-            document.getElementById('fS1').textContent = s1Count;
-            document.getElementById('fS10').textContent = s10Count;
-            document.getElementById('fS8').textContent = s8Count;
-            
-            // Render opportunities
-            renderOpportunities(opps);
-            
-            // Trades
-            var tradesEl = document.getElementById('trades');
-            var trades = data.recent_trades || [];
-            
-            if (trades.length === 0) {
-                tradesEl.innerHTML = '<tr><td colspan="8" style="text-align:center;color:#8b949e;">No recent trades</td></tr>';
-            } else {
-                tradesEl.innerHTML = trades.map(function(t) {
-                    var pnl = t.pnl || 0;
-                    var pnlClass = pnl > 0 ? 'positive' : (pnl < 0 ? 'negative' : '');
-                    return '<tr>' +
-                        '<td>' + (t.time || '').substring(11, 19) + '</td>' +
-                        '<td>' + (t.strategy || 'N/A') + '</td>' +
-                        '<td>' + (t.market || 'N/A').substring(0, 25) + '</td>' +
-                        '<td>' + (t.side || 'N/A') + '</td>' +
-                        '<td>$' + (t.price || 0).toFixed(2) + '</td>' +
-                        '<td>$' + (t.size || 0).toFixed(2) + '</td>' +
-                        '<td class="' + pnlClass + '">$' + pnl.toFixed(2) + '</td>' +
-                        '<td><span class="status ' + (t.outcome || 'open') + '">' + (t.outcome || 'open') + '</span></td>' +
-                    '</tr>';
-                }).join('');
-            }
-        }
+  <!-- Heatmap -->
+  <div class="card" style="margin-bottom:24px">
+    <div class="section-title">Opportunity Frequency by Hour (UTC)</div>
+    <div class="heatmap" id="heatmap"></div>
+    <div style="display:flex;justify-content:space-between;margin-top:6px">
+      <span style="font-size:10px;color:var(--muted)">00:00 UTC</span>
+      <span style="font-size:10px;color:var(--muted)">23:00 UTC</span>
+    </div>
+  </div>
 
-        function formatTimeLeft(seconds) {
-            if (seconds < 0) return 'Resolved';
-            if (seconds < 60) return seconds + 's';
-            if (seconds < 3600) return Math.floor(seconds / 60) + 'm';
-            if (seconds < 86400) return Math.floor(seconds / 3600) + 'h';
-            return Math.floor(seconds / 86400) + 'd';
-        }
+  <!-- Pattern Analysis -->
+  <div class="grid-2" style="margin-bottom:24px">
+    <div class="card">
+      <div class="section-title">Best Performing Categories</div>
+      <div id="cat-analysis"><div class="loading">Loading...</div></div>
+    </div>
+    <div class="card">
+      <div class="section-title">Days-to-Resolution Buckets</div>
+      <div class="chart-wrap"><canvas id="chart-days"></canvas></div>
+    </div>
+  </div>
 
-        function renderOpportunities(opps) {
-            var tbody = document.getElementById('opportunities');
-            var filtered = currentFilter === 'all' ? opps : opps.filter(function(o) { return o.strategy === currentFilter; });
-            
-            // Sort by score descending
-            filtered.sort(function(a, b) { return b.score - a.score; });
-            
-            if (filtered.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="9" style="text-align:center;color:#8b949e;">No opportunities found</td></tr>';
-                return;
-            }
-            
-            tbody.innerHTML = filtered.map(function(o) {
-                var actionClass = o.action.replace(/_/g, '-');
-                var stratBadge = o.strategy === 's1_negrisk_arb' ? 'S1' : (o.strategy === 's10_near_resolution' ? 'S10' : 'S8');
-                var stratClass = o.strategy === 's1_negrisk_arb' ? 's1' : (o.strategy === 's10_near_resolution' ? 's10' : 's8');
-                var scoreWidth = Math.round(o.score * 100);
-                var edgeClass = o.edge >= 5 ? 'positive' : (o.edge < 2 ? 'negative' : '');
-                
-                return '<tr>' +
-                    '<td><div class="score-bar"><div class="score-bar-fill" style="width:' + scoreWidth + '%"></div></div> ' + (o.score * 100).toFixed(1) + '%</td>' +
-                    '<td><span class="summary-badge ' + stratClass + '">' + stratBadge + '</span></td>' +
-                    '<td><span class="action-badge ' + actionClass + '">' + o.action.replace(/_/g, ' ') + '</span></td>' +
-                    '<td class="opp-question" title="' + (o.question || '') + '">' + (o.question || 'N/A').substring(0, 50) + '</td>' +
-                    '<td class="' + edgeClass + '">' + o.edge.toFixed(2) + '%</td>' +
-                    '<td>' + o.win_prob.toFixed(1) + '%</td>' +
-                    '<td>' + o.max_payout.toFixed(4) + 'x</td>' +
-                    '<td><span class="time-left">' + formatTimeLeft(o.time_to_resolution) + '</span></td>' +
-                    '<td>' + (o.category || 'unknown') + '</td>' +
-                '</tr>';
-            }).join('');
-        }
+  <!-- Open Positions -->
+  <div class="card" style="margin-bottom:24px">
+    <div class="section-title">Open Positions</div>
+    <div id="open-positions"><div class="loading">Loading...</div></div>
+  </div>
 
-        // Tab switching
-        document.querySelectorAll('.tab').forEach(function(tab) {
-            tab.addEventListener('click', function() {
-                document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('active'); });
-                document.querySelectorAll('.tab-content').forEach(function(c) { c.classList.remove('active'); });
-                tab.classList.add('active');
-                document.getElementById('tab-' + tab.dataset.tab).classList.add('active');
-            });
-        });
+  <!-- Recent Trades -->
+  <div class="card" style="margin-bottom:24px">
+    <div class="section-title">Recent Trades (last 50)</div>
+    <div id="recent-trades" style="overflow-x:auto"><div class="loading">Loading...</div></div>
+  </div>
 
-        // Filter buttons
-        document.querySelectorAll('.filter-btn').forEach(function(btn) {
-            btn.addEventListener('click', function() {
-                document.querySelectorAll('.filter-btn').forEach(function(b) { b.classList.remove('active'); });
-                btn.classList.add('active');
-                currentFilter = btn.dataset.filter;
-                renderOpportunities(STATE_DATA.opportunities || []);
-            });
-        });
+  <!-- Scan Log Table -->
+  <div class="card">
+    <div class="section-title">Recent Opportunities from Scan Log (last 30)</div>
+    <div id="scan-log-table" style="overflow-x:auto"><div class="loading">Loading...</div></div>
+  </div>
+</main>
 
-        renderDashboard();
-    </script>
+<script>
+// ── Config ─────────────────────────────────────────────────────────────────
+const OWNER  = 'Airdropperxx';
+const REPO   = 'polymarket-engine';
+const BRANCH = 'main';
+const RAW    = `https://raw.githubusercontent.com/${OWNER}/${REPO}/${BRANCH}`;
+
+let scanLog  = [];
+let trades   = [];
+let lessons  = {};
+
+async function fetchRaw(path) {
+  const r = await fetch(`${RAW}/${path}?_=${Date.now()}`);
+  if (!r.ok) throw new Error(`${path}: ${r.status}`);
+  return r.json();
+}
+
+async function fetchText(path) {
+  const r = await fetch(`${RAW}/${path}?_=${Date.now()}`);
+  if (!r.ok) throw new Error(`${path}: ${r.status}`);
+  return r.text();
+}
+
+// ── Helpers ────────────────────────────────────────────────────────────────
+function fmt(n, dec=2) {
+  if (n === null || n === undefined || isNaN(n)) return '—';
+  return Number(n).toFixed(dec);
+}
+function fmtUSD(n) {
+  if (n === null || n === undefined) return '—';
+  const v = Number(n);
+  const sign = v >= 0 ? '+' : '';
+  return sign + '$' + Math.abs(v).toFixed(2);
+}
+function cls(n) { return Number(n) >= 0 ? 'green' : 'red'; }
+function stratPill(s) {
+  if (!s) return '';
+  if (s.includes('s10')) return `<span class="pill pill-s10">S10</span>`;
+  if (s.includes('s1'))  return `<span class="pill pill-s1">S1</span>`;
+  if (s.includes('s8'))  return `<span class="pill pill-s8">S8</span>`;
+  return `<span class="pill pill-dry">${s}</span>`;
+}
+function statusPill(s) {
+  if (s === 'open') return `<span class="pill pill-open">open</span>`;
+  if (s === 'resolved' || s === 'win') return `<span class="pill pill-win">win</span>`;
+  if (s === 'loss') return `<span class="pill pill-loss">loss</span>`;
+  return `<span class="pill pill-dry">${s||''}</span>`;
+}
+function timeAgo(iso) {
+  if (!iso) return '—';
+  const diff = (Date.now() - new Date(iso).getTime()) / 1000;
+  if (diff < 60) return `${Math.round(diff)}s ago`;
+  if (diff < 3600) return `${Math.round(diff/60)}m ago`;
+  if (diff < 86400) return `${Math.round(diff/3600)}h ago`;
+  return `${Math.round(diff/86400)}d ago`;
+}
+
+// ── Chart defaults ──────────────────────────────────────────────────────────
+Chart.defaults.color = '#64748b';
+Chart.defaults.borderColor = '#2a2f3d';
+Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+Chart.defaults.font.size = 11;
+
+const charts = {};
+function destroyChart(id) { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
+
+// ── Load scan_log.json ─────────────────────────────────────────────────────
+async function loadScanLog() {
+  try {
+    scanLog = await fetchRaw('data/scan_log.json');
+    if (!Array.isArray(scanLog)) scanLog = [];
+  } catch(e) {
+    scanLog = [];
+  }
+}
+
+// ── Load trades from lessons.json (we don't have SQLite access in browser) ──
+// trades.db is binary so we read what we can from lessons.json and scan_log
+async function loadLessons() {
+  try {
+    lessons = await fetchRaw('data/lessons.json');
+  } catch(e) {
+    lessons = {};
+  }
+}
+
+// ── KPIs ───────────────────────────────────────────────────────────────────
+function renderKPIs() {
+  const executed = scanLog.filter(e => e.executed);
+  const resolved = executed.filter(e => e.outcome);
+  const wins     = resolved.filter(e => e.outcome === 'win');
+
+  // Balance from lessons
+  const scores   = lessons.strategy_scores || {};
+  const allocs   = Object.values(scores);
+
+  document.getElementById('kpi-balance').textContent = '$100.00';
+  document.getElementById('kpi-balance-sub').textContent = 'Starting capital (dry-run)';
+
+  const pnlEl = document.getElementById('kpi-pnl');
+  pnlEl.textContent = '+$0.00';
+  pnlEl.className = 'stat-val green';
+
+  document.getElementById('kpi-trades').textContent = executed.length;
+  document.getElementById('kpi-trades-sub').textContent =
+    `${executed.filter(e=>e.strategy?.includes('s10')).length} S10 · ` +
+    `${executed.filter(e=>e.strategy?.includes('s1')).length} S1`;
+
+  const wr = resolved.length > 0 ? (wins.length / resolved.length * 100).toFixed(0) + '%' : '—';
+  const wrEl = document.getElementById('kpi-winrate');
+  wrEl.textContent = wr;
+  wrEl.className = 'stat-val ' + (wins.length >= resolved.length/2 ? 'green' : 'red');
+  document.getElementById('kpi-winrate-sub').textContent =
+    `${wins.length}W / ${resolved.length - wins.length}L of ${resolved.length} resolved`;
+
+  document.getElementById('kpi-open').textContent =
+    executed.filter(e => !e.outcome).length;
+
+  document.getElementById('kpi-opps').textContent = scanLog.length;
+
+  const edges  = scanLog.map(e => e.edge).filter(e => e > 0);
+  const avgEdge = edges.length ? (edges.reduce((a,b)=>a+b,0)/edges.length*100).toFixed(2) : '—';
+  document.getElementById('kpi-edge').textContent = avgEdge !== '—' ? avgEdge + '%' : '—';
+
+  const probs  = scanLog.map(e => e.probability).filter(p => p > 0);
+  const avgProb = probs.length ? (probs.reduce((a,b)=>a+b,0)/probs.length*100).toFixed(1) : '—';
+  document.getElementById('kpi-prob').textContent = avgProb !== '—' ? avgProb + '%' : '—';
+
+  // Mode badge
+  const isDry = executed.some(e => e.trade_id?.startsWith('DRY'));
+  const badge = document.getElementById('mode-badge');
+  badge.textContent = 'DRY RUN';
+  badge.className = 'badge dry';
+  document.getElementById('status-dot').className = scanLog.length > 0 ? 'ok' : '';
+}
+
+// ── P&L Chart ───────────────────────────────────────────────────────────────
+function renderPnLChart() {
+  destroyChart('pnl');
+  const executed = scanLog.filter(e => e.executed).sort((a,b) => a.ts_unix - b.ts_unix);
+  if (executed.length < 2) return;
+
+  // Fake cumulative P&L based on edge (for pattern visibility)
+  let cum = 0;
+  const labels = [];
+  const data   = [];
+  executed.forEach((e, i) => {
+    cum += (e.edge || 0) * (e.buy_price || 0.9) * 40; // ~$40 position
+    labels.push(i + 1);
+    data.push(parseFloat(cum.toFixed(3)));
+  });
+
+  const ctx = document.getElementById('chart-pnl').getContext('2d');
+  const positive = data[data.length-1] >= 0;
+  charts.pnl = new Chart(ctx, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [{
+        data,
+        borderColor: positive ? '#22c55e' : '#ef4444',
+        backgroundColor: positive ? 'rgba(34,197,94,0.08)' : 'rgba(239,68,68,0.08)',
+        borderWidth: 2,
+        fill: true,
+        tension: 0.3,
+        pointRadius: 0,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: '#1e222d' }, ticks: { maxTicksLimit: 8 } },
+        y: { grid: { color: '#1e222d' },
+             ticks: { callback: v => '$' + v.toFixed(2) } }
+      }
+    }
+  });
+}
+
+// ── Edge Distribution ──────────────────────────────────────────────────────
+function renderEdgeChart() {
+  destroyChart('edge');
+  if (!scanLog.length) return;
+
+  const buckets = {};
+  scanLog.forEach(e => {
+    const b = Math.floor((e.edge || 0) * 100).toString();
+    buckets[b] = (buckets[b] || 0) + 1;
+  });
+  const keys   = Object.keys(buckets).sort((a,b) => +a - +b);
+  const labels = keys.map(k => k + '%');
+  const data   = keys.map(k => buckets[k]);
+
+  const ctx = document.getElementById('chart-edge').getContext('2d');
+  charts.edge = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels,
+      datasets: [{
+        data,
+        backgroundColor: 'rgba(168,85,247,0.6)',
+        borderColor: 'rgba(168,85,247,0.9)',
+        borderWidth: 1,
+        borderRadius: 4,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false } },
+        y: { grid: { color: '#1e222d' }, ticks: { stepSize: 1 } }
+      }
+    }
+  });
+}
+
+// ── Category Chart ─────────────────────────────────────────────────────────
+function renderCatChart() {
+  destroyChart('cat');
+  if (!scanLog.length) return;
+
+  const cats = {};
+  scanLog.forEach(e => {
+    const c = e.category || 'other';
+    cats[c] = (cats[c] || 0) + 1;
+  });
+  const labels = Object.keys(cats);
+  const data   = labels.map(l => cats[l]);
+  const colors = ['#3b82f6','#22c55e','#f59e0b','#a855f7','#14b8a6','#ef4444'];
+
+  const ctx = document.getElementById('chart-cat').getContext('2d');
+  charts.cat = new Chart(ctx, {
+    type: 'doughnut',
+    data: {
+      labels,
+      datasets: [{
+        data,
+        backgroundColor: colors,
+        borderColor: '#161920',
+        borderWidth: 2,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: {
+        legend: { position: 'right', labels: { boxWidth: 12, padding: 12 } }
+      }
+    }
+  });
+}
+
+// ── Strategy Chart ─────────────────────────────────────────────────────────
+function renderStratChart() {
+  destroyChart('strat');
+  if (!scanLog.length) return;
+
+  const strats = {};
+  scanLog.forEach(e => {
+    const s = e.strategy || 'unknown';
+    strats[s] = (strats[s] || 0) + 1;
+  });
+
+  const ctx = document.getElementById('chart-strat').getContext('2d');
+  charts.strat = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: Object.keys(strats),
+      datasets: [{
+        data: Object.values(strats),
+        backgroundColor: ['rgba(168,85,247,0.7)','rgba(20,184,166,0.7)','rgba(59,130,246,0.7)'],
+        borderRadius: 6,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      indexAxis: 'y',
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { color: '#1e222d' } },
+        y: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+// ── Probability Buckets ────────────────────────────────────────────────────
+function renderProbChart() {
+  destroyChart('prob');
+  if (!scanLog.length) return;
+
+  const b = {'85-90%':0,'90-95%':0,'95-99%':0,'99%+':0};
+  scanLog.forEach(e => {
+    const p = (e.probability||0)*100;
+    if (p >= 99)      b['99%+']++;
+    else if (p >= 95) b['95-99%']++;
+    else if (p >= 90) b['90-95%']++;
+    else if (p >= 85) b['85-90%']++;
+  });
+
+  const ctx = document.getElementById('chart-prob').getContext('2d');
+  charts.prob = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: Object.keys(b),
+      datasets: [{
+        data: Object.values(b),
+        backgroundColor: ['rgba(59,130,246,0.7)','rgba(34,197,94,0.6)','rgba(34,197,94,0.8)','rgba(34,197,94,1.0)'],
+        borderRadius: 6,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false } },
+        y: { grid: { color: '#1e222d' } }
+      }
+    }
+  });
+}
+
+// ── Days-to-Resolution Chart ───────────────────────────────────────────────
+function renderDaysChart() {
+  destroyChart('days');
+  if (!scanLog.length) return;
+
+  const b = {'<1d':0,'1-3d':0,'3-7d':0,'7d+':0};
+  scanLog.forEach(e => {
+    const d = e.days_to_res || 0;
+    if (d < 1)      b['<1d']++;
+    else if (d < 3) b['1-3d']++;
+    else if (d < 7) b['3-7d']++;
+    else            b['7d+']++;
+  });
+
+  const ctx = document.getElementById('chart-days').getContext('2d');
+  charts.days = new Chart(ctx, {
+    type: 'bar',
+    data: {
+      labels: Object.keys(b),
+      datasets: [{
+        data: Object.values(b),
+        backgroundColor: ['rgba(239,68,68,0.8)','rgba(245,158,11,0.7)','rgba(59,130,246,0.7)','rgba(100,116,139,0.5)'],
+        borderRadius: 6,
+      }]
+    },
+    options: {
+      responsive: true, maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        x: { grid: { display: false } },
+        y: { grid: { color: '#1e222d' } }
+      }
+    }
+  });
+}
+
+// ── Heatmap ────────────────────────────────────────────────────────────────
+function renderHeatmap() {
+  const hourCounts = Array(24).fill(0);
+  scanLog.forEach(e => {
+    const h = e.hour_utc;
+    if (h >= 0 && h < 24) hourCounts[h]++;
+  });
+  const max = Math.max(...hourCounts, 1);
+  const container = document.getElementById('heatmap');
+  container.innerHTML = '';
+  hourCounts.forEach((count, h) => {
+    const intensity = count / max;
+    const alpha = 0.1 + intensity * 0.9;
+    const cell = document.createElement('div');
+    cell.className = 'heatmap-cell';
+    cell.style.background = `rgba(168,85,247,${alpha.toFixed(2)})`;
+    cell.title = `${h.toString().padStart(2,'0')}:00 UTC — ${count} opportunities`;
+    cell.textContent = count > 0 ? count : '';
+    container.appendChild(cell);
+  });
+}
+
+// ── Category Analysis ──────────────────────────────────────────────────────
+function renderCatAnalysis() {
+  const el = document.getElementById('cat-analysis');
+  if (!scanLog.length) { el.innerHTML = '<div class="loading">No data yet</div>'; return; }
+
+  const cats = {};
+  scanLog.forEach(e => {
+    const c = e.category || 'other';
+    if (!cats[c]) cats[c] = { count: 0, edges: [], probs: [], executed: 0 };
+    cats[c].count++;
+    cats[c].edges.push(e.edge || 0);
+    cats[c].probs.push(e.probability || 0);
+    if (e.executed) cats[c].executed++;
+  });
+
+  const sorted = Object.entries(cats).sort((a,b) => b[1].count - a[1].count);
+  const colorMap = { crypto:'#3b82f6', sports:'#22c55e', politics:'#f59e0b', other:'#64748b' };
+
+  el.innerHTML = sorted.map(([cat, d]) => {
+    const avgEdge = (d.edges.reduce((a,b)=>a+b,0)/d.edges.length*100).toFixed(2);
+    const avgProb = (d.probs.reduce((a,b)=>a+b,0)/d.probs.length*100).toFixed(1);
+    const execRate = (d.executed / d.count * 100).toFixed(0);
+    const pct = (d.count / scanLog.length * 100).toFixed(0);
+    const color = colorMap[cat] || '#64748b';
+    return `
+      <div style="margin-bottom:16px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
+          <span style="font-weight:500;color:${color}">${cat}</span>
+          <span style="font-size:12px;color:var(--muted)">${d.count} opps (${pct}%)</span>
+        </div>
+        <div class="prog-bar" style="margin-bottom:6px">
+          <div class="prog-fill" style="width:${pct}%;background:${color}"></div>
+        </div>
+        <div style="display:flex;gap:16px;font-size:12px;color:var(--muted)">
+          <span>Avg edge <b style="color:var(--text)">${avgEdge}%</b></span>
+          <span>Avg prob <b style="color:var(--text)">${avgProb}%</b></span>
+          <span>Exec rate <b style="color:var(--text)">${execRate}%</b></span>
+        </div>
+      </div>
+    `;
+  }).join('');
+}
+
+// ── Open Positions ─────────────────────────────────────────────────────────
+function renderOpenPositions() {
+  const el = document.getElementById('open-positions');
+  const open = scanLog.filter(e => e.executed && !e.outcome);
+  if (!open.length) {
+    el.innerHTML = '<div class="loading" style="padding:20px">No open positions</div>';
+    return;
+  }
+  el.innerHTML = `
+    <table>
+      <thead><tr>
+        <th>Strategy</th><th>Question</th><th>Action</th>
+        <th>Probability</th><th>Edge</th><th>Days Left</th>
+        <th>Category</th><th>Volume 24h</th>
+      </tr></thead>
+      <tbody>
+        ${open.slice(0,20).map(e => `
+          <tr>
+            <td>${stratPill(e.strategy)}</td>
+            <td style="max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${e.question}</td>
+            <td><span class="pill pill-open">${e.action||'BUY'}</span></td>
+            <td>${((e.probability||0)*100).toFixed(1)}%</td>
+            <td class="green">${((e.edge||0)*100).toFixed(2)}%</td>
+            <td>${(e.days_to_res||0).toFixed(1)}d</td>
+            <td>${e.category||'—'}</td>
+            <td>$${Number(e.volume_24h||0).toLocaleString()}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+// ── Recent Trades ──────────────────────────────────────────────────────────
+function renderRecentTrades() {
+  const el = document.getElementById('recent-trades');
+  const executed = scanLog.filter(e => e.executed)
+                          .sort((a,b) => b.ts_unix - a.ts_unix)
+                          .slice(0, 50);
+  if (!executed.length) {
+    el.innerHTML = '<div class="loading" style="padding:20px">No trades yet — waiting for scan cycles</div>';
+    return;
+  }
+  el.innerHTML = `
+    <table>
+      <thead><tr>
+        <th>Time</th><th>Strategy</th><th>Question</th>
+        <th>Action</th><th>Probability</th><th>Edge</th>
+        <th>Score</th><th>Days Left</th><th>Category</th><th>Status</th>
+      </tr></thead>
+      <tbody>
+        ${executed.map(e => `
+          <tr>
+            <td style="white-space:nowrap;color:var(--muted)">${timeAgo(e.ts)}</td>
+            <td>${stratPill(e.strategy)}</td>
+            <td style="max-width:240px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"
+                title="${e.question}">${e.question}</td>
+            <td><span class="pill pill-open">${e.action||'BUY'}</span></td>
+            <td>${((e.probability||0)*100).toFixed(1)}%</td>
+            <td class="green">${((e.edge||0)*100).toFixed(2)}%</td>
+            <td>${((e.score||0)).toFixed(3)}</td>
+            <td>${(e.days_to_res||0).toFixed(1)}d</td>
+            <td>${e.category||'—'}</td>
+            <td>${statusPill(e.outcome||'open')}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+// ── Scan Log Table ─────────────────────────────────────────────────────────
+function renderScanLogTable() {
+  const el = document.getElementById('scan-log-table');
+  const recent = [...scanLog].sort((a,b) => b.ts_unix - a.ts_unix).slice(0, 30);
+  if (!recent.length) {
+    el.innerHTML = '<div class="loading" style="padding:20px">No scan log data yet</div>';
+    return;
+  }
+  el.innerHTML = `
+    <table>
+      <thead><tr>
+        <th>Time</th><th>Strategy</th><th>Question</th>
+        <th>Edge</th><th>Prob</th><th>Score</th>
+        <th>Days</th><th>Vol 24h</th><th>Executed</th>
+      </tr></thead>
+      <tbody>
+        ${recent.map(e => `
+          <tr>
+            <td style="white-space:nowrap;color:var(--muted)">${timeAgo(e.ts)}</td>
+            <td>${stratPill(e.strategy)}</td>
+            <td style="max-width:260px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis"
+                title="${e.question}">${e.question}</td>
+            <td class="green">${((e.edge||0)*100).toFixed(2)}%</td>
+            <td>${((e.probability||0)*100).toFixed(1)}%</td>
+            <td>${(e.score||0).toFixed(3)}</td>
+            <td>${(e.days_to_res||0).toFixed(1)}d</td>
+            <td>$${Number(e.volume_24h||0).toLocaleString()}</td>
+            <td>${e.executed
+              ? '<span class="pill pill-win">yes</span>'
+              : `<span class="pill pill-loss" title="${e.skipped_reason||''}">no</span>`}</td>
+          </tr>
+        `).join('')}
+      </tbody>
+    </table>
+  `;
+}
+
+// ── Main load ──────────────────────────────────────────────────────────────
+async function loadAll() {
+  document.getElementById('last-updated').textContent = 'Loading...';
+  try {
+    await Promise.all([loadScanLog(), loadLessons()]);
+    renderKPIs();
+    renderPnLChart();
+    renderEdgeChart();
+    renderCatChart();
+    renderStratChart();
+    renderProbChart();
+    renderDaysChart();
+    renderHeatmap();
+    renderCatAnalysis();
+    renderOpenPositions();
+    renderRecentTrades();
+    renderScanLogTable();
+    document.getElementById('last-updated').textContent =
+      'Updated ' + new Date().toLocaleTimeString();
+  } catch(e) {
+    console.error(e);
+    document.getElementById('last-updated').textContent = 'Error: ' + e.message;
+  }
+}
+
+// Auto-refresh every 5 minutes
+loadAll();
+setInterval(loadAll, 300000);
+</script>
 </body>
 </html>
