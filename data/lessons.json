@@ -22,14 +22,14 @@
     }
   },
   "lessons": [
-    "Fee formula: 2.25 * 0.25 * (p*(1-p))^2. At p=0.50 fee is 1.406%. At p=0.95 fee is <0.013%. Enter near certainty only.",
-    "ALWAYS read fee_rate_bps from MarketState or fresh clob_client.get_market(). NEVER hardcode. Post-Feb-2026 stale rates = silent rejection.",
-    "S10 sports markets require min_probability=0.93 (not 0.90). Late-reversal risk in last 5 min causes ~9% miss rate at lower threshold.",
-    "S1 NegRisk long arb: buy_all_yes when sum(YES ask prices) < 1.00. Exactly one candidate MUST win. win_probability=1.0 always.",
-    "S8 logical violations most common in US politics subset markets (candidate vs party). Scan politics/* first.",
-    "S8 classifier cache must be committed to repo (data/s8_direction_cache.json). GitHub Actions runners are ephemeral — in-memory cache lost every run.",
-    "max_minutes_remaining in S10 YAML must be > poll_interval_minutes + 15 min buffer. With 30-min GHA poll: use 60. With 60-min poll: use 90.",
-    "S4 Chainlink Sniper requires <2 min reaction time. Incompatible with 30-60 min cron polling. Only enable with persistent WebSocket process on VPS."
+    "Fee formula: 2.25 * 0.25 * (p*(1-p))^2. At p=0.50 fee is 1.41%. At p=0.95 fee is ~0.013%.",
+    "ALWAYS fetch feeRateBps live before every order. Stale rates cause silent rejections.",
+    "S10 max_minutes_remaining is in MINUTES — code converts to seconds internally. Do not compare raw.",
+    "S10 sports requires min_probability=0.93 not 0.90. Late-reversal risk is real in final minutes.",
+    "S1 NegRisk: reject legs with yes_bid < 0.02. Zero bids = stale market = phantom arb signal.",
+    "S8: US politics markets have the most logical violations. Scan politics/* first.",
+    "Market cache is gzip-compressed to data/market_snapshot.json.gz and committed after each run.",
+    "S1 NegRisk arb: use YES ask (taker price) not YES mid for total_ask computation."
   ],
   "deprecated_lessons": [],
   "capital_history": []

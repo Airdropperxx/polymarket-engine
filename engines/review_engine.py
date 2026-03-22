@@ -1,192 +1,142 @@
 """
-engines/review_engine.py
-========================
-AI-powered post-resolution learning loop.
-
-Called after every resolution and daily at 00:00 UTC.
-Updates data/lessons.json with new strategy insights and allocation adjustments.
-
-Uses Claude Haiku for cost efficiency (~$0.001 per review).
-NEVER places orders. NEVER raises — all failures are logged and swallowed.
+engines/review_engine.py — AI learning loop using Claude Haiku.
+NEVER trades. NEVER raises. Returns {'status': 'skipped'} if 0 trades.
+JSON parse has try/except + regex fallback per spec.
 """
 
 from __future__ import annotations
 
 import json
+import os
 import re
-from datetime import datetime, timedelta, timezone
-from typing import Optional
+from datetime import datetime, timezone
 
 import structlog
 
 from engines.state_engine import StateEngine
 
-log = structlog.get_logger()
+log = structlog.get_logger(component="review_engine")
 
-try:
-    import anthropic
-    ANTHROPIC_AVAILABLE = True
-except ImportError:
-    ANTHROPIC_AVAILABLE = False
-    log.warning("review_engine.anthropic_unavailable")
+SYSTEM_PROMPT = """You are a trading strategy reviewer for a Polymarket prediction market engine.
 
-_SYSTEM_PROMPT = """You are a quantitative trading strategy reviewer for a Polymarket prediction market engine.
-
-INPUT: A JSON object with recent resolved trades and existing lessons.
-OUTPUT: Valid JSON ONLY. No preamble. No markdown fences. No explanation outside the JSON.
-
-Output schema:
+Review the recent resolved trades and current lessons, then output ONLY valid JSON:
 {
   "strategy_score_updates": {
-    "strategy_name": {"win_rate": float, "avg_roi": float, "allocation_delta": float}
+    "s10_near_resolution": {"allocation_delta": 0.0, "notes": "..."},
+    "s1_negrisk_arb":      {"allocation_delta": 0.0, "notes": "..."},
+    "s8_logical_arb":      {"allocation_delta": 0.0, "notes": "..."}
   },
-  "new_lessons": ["lesson string", ...],
-  "deprecated_lesson_indices": [0, 1, ...],
-  "reasoning": "one sentence explaining the main change"
+  "new_lessons": ["specific lesson string"],
+  "deprecated_lesson_indices": [],
+  "reasoning": "brief explanation"
 }
 
-Rules:
-- Lessons must be SPECIFIC and FALSIFIABLE.
-  BAD:  "S10 sometimes loses in sports"
-  GOOD: "S10 sports win rate 71% when margin < 2 goals AND time < 10 min. Raise threshold to 0.95."
-- allocation_delta: max ±0.05 per strategy per cycle. Never exceed this.
-- Only adjust allocation if strategy has >= 5 trades in the input.
-- Deprecate a lesson only if there is clear contradicting evidence (not one outlier).
-- If fewer than 3 trades total: set strategy_score_updates to {} and new_lessons to [].
+RULES:
+- Output ONLY valid JSON — no prose, no markdown, no backticks
+- allocation_delta: max ±0.05 per strategy per cycle
+- Min 5 trades before adjusting any allocation
+- Lessons must be specific: "S10 sports at p=0.91 loses 29%" not "S10 is risky"
+- All allocations must still sum to 1.0 after deltas applied
 """
 
 
 class ReviewEngine:
-    """AI-powered post-resolution learning loop."""
+    def __init__(self, state_engine: StateEngine, config: dict):
+        self.state  = state_engine
+        self.config = config
 
-    def __init__(self, state_engine: StateEngine, config: dict) -> None:
-        self._state  = state_engine
-        self._config = config
-        self._client = None
-        if ANTHROPIC_AVAILABLE:
-            try:
-                self._client = anthropic.Anthropic()
-            except Exception as e:
-                log.warning("review_engine.anthropic_init_failed", error=str(e))
-                self._client = None
-        else:
-            log.warning("review_engine.anthropic_not_installed")
-
-    def run_after_resolution(self, market_id: str) -> dict:
-        """
-        Run review triggered by a specific market resolution.
-        Uses last 48 hours of resolved trades.
-        Returns status dict. NEVER raises.
-        """
-        trades = self._state.get_recent_resolved_trades(hours=48)
-        if not trades:
-            return {"status": "skipped", "reason": "no_trades"}
-        return self._run(trades, context=f"triggered by resolution of {market_id}")
+    def run_after_resolution(self) -> dict:
+        return self._run(window_hours=48)
 
     def run_daily_review(self) -> dict:
-        """
-        Run full daily review at 00:00 UTC.
-        Uses last 7 days of resolved trades. NEVER raises.
-        """
-        trades = self._state.get_recent_resolved_trades(hours=168)
-        return self._run(trades, context="daily review")
+        return self._run(window_hours=168)  # 7 days
 
-    # -----------------------------------------------------------------------
-    # Internal
-    # -----------------------------------------------------------------------
+    def _run(self, window_hours: int = 48) -> dict:
+        recent = self.state.get_recent_resolved_trades(hours=window_hours)
+        if not recent:
+            log.info("review_skipped_no_trades")
+            return {"status": "skipped"}
 
-    def _run(self, trades: list[dict], context: str) -> dict:
-        if not self._client:
-            return {"status": "skipped", "reason": "anthropic_not_available"}
-        
-        lessons = self._state.get_lessons()
-
-        user_content = json.dumps({
-            "context": context,
-            "trade_count": len(trades),
-            "trades": trades[:50],  # cap at 50 to stay within token limits
-            "existing_lessons": lessons.get("lessons", []),
-            "current_scores": lessons.get("strategy_scores", {}),
-        }, default=str)
+        lessons_data = self.state.get_lessons()
+        api_key      = os.environ.get("ANTHROPIC_API_KEY", "")
+        if not api_key:
+            log.warning("review_skipped_no_api_key")
+            return {"status": "skipped_no_key"}
 
         try:
-            response = self._client.messages.create(
-                model="claude-haiku-4-5-20251001",
-                max_tokens=1000,
-                system=_SYSTEM_PROMPT,
-                messages=[{"role": "user", "content": user_content}],
+            import anthropic
+            client = anthropic.Anthropic(api_key=api_key)
+
+            prompt = (
+                f"Recent trades ({len(recent)}):\n"
+                f"{json.dumps(recent[:20], indent=2)}\n\n"
+                f"Current lessons:\n"
+                f"{json.dumps(lessons_data.get('lessons', []), indent=2)}"
             )
-            raw = response.content[0].text
-        except Exception as exc:
-            log.error("review_engine.api_error", error=str(exc))
-            return {"status": "error", "reason": str(exc)}
 
-        updates = self._parse_response(raw)
-        if not updates:
-            return {"status": "error", "reason": "could_not_parse_response"}
+            response = client.messages.create(
+                model      = "claude-haiku-4-5-20251001",
+                max_tokens = 1000,
+                system     = SYSTEM_PROMPT,
+                messages   = [{"role": "user", "content": prompt}]
+            )
+            text = response.content[0].text.strip()
 
-        self._apply_updates(updates, lessons)
-        log.info("review_engine.updated", reasoning=updates.get("reasoning", ""))
-        return {
-            "status": "updated",
-            "new_lessons": updates.get("new_lessons", []),
-            "reasoning": updates.get("reasoning", ""),
-        }
-
-    def _parse_response(self, text: str) -> Optional[dict]:
-        """Parse JSON from LLM response with fallback regex extraction."""
-        try:
-            return json.loads(text)
-        except json.JSONDecodeError:
-            pass
-        match = re.search(r"\{.*\}", text, re.DOTALL)
-        if match:
+            # Parse JSON with fallback
             try:
-                return json.loads(match.group())
+                updates = json.loads(text)
             except json.JSONDecodeError:
-                pass
-        log.error("review_engine.parse_failed", raw=text[:200])
-        return None
+                match = re.search(r'\{.*\}', text, re.DOTALL)
+                if match:
+                    try:
+                        updates = json.loads(match.group())
+                    except Exception:
+                        return {"status": "error", "raw": text[:200]}
+                else:
+                    return {"status": "error"}
 
-    def _apply_updates(self, updates: dict, lessons: dict) -> None:
-        """Apply reviewer output to lessons dict and save."""
-        MAX_ALLOCATION_DELTA = 0.05
-        MAX_LESSONS = 20
+            # Apply updates
+            self._apply_updates(lessons_data, updates)
+            self.state.save_lessons(lessons_data)
 
-        # Update strategy scores and allocation weights
-        for strategy, score_update in updates.get("strategy_score_updates", {}).items():
-            if strategy not in lessons.setdefault("strategy_scores", {}):
-                lessons["strategy_scores"][strategy] = {}
-            entry = lessons["strategy_scores"][strategy]
-            for k in ("win_rate", "avg_roi"):
-                if k in score_update:
-                    entry[k] = score_update[k]
-            delta = float(score_update.get("allocation_delta", 0.0))
-            delta = max(-MAX_ALLOCATION_DELTA, min(MAX_ALLOCATION_DELTA, delta))  # enforce cap
-            entry["allocation"] = round(entry.get("allocation", 0.0) + delta, 4)
+            log.info("review_complete",
+                     new_lessons=len(updates.get("new_lessons", [])),
+                     deprecated=len(updates.get("deprecated_lesson_indices", [])))
+            return {"status": "ok", "updates": updates}
 
-        # Add new lessons (prune oldest if over limit)
-        existing = lessons.setdefault("lessons", [])
-        for lesson in updates.get("new_lessons", []):
-            if lesson and lesson not in existing:
-                existing.append(lesson)
-        while len(existing) > MAX_LESSONS:
-            deprecated = existing.pop(0)
-            lessons.setdefault("deprecated_lessons", []).append(deprecated)
+        except Exception as e:
+            log.error("review_engine_failed", error=str(e))
+            return {"status": "error"}
 
-        # Deprecate old lessons
-        indices = sorted(updates.get("deprecated_lesson_indices", []), reverse=True)
-        for i in indices:
-            if 0 <= i < len(existing):
-                deprecated = existing.pop(i)
-                lessons.setdefault("deprecated_lessons", []).append(deprecated)
+    def _apply_updates(self, lessons_data: dict, updates: dict) -> None:
+        """Apply allocation deltas and new lessons. Never crashes."""
+        try:
+            # Add new lessons
+            for lesson in updates.get("new_lessons", []):
+                if lesson and len(lesson) > 10:
+                    lessons_data.setdefault("lessons", []).append(lesson)
 
-        # Append capital history entry
-        lessons.setdefault("capital_history", []).append({
-            "date": datetime.now(timezone.utc).date().isoformat(),
-            "balance": self._state.get_current_balance(),
-            "pnl_today": self._state.get_daily_pnl(),
-        })
+            # Deprecate old lessons
+            deprecated_idx = sorted(
+                updates.get("deprecated_lesson_indices", []), reverse=True
+            )
+            lessons = lessons_data.get("lessons", [])
+            for idx in deprecated_idx:
+                if 0 <= idx < len(lessons):
+                    lessons_data.setdefault("deprecated_lessons", []).append(
+                        lessons.pop(idx)
+                    )
 
-        lessons["last_updated"] = datetime.now(timezone.utc).isoformat()
-        self._state.save_lessons(lessons)
+            # Apply allocation deltas (capped at ±0.05)
+            scores = lessons_data.get("strategy_scores", {})
+            for strat, update in updates.get("strategy_score_updates", {}).items():
+                delta = float(update.get("allocation_delta", 0.0))
+                delta = max(-0.05, min(0.05, delta))   # hard cap
+                if strat in scores:
+                    scores[strat]["allocation"] = round(
+                        scores[strat].get("allocation", 0.0) + delta, 3
+                    )
+
+            lessons_data["last_updated"] = datetime.now(timezone.utc).isoformat()
+        except Exception as e:
+            log.warning("apply_updates_failed", error=str(e))

@@ -1,30 +1,31 @@
 engine:
-  version: "0.3.0"
+  version: "3.1"
   capital_usdc: 100.00
-  dry_run: true
-  # GitHub Actions: 5-min poll for faster dry-run testing
-  # Production: use 30 min (public repo, unlimited minutes)
-  poll_interval_seconds: 300         # 5 minutes
+  dry_run: false        # OVERRIDE with DRY_RUN=true env var for testing
 
-  max_per_cycle: 20                  # Max new trades per scan cycle
+  # How many new trades to execute per scan cycle (prevents over-trading)
+  max_per_cycle: 3
 
-risk:
-  max_position_pct: 0.15             # Max 15% of total capital per trade ($15 at $100)
-  max_daily_loss_pct: 0.05           # 5% daily loss = $5 → engine halts until next day
-  max_open_positions: 5              # Never hold more than 5 positions simultaneously
-  min_edge_after_fees: 0.025         # Minimum 2.5% net edge required after fees to enter
+  # Scan interval — must match GitHub Actions cron (30 min)
+  poll_interval_seconds: 1800
 
-allocations:                         # Must sum to exactly 1.0
-  s10_near_resolution: 0.20          # $20 — near-term sports/political markets
-  s1_negrisk_arb:      0.30          # $30 — guaranteed arb, zero directional risk
-  s11_short_duration:  0.25          # $25 — same-day/short-duration markets
-  s12_btc_momentum:    0.25          # $25 — BTC price momentum trading
+  risk:
+    max_position_pct: 0.15        # 15% of bankroll per trade = $15
+    max_daily_loss_pct: 0.05      # halt trading if daily loss > 5% = $5
+    max_open_positions: 5         # never hold more than 5 simultaneous positions
+    min_edge_after_fees: 0.005    # 0.5% minimum net edge (overridden per strategy)
 
-monitoring:
-  telegram_alerts: true
-  alert_on:
-    - trade_executed
-    - daily_summary
-    - risk_limit_hit
-    - error
-    - lesson_update
+  # Capital allocation across strategies (must sum to 1.0)
+  allocations:
+    s10_near_resolution: 0.40    # $40 — safest, fastest-cycling strategy
+    s1_negrisk_arb: 0.40         # $40 — true arb, ~100% win rate when it fires
+    s8_logical_arb: 0.20         # $20 — higher risk (LLM can err), lower allocation
+
+  monitoring:
+    telegram_alerts: true
+    alert_on:
+      - trade_executed
+      - daily_summary
+      - risk_limit_hit
+      - error
+      - lesson_update

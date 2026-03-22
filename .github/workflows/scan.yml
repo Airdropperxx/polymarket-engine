@@ -2,50 +2,88 @@ name: Market Scanner
 
 on:
   schedule:
-    - cron: '*/5 * * * *'     # Every 5 minutes for fast dry-run
-  workflow_dispatch:            # Manual trigger
-  push:                        # Also run on push for immediate updates
+    # Every 30 minutes on public repo (unlimited GHA minutes)
+    # Changed from 5-min: 5-min = 8,640 runs/month, hits concurrency stacking
+    # 30-min = 1,440 runs/month — clean, reliable, sufficient for zero-infra strategies
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+    inputs:
+      dry_run:
+        description: 'Force dry run (true/false)'
+        required: false
+        default: 'true'
 
 concurrency:
-  group: engine-scan
-  cancel-in-progress: true     # Cancel in-progress to save minutes
+  group: engine-state
+  cancel-in-progress: false   # NEVER cancel a running scan — data corruption risk
+
+permissions:
+  contents: write   # Required: scan cycle commits data/ back to repo
 
 jobs:
   scan:
     runs-on: ubuntu-latest
-    timeout-minutes: 3         # 3 min timeout for speed
+    timeout-minutes: 15   # Hard kill if something hangs
+
+    env:
+      # All secrets injected from GitHub Secrets (never in code)
+      POLYMARKET_API_KEY:       ${{ secrets.POLYMARKET_API_KEY }}
+      POLYMARKET_API_SECRET:    ${{ secrets.POLYMARKET_API_SECRET }}
+      POLYMARKET_PASSPHRASE:    ${{ secrets.POLYMARKET_PASSPHRASE }}
+      POLYMARKET_WALLET_ADDRESS: ${{ secrets.POLYMARKET_WALLET_ADDRESS }}
+      POLYMARKET_PRIVATE_KEY:   ${{ secrets.POLYMARKET_PRIVATE_KEY }}
+      POLYGON_RPC_URL:          ${{ secrets.POLYGON_RPC_URL }}
+      ANTHROPIC_API_KEY:        ${{ secrets.ANTHROPIC_API_KEY }}
+      TELEGRAM_BOT_TOKEN:       ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID:         ${{ secrets.TELEGRAM_CHAT_ID }}
+      # DRY_RUN: set as a GitHub Variable (not Secret) so it's easy to toggle
+      DRY_RUN:                  ${{ vars.DRY_RUN }}
 
     steps:
-      - name: Checkout
+      - name: Checkout repo (with full history for git push)
         uses: actions/checkout@v4
         with:
-          fetch-depth: 1
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Setup Python
+      - name: Set up Python 3.11
         uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+          # Cache pip packages — sentence-transformers is 80MB, this saves ~90s
+          cache: 'pip'
+          cache-dependency-path: 'requirements.txt'
 
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install -r requirements-core.txt --quiet
+          pip install -r requirements.txt
+
+      # Cache the sentence-transformers model weights between runs
+      # This is the biggest speedup — saves ~45s model download per run
+      - name: Cache HuggingFace models
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/huggingface
+          key: hf-all-MiniLM-L6-v2-v1
+          restore-keys: hf-all-MiniLM-L6-v2-
+
+      - name: Configure git for data commits
+        run: |
+          git config user.email "engine@polymarket-bot"
+          git config user.name "Polymarket Engine"
 
       - name: Run scan cycle
         run: python scripts/run_scan_cycle.py
-        env:
-          DATABASE_PATH: data/trades.db
-          LESSONS_PATH:  data/lessons.json
-          ENGINE_CONFIG: configs/engine.yaml
-          DRY_RUN: ${{ vars.DRY_RUN || 'true' }}
 
-      - name: Update Dashboard
-        run: python scripts/update_dashboard.py || true
-
-      - name: Commit state changes
-        run: |
-          git config user.name "polymarket-engine[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/last_scan.json data/trades.db data/lessons.json dashboard.html 2>/dev/null || true
-          git diff --cached --quiet || git commit -m "auto(scan): $(date -u +%Y-%m-%dT%H:%M:%SZ)" || true
-          git push || true
+      # Explicit upload of scan logs as artifact for debugging
+      - name: Upload scan logs
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: scan-logs-${{ github.run_number }}
+          path: |
+            logs/*.log
+            data/market_snapshot.json.gz
+          retention-days: 7
+          if-no-files-found: ignore

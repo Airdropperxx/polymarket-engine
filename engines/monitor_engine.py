@@ -1,85 +1,69 @@
 """
-engines/monitor_engine.py
-=========================
-Telegram notification engine.
-
-Sends alerts for all key events.
-Silent (log-only) if TELEGRAM_BOT_TOKEN is missing — NEVER crashes the engine.
-All messages truncated to < 200 chars.
+engines/monitor_engine.py — Telegram alerts. NEVER raises. Silent if token missing.
+Messages < 200 chars per the spec.
 """
 
 from __future__ import annotations
 
 import os
-
-import requests
 import structlog
+import requests
 
-log = structlog.get_logger()
-
-_TELEGRAM_API = "https://api.telegram.org/bot{token}/sendMessage"
-
-_TEMPLATES = {
-    "trade_executed":  "[TRADE] {strategy} | {action} {question} | ${size:.2f} @ ${price:.3f}",
-    "trade_rejected":  "[REJECTED] {reason} | {strategy}",
-    "daily_summary":   "[SUMMARY] P&L ${pnl:+.2f} | Trades: {trades} | Balance: ${balance:.2f}",
-    "risk_limit_hit":  "[ALERT] RISK LIMIT: {limit_type} hit. Engine halted.",
-    "error":           "[ERROR] {component} | {error}",
-    "lesson_update":   "[LEARNED] {lesson}",
-}
+log = structlog.get_logger(component="monitor_engine")
 
 
 class MonitorEngine:
-    """Fire-and-forget Telegram alerts. Never raises."""
+    def __init__(self, config: dict):
+        self.token   = os.environ.get("TELEGRAM_BOT_TOKEN", "")
+        self.chat_id = os.environ.get("TELEGRAM_CHAT_ID", "")
+        self.enabled = bool(self.token and self.chat_id)
+        self.config  = config
 
-    def __init__(self, config: dict) -> None:
-        self._token   = os.environ.get("TELEGRAM_BOT_TOKEN", "")
-        self._chat_id = os.environ.get("TELEGRAM_CHAT_ID", "")
-        self._enabled = bool(self._token and self._chat_id)
-
-        if not self._enabled:
-            log.warning("monitor_engine.telegram_disabled",
-                        reason="TELEGRAM_BOT_TOKEN or TELEGRAM_CHAT_ID not set")
-
-    def send(self, event_type: str, **kwargs) -> None:
-        """
-        Format and send a Telegram message.
-        On any error: log warning and return silently.
-        """
-        template = _TEMPLATES.get(event_type)
-        if not template:
-            log.warning("monitor_engine.unknown_event", event_type=event_type)
+    def _send(self, text: str) -> None:
+        if not self.enabled:
+            log.debug("telegram_disabled")
             return
-
-        # Truncate long string fields before formatting
-        for field in ("question", "error", "lesson"):
-            if field in kwargs and isinstance(kwargs[field], str):
-                kwargs[field] = kwargs[field][:60]
-
         try:
-            msg = template.format(**kwargs)
-        except KeyError as exc:
-            log.warning("monitor_engine.format_error", event=event_type, error=str(exc))
-            return
+            # Truncate to 200 chars per spec
+            msg = text[:200]
+            url = f"https://api.telegram.org/bot{self.token}/sendMessage"
+            requests.post(url, json={"chat_id": self.chat_id, "text": msg},
+                          timeout=5)
+        except Exception as e:
+            log.debug("telegram_send_failed", error=str(e))
+            # Never raise
 
-        # Enforce 200-char limit
-        if len(msg) > 200:
-            msg = msg[:197] + "…"
+    def send_scan_summary(self, markets_scanned: int, opportunities: int,
+                          trades_executed: int, resolved: int,
+                          balance: float, daily_pnl: float,
+                          elapsed_sec: float, dry_run: bool) -> None:
+        dr = "[DRY] " if dry_run else ""
+        pnl_sign = "+" if daily_pnl >= 0 else ""
+        self._send(
+            f"{dr}Scan done: {markets_scanned} mkts, "
+            f"{opportunities} opps, {trades_executed} trades, "
+            f"{resolved} resolved | "
+            f"Bal=${balance:.2f} PnL={pnl_sign}{daily_pnl:.2f} ({elapsed_sec:.0f}s)"
+        )
 
-        log.info("monitor_engine.alert", event_type=event_type, message=msg)
+    def send_trade_alert(self, trade_id: str, strategy: str,
+                         market_question: str, size: float,
+                         edge: float, dry_run: bool) -> None:
+        dr = "[DRY] " if dry_run else ""
+        q  = market_question[:60]
+        self._send(
+            f"{dr}TRADE {strategy}: {q}... "
+            f"${size:.2f} edge={edge:.3f}"
+        )
 
-        if not self._enabled:
-            return  # Log-only mode
+    def send_error(self, component: str, error: str) -> None:
+        self._send(f"ERROR in {component}: {error[:120]}")
 
-        try:
-            resp = requests.post(
-                _TELEGRAM_API.format(token=self._token),
-                json={"chat_id": self._chat_id, "text": msg},
-                timeout=5,
-            )
-            if not resp.ok:
-                log.warning("monitor_engine.send_failed",
-                            status=resp.status_code, body=resp.text[:100])
-        except Exception as exc:
-            log.warning("monitor_engine.send_error", error=str(exc))
-            # Never raise — Telegram failure must never affect the engine
+    def send_daily_summary(self, balance: float, daily_pnl: float,
+                           trades: int, wins: int) -> None:
+        pnl_sign = "+" if daily_pnl >= 0 else ""
+        self._send(
+            f"Daily summary: Bal=${balance:.2f} "
+            f"PnL={pnl_sign}{daily_pnl:.2f} | "
+            f"{trades} trades, {wins} wins"
+        )

@@ -1,115 +1,264 @@
-#!/usr/bin/env python3
 """
-scripts/run_scan_cycle.py
-=========================
-GitHub Actions / local cron entry point.
+scripts/run_scan_cycle.py — Entry point for scan.yml GitHub Actions workflow.
 
-Runs ONE complete scan cycle then exits.
-No infinite loop — scheduling is handled by GitHub Actions cron or local crontab.
+One complete cycle:
+  1. Load config
+  2. DataEngine: fetch/refresh market data (uses compressed snapshot)
+  3. SignalEngine: scan all strategies → rank opportunities
+  4. ExecutionEngine: execute top opportunities (with DRY_RUN guard)
+  5. StateEngine: check resolutions, update balance
+  6. ReviewEngine: run if new resolutions
+  7. MonitorEngine: send Telegram summary
+  8. Commit data/ to git (snapshot + trades.db + lessons.json)
+
+This script exits with code 0 on success, 1 on unrecoverable error.
+GitHub Actions reads the exit code and marks the step pass/fail.
 """
 
 import os
 import sys
+import time
+import subprocess
+import structlog
+import yaml
 from pathlib import Path
 
-sys.path.insert(0, str(Path(__file__).parent.parent))
-
-from dotenv import load_dotenv
-load_dotenv()
-
-import yaml
-import structlog
-
-log = structlog.get_logger()
+log = structlog.get_logger(component="run_scan_cycle")
 
 
-def main() -> None:
-    config_path = os.environ.get("ENGINE_CONFIG", "configs/engine.yaml")
-    config = yaml.safe_load(open(config_path))
+def load_config() -> dict:
+    config_path = Path("configs/engine.yaml")
+    if not config_path.exists():
+        log.error("config_missing", path=str(config_path))
+        sys.exit(1)
+    with open(config_path) as f:
+        return yaml.safe_load(f)
 
-    dry_run = os.environ.get("DRY_RUN", "false").lower() == "true"
-    if dry_run:
-        log.warning("run_scan_cycle.dry_run_mode")
 
-    # Create engines
-    from engines.state_engine import StateEngine
-    from engines.data_engine import DataEngine
-    from engines.monitor_engine import MonitorEngine
-    from engines.review_engine import ReviewEngine
-    from engines.signal_engine import SignalEngine
+def load_strategy_configs() -> dict:
+    """Load all per-strategy YAML configs and merge into one dict."""
+    merged = {}
+    configs_dir = Path("configs")
+    for yml_path in configs_dir.glob("s*.yaml"):
+        with open(yml_path) as f:
+            data = yaml.safe_load(f)
+        if isinstance(data, dict):
+            merged.update(data)
+    return merged
 
-    state   = StateEngine(
-        db_path=os.environ.get("DATABASE_PATH", "data/trades.db"),
-        lessons_path=os.environ.get("LESSONS_PATH", "data/lessons.json"),
-    )
-    data    = DataEngine(config)
-    monitor = MonitorEngine(config)
-    review  = ReviewEngine(state, config)
 
-    # Try to create execution engine
-    execute = None
+def commit_data() -> None:
+    """Commit data/ changes back to repo. Required for GHA persistence."""
     try:
-        from engines.execution_engine import ExecutionEngine
-        try:
-            from py_clob_client.client import ClobClient
-            clob = ClobClient(
-                host="https://clob.polymarket.com",
-                key=os.environ.get("POLYMARKET_PRIVATE_KEY", ""),
-                chain_id=137,
+        result = subprocess.run(
+            ["git", "config", "user.email", "engine@polymarket-bot"],
+            capture_output=True
+        )
+        subprocess.run(
+            ["git", "config", "user.name", "Polymarket Engine"],
+            capture_output=True
+        )
+        subprocess.run(["git", "add", "data/"], capture_output=True)
+
+        # Only commit if there are actual changes
+        status = subprocess.run(
+            ["git", "diff", "--cached", "--quiet"],
+            capture_output=True
+        )
+        if status.returncode != 0:  # returncode=1 means changes exist
+            ts = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+            subprocess.run(
+                ["git", "commit", "-m", f"scan: {ts} [automated]"],
+                capture_output=True
             )
-        except ImportError:
-            log.warning("run_scan_cycle.clob_client_unavailable")
-            clob = None
+            subprocess.run(["git", "push"], capture_output=True)
+            log.info("data_committed", timestamp=ts)
+        else:
+            log.info("data_no_changes_skip_commit")
+    except Exception as e:
+        log.warning("git_commit_failed", error=str(e))
+        # Non-fatal — data is still on disk for next run
+
+
+def main():
+    start_time = time.time()
+    dry_run    = os.environ.get("DRY_RUN", "true").lower() == "true"
+
+    log.info("scan_cycle_start", dry_run=dry_run)
+
+    # ── 1. Load config ────────────────────────────────────────────────────────
+    engine_cfg   = load_config()
+    strategy_cfg = load_strategy_configs()
+    full_cfg     = {**engine_cfg, **strategy_cfg}
+
+    capital      = float(engine_cfg.get("engine", {}).get("capital_usdc", 100.0))
+    risk_cfg     = engine_cfg.get("engine", {}).get("risk", {})
+    max_per_cycle = int(engine_cfg.get("engine", {}).get("max_per_cycle", 3))
+
+    # ── 2. DataEngine: fetch markets ──────────────────────────────────────────
+    from engines.data_engine import DataEngine
+
+    data_engine = DataEngine(full_cfg)
+    markets     = data_engine.fetch_all_markets()
+    groups      = data_engine.fetch_negrisk_groups()
+
+    log.info("markets_fetched",
+             total=len(markets),
+             negrisk_groups=len(groups))
+
+    if not markets:
+        log.warning("no_markets_fetched_using_cache")
+        markets = data_engine.get_cached_markets()
+
+    if not markets:
+        log.error("no_markets_available")
+        commit_data()
+        sys.exit(0)  # Exit 0 — transient API failure, not a code bug
+
+    # ── 3. SignalEngine: scan and rank ────────────────────────────────────────
+    from engines.signal_engine import SignalEngine
+    from strategies.s10_near_resolution import S10NearResolution
+    from strategies.s1_negrisk_arb import S1NegRiskArb
+    from strategies.s8_logical_arb import S8LogicalArb
+
+    signal_engine = SignalEngine(full_cfg)
+    signal_engine.register(S10NearResolution())
+    signal_engine.register(S1NegRiskArb())
+    signal_engine.register(S8LogicalArb())
+
+    cycle_result = signal_engine.run_one_cycle(markets, groups)
+
+    all_opps     = cycle_result.get("opportunities", [])
+    log.info("signal_scan_complete",
+             opportunities_found=len(all_opps),
+             markets_scanned=cycle_result.get("markets_scanned", 0))
+
+    # ── 4. ExecutionEngine ────────────────────────────────────────────────────
+    from engines.state_engine import StateEngine
+    from engines.execution_engine import ExecutionEngine
+
+    state_engine = StateEngine(
+        db_path          = "data/trades.db",
+        lessons_path     = "data/lessons.json",
+        initial_balance  = capital,
+    )
+    execution_engine = ExecutionEngine(
+        state_engine = state_engine,
+        data_engine  = data_engine,
+        config       = full_cfg,
+        dry_run      = dry_run,
+    )
+
+    # Safety checks
+    daily_pnl = state_engine.get_daily_pnl()
+    max_daily_loss = capital * float(risk_cfg.get("max_daily_loss_pct", 0.05))
+    if daily_pnl < -max_daily_loss:
+        log.warning("daily_loss_limit_hit",
+                    daily_pnl=daily_pnl, max_loss=max_daily_loss)
+        commit_data()
+        sys.exit(0)
+
+    open_count = state_engine.get_open_position_count()
+    max_open   = int(risk_cfg.get("max_open_positions", 5))
+    if open_count >= max_open:
+        log.info("max_open_positions_reached",
+                 open=open_count, max=max_open)
+        commit_data()
+        sys.exit(0)
+
+    # Execute top opportunities
+    trades_executed = 0
+    current_balance = state_engine.get_current_balance()
+
+    # Get strategy instances (needed for size() calls)
+    strategy_map = {s.name: s for s in signal_engine.strategies}
+
+    for opp in all_opps[:max_per_cycle]:
+        if trades_executed >= max_per_cycle:
+            break
+        if open_count + trades_executed >= max_open:
+            break
+
+        strategy = strategy_map.get(opp.strategy)
+        if not strategy:
+            continue
+
+        # Re-fetch market for fresh fee_rate_bps before execution
+        market_state = data_engine.get_single_market(
+            opp.metadata.get("token_id", "")
+        )
+
+        trade_id = execution_engine.execute_opportunity(
+            opp, strategy, market_state, current_balance
+        )
+        if trade_id:
+            trades_executed += 1
+            log.info("trade_executed",
+                     trade_id=trade_id,
+                     strategy=opp.strategy,
+                     edge=opp.edge,
+                     score=opp.score,
+                     dry_run=dry_run)
+
+    # ── 5. Check resolutions ──────────────────────────────────────────────────
+    open_positions = state_engine.get_open_positions()
+    resolved_count = 0
+
+    for pos in open_positions:
+        token_id = pos.get("metadata", {}).get("token_id")
+        if not token_id:
+            continue
+        try:
+            market = data_engine.get_single_market(token_id)
+            if market and market.seconds_to_resolution <= 0:
+                # Market has resolved — check actual outcome
+                # (ExecutionEngine.check_resolution handles the CLOB query)
+                resolved = execution_engine.check_and_settle(pos)
+                if resolved:
+                    resolved_count += 1
         except Exception as e:
-            log.warning("run_scan_cycle.clob_init_error", error=str(e))
-            clob = None
+            log.warning("resolution_check_failed",
+                        market_id=pos.get("market_id"), error=str(e))
 
-        # Always create ExecutionEngine - DRY_RUN mode works without CLOB client
-        execute = ExecutionEngine(clob, state, config, dry_run=dry_run)
-    except ImportError:
-        log.warning("run_scan_cycle.execution_engine_unavailable")
-        # Fallback: create minimal execution engine
-        from engines.execution_engine import ExecutionEngine
-        execute = ExecutionEngine(None, state, config, dry_run=dry_run)
+    # ── 6. ReviewEngine: run if new resolutions ────────────────────────────────
+    if resolved_count > 0:
+        try:
+            from engines.review_engine import ReviewEngine
+            reviewer = ReviewEngine(state_engine, full_cfg)
+            reviewer.run_after_resolution()
+        except Exception as e:
+            log.warning("review_engine_failed", error=str(e))
 
-    hub = SignalEngine(data, execute, state, review, monitor, config)
-
-    # Register strategies - try imports, skip if unavailable
+    # ── 7. MonitorEngine: send summary ───────────────────────────────────────
     try:
-        from strategies.s10_near_resolution import NearResolutionStrategy
-        hub.register(NearResolutionStrategy(), "configs/s10_near_resolution.yaml")
-    except ImportError:
-        log.warning("run_scan_cycle.s10_unavailable")
+        from engines.monitor_engine import MonitorEngine
+        monitor = MonitorEngine(full_cfg)
+        elapsed = round(time.time() - start_time, 1)
+        monitor.send_scan_summary(
+            markets_scanned  = len(markets),
+            opportunities    = len(all_opps),
+            trades_executed  = trades_executed,
+            resolved         = resolved_count,
+            balance          = state_engine.get_current_balance(),
+            daily_pnl        = state_engine.get_daily_pnl(),
+            elapsed_sec      = elapsed,
+            dry_run          = dry_run,
+        )
+    except Exception as e:
+        log.warning("monitor_engine_failed", error=str(e))
 
-    try:
-        from strategies.s1_negrisk_arb import NegRiskArbStrategy
-        hub.register(NegRiskArbStrategy(), "configs/s1_negrisk.yaml")
-    except ImportError:
-        log.warning("run_scan_cycle.s1_unavailable")
+    # ── 8. Commit data/ to git ─────────────────────────────────────────────────
+    commit_data()
 
-    try:
-        from strategies.s8_logical_arb import LogicalArbStrategy
-        hub.register(LogicalArbStrategy(), "configs/s8_logical.yaml")
-    except ImportError:
-        log.warning("run_scan_cycle.s8_unavailable")
+    elapsed = round(time.time() - start_time, 1)
+    log.info("scan_cycle_complete",
+             elapsed_sec=elapsed,
+             markets=len(markets),
+             opportunities=len(all_opps),
+             trades=trades_executed,
+             resolved=resolved_count,
+             dry_run=dry_run)
 
-    # S11: Short Duration Monitor
-    try:
-        from strategies.s11_short_duration_monitor import ShortDurationMonitor
-        hub.register(ShortDurationMonitor(), "configs/s11_short_duration.yaml")
-    except ImportError:
-        log.warning("run_scan_cycle.s11_unavailable")
-
-    # S12: BTC Momentum
-    try:
-        from strategies.s12_btc_momentum import BTCMomentumStrategy
-        hub.register(BTCMomentumStrategy(), "configs/s12_btc_momentum.yaml")
-    except ImportError:
-        log.warning("run_scan_cycle.s12_unavailable")
-
-    result = hub.run_one_cycle()
-
-    log.info("run_scan_cycle.done", **result)
     sys.exit(0)
 
 

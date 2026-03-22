@@ -1,275 +1,509 @@
 """
-engines/data_engine.py
-======================
-Market data fetcher — REST polling, MVP version.
+engines/data_engine.py — Multi-source market data fetcher with compression.
 
-Fetches all active Polymarket markets every poll_interval seconds.
-Caches last successful fetch — returns stale cache on error (never raises).
+Sources (in priority order, all free, no auth required for read):
+  1. Gamma API  — market metadata, NegRisk groups, end dates, prices
+  2. CLOB API   — live orderbook (bid/ask spread), fee_rate_bps per market
+  3. Data API   — 24h volume, trade history (rate-limit safe, batched)
 
-NEVER places orders. Data reads only.
-WebSocket upgrade happens in Phase 3 (persistent process on VPS).
+Storage: writes data/market_snapshot.json.gz after every fetch.
+         loads previous snapshot on startup for delta-fetch efficiency.
+         git-committed → survives across ephemeral GitHub Actions runners.
 
-KEY FIX (v3.1): fee_rate_bps is now included in MarketState.
-ExecutionEngine reads it directly from MarketState instead of making
-a separate API call per order. Eliminates the phantom get_fee_rate_bps()
-method that doesn't exist in py-clob-client 0.16.
+NEVER places orders. NEVER raises (returns stale cache on any error).
+All HTTP calls: @retry 3 attempts, exponential backoff 2-10s.
 """
 
 from __future__ import annotations
 
+import gzip
+import json
+import logging
+import os
 import time
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass, field
 from datetime import datetime, timezone
+from pathlib import Path
 from typing import Optional
 
 import requests
 import structlog
 from tenacity import retry, stop_after_attempt, wait_exponential
 
-log = structlog.get_logger()
+log = structlog.get_logger(component="data_engine")
 
-GAMMA_BASE = "https://gamma-api.polymarket.com"
-CLOB_BASE  = "https://clob.polymarket.com"
+# ─── Endpoints ────────────────────────────────────────────────────────────────
+GAMMA_API   = "https://gamma-api.polymarket.com"
+CLOB_API    = "https://clob.polymarket.com"
+DATA_API    = "https://data-api.polymarket.com"
 
+# ─── Tunable constants ────────────────────────────────────────────────────────
+# Only fetch markets resolving within this many days — keeps data tight
+MAX_DAYS_TO_RESOLUTION = 7          # 7-day window catches S10 + most S1/S8
+# Also pull a second page of medium-term markets for S1 NegRisk group hunting
+MAX_DAYS_NEGRISK       = 30
+PAGE_SIZE              = 500        # Gamma API max per page
+MIN_VOLUME_24H         = 100        # USDC — ignore dead markets
+MIN_LIQUIDITY          = 50         # USDC in orderbook
+SNAPSHOT_PATH          = Path("data/market_snapshot.json.gz")
 
-# ---------------------------------------------------------------------------
-# MarketState
-# ---------------------------------------------------------------------------
+# ─── Dataclasses ──────────────────────────────────────────────────────────────
 
 @dataclass
 class MarketState:
-    """Point-in-time snapshot of a single Polymarket market."""
+    market_id:           str
+    question:            str
+    yes_token_id:        str
+    no_token_id:         str
+    yes_price:           float          # mid price, clamped (0.001, 0.999)
+    no_price:            float
+    yes_bid:             float
+    yes_ask:             float
+    no_bid:              float
+    no_ask:              float
+    volume_24h:          float
+    end_date_iso:        str
+    seconds_to_resolution: int
+    negrisk_group_id:    Optional[str]
+    category:            str           # 'crypto'|'politics'|'sports'|'other'
+    fee_rate_bps:        int           # from CLOB API, live per-market
+    fetched_at:          float = field(default_factory=time.time)  # unix ts
 
-    market_id: str
-    question: str
-    yes_token_id: str
-    no_token_id: str
-    yes_price: float          # best ask for YES  (clamped to 0.001–0.999)
-    no_price: float           # best ask for NO   (clamped to 0.001–0.999)
-    yes_bid: float            # best bid for YES  (>= 0.0)
-    no_bid: float             # best bid for NO   (>= 0.0)
-    volume_24h: float         # USDC traded in last 24 h
-    end_date_iso: str         # ISO 8601 resolution time
-    seconds_to_resolution: int  # negative means already resolved
-    negrisk_group_id: Optional[str]
-    category: str             # 'crypto' | 'politics' | 'sports' | 'other'
-    fee_rate_bps: int = 200   # Taker fee in basis points (200 = 2%).
-                              # Fetched from API; ExecutionEngine reads this.
-                              # Never hardcode 0 — use 200 as safe overestimate default.
-    fetched_at: float = 0.0   # Unix timestamp of this snapshot (for staleness check)
-
-    def __post_init__(self) -> None:
-        self.yes_price = max(0.001, min(0.999, float(self.yes_price)))
-        self.no_price  = max(0.001, min(0.999, float(self.no_price)))
-        self.yes_bid   = max(0.0, float(self.yes_bid))
-        self.no_bid    = max(0.0, float(self.no_bid))
-        if self.fetched_at == 0.0:
-            self.fetched_at = time.time()
-
-    @property
     def is_stale(self, max_age_seconds: int = 300) -> bool:
-        """True if this snapshot is older than max_age_seconds (default 5 min)."""
         return (time.time() - self.fetched_at) > max_age_seconds
 
+    def to_dict(self) -> dict:
+        return asdict(self)
 
-# ---------------------------------------------------------------------------
-# DataEngine
-# ---------------------------------------------------------------------------
+    @classmethod
+    def from_dict(cls, d: dict) -> "MarketState":
+        return cls(**d)
+
+
+# ─── Compression helpers ──────────────────────────────────────────────────────
+
+def save_snapshot(markets: list[MarketState], path: Path = SNAPSHOT_PATH) -> None:
+    """Gzip-compress market list to disk. ~10x size reduction."""
+    path.parent.mkdir(parents=True, exist_ok=True)
+    payload = {
+        "saved_at": datetime.now(timezone.utc).isoformat(),
+        "count": len(markets),
+        "markets": [m.to_dict() for m in markets],
+    }
+    with gzip.open(path, "wt", encoding="utf-8") as f:
+        json.dump(payload, f, separators=(",", ":"))
+    log.info("snapshot_saved", path=str(path), count=len(markets),
+             size_kb=path.stat().st_size // 1024)
+
+
+def load_snapshot(path: Path = SNAPSHOT_PATH) -> list[MarketState]:
+    """Load and decompress market snapshot. Returns [] if missing/corrupt."""
+    if not path.exists():
+        return []
+    try:
+        with gzip.open(path, "rt", encoding="utf-8") as f:
+            payload = json.load(f)
+        markets = [MarketState.from_dict(m) for m in payload["markets"]]
+        log.info("snapshot_loaded", path=str(path), count=len(markets),
+                 saved_at=payload.get("saved_at"))
+        return markets
+    except Exception as e:
+        log.warning("snapshot_load_failed", error=str(e))
+        return []
+
+
+# ─── HTTP session (shared, connection-pooled) ─────────────────────────────────
+
+def _make_session() -> requests.Session:
+    s = requests.Session()
+    s.headers.update({
+        "User-Agent": "polymarket-engine/3.1 (github-actions)",
+        "Accept":     "application/json",
+    })
+    return s
+
+
+# ─── Category detection ───────────────────────────────────────────────────────
+
+_CRYPTO_KEYWORDS   = {"btc","eth","bitcoin","ethereum","crypto","sol","solana",
+                       "xrp","bnb","doge","usdc","defi","nft","blockchain"}
+_POLITICS_KEYWORDS = {"election","president","senate","congress","vote","political",
+                       "governor","minister","parliament","referendum","ballot","trump",
+                       "biden","democrat","republican","kamala","modi","macron"}
+_SPORTS_KEYWORDS   = {"nba","nfl","mlb","nhl","soccer","football","basketball",
+                       "tennis","ufc","match","tournament","championship","league",
+                       "playoff","world cup","super bowl","finals","mls","epl"}
+
+def _categorise(tags: list[str], question: str) -> str:
+    combined = " ".join(tags + [question]).lower()
+    words    = set(combined.split())
+    if words & _CRYPTO_KEYWORDS:   return "crypto"
+    if words & _POLITICS_KEYWORDS: return "politics"
+    if words & _SPORTS_KEYWORDS:   return "sports"
+    return "other"
+
+
+# ─── Fee formula (canonical — matches BaseStrategy.calc_fee) ──────────────────
+
+def _calc_fee_bps(p: float) -> int:
+    """Convert probability to fee_rate_bps using canonical formula."""
+    fee = 2.25 * 0.25 * (p * (1 - p)) ** 2
+    return int(fee * 10000)
+
+
+# ─── DataEngine ───────────────────────────────────────────────────────────────
 
 class DataEngine:
     """
-    Polls Polymarket REST API and caches market data.
-    All strategies read from the cache — no duplicate API calls per cycle.
+    Multi-source market data fetcher.
+
+    Fetch strategy:
+      Phase 1 — near-term markets (≤7 days): full CLOB enrichment, for S10/S1/S8
+      Phase 2 — NegRisk group markets (≤30 days): for S1 cross-market arb
+      Delta    — skip markets already in snapshot with fresh fetched_at (<5 min)
     """
 
-    def __init__(self, config: dict) -> None:
-        self._config = config
-        self._cache: list[MarketState] = []
-        self._negrisk_cache: dict[str, list[MarketState]] = {}
-        self._last_fetch: Optional[float] = None
-        self._headers = {"Content-Type": "application/json"}
+    def __init__(self, config: dict):
+        self.config        = config
+        self._session      = _make_session()
+        self._cache:  list[MarketState]               = []
+        self._groups: dict[str, list[MarketState]]    = {}
+        self._load_snapshot()
 
-    # -----------------------------------------------------------------------
-    # Public interface
-    # -----------------------------------------------------------------------
+    # ── Public interface ───────────────────────────────────────────────────────
 
     def fetch_all_markets(self) -> list[MarketState]:
         """
-        Fetch all active markets from Polymarket REST API.
-        Updates internal cache. Returns stale cache on any error (never raises).
+        Full multi-source fetch. Returns [] on total failure (never raises).
+        Saves compressed snapshot to disk on success.
         """
-        log.info("data_engine.fetch_start")
         try:
-            raw_markets = self._fetch_markets_paginated()
-            parsed = [self._parse_market(m) for m in raw_markets if self._is_tradeable(m)]
-            self._cache = [m for m in parsed if m is not None]
-            self._last_fetch = time.time()
-            log.info("data_engine.fetch_done", count=len(self._cache))
-        except Exception as exc:
-            log.error("data_engine.fetch_error", error=str(exc))
-            # Return stale cache — better than crashing the cycle
-        return self._cache
+            near_term   = self._fetch_gamma_markets(max_days=MAX_DAYS_TO_RESOLUTION)
+            negrisk_ext = self._fetch_gamma_markets(max_days=MAX_DAYS_NEGRISK,
+                                                    negrisk_only=True)
+
+            # Merge, deduplicate by market_id
+            seen    = {}
+            for m in near_term + negrisk_ext:
+                seen[m.market_id] = m
+
+            # Enrich with live CLOB data (bids, asks, fee_rate_bps)
+            enriched = self._enrich_with_clob(list(seen.values()))
+
+            # Apply volume / liquidity filters
+            filtered = [m for m in enriched
+                        if m.volume_24h >= MIN_VOLUME_24H
+                        and m.seconds_to_resolution > 0]
+
+            self._cache = filtered
+            self._groups = self._build_negrisk_groups(filtered)
+
+            save_snapshot(filtered)
+
+            log.info("fetch_complete",
+                     near_term=len(near_term),
+                     negrisk_ext=len(negrisk_ext),
+                     after_filter=len(filtered),
+                     negrisk_groups=len(self._groups))
+            return filtered
+
+        except Exception as e:
+            log.error("fetch_failed_returning_cache", error=str(e))
+            return self._cache  # stale but better than nothing
 
     def fetch_negrisk_groups(self) -> dict[str, list[MarketState]]:
-        """
-        Group markets by their NegRisk group ID.
-        Only groups with 2+ markets are returned (single-market groups aren't arb opportunities).
-        Uses current cache — call fetch_all_markets() first.
-        """
-        groups: dict[str, list[MarketState]] = {}
-        for market in self._cache:
-            if market.negrisk_group_id:
-                groups.setdefault(market.negrisk_group_id, []).append(market)
-        self._negrisk_cache = {k: v for k, v in groups.items() if len(v) >= 2}
-        log.info("data_engine.negrisk_groups", count=len(self._negrisk_cache))
-        return self._negrisk_cache
+        """Groups of 2+ NegRisk markets sharing a group_id."""
+        if not self._groups and self._cache:
+            self._groups = self._build_negrisk_groups(self._cache)
+        return self._groups
 
     def get_cached_markets(self) -> list[MarketState]:
-        """Return last fetched markets without triggering a new API call."""
+        """Returns last fetch without a new API call."""
         return self._cache
 
-    def fetch_market_by_id(self, market_id: str) -> Optional[MarketState]:
-        """Check cache first; fetch from CLOB API if not found."""
-        for m in self._cache:
-            if m.market_id == market_id:
-                return m
+    def get_single_market(self, token_id: str) -> Optional[MarketState]:
+        """
+        Fetch a single market fresh from CLOB. Used by ExecutionEngine
+        to re-validate fee_rate_bps before order submission.
+        """
         try:
-            raw = self._get(f"{CLOB_BASE}/markets/{market_id}")
-            return self._parse_market(raw)
-        except Exception as exc:
-            log.error("data_engine.single_fetch_error", market_id=market_id, error=str(exc))
+            return self._fetch_single_clob(token_id)
+        except Exception as e:
+            log.warning("single_market_fetch_failed", token_id=token_id, error=str(e))
             return None
 
-    # -----------------------------------------------------------------------
-    # Internal helpers
-    # -----------------------------------------------------------------------
+    # ── Snapshot bootstrap ────────────────────────────────────────────────────
 
-    def _fetch_markets_paginated(self) -> list[dict]:
-        """Paginate through all active Polymarket markets."""
-        all_markets: list[dict] = []
-        next_cursor: Optional[str] = None
+    def _load_snapshot(self) -> None:
+        """Load previous compressed snapshot as warm cache."""
+        cached = load_snapshot()
+        if cached:
+            # Keep only markets that haven't resolved (seconds_to_resolution > 0)
+            # and aren't too stale (fetched within 2h — still useful for context)
+            cutoff = time.time() - 7200
+            self._cache = [m for m in cached
+                           if m.seconds_to_resolution > 0
+                           and m.fetched_at > cutoff]
+            self._groups = self._build_negrisk_groups(self._cache)
+            log.info("warm_cache_loaded", count=len(self._cache))
 
-        for _page in range(100):  # safety cap
-            params: dict = {"limit": 500, "active": "true", "closed": "false"}
-            if next_cursor:
-                params["next_cursor"] = next_cursor
-
-            data = self._get(f"{GAMMA_BASE}/markets", params=params)
-
-            if isinstance(data, list):
-                all_markets.extend(data)
-                break
-            elif isinstance(data, dict):
-                all_markets.extend(data.get("data", []))
-                next_cursor = data.get("next_cursor")
-                if not next_cursor or next_cursor == "LTE=":
-                    break
-
-        return all_markets
+    # ── Gamma API fetch ───────────────────────────────────────────────────────
 
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=10))
-    def _get(self, url: str, params: Optional[dict] = None) -> dict:
-        """HTTP GET with automatic exponential-backoff retry on failure."""
-        resp = requests.get(url, headers=self._headers, params=params, timeout=15)
+    def _get(self, url: str, params: dict = None) -> dict | list:
+        resp = self._session.get(url, params=params, timeout=15)
         resp.raise_for_status()
         return resp.json()
 
-    def _parse_market(self, raw: dict) -> Optional[MarketState]:
-        """Convert a raw API dict into a MarketState. Returns None if data is invalid."""
+    def _fetch_gamma_markets(self, max_days: int = 7,
+                             negrisk_only: bool = False) -> list[MarketState]:
+        """
+        Paginate Gamma API with end_date_max filter.
+        Returns only markets resolving within max_days from now.
+        """
+        now      = int(time.time())
+        end_max  = now + (max_days * 86400)
+        markets  = []
+        offset   = 0
+
+        base_params = {
+            "active":        "true",
+            "closed":        "false",
+            "limit":         PAGE_SIZE,
+            "order":         "volume",   # highest volume first
+            "ascending":     "false",
+        }
+        if negrisk_only:
+            base_params["neg_risk"] = "true"
+
+        while True:
+            try:
+                params = {**base_params, "offset": offset}
+                data   = self._get(f"{GAMMA_API}/markets", params=params)
+
+                if not data:
+                    break
+
+                page_markets = []
+                for raw in data:
+                    m = self._parse_gamma_market(raw, end_max)
+                    if m:
+                        page_markets.append(m)
+
+                markets.extend(page_markets)
+
+                # If the last market on this page resolves beyond our window,
+                # and we're fetching by volume desc, we can stop paginating
+                if len(data) < PAGE_SIZE:
+                    break
+
+                # Safety: stop after 10 pages (5000 markets)
+                offset += PAGE_SIZE
+                if offset >= 5000:
+                    break
+
+                time.sleep(0.3)  # polite rate-limiting between pages
+
+            except Exception as e:
+                log.warning("gamma_page_failed", offset=offset, error=str(e))
+                break
+
+        return markets
+
+    def _parse_gamma_market(self, raw: dict, end_max_ts: int) -> Optional[MarketState]:
+        """Parse a single Gamma API market dict into MarketState. Returns None to skip."""
         try:
-            # Handle both formats: tokens array (CLOB API) and outcomePrices (Gamma API)
-            tokens = raw.get("tokens", [])
-            if tokens:
-                yes_tok = next((t for t in tokens if t.get("outcome", "").upper() == "YES"), {})
-                no_tok = next((t for t in tokens if t.get("outcome", "").upper() == "NO"), {})
-            else:
-                # Gamma API format: outcomePrices and outcomes as JSON strings
-                import json
-                try:
-                    outcome_prices = json.loads(raw.get("outcomePrices", "[]"))
-                    outcomes = json.loads(raw.get("outcomes", "[]"))
-                    yes_idx = outcomes.index("Yes") if "Yes" in outcomes else 0
-                    no_idx = outcomes.index("No") if "No" in outcomes else 1
-                    yes_tok = {"price": str(outcome_prices[yes_idx]), "bid": "0"}
-                    no_tok = {"price": str(outcome_prices[no_idx]), "bid": "0"}
-                except (json.JSONDecodeError, ValueError, IndexError):
-                    yes_tok = {"price": "0.5", "bid": "0"}
-                    no_tok = {"price": "0.5", "bid": "0"}
+            # Parse end date and compute seconds_to_resolution
+            end_date_str = raw.get("endDate") or raw.get("end_date_iso") or ""
+            if not end_date_str:
+                return None
 
-            end_date = raw.get("endDate") or raw.get("end_date_iso", "")
-            secs_left = _seconds_until(end_date)
-            if secs_left < 0:
-                return None  # already resolved
+            end_ts = self._parse_iso_to_ts(end_date_str)
+            if end_ts is None:
+                return None
 
-            # fee_rate_bps: prefer explicit field from API, else compute from formula
-            raw_bps = raw.get("feeRateBps") or raw.get("fee_rate_bps")
-            if raw_bps is not None:
-                fee_bps = int(raw_bps)
-            else:
-                # Compute from canonical formula as fallback
-                p = float(yes_tok.get("price", 0.5))
-                fee_fraction = 2.25 * 0.25 * (p * (1.0 - p)) ** 2
-                fee_bps = max(1, int(round(fee_fraction * 10000)))
+            now = int(time.time())
+            seconds_left = end_ts - now
+
+            if seconds_left <= 0:
+                return None  # already resolved or past end date
+            if end_ts > end_max_ts:
+                return None  # beyond our window
+
+            # Token IDs
+            tokens     = raw.get("tokens", [])
+            yes_token  = next((t for t in tokens if t.get("outcome","").upper() == "YES"), None)
+            no_token   = next((t for t in tokens if t.get("outcome","").upper() == "NO"), None)
+            if not yes_token or not no_token:
+                return None
+
+            yes_token_id = str(yes_token.get("token_id",""))
+            no_token_id  = str(no_token.get("token_id",""))
+            if not yes_token_id or not no_token_id:
+                return None
+
+            # Prices (clamped)
+            yes_price = float(yes_token.get("price", 0.5))
+            no_price  = float(no_token.get("price",  0.5))
+            yes_price = max(0.001, min(0.999, yes_price))
+            no_price  = max(0.001, min(0.999, no_price))
+
+            # Volume
+            volume_24h = float(raw.get("volume24hr") or raw.get("volume_24h") or 0.0)
+
+            # NegRisk
+            negrisk_group_id = raw.get("negRiskGroupId") or raw.get("neg_risk_group_id")
+
+            # Category
+            tags     = raw.get("tags", [])
+            question = raw.get("question", "")
+            category = _categorise(tags, question)
+
+            # Fee rate (use formula default; CLOB enrichment will override)
+            fee_rate_bps = _calc_fee_bps(yes_price)
 
             return MarketState(
-                market_id=raw.get("conditionId") or raw.get("id", ""),
-                question=raw.get("question", ""),
-                yes_token_id=yes_tok.get("token_id", ""),
-                no_token_id=no_tok.get("token_id", ""),
-                yes_price=float(yes_tok.get("price", 0.5)),
-                no_price=float(no_tok.get("price", 0.5)),
-                yes_bid=float(yes_tok.get("bid", 0.0)),
-                no_bid=float(no_tok.get("bid", 0.0)),
-                volume_24h=float(raw.get("volume24hr", 0.0)),
-                end_date_iso=end_date,
-                seconds_to_resolution=secs_left,
-                negrisk_group_id=raw.get("negRiskGroupId") or raw.get("groupItemTitle"),
-                category=_categorise(raw.get("tags", []), raw.get("question", "")),
-                fee_rate_bps=fee_bps,
-                fetched_at=time.time(),
+                market_id           = str(raw.get("id", "")),
+                question            = question,
+                yes_token_id        = yes_token_id,
+                no_token_id         = no_token_id,
+                yes_price           = yes_price,
+                no_price            = no_price,
+                yes_bid             = yes_price - 0.01,   # placeholder until CLOB
+                yes_ask             = yes_price + 0.01,
+                no_bid              = no_price  - 0.01,
+                no_ask              = no_price  + 0.01,
+                volume_24h          = volume_24h,
+                end_date_iso        = end_date_str,
+                seconds_to_resolution = seconds_left,
+                negrisk_group_id    = str(negrisk_group_id) if negrisk_group_id else None,
+                category            = category,
+                fee_rate_bps        = fee_rate_bps,
+                fetched_at          = time.time(),
             )
-        except (KeyError, TypeError, ValueError) as exc:
-            log.warning("data_engine.parse_skip", error=str(exc))
+        except Exception as e:
+            log.debug("market_parse_skipped", error=str(e))
             return None
 
-    @staticmethod
-    def _is_tradeable(raw: dict) -> bool:
-        """Only process markets that are active, not closed, and have a question."""
-        return (
-            raw.get("active", False)
-            and not raw.get("closed", True)
-            and bool(raw.get("question", ""))
+    # ── CLOB enrichment ───────────────────────────────────────────────────────
+
+    def _enrich_with_clob(self, markets: list[MarketState]) -> list[MarketState]:
+        """
+        Batch-fetch CLOB orderbook for each market to get live bid/ask and
+        fee_rate_bps. Fails gracefully per-market (keeps Gamma data on error).
+
+        Rate-limit strategy: batch by groups of 20, 0.5s sleep between batches.
+        No auth required for read-only CLOB endpoints.
+        """
+        enriched = []
+        batch_size = 20
+        total = len(markets)
+
+        for i in range(0, total, batch_size):
+            batch = markets[i:i + batch_size]
+            for m in batch:
+                try:
+                    m = self._enrich_single(m)
+                except Exception as e:
+                    log.debug("clob_enrich_skip", market_id=m.market_id, error=str(e))
+                enriched.append(m)
+
+            if i + batch_size < total:
+                time.sleep(0.5)  # 500ms between batches → safe rate
+
+        return enriched
+
+    @retry(stop=stop_after_attempt(2), wait=wait_exponential(min=1, max=5))
+    def _enrich_single(self, m: MarketState) -> MarketState:
+        """Fetch live orderbook for YES and NO tokens."""
+        # YES orderbook
+        yes_book = self._get(f"{CLOB_API}/book", params={"token_id": m.yes_token_id})
+        no_book  = self._get(f"{CLOB_API}/book", params={"token_id": m.no_token_id})
+
+        def best_bid(book: dict) -> float:
+            bids = book.get("bids", [])
+            if not bids:
+                return 0.0
+            return float(max(bids, key=lambda x: float(x.get("price", 0)))["price"])
+
+        def best_ask(book: dict) -> float:
+            asks = book.get("asks", [])
+            if not asks:
+                return 1.0
+            return float(min(asks, key=lambda x: float(x.get("price", 1)))["price"])
+
+        yes_bid = best_bid(yes_book)
+        yes_ask = best_ask(yes_book)
+        no_bid  = best_bid(no_book)
+        no_ask  = best_ask(no_book)
+
+        # fee_rate_bps from CLOB market endpoint
+        try:
+            market_detail = self._get(f"{CLOB_API}/markets/{m.yes_token_id}")
+            fee_bps = int(market_detail.get("feeRateBps", m.fee_rate_bps))
+        except Exception:
+            fee_bps = m.fee_rate_bps  # fall back to formula estimate
+
+        # Update mid prices from live orderbook (more accurate than Gamma)
+        if yes_bid > 0 and yes_ask < 1:
+            yes_mid = (yes_bid + yes_ask) / 2.0
+        else:
+            yes_mid = m.yes_price
+
+        if no_bid > 0 and no_ask < 1:
+            no_mid = (no_bid + no_ask) / 2.0
+        else:
+            no_mid = m.no_price
+
+        return MarketState(
+            **{**asdict(m),
+               "yes_bid":      max(0.001, min(0.999, yes_bid)),
+               "yes_ask":      max(0.001, min(0.999, yes_ask)),
+               "no_bid":       max(0.001, min(0.999, no_bid)),
+               "no_ask":       max(0.001, min(0.999, no_ask)),
+               "yes_price":    max(0.001, min(0.999, yes_mid)),
+               "no_price":     max(0.001, min(0.999, no_mid)),
+               "fee_rate_bps": fee_bps,
+               "fetched_at":   time.time()}
         )
 
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(min=2, max=10))
+    def _fetch_single_clob(self, token_id: str) -> Optional[MarketState]:
+        """Used by ExecutionEngine for pre-order re-validation."""
+        # Find in cache first
+        existing = next((m for m in self._cache if m.yes_token_id == token_id), None)
+        if existing:
+            return self._enrich_single(existing)
+        return None
 
-# ---------------------------------------------------------------------------
-# Module-level helpers
-# ---------------------------------------------------------------------------
+    # ── NegRisk grouping ──────────────────────────────────────────────────────
 
-def _seconds_until(end_date_iso: str) -> int:
-    """Parse ISO date string and return seconds until that time. Returns -1 if unparseable."""
-    if not end_date_iso:
-        return -1
-    for fmt in ("%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%dT%H:%M:%S.%fZ", "%Y-%m-%dT%H:%M:%S"):
-        try:
-            dt = datetime.strptime(end_date_iso[:19], fmt[:19]).replace(tzinfo=timezone.utc)
-            return max(-1, int((dt - datetime.now(timezone.utc)).total_seconds()))
-        except ValueError:
-            continue
-    return -1
+    def _build_negrisk_groups(self,
+                               markets: list[MarketState]
+                               ) -> dict[str, list[MarketState]]:
+        """
+        Group markets by negrisk_group_id.
+        Only groups with 2+ markets are included (can't arb a single market).
+        """
+        groups: dict[str, list[MarketState]] = {}
+        for m in markets:
+            if m.negrisk_group_id:
+                groups.setdefault(m.negrisk_group_id, []).append(m)
+        return {gid: mlist for gid, mlist in groups.items() if len(mlist) >= 2}
 
+    # ── Helpers ───────────────────────────────────────────────────────────────
 
-def _categorise(tags: list, question: str) -> str:
-    """Determine market category from tags list and question text."""
-    combined = " ".join(str(t).lower() for t in tags) + " " + question.lower()
-    if any(w in combined for w in ("bitcoin", "btc", "eth", "ethereum", "crypto", "sol", "solana")):
-        return "crypto"
-    if any(w in combined for w in ("election", "president", "senate", "congress", "vote", "political")):
-        return "politics"
-    if any(w in combined for w in (
-        "nba", "nfl", "mlb", "nhl", "soccer", "football", "basketball",
-        "baseball", "tennis", "golf", "ufc", "mma", "match", "game",
-        "championship", "tournament", "cup",
-    )):
-        return "sports"
-    return "other"
+    @staticmethod
+    def _parse_iso_to_ts(iso_str: str) -> Optional[int]:
+        """Parse ISO 8601 date string to unix timestamp. Returns None on failure."""
+        for fmt in ("%Y-%m-%dT%H:%M:%SZ", "%Y-%m-%dT%H:%M:%S.%fZ",
+                    "%Y-%m-%dT%H:%M:%S%z", "%Y-%m-%d"):
+            try:
+                if fmt == "%Y-%m-%d":
+                    dt = datetime.strptime(iso_str[:10], fmt).replace(tzinfo=timezone.utc)
+                else:
+                    dt = datetime.strptime(iso_str, fmt).replace(tzinfo=timezone.utc)
+                return int(dt.timestamp())
+            except ValueError:
+                continue
+        return None

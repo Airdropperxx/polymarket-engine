@@ -2,50 +2,51 @@ name: Resolution Check
 
 on:
   schedule:
-    - cron: '0 * * * *'        # Every hour on the hour
+    - cron: '15 * * * *'   # Every hour at :15 (offset from scan at :00/:30)
   workflow_dispatch:
 
 concurrency:
-  group: engine-resolve         # FIXED: own group, no longer queues behind scan
+  group: engine-state
   cancel-in-progress: false
+
+permissions:
+  contents: write
 
 jobs:
   resolve:
     runs-on: ubuntu-latest
-    timeout-minutes: 8
+    timeout-minutes: 10
+
+    env:
+      POLYMARKET_API_KEY:        ${{ secrets.POLYMARKET_API_KEY }}
+      POLYMARKET_API_SECRET:     ${{ secrets.POLYMARKET_API_SECRET }}
+      POLYMARKET_PASSPHRASE:     ${{ secrets.POLYMARKET_PASSPHRASE }}
+      POLYMARKET_WALLET_ADDRESS: ${{ secrets.POLYMARKET_WALLET_ADDRESS }}
+      POLYMARKET_PRIVATE_KEY:    ${{ secrets.POLYMARKET_PRIVATE_KEY }}
+      POLYGON_RPC_URL:           ${{ secrets.POLYGON_RPC_URL }}
+      ANTHROPIC_API_KEY:         ${{ secrets.ANTHROPIC_API_KEY }}
+      TELEGRAM_BOT_TOKEN:        ${{ secrets.TELEGRAM_BOT_TOKEN }}
+      TELEGRAM_CHAT_ID:          ${{ secrets.TELEGRAM_CHAT_ID }}
+      DRY_RUN:                   ${{ vars.DRY_RUN }}
 
     steps:
       - uses: actions/checkout@v4
         with:
+          fetch-depth: 0
           token: ${{ secrets.GITHUB_TOKEN }}
-          fetch-depth: 1
 
-      - uses: actions/setup-python@v4
+      - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
           cache: 'pip'
+          cache-dependency-path: 'requirements.txt'
 
       - run: pip install -r requirements.txt
 
-      - name: Check resolutions
-        env:
-          POLYMARKET_API_KEY:    ${{ secrets.POLYMARKET_API_KEY }}
-          POLYMARKET_API_SECRET: ${{ secrets.POLYMARKET_API_SECRET }}
-          POLYMARKET_PASSPHRASE: ${{ secrets.POLYMARKET_PASSPHRASE }}
-          POLYMARKET_PRIVATE_KEY: ${{ secrets.POLYMARKET_PRIVATE_KEY }}
-          POLYGON_RPC_URL:       ${{ secrets.POLYGON_RPC_URL }}
-          ANTHROPIC_API_KEY:     ${{ secrets.ANTHROPIC_API_KEY }}
-          TELEGRAM_BOT_TOKEN:    ${{ secrets.TELEGRAM_BOT_TOKEN }}
-          TELEGRAM_CHAT_ID:      ${{ secrets.TELEGRAM_CHAT_ID }}
-          DATABASE_PATH:         data/trades.db
-          LESSONS_PATH:          data/lessons.json
-          ENGINE_CONFIG:         configs/engine.yaml
-        run: python scripts/check_resolutions.py
-
-      - name: Commit state
+      - name: Configure git
         run: |
-          git config user.name "polymarket-engine[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add data/trades.db data/lessons.json configs/engine.yaml 2>/dev/null || true
-          git diff --cached --quiet || git commit -m "auto(resolve): state $(date -u +%Y-%m-%dT%H:%M:%SZ)"
-          git push || true
+          git config user.email "engine@polymarket-bot"
+          git config user.name "Polymarket Engine"
+
+      - name: Check resolutions
+        run: python scripts/check_resolutions.py

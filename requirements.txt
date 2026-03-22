@@ -1,25 +1,20 @@
-# Polymarket Engine Dependencies
-# Install: pip install -r requirements.txt
+# Polymarket Engine v3.1 — pinned requirements
+# CRITICAL: Do NOT upgrade web3 past 6.14.0 — breaks py-clob-client 0.16.0
 
-# Core - lightweight, fast to install
-requests>=2.31.0
-pyyaml>=6.0.1
-python-dotenv>=1.0.1
-tenacity>=8.2.3
-structlog>=24.1.0
-sqlalchemy>=2.0.28
-PyGithub>=2.1.1
+py-clob-client==0.16.0
+web3==6.14.0
 
-# Polymarket trading (required for real trades)
-py-clob-client>=0.16.0
-web3>=6.0.0,<7.0.0
-
-# AI features (optional - S8 strategy needs this)
-sentence-transformers>=2.7.0
-anthropic>=0.18.0,<0.30.0
-
-# Notifications
-python-telegram-bot>=21.0
-
-# Dashboard
-flask>=3.0.0
+requests==2.31.0
+aiohttp==3.9.3
+anthropic==0.25.0
+sqlalchemy==2.0.28
+python-dotenv==1.0.1
+pyyaml==6.0.1
+tenacity==8.2.3
+structlog==24.1.0
+sentence-transformers==2.7.0
+# chromadb REMOVED — state lost between ephemeral GHA runners
+# Using pure numpy cosine similarity instead (already bundled with sentence-transformers)
+python-telegram-bot==21.0
+PyGithub==2.1.1
+numpy>=1.24.0        # bundled with sentence-transformers, listed explicitly

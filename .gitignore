@@ -1,11 +1,7 @@
-# Secrets — NEVER commit these
+# Secrets — NEVER commit
 .env
-
-# SQLite database (binary, tracked separately; WAL/SHM are temp files — NEVER commit)
-data/trades.db
-data/trades.db-wal
-data/trades.db-shm
-data/market_cache/
+*.pem
+*.key
 
 # Python
 __pycache__/
@@ -13,23 +9,37 @@ __pycache__/
 *.egg-info/
 dist/
 build/
-.pytest_cache/
-.coverage
-htmlcov/
-*.pyc
+.venv/
+venv/
+
+# SQLite WAL/SHM files — ephemeral, not needed in git
+*.db-wal
+*.db-shm
+
+# Market cache dir — too large and ephemeral
+# data/market_cache/ is replaced by data/market_snapshot.json.gz (committed)
+data/market_cache/
+
+# S8 embedding cache is .json (committed) — not this
+data/*.jsonl   # audit log can get large
 
 # Logs
 logs/
 *.log
 
+# HuggingFace model weights — cached by GHA, don't commit
+.cache/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+
 # OS
 .DS_Store
 Thumbs.db
 
-# IDE
-.vscode/
-.idea/
-
-# HuggingFace model cache (large, not needed in repo)
-# NOTE: GHA workflow caches ~/.cache/huggingface/hub separately
-.cache/
+# Test artifacts
+.pytest_cache/
+.coverage
+htmlcov/

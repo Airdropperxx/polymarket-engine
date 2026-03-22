@@ -1,230 +1,298 @@
 """
-engines/execution_engine.py
-============================
-THE ONLY ENGINE THAT PLACES REAL ORDERS.
+engines/execution_engine.py — THE ONLY engine that submits orders.
 
-All risk gates live here. Nothing else submits orders.
+5 risk gates in fixed order before any order is placed:
+  1. Daily P&L check (halt if max_daily_loss exceeded)
+  2. Open position count check
+  3. Min size check ($1.00 floor)
+  4. DRY_RUN guard (never submit if dry_run=True)
+  5. Live fee_rate_bps re-fetch (re-fetch if MarketState > 5 min old)
 
-CRITICAL RULES (violation = bug):
-  1. fee_rate_bps is read from MarketState.fee_rate_bps (fetched by DataEngine).
-     Only re-fetches from API if MarketState is stale (> 5 min old).
-     NEVER hardcoded. NEVER zero.
-  2. DRY_RUN=true → NEVER calls any order submission API.
-  3. Risk gates execute in fixed order. Stop at first failure.
-  4. Every rejection is logged with reason, strategy, and market_id.
+All monetary values: USDC. All probabilities: float [0.0, 1.0].
+NEVER raises — returns None on any failure.
 """
 
 from __future__ import annotations
 
 import os
 import time
+import uuid
 from typing import Optional
 
 import structlog
 from tenacity import retry, stop_after_attempt, wait_exponential
 
-from engines.state_engine import StateEngine, TradeRecord
-from engines.data_engine import MarketState
 from strategies.base import BaseStrategy, Opportunity
+from engines.data_engine import DataEngine, MarketState
+from engines.state_engine import StateEngine, TradeRecord
 
-log = structlog.get_logger()
+log = structlog.get_logger(component="execution_engine")
 
-_MAX_MARKET_STATE_AGE_SECONDS = 300  # re-fetch fee_rate_bps if snapshot > 5 min old
+MARKET_STALENESS_SEC = 300   # 5 minutes
 
 
 class ExecutionEngine:
-    """
-    Executes trading opportunities against Polymarket CLOB.
-    Enforces all risk constraints before any order is submitted.
-    """
+    def __init__(self,
+                 state_engine: StateEngine,
+                 data_engine:  DataEngine,
+                 config:       dict,
+                 dry_run:      bool = True):
+        self.state     = state_engine
+        self.data      = data_engine
+        self.config    = config
+        self.dry_run   = dry_run
+        self._clob     = None   # lazy-init — avoids import cost when dry_run=True
 
-    def __init__(
-        self,
-        clob_client,               # py-clob-client ClobClient instance
-        state_engine: StateEngine,
-        config: dict,
-        dry_run: bool = False,
-    ) -> None:
-        self._client = clob_client
-        self._state = state_engine
-        self._config = config
-        self._dry_run = dry_run or (os.environ.get("DRY_RUN", "false").lower() == "true")
+    # ── Public interface ───────────────────────────────────────────────────────
 
-        if self._dry_run:
-            log.warning("execution_engine.dry_run_active")
-
-    # -----------------------------------------------------------------------
-    # Public interface
-    # -----------------------------------------------------------------------
-
-    def execute_opportunity(
-        self,
-        opp: Opportunity,
-        strategy: BaseStrategy,
-        market_state: MarketState,
-        strategy_config: dict,
-    ) -> Optional[str]:
+    def execute_opportunity(self,
+                            opp:           Opportunity,
+                            strategy:      BaseStrategy,
+                            market_state:  Optional[MarketState],
+                            bankroll:      float) -> Optional[str]:
         """
-        Main execution entry point.
-
-        Returns:
-            trade_id (str)  — if executed or dry-run
-            None            — if rejected by any risk gate
-
-        Risk gate order (stop at first failure):
-            Gate 1: daily loss limit
-            Gate 2: max open positions
-            Gate 3: min trade size ($1 floor)
-            Gate 4: DRY_RUN guard
-            Gate 5: live order submission
+        Execute one opportunity through all 5 risk gates.
+        Returns trade_id (str) if executed, None if rejected at any gate.
+        trade_id starts with "DRY_RUN_" when dry_run=True.
         """
-        balance = self._state.get_current_balance()
-        risk    = self._config["risk"]
+        risk = self.config.get("engine", {}).get("risk", {})
 
-        # --- Gate 1: Daily loss limit ---
-        daily_pnl      = self._state.get_daily_pnl()
-        max_daily_loss = risk["max_daily_loss_pct"] * balance
-        if daily_pnl <= -max_daily_loss:
-            self._reject(opp, "DAILY_LOSS_LIMIT_HIT")
-            log.error("execution_engine.halt", daily_pnl=daily_pnl, limit=-max_daily_loss)
+        # ── Gate 1: Daily P&L ─────────────────────────────────────────────────
+        daily_pnl     = self.state.get_daily_pnl()
+        max_daily_loss = bankroll * float(risk.get("max_daily_loss_pct", 0.05))
+        if daily_pnl < -max_daily_loss:
+            log.warning("gate1_daily_loss_limit",
+                        daily_pnl=daily_pnl, max_loss=max_daily_loss)
             return None
 
-        # --- Gate 2: Max open positions ---
-        if self._state.get_open_position_count() >= risk["max_open_positions"]:
-            self._reject(opp, "MAX_POSITIONS_REACHED")
+        # ── Gate 2: Open position count ───────────────────────────────────────
+        open_count = self.state.get_open_position_count()
+        max_open   = int(risk.get("max_open_positions", 5))
+        if open_count >= max_open:
+            log.info("gate2_max_positions", open=open_count, max=max_open)
             return None
 
-        # --- Gate 3: Min trade size ---
-        allocation = self._config["allocations"].get(opp.strategy, 0.0)
-        allocated  = balance * allocation
-        size_usdc  = strategy.size(opp, allocated, strategy_config)
-        max_size   = risk["max_position_pct"] * balance
-        size_usdc  = min(size_usdc, max_size)  # hard cap
-
+        # ── Gate 3: Size check ────────────────────────────────────────────────
+        size_usdc = strategy.size(opp, bankroll, self.config)
         if size_usdc < 1.0:
-            self._reject(opp, "SIZE_TOO_SMALL")
+            log.info("gate3_size_too_small", size=size_usdc)
             return None
 
-        # --- Gate 4: DRY_RUN ---
-        if self._dry_run:
-            trade_id = f"DRY_RUN_{opp.market_id}_{int(time.time())}"
-            log.info("execution_engine.dry_run", trade_id=trade_id,
-                     strategy=opp.strategy, size_usdc=size_usdc)
+        # ── Gate 4: DRY_RUN ───────────────────────────────────────────────────
+        if self.dry_run:
+            trade_id = f"DRY_RUN_{uuid.uuid4().hex[:12].upper()}"
+            buy_price = opp.metadata.get("buy_price",
+                        opp.metadata.get("yes_ask", opp.win_probability))
+            shares    = size_usdc / buy_price if buy_price > 0 else 0
+            fee_usdc  = strategy.calc_fee(buy_price) * size_usdc
+
+            record = TradeRecord(
+                trade_id       = trade_id,
+                strategy       = opp.strategy,
+                market_id      = opp.market_id,
+                market_question = opp.market_question,
+                side           = opp.action.replace("BUY_", ""),
+                price          = buy_price,
+                shares         = shares,
+                cost_usdc      = size_usdc,
+                fee_usdc       = fee_usdc,
+                status         = "open",
+                entry_time     = _now_iso(),
+                notes          = f"DRY_RUN score={opp.score:.3f} edge={opp.edge:.4f}",
+            )
+            # Inject metadata for on_resolve
+            record_dict = record.__dict__
+            record_dict["metadata"] = opp.metadata
+
+            self.state.log_trade(record)
+            log.info("dry_run_trade_logged",
+                     trade_id=trade_id, strategy=opp.strategy,
+                     size=size_usdc, score=opp.score, edge=opp.edge)
             return trade_id
 
-        # --- Gate 5: Live submission ---
-        fee_bps = self._get_fee_rate_bps(opp, market_state)
+        # ── Gate 5: Live fee_rate_bps re-fetch ───────────────────────────────
+        token_id = opp.metadata.get("token_id", "")
+        fee_rate_bps = self._get_live_fee_bps(market_state, token_id)
 
-        order  = self._build_order(opp, size_usdc, fee_bps, market_state)
-        result = self._submit_with_retry(order)
-        trade_id = result.get("orderId") or result.get("id", "UNKNOWN")
+        # ── Submit order ──────────────────────────────────────────────────────
+        return self._submit_order(opp, strategy, size_usdc, fee_rate_bps, bankroll)
 
-        self._state.log_trade(TradeRecord(
-            trade_id=trade_id,
-            strategy=opp.strategy,
-            market_id=opp.market_id,
-            market_question=opp.market_question,
-            side="YES" if opp.action in ("buy_yes", "buy_all_yes") else "NO",
-            price=opp.win_probability,
-            shares=size_usdc / max(opp.win_probability, 0.001),
-            cost_usdc=size_usdc,
-            fee_usdc=size_usdc * (fee_bps / 10000),
-            status="open",
-        ))
-
-        log.info("execution_engine.trade_submitted",
-                 trade_id=trade_id, strategy=opp.strategy,
-                 market_id=opp.market_id, size_usdc=size_usdc, fee_bps=fee_bps)
-        return trade_id
-
-    # -----------------------------------------------------------------------
-    # Fee rate — NEVER hardcoded
-    # -----------------------------------------------------------------------
-
-    def _get_fee_rate_bps(self, opp: Opportunity, market_state: MarketState) -> int:
+    def check_and_settle(self, position: dict) -> bool:
         """
-        Returns fee_rate_bps for the order.
-
-        Priority:
-          1. market_state.fee_rate_bps if snapshot is fresh (< 5 min old)
-          2. Re-fetch via clob_client.get_market() if snapshot is stale
-          3. Fallback: 200 bps (2%) — safe overestimate, never 0
-
-        Note: py-clob-client 0.16 exposes get_market(token_id) which returns
-        a dict including 'feeRateBps'. There is NO standalone get_fee_rate_bps()
-        method in this SDK version.
+        Check if an open position has resolved and settle it.
+        Returns True if resolved and settled.
         """
-        # Use cached value if fresh
-        if market_state and not _is_stale(market_state.fetched_at):
-            bps = market_state.fee_rate_bps
-            if bps and bps > 0:
-                return bps
-
-        # Re-fetch from CLOB API
-        token_id = (
-            market_state.yes_token_id
-            if opp.action in ("buy_yes", "buy_all_yes")
-            else market_state.no_token_id
-        )
         try:
-            mkt = self._client.get_market(token_id)
-            bps = int(mkt.get("feeRateBps") or mkt.get("fee_rate_bps") or 200)
-            log.info("execution_engine.fee_rate_fetched", token_id=token_id, bps=bps)
-            return max(1, bps)
-        except Exception as exc:
-            log.warning("execution_engine.fee_rate_fallback",
-                        token_id=token_id, error=str(exc))
-            return 200  # 2% safe overestimate — never 0
+            market_id = position.get("market_id", "")
+            token_id  = position.get("metadata", {}).get("token_id", "")
+            side      = position.get("side", "YES")
 
-    # -----------------------------------------------------------------------
-    # Order building
-    # -----------------------------------------------------------------------
+            if not token_id:
+                return False
 
-    def _build_order(
-        self,
-        opp: Opportunity,
-        size_usdc: float,
-        fee_bps: int,
-        market_state: MarketState,
-    ) -> dict:
-        """
-        Build order payload for py-clob-client.
+            # Query CLOB for resolution status
+            clob = self._get_clob_client()
+            if not clob:
+                return False
 
-        Order types:
-          buy_all_yes (NegRisk arb): FOK — Fill-or-Kill (all legs must fill)
-          buy_yes / buy_no:          GTD — Good-Till-Date (near-resolution, logical arb)
-          sell_all_yes (NegRisk):    FOK
+            market = clob.get_market(token_id)
+            if not market:
+                return False
 
-        py-clob-client 0.16 order structure:
-          token_id, price, size, side ('BUY'/'SELL'), order_type, feeRateBps
-        """
-        is_buy = opp.action in ("buy_yes", "buy_all_yes")
-        token_id = market_state.yes_token_id if is_buy else market_state.no_token_id
-        order_type = "FOK" if opp.action in ("buy_all_yes", "sell_all_yes") else "GTD"
+            # Check if resolved
+            resolved_price = float(market.get("lastTradedPrice", -1))
+            status = market.get("gameStatus", "")
 
-        return {
-            "token_id":    token_id,
-            "price":       opp.win_probability,
-            "size":        size_usdc,
-            "side":        "BUY" if is_buy else "SELL",
-            "order_type":  order_type,
-            "feeRateBps":  fee_bps,    # required field — never omit, never hardcode
-        }
+            is_resolved = (status == "resolved" or
+                           resolved_price in (0.0, 1.0) or
+                           market.get("closed", False))
 
-    @retry(stop=stop_after_attempt(3), wait=wait_exponential(multiplier=1, min=2, max=8))
-    def _submit_with_retry(self, order: dict) -> dict:
-        """Submit order to Polymarket CLOB with retry on transient errors."""
-        return self._client.create_order(order)
+            if not is_resolved:
+                return False
 
-    # -----------------------------------------------------------------------
-    # Logging
-    # -----------------------------------------------------------------------
+            # Determine outcome
+            if side == "YES":
+                won = resolved_price >= 0.99
+            elif side == "NO":
+                won = resolved_price <= 0.01
+            else:
+                won = False
 
-    def _reject(self, opp: Opportunity, reason: str) -> None:
-        log.warning("execution_engine.rejected",
-                    reason=reason, strategy=opp.strategy,
-                    market_id=opp.market_id, action=opp.action)
+            outcome = "win" if won else "loss"
+            pnl_usdc = (position["shares"] - position["cost_usdc"] - position["fee_usdc"]
+                        if won else
+                        -position["cost_usdc"] - position["fee_usdc"])
+
+            self.state.mark_resolved(market_id, outcome, pnl_usdc)
+            log.info("position_settled",
+                     market_id=market_id, outcome=outcome, pnl=pnl_usdc)
+            return True
+
+        except Exception as e:
+            log.warning("settle_failed",
+                        market_id=position.get("market_id"), error=str(e))
+            return False
+
+    # ── Internal helpers ──────────────────────────────────────────────────────
+
+    def _get_live_fee_bps(self, market_state: Optional[MarketState],
+                           token_id: str) -> int:
+        """Re-fetch fee_rate_bps if market_state is stale."""
+        if market_state and not market_state.is_stale(MARKET_STALENESS_SEC):
+            return market_state.fee_rate_bps
+
+        # Stale or missing — re-fetch
+        try:
+            clob   = self._get_clob_client()
+            detail = clob.get_market(token_id) if clob else {}
+            bps    = int(detail.get("feeRateBps", 0))
+            if bps > 0:
+                return bps
+        except Exception as e:
+            log.warning("fee_rate_refetch_failed", token_id=token_id, error=str(e))
+
+        # Fall back to formula estimate from market_state
+        if market_state:
+            return market_state.fee_rate_bps
+
+        return 25  # safe default (0.25%) if all else fails
+
+    def _get_clob_client(self):
+        """Lazy-init CLOB client (heavy import, skip in dry_run)."""
+        if self._clob is None:
+            try:
+                from py_clob_client.client import ClobClient
+                from py_clob_client.clob_types import ApiCreds
+
+                creds = ApiCreds(
+                    api_key     = os.environ["POLYMARKET_API_KEY"],
+                    api_secret  = os.environ["POLYMARKET_API_SECRET"],
+                    api_passphrase = os.environ["POLYMARKET_PASSPHRASE"],
+                )
+                self._clob = ClobClient(
+                    host         = "https://clob.polymarket.com",
+                    chain_id     = 137,
+                    private_key  = os.environ["POLYMARKET_PRIVATE_KEY"],
+                    creds        = creds,
+                    signature_type = 0,
+                    funder       = os.environ["POLYMARKET_WALLET_ADDRESS"],
+                )
+            except Exception as e:
+                log.error("clob_client_init_failed", error=str(e))
+                return None
+        return self._clob
+
+    @retry(stop=stop_after_attempt(3), wait=wait_exponential(min=2, max=10))
+    def _submit_order(self,
+                      opp:          Opportunity,
+                      strategy:     BaseStrategy,
+                      size_usdc:    float,
+                      fee_rate_bps: int,
+                      bankroll:     float) -> Optional[str]:
+        """Submit a real order to Polymarket CLOB."""
+        try:
+            from py_clob_client.clob_types import OrderArgs, OrderType
+
+            clob      = self._get_clob_client()
+            token_id  = opp.metadata.get("token_id", "")
+            buy_price = opp.metadata.get("buy_price",
+                        opp.metadata.get("yes_ask", opp.win_probability))
+
+            if not token_id:
+                log.error("no_token_id", market_id=opp.market_id)
+                return None
+
+            shares = round(size_usdc / buy_price, 2) if buy_price > 0 else 0
+            if shares < 1.0:
+                log.info("shares_too_small", shares=shares)
+                return None
+
+            order_args = OrderArgs(
+                token_id      = token_id,
+                price         = round(buy_price, 4),
+                size          = shares,
+                side          = "BUY",
+                fee_rate_bps  = fee_rate_bps,
+                nonce         = int(time.time() * 1000),
+            )
+
+            signed_order = clob.create_order(order_args)
+            response     = clob.post_order(signed_order, OrderType.GTC)
+
+            if not response or not response.get("orderID"):
+                log.error("order_rejected", response=str(response)[:200])
+                return None
+
+            order_id = response["orderID"]
+            fee_usdc = strategy.calc_fee(buy_price) * size_usdc
+
+            record = TradeRecord(
+                trade_id        = order_id,
+                strategy        = opp.strategy,
+                market_id       = opp.market_id,
+                market_question = opp.market_question,
+                side            = opp.action.replace("BUY_", ""),
+                price           = buy_price,
+                shares          = shares,
+                cost_usdc       = size_usdc,
+                fee_usdc        = fee_usdc,
+                status          = "open",
+                entry_time      = _now_iso(),
+                notes           = f"score={opp.score:.3f} edge={opp.edge:.4f}",
+            )
+            self.state.log_trade(record)
+
+            log.info("order_submitted",
+                     order_id=order_id, strategy=opp.strategy,
+                     token_id=token_id, price=buy_price,
+                     shares=shares, cost_usdc=size_usdc)
+            return order_id
+
+        except Exception as e:
+            log.error("order_submit_failed", error=str(e))
+            raise   # Let tenacity retry
 
 
-def _is_stale(fetched_at: float) -> bool:
-    return (time.time() - fetched_at) > _MAX_MARKET_STATE_AGE_SECONDS
+def _now_iso() -> str:
+    from datetime import datetime, timezone
+    return datetime.now(timezone.utc).isoformat()
