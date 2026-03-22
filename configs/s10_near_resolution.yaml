@@ -1,44 +1,13 @@
-# configs/s10_near_resolution.yaml
-# S10: Near-resolution harvest strategy
-# Capital: $40 (40% of $100 bankroll)
-# Target: markets resolving within 60 min with high-probability outcome
-
 s10_near_resolution:
   enabled: true
-
-  # ── Time filter ──────────────────────────────────────────────────────────
-  # Markets must resolve within this many MINUTES from now
-  # FIX: This is MINUTES — the code converts to seconds internally.
-  # Original bug: was being compared as minutes against seconds_to_resolution
-  max_minutes_remaining: 60       # 1 hour window (safe with 30-min scan interval)
-
-  # ── Probability filter ────────────────────────────────────────────────────
-  min_probability: 0.90           # YES or NO must be ≥ 90% to enter
-  # Sports: consider raising to 0.93 (late reversals common)
-  # Crypto: 0.90 is fine (price bets resolve cleanly)
-
-  # ── Liquidity filters ─────────────────────────────────────────────────────
-  min_volume_24h: 500.0           # USDC — rejects dead markets
-  max_spread: 0.03                # max bid-ask spread (0.03 = 3 cents on $1)
-
-  # ── Edge requirement ──────────────────────────────────────────────────────
-  min_edge_after_fees: 0.005      # 0.5% minimum net edge after fee formula
-  # At p=0.95, fee ≈ 0.013% — so 0.5% edge means buying at 0.937 or better
-
-  # ── Position sizing ────────────────────────────────────────────────────────
-  max_position_pct: 0.15          # 15% of bankroll max per trade = $15
-  kelly_fraction: 0.25            # quarter-Kelly (conservative)
-
-  # ── Scoring weights (internal to s10.score()) ─────────────────────────────
-  # time_weight:  0.35  — urgency is primary signal
-  # prob_weight:  0.30  — higher certainty → higher score
-  # edge_weight:  0.20  — wider edge → higher score
-  # vol_weight:   0.15  — liquidity confidence
-
-  # ── Execution gate ────────────────────────────────────────────────────────
-  threshold: 0.55                 # minimum score() result to execute trade
-
-  # ── ReviewEngine tracking ─────────────────────────────────────────────────
+  max_minutes_remaining: 10080
+  min_probability: 0.85
+  min_volume_24h: 100.0
+  max_spread: 0.05
+  min_edge_after_fees: 0.001
+  max_position_pct: 0.15
+  kelly_fraction: 0.25
+  threshold: 0.30
   review:
-    track_metrics: [win_rate, avg_roi, avg_minutes_left_at_entry, category_breakdown]
+    track_metrics: [win_rate, avg_roi, avg_days_left, category_breakdown]
     rebalance_trigger: weekly

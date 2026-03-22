@@ -1,42 +1,13 @@
-# configs/s8_logical.yaml
-# S8: Logical impossibility arbitrage
-# Capital: $20 (20% of $100 bankroll)
-# Uses embeddings + LLM to find mutually exclusive markets priced as if independent
-
 s8_logical_arb:
-  # DISABLED at MVP — sentence-transformers requires torch (~1.5GB)
-  # Enable when: capital > $500 AND running locally or on a VPS
   enabled: false
-
-  # ── Embedding similarity gate ─────────────────────────────────────────────
-  similarity_threshold: 0.75      # cosine similarity to consider pair for LLM review
-  # Lower = more pairs reviewed (more LLM cost), Higher = fewer pairs but surer
-
-  # ── Price arb threshold ───────────────────────────────────────────────────
-  min_edge_after_fees: 0.030      # 3% — higher than S10 because LLM can be wrong
-
-  # ── Liquidity ─────────────────────────────────────────────────────────────
-  min_volume_24h: 300.0           # USDC
-
-  # ── LLM usage control ─────────────────────────────────────────────────────
-  max_llm_calls_per_scan: 5       # Haiku ≈ $0.001/call → $0.005/scan = $7/month
-  # New pairs only — cached pairs never re-classified (cache in data/s8_direction_cache.json)
-
-  # ── Category priority ─────────────────────────────────────────────────────
-  priority_categories:            # scan order — politics has most logical violations
-    - politics
-    - other
-    - crypto
-    - sports
-
-  # ── Position sizing ────────────────────────────────────────────────────────
-  max_position_pct: 0.15          # 15% of bankroll = $15
-  kelly_fraction: 0.25            # quarter-Kelly
-
-  # ── Execution gate ────────────────────────────────────────────────────────
-  threshold: 0.65                 # highest threshold — LLM can err, need strong signal
-
-  # ── ReviewEngine tracking ─────────────────────────────────────────────────
+  min_edge_after_fees: 0.030
+  similarity_threshold: 0.75
+  min_volume_24h: 300.0
+  max_llm_calls_per_scan: 5
+  priority_categories: [politics, other, crypto, sports]
+  max_position_pct: 0.15
+  kelly_fraction: 0.25
+  threshold: 0.65
   review:
-    track_metrics: [win_rate, avg_yes_sum, avg_similarity, category_breakdown]
+    track_metrics: [win_rate, avg_yes_sum, avg_similarity]
     rebalance_trigger: weekly
