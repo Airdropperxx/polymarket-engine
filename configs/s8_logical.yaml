@@ -8,6 +8,3 @@ s8_logical_arb:
   max_position_pct: 0.15
   kelly_fraction: 0.25
   threshold: 0.65
-  review:
-    track_metrics: [win_rate, avg_yes_sum, avg_similarity]
-    rebalance_trigger: weekly
