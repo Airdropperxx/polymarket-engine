@@ -64,14 +64,14 @@ _SOCIAL   = {"tweets","tweet","posts from","white house post","elon musk post",
 _SHIPPING = {"ships transit","strait of hormuz","suez","maritime","cargo","vessel",
              "shipping","port","trade route","tanker","transit count"}
 
-def _categorise(question: str, gamma_category: str = "") -> str:
+def _categorise(tags: list, question: str) -> str:
     """
-    Determine market category.
-    Priority: Gamma category field -> question keyword matching -> 'other'
+    Determine market category from tags list and question text.
+    Priority: tags keyword matching -> question keyword matching -> 'other'
     Covers: crypto, sports, politics, finance, tech, geopolitics,
             weather, entertainment, social_media, shipping, science, other
     """
-    gc = gamma_category.lower().strip() if gamma_category else ""
+    gc = " ".join(str(t) for t in tags).lower().strip() if tags else ""
     if gc:
         known = {
             "us politics": "politics", "world politics": "politics",
@@ -125,6 +125,16 @@ def _parse_iso(s: str) -> Optional[int]:
         return int(datetime.strptime(s[:10], "%Y-%m-%d").replace(tzinfo=timezone.utc).timestamp())
     except Exception:
         return None
+
+
+def _seconds_until(iso_str: str) -> int:
+    """Return seconds from now until the ISO datetime. Returns -1 for empty/invalid."""
+    if not iso_str:
+        return -1
+    ts = _parse_iso(iso_str)
+    if ts is None:
+        return -1
+    return int(ts - time.time())
 
 
 @dataclass
@@ -334,7 +344,7 @@ class DataEngine:
                 if isinstance(events, list) and events:
                     first = events[0] if isinstance(events[0], dict) else {}
                     gamma_cat = str(first.get("category") or "")
-            category = _categorise(question, gamma_cat)
+            category = _categorise([gamma_cat], question)
 
             # NegRisk group
             neg_risk_id = raw.get("negRiskGroupId")
