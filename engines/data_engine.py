@@ -55,39 +55,45 @@ _GEO      = {"war","ceasefire","invasion","military","ukraine","russia","china",
 def _categorise(question: str, gamma_category: str = "") -> str:
     """
     Determine market category.
-    Priority: Gamma's own category field -> keyword matching -> 'other'
+    Priority: Gamma category field -> question keyword matching -> 'other'
+    Covers: crypto, sports, politics, finance, tech, geopolitics,
+            weather, entertainment, social_media, shipping, science, other
     """
-    # Use Gamma's category field if it looks meaningful
     gc = gamma_category.lower().strip() if gamma_category else ""
     if gc:
-        if any(k in gc for k in ["crypto","bitcoin","ethereum","blockchain"]): return "crypto"
-        if any(k in gc for k in ["sport","nba","nfl","soccer","football","tennis"]): return "sports"
-        if any(k in gc for k in ["politic","election","government"]): return "politics"
-        if any(k in gc for k in ["financ","stock","market","econom"]): return "finance"
-        if any(k in gc for k in ["tech","ai","software"]): return "tech"
-        if any(k in gc for k in ["world","geo","war","conflict"]): return "geopolitics"
-        # Map common Gamma category strings
         known = {
             "us politics": "politics", "world politics": "politics",
             "crypto": "crypto", "sports": "sports", "science": "science",
             "entertainment": "entertainment", "business": "finance",
             "economics": "finance", "technology": "tech",
+            "weather": "weather", "pop culture": "entertainment",
+            "tv": "entertainment", "music": "entertainment",
         }
         for k, v in known.items():
             if k in gc: return v
-        # If gamma has any non-empty category, use it directly (capitalised)
-        if len(gc) < 30:
-            return gc.title()
+        if any(k in gc for k in ["crypto","bitcoin","ethereum","blockchain"]): return "crypto"
+        if any(k in gc for k in ["sport","nba","nfl","soccer","football","tennis","mls","nhl","mlb"]): return "sports"
+        if any(k in gc for k in ["politic","election","government"]): return "politics"
+        if any(k in gc for k in ["financ","stock","market","econom"]): return "finance"
+        if any(k in gc for k in ["tech","ai","software"]): return "tech"
+        if any(k in gc for k in ["world","geo","war","conflict"]): return "geopolitics"
+        if any(k in gc for k in ["weather","climate","temperature"]): return "weather"
+        if any(k in gc for k in ["entertainment","tv","film","netflix","music"]): return "entertainment"
+        if len(gc) < 30: return gc.title()
 
-    # Keyword fallback on question text
     q = question.lower()
     words = set(q.split())
-    if words & _CRYPTO   or any(k in q for k in _CRYPTO):   return "crypto"
-    if words & _SPORTS   or any(k in q for k in _SPORTS):   return "sports"
-    if words & _FINANCE  or any(k in q for k in _FINANCE):  return "finance"
-    if words & _TECH     or any(k in q for k in _TECH):     return "tech"
-    if words & _POLITICS or any(k in q for k in _POLITICS): return "politics"
-    if words & _GEO      or any(k in q for k in _GEO):      return "geopolitics"
+    # Priority order: specific first, generic last
+    if words & _WEATHER   or any(k in q for k in _WEATHER):   return "weather"
+    if words & _CRYPTO    or any(k in q for k in _CRYPTO):    return "crypto"
+    if words & _SPORTS    or any(k in q for k in _SPORTS):    return "sports"
+    if words & _ENTERTAIN or any(k in q for k in _ENTERTAIN): return "entertainment"
+    if words & _SOCIAL    or any(k in q for k in _SOCIAL):    return "social_media"
+    if words & _SHIPPING  or any(k in q for k in _SHIPPING):  return "shipping"
+    if words & _FINANCE   or any(k in q for k in _FINANCE):   return "finance"
+    if words & _TECH      or any(k in q for k in _TECH):      return "tech"
+    if words & _POLITICS  or any(k in q for k in _POLITICS):  return "politics"
+    if words & _GEO       or any(k in q for k in _GEO):       return "geopolitics"
     return "other"
 
 
