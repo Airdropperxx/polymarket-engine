@@ -2,7 +2,7 @@ name: Resolution Check
 
 on:
   schedule:
-    - cron: '15 * * * *'   # Every hour at :15 (offset from scan at :00/:30)
+    - cron: '5 * * * *'   # Every hour at :05
   workflow_dispatch:
 
 concurrency:
@@ -15,9 +15,10 @@ permissions:
 jobs:
   resolve:
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 8
 
     env:
+      PYTHONPATH:                ${{ github.workspace }}
       POLYMARKET_API_KEY:        ${{ secrets.POLYMARKET_API_KEY }}
       POLYMARKET_API_SECRET:     ${{ secrets.POLYMARKET_API_SECRET }}
       POLYMARKET_PASSPHRASE:     ${{ secrets.POLYMARKET_PASSPHRASE }}
@@ -39,9 +40,17 @@ jobs:
         with:
           python-version: '3.11'
           cache: 'pip'
-          cache-dependency-path: 'requirements.txt'
 
-      - run: pip install -r requirements.txt
+      - name: Install dependencies
+        run: |
+          pip install --upgrade pip
+          pip install requests==2.31.0
+          pip install pyyaml==6.0.1
+          pip install sqlalchemy==2.0.28
+          pip install structlog==24.1.0
+          pip install tenacity==8.2.3
+          pip install python-dotenv==1.0.1
+          pip install anthropic==0.25.0
 
       - name: Configure git
         run: |
