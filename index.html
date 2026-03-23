@@ -1,3 +1,11 @@
+/* Tooltip */
+[data-tip]{position:relative;cursor:help}
+[data-tip]:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;
+  transform:translateX(-50%);background:#1e222d;border:1px solid #3b4458;color:#e2e8f0;
+  padding:7px 11px;border-radius:8px;font-size:11px;line-height:1.55;white-space:pre-line;
+  max-width:260px;z-index:9999;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.5);font-weight:400}
+[data-tip]:hover::before{content:'';position:absolute;bottom:calc(100% + 1px);left:50%;
+  transform:translateX(-50%);border:5px solid transparent;border-top-color:#3b4458;z-index:9999;pointer-events:none}
 <!DOCTYPE html>
 <html lang="en">
 <head>
