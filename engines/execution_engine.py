@@ -36,16 +36,17 @@ SCAN_LOG_MAX_ENTRIES = 20000   # keep ~7 days at 5-min scan cadence
 
 class ExecutionEngine:
     def __init__(self,
+                 clob_client,
                  state_engine: StateEngine,
-                 data_engine:  DataEngine,
                  config:       dict,
-                 dry_run:      bool = True):
+                 dry_run:      bool = True,
+                 data_engine=None):
+        self._client  = clob_client   # CLOB order submission client
         self.state    = state_engine
-        self.data     = data_engine
         self.config   = config
-        self._config  = config  # alias for test access
+        self._config  = config        # alias for test access
         self.dry_run  = dry_run
-        self._clob    = None
+        self.data     = data_engine
 
     # ------------------------------------------------------------------ #
     #  Opportunity logging                                                 #
