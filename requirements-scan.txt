@@ -1,10 +1,9 @@
-# requirements-scan.txt
-# Used by GitHub Actions scan.yml — installs in ~15 seconds, zero conflicts.
-# These 7 packages cover ALL scan cycle needs including dry-run trades.
-requests>=2.28.0
-pyyaml>=6.0
-sqlalchemy>=2.0.0
-structlog>=23.0.0
-tenacity>=8.0.0
-python-dotenv>=1.0.0
-anthropic>=0.25.0
+# requirements-scan.txt — used by GitHub Actions scan.yml
+# Pinned for reproducibility, zero conflict risk
+requests==2.31.0
+pyyaml==6.0.1
+sqlalchemy==2.0.28
+structlog==24.1.0
+tenacity==8.2.3
+python-dotenv==1.0.1
+anthropic==0.25.0
