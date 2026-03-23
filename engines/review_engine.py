@@ -108,6 +108,31 @@ class ReviewEngine:
             log.error("review_engine_failed", error=str(e))
             return {"status": "error"}
 
+    def _parse_response(self, raw: str):
+        """Parse AI response JSON. Returns dict or None."""
+        import json, re as _re
+        if not raw:
+            return None
+        # Try direct JSON parse first
+        try:
+            return json.loads(raw)
+        except Exception:
+            pass
+        # Try to extract JSON from prose
+        m = _re.search(r'\{[^{}]*"new_lessons"[^{}]*\}', raw, _re.DOTALL)
+        if m:
+            try:
+                return json.loads(m.group())
+            except Exception:
+                pass
+        # Broader JSON extraction
+        m = _re.search(r'\{.*\}', raw, _re.DOTALL)
+        if m:
+            try:
+                return json.loads(m.group())
+            except Exception:
+                pass
+        return None
     def _apply_updates(self, updates: dict, lessons_data: dict) -> None:
         """Apply allocation deltas and new lessons. Never crashes."""
         try:
