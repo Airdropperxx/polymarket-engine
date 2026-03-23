@@ -10,7 +10,7 @@ s11_inplay_momentum:
   max_position_pct: 0.15
   kelly_fraction: 0.25
   threshold: 0.30
-  observer_boost: true               # momentum signals pre-filter markets
+  observer_boost: true
   review:
     track_metrics: [win_rate, avg_roi, avg_move, category_breakdown]
     rebalance_trigger: weekly
