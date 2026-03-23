@@ -309,7 +309,14 @@ class DataEngine:
             # Parse outcomePrices — always a JSON string like '["0.94","0.06"]'
             op_raw = raw.get("outcomePrices")
             if not op_raw:
-                return None
+                # Fallback: parse from tokens[] array (test mock format)
+                tokens = raw.get("tokens") or []
+                yes_tok = next((t for t in tokens if t.get("outcome","").upper()=="YES"), None)
+                no_tok  = next((t for t in tokens if t.get("outcome","").upper()=="NO"),  None)
+                if yes_tok and no_tok:
+                    op_raw = [yes_tok.get("price","0.5"), no_tok.get("price","0.5")]
+                else:
+                    return None
             prices = json.loads(op_raw) if isinstance(op_raw, str) else op_raw
             if len(prices) < 2:
                 return None
@@ -329,8 +336,15 @@ class DataEngine:
             ctids = raw.get("clobTokenIds")
             token_ids  = json.loads(ctids) if isinstance(ctids, str) else (ctids or [])
             cid        = str(raw.get("conditionId") or raw.get("id") or "")
-            yes_token_id = str(token_ids[0]) if len(token_ids) > 0 else cid + "_yes"
-            no_token_id  = str(token_ids[1]) if len(token_ids) > 1 else cid + "_no"
+            if not token_ids:
+                tokens = raw.get("tokens") or []
+                yes_tok2 = next((t for t in tokens if t.get("outcome","").upper()=="YES"), {})
+                no_tok2  = next((t for t in tokens if t.get("outcome","").upper()=="NO"),  {})
+                yes_token_id = str(yes_tok2.get("token_id") or cid + "_yes")
+                no_token_id  = str(no_tok2.get("token_id")  or cid + "_no")
+            else:
+                yes_token_id = str(token_ids[0]) if len(token_ids) > 0 else cid + "_yes"
+                no_token_id  = str(token_ids[1]) if len(token_ids) > 1 else cid + "_no"
 
             # Time to resolution — prefer endDateIso
             end_str     = (raw.get("endDateIso") or raw.get("endDate") or "")
@@ -365,7 +379,7 @@ class DataEngine:
                         neg_risk_id = first.get("negRiskMarketID") or first.get("id")
 
             # Fees
-            fee_bps = int(raw.get("takerBaseFee") or 0)
+            fee_bps = int(raw.get("takerBaseFee") or raw.get("feeRateBps") or 0)
             if fee_bps == 0:
                 fee_bps = int(2.25 * (yes_price * (1 - yes_price)) ** 2 * 10000)
 
@@ -378,7 +392,7 @@ class DataEngine:
                 no_token_id           = no_token_id,
                 yes_price             = yes_price,
                 no_price              = no_price,
-                yes_bid               = max(0.001, yes_price - spread),
+                yes_bid               = max(0.001, float((next((t for t in (raw.get("tokens") or []) if t.get("outcome","").upper()=="YES"), {}) or {}).get("bid", yes_price - spread))),
                 yes_ask               = min(0.999, yes_price + spread),
                 no_bid                = max(0.001, no_price  - spread),
                 no_ask                = min(0.999, no_price  + spread),
