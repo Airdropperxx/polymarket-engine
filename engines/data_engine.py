@@ -51,6 +51,18 @@ _TECH     = {"ai","artificial intelligence","openai","anthropic","google",
 _GEO      = {"war","ceasefire","invasion","military","ukraine","russia","china",
              "taiwan","israel","gaza","nato","sanctions","conflict","nuclear"}
 
+_WEATHER  = {"temperature","weather","celsius","fahrenheit","degrees","rainfall",
+              "humidity","forecast","°c","°f","highest temp","lowest temp","climate",
+              "hottest","coldest","precipitation","snow","wind","storm"}
+_ENTERTAIN= {"netflix","survivor","reality tv","peaky blinders","oscar","grammy",
+             "celebrity","movie","film","tv show","episode","season","streaming",
+             "disney","hbo","amazon prime","box office","chart","number one",
+             "spotify","album","singer","actor","actress","series","top.*netflix"}
+_SOCIAL   = {"tweets","tweet","posts from","white house post","elon musk post",
+             "instagram","tiktok","youtube","views","likes","social media",
+             "followers","retweet","post count","number of posts"}
+_SHIPPING = {"ships transit","strait of hormuz","suez","maritime","cargo","vessel",
+             "shipping","port","trade route","tanker","transit count"}
 
 def _categorise(question: str, gamma_category: str = "") -> str:
     """
