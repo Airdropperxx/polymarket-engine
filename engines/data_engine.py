@@ -45,7 +45,7 @@ _SPORTS   = {"nba","nfl","mlb","nhl","soccer","football","basketball","tennis",
 _FINANCE  = {"stock","nasdaq","s&p","dow","ipo","earnings","gdp","inflation",
              "interest rate","fed rate","cpi","unemployment","recession",
              "market cap","aapl","tsla","nvda","msft","amzn","googl","meta"}
-_TECH     = {"ai","artificial intelligence","openai","anthropic","google",
+_TECH     = {"artificial intelligence","openai","anthropic","google",
              "microsoft","apple","samsung","iphone","android","chatgpt",
              "spacex","tesla","neuralink"}
 _GEO      = {"war","ceasefire","invasion","military","ukraine","russia","china",
@@ -255,6 +255,15 @@ class DataEngine:
              if m.yes_token_id == token_id or m.no_token_id == token_id),
             None
         )
+
+    def _fetch_markets_paginated(self) -> list:
+        """Alias for _paginate — used by tests."""
+        return self._paginate()
+
+    @staticmethod
+    def _parse_iso_to_ts(s: str):
+        """Static wrapper for test access."""
+        return _parse_iso(s)
 
     def _paginate(self) -> list:
         results = []
