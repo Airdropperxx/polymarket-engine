@@ -1,7 +1,7 @@
 s1_negrisk_arb:
   enabled: true
   min_edge_after_fees: 0.005
-  min_leg_volume_24h: 50.0
+  min_leg_volume_24h: 1000.0   # raised from 50: filter zero-volume phantom legs
   min_leg_bid: 0.01
   min_leg_price: 0.03
   max_leg_price: 0.97
