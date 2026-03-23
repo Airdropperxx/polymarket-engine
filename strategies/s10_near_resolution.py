@@ -24,7 +24,7 @@ class S10NearResolution(BaseStrategy):
         max_seconds = max_minutes * 60          # compare seconds to seconds
         min_prob    = float(cfg.get("min_probability",     0.85))
         max_prob    = float(cfg.get("max_probability",     0.989))  # exclude resolved
-        min_volume  = float(cfg.get("min_volume_24h",      100.0))
+        min_volume  = float(cfg.get("min_volume_24h",      1000.0))  # $1k minimum
         max_spread  = float(cfg.get("max_spread",          0.05))
         min_edge    = float(cfg.get("min_edge_after_fees", 0.001))
 
