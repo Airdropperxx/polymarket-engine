@@ -33,6 +33,8 @@ class SignalEngine:
         log.info("strategy_registered", name=strategy.name)
 
     def run_one_cycle(self,
+        markets = markets or []
+        groups  = groups  or {}
                       markets:        list[MarketState],
                       groups:         dict[str, list[MarketState]],
                       observer_hints: dict | None = None) -> dict:
