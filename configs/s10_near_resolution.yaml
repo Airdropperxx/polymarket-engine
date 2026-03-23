@@ -1,23 +1,16 @@
 s10_near_resolution:
   enabled: true
-  max_minutes_remaining: 10080
+  max_minutes_remaining: 10080       # up to 7 days out
   min_probability: 0.85
-<<<<<<< Updated upstream
-  max_probability: 0.989
-  min_volume_24h: 1000.0       # raised from 100 - filter zero-volume trades
+  max_probability: 0.989             # exclude effectively-resolved markets
+  min_volume_24h: 100.0              # low floor — observer pre-filters quality
   max_spread: 0.05
-  min_edge_after_fees: 0.001
+  min_edge_after_fees: 0.001         # very low: capture near-cert markets
   max_position_pct: 0.40
-=======
-  max_probability: 0.980  # p>=0.98 is near-zero ROI after fees         # reject effectively-resolved markets
-
-  min_volume_24h: 100.0
-  max_spread: 0.05
-  min_edge_after_fees: 0.005  # min 0.5% net ROI
-  max_position_pct: 0.40         # 40% per trade in dry-run for data collection
->>>>>>> Stashed changes
   kelly_fraction: 0.25
   threshold: 0.25
+  # Observer integration: resolution_drift signals pre-prioritise scan
+  observer_boost: true               # when true, drift-signal markets scanned first
   review:
     track_metrics: [win_rate, avg_roi, avg_days_left, category_breakdown]
     rebalance_trigger: weekly
