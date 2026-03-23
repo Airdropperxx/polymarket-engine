@@ -1,20 +1,14 @@
 s10_near_resolution:
   enabled: true
-
-  # Time window: 7 days captures end-of-month markets
-  max_minutes_remaining: 10080   # 7 days
-
-  # FIXED: 0.85-0.98 only. Markets at 0.99+ are functionally resolved already.
-  # Real edge comes from 0.87-0.96 range where price < true probability.
+  max_minutes_remaining: 10080
   min_probability: 0.85
-  max_probability: 0.989         # reject effectively-resolved markets
-
-  min_volume_24h: 100.0
+  max_probability: 0.989
+  min_volume_24h: 1000.0       # raised from 100 - filter zero-volume trades
   max_spread: 0.05
   min_edge_after_fees: 0.001
-  max_position_pct: 0.40         # 40% per trade in dry-run for data collection
+  max_position_pct: 0.40
   kelly_fraction: 0.25
-  threshold: 0.25                # low threshold to collect more data points
+  threshold: 0.25
   review:
     track_metrics: [win_rate, avg_roi, avg_days_left, category_breakdown]
     rebalance_trigger: weekly
