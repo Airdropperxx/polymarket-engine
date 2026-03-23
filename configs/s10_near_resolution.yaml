@@ -1,15 +1,15 @@
 s10_near_resolution:
   enabled: true
-  max_minutes_remaining: 10080       # up to 7 days out
+  max_minutes_remaining: 10080
   min_probability: 0.85
-  max_probability: 0.989             # exclude effectively-resolved markets
-  min_volume_24h: 100.0              # low floor — observer pre-filters quality
+  max_probability: 0.989
+  min_volume_24h: 100.0
   max_spread: 0.05
-  min_edge_after_fees: 0.001         # very low: capture near-cert markets
+  min_edge_after_fees: 0.001
   max_position_pct: 0.40
   kelly_fraction: 0.25
   threshold: 0.25
-  observer_boost: true               # resolution_drift signals scanned first
+  observer_boost: true
   review:
     track_metrics: [win_rate, avg_roi, avg_days_left, category_breakdown]
     rebalance_trigger: weekly
