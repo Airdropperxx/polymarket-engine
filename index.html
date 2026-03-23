@@ -326,404 +326,403 @@ border-radius:4px;padding:3px 9px;color:var(--blue);cursor:pointer;text-decorati
 <div id="sig-list"><div class="load">No Observer signals yet — needs 3+ scan cycles to build momentum data</div></div>
 </div>
 <script>
-const OWN='Airdropperxx',REPO='polymarket-engine',BR='main';
-const RAW='https://raw.githubusercontent.com/'+OWN+'/'+REPO+'/'+BR;
-Chart.defaults.color='#64748b';Chart.defaults.borderColor='#2a2f3d';
-Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif';
-Chart.defaults.font.size=11;
-let SL=[],PH={},LS={};const charts={};
-function go(id,el){
-  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('page-'+id).classList.add('active');
-  el.classList.add('active');
+var OWN  = 'Airdropperxx';
+var REPO = 'polymarket-engine';
+var RAW  = 'https://raw.githubusercontent.com/' + OWN + '/' + REPO + '/main';
+
+Chart.defaults.color       = '#64748b';
+Chart.defaults.borderColor = '#2a2f3d';
+Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
+Chart.defaults.font.size   = 11;
+
+var SL = [], PH = {}, LS = {};
+var charts = {};
+
+function go(id, el) {
+  document.querySelectorAll('.pg').forEach(function(p) { p.classList.remove('on'); });
+  document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('on'); });
+  document.getElementById('page-' + id).classList.add('on');
+  el.classList.add('on');
 }
-async function gj(p){const r=await fetch(RAW+'/'+p+'?_='+Date.now());if(!r.ok)throw new Error(p+':'+r.status);return r.json();}
-function dc(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
-function ago(iso){if(!iso)return'—';const d=(Date.now()-new Date(iso).getTime())/1000;
-  if(d<60)return Math.round(d)+'s ago';if(d<3600)return Math.round(d/60)+'m ago';
-  if(d<86400)return Math.round(d/3600)+'h ago';return Math.round(d/86400)+'d ago';}
-const CC={
+
+function gj(path) {
+  var url = RAW + '/' + path + '?_=' + Date.now();
+  return fetch(url).then(function(r) {
+    if (!r.ok) throw new Error(path + ' HTTP ' + r.status);
+    return r.json();
+  });
+}
+
+function dc(id) { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
+
+function ago(iso) {
+  if (!iso) return '—';
+  var d = (Date.now() - new Date(iso).getTime()) / 1000;
+  if (d < 60) return Math.round(d) + 's ago';
+  if (d < 3600) return Math.round(d / 60) + 'm ago';
+  if (d < 86400) return Math.round(d / 3600) + 'h ago';
+  return Math.round(d / 86400) + 'd ago';
+}
+
+function fv(v) {
+  v = v || 0;
+  if (v >= 1000000) return '$' + (v/1000000).toFixed(1) + 'M';
+  if (v >= 1000) return '$' + (v/1000).toFixed(0) + 'k';
+  if (v > 0) return '$' + Math.round(v);
+  return '$0';
+}
+
+var CC = {
   crypto:'#f59e0b',sports:'#22c55e',politics:'#ef4444',finance:'#3b82f6',
   tech:'#a855f7',geopolitics:'#14b8a6',weather:'#60a5fa',entertainment:'#ec4899',
-  social_media:'#f97316',shipping:'#84cc16',science:'#8b5cf6',other:'#64748b','(empty)':'#374151'
+  social_media:'#f97316',shipping:'#84cc16',science:'#8b5cf6',other:'#64748b'
 };
-const CT={
-  crypto:'Cryptocurrency & blockchain price markets',
+var CT = {
+  crypto:'Cryptocurrency and blockchain price markets',
   sports:'Sports game outcomes, scores, tournaments',
   politics:'Elections, government decisions, political events',
-  finance:'Stock prices, economic indicators, company earnings',
+  finance:'Stock prices, economic indicators, earnings',
   tech:'AI, software, hardware, tech company events',
-  geopolitics:'Wars, conflicts, international relations, sanctions',
-  weather:'Daily temperature & weather prediction markets',
-  entertainment:'Netflix, TV shows, movies, reality TV, music charts',
+  geopolitics:'Wars, conflicts, international relations',
+  weather:'Daily temperature and weather prediction markets',
+  entertainment:'Netflix, TV shows, movies, reality TV, music',
   social_media:'Tweet counts, follower metrics, post engagement',
-  shipping:'Maritime shipping volumes, trade route transit counts',
+  shipping:'Maritime shipping volumes, trade route transits',
   science:'Space launches, research outcomes, climate records',
-  other:'Uncategorised markets (run next scan to classify)'
+  other:'Uncategorised — classifies on next scan'
 };
-function cc(c){return CC[c]||'#64748b';}
-function cp(c){const col=cc(c),tip=CT[c?.toLowerCase()]||c||'—';
-  return '<span class="pill" style="background:'+col+'22;color:'+col+'" data-tip="'+tip+'">'+(c||'other').substring(0,14)+'</span>';}
-const STRAT={
-  s1_negrisk_arb:{label:'S1',cls:'ps1',tip:'S1 NegRisk Arbitrage\nMath: sum(YES ask) < 1.0 = guaranteed profit\nWin rate: ~100%',link:'strategies/s1_negrisk_arb.py'},
-  s10_near_resolution:{label:'S10',cls:'ps10',tip:'S10 Near-Resolution Harvest\nHigh-prob (0.85-0.989), 7 day window\nTarget win rate: 88-95%',link:'strategies/s10_near_resolution.py'},
-  s11_inplay_momentum:{label:'S11',cls:'ps11',tip:'S11 In-Play Momentum\nSports markets 20%+ during live games\nUses Observer data — no extra infra',link:'strategies/s11_inplay_momentum.py'},
-  s8_logical_arb:{label:'S8',cls:'ps8',tip:'S8 Logical Impossibility Arb\nMutually exclusive markets both >50%\nDisabled: needs PyTorch 1.5GB',link:'strategies/s8_logical_arb.py'},
-};
-function sp(s){
-  const d=STRAT[s];if(!d)return '<span class="pill pob" data-tip="Observer signal">OBS</span>';
-  const url='https://github.com/'+OWN+'/'+REPO+'/blob/main/'+d.link;
-  return '<a href="'+url+'" target="_blank" class="pill '+d.cls+'" style="text-decoration:none" data-tip="'+d.tip+'">'+d.label+'</a>';+d.label+'</a>';
+function cc(c) { return CC[c] || '#64748b'; }
+
+function catPill(c) {
+  var col = cc(c);
+  var tip = CT[(c||'').toLowerCase()] || (c || 'other');
+  return '<span class="pill" style="background:' + col + '22;color:' + col + '" data-tip="' + tip + '">' + (c||'other').substring(0,14) + '</span>';
 }
-async function loadAll(){
-  document.getElementById('upd').textContent='Loading...';
-  try{
-    [SL,PH,LS]=await Promise.all([
-      gj('data/scan_log.json').catch(()=>[]),
-      gj('data/price_history.json').catch(()=>({})),
-      gj('data/lessons.json').catch(()=>({})),
-    ]);
-    if(!Array.isArray(SL))SL=[];
+
+var STRAT_INFO = {
+  s1_negrisk_arb:     {label:'S1',  cls:'ps1',  tip:'S1 NegRisk Arbitrage\nMath: sum(YES ask) < 1.0 = guaranteed profit\nWin rate: ~100%',             link:'strategies/s1_negrisk_arb.py'},
+  s10_near_resolution:{label:'S10', cls:'ps10', tip:'S10 Near-Resolution Harvest\nHigh-prob (0.85-0.989) in 7 days\nTarget win rate: 88-95%',           link:'strategies/s10_near_resolution.py'},
+  s11_inplay_momentum:{label:'S11', cls:'ps11', tip:'S11 In-Play Momentum\nSports markets 20%+ during live games\nUses Observer data — no extra infra', link:'strategies/s11_inplay_momentum.py'},
+  s8_logical_arb:     {label:'S8',  cls:'ps8',  tip:'S8 Logical Impossibility Arb\nMutually exclusive both >50%\nDisabled: needs PyTorch 1.5GB',        link:'strategies/s8_logical_arb.py'}
+};
+
+function stratPill(s) {
+  var info = STRAT_INFO[s];
+  if (!info) return '<span class="pill pob" data-tip="Observer signal">OBS</span>';
+  var url = 'https://github.com/' + OWN + '/' + REPO + '/blob/main/' + info.link;
+  return '<a href="' + url + '" target="_blank" class="pill ' + info.cls + '" style="text-decoration:none" data-tip="' + info.tip + '">' + info.label + '</a>';
+}
+
+function avg(arr, fn) {
+  var vals = arr.map(fn).filter(function(v) { return v !== null && !isNaN(v); });
+  if (!vals.length) return null;
+  return vals.reduce(function(a,b){return a+b;},0) / vals.length;
+}
+
+function loadAll() {
+  document.getElementById('upd').textContent = 'Loading...';
+  Promise.all([
+    gj('data/scan_log.json').catch(function(){ return []; }),
+    gj('data/price_history.json').catch(function(){ return {}; }),
+    gj('data/lessons.json').catch(function(){ return {}; })
+  ]).then(function(results) {
+    SL = Array.isArray(results[0]) ? results[0] : [];
+    PH = results[1] || {};
+    LS = results[2] || {};
     renderAll();
-    document.getElementById('upd').textContent='Updated '+new Date().toLocaleTimeString();
-    document.getElementById('dot').className=SL.length>0?'ok':'';
-  }catch(e){document.getElementById('upd').textContent='Error: '+e.message;}
+    document.getElementById('upd').textContent = 'Updated ' + new Date().toLocaleTimeString();
+    document.getElementById('dot').className = SL.length > 0 ? 'ok' : '';
+  }).catch(function(err) {
+    document.getElementById('upd').textContent = 'Error: ' + err.message;
+  });
 }
-function renderAll(){rOv();rStrats();rTrades();rData();rPatterns();rSignals();}
-function rOv(){
-  const clean=SL.filter(e=>!e.strategy?.includes('observer'));
-  const good=clean.filter(e=>(e.volume_24h||0)>=1000);
-  const zero=clean.filter(e=>(e.volume_24h||0)===0);
-  const s10=good.filter(e=>e.strategy==='s10_near_resolution');
-  const s1=clean.filter(e=>e.strategy==='s1_negrisk_arb');
-  const s1r=s1.filter(e=>{ const ta=e.total_ask||0; return ta>0.5&&ta<1.0; });
-  const pts=Object.values(PH).reduce((a,d)=>a+(d.points?.length||0),0);
-  
-  document.getElementById('k-opps').textContent=good.length;
-  document.getElementById('k-opps-s').textContent='S10:'+s10.length+' S1r:'+s1r.length+' total:'+clean.length;
-  
-  const s10e=s10.filter(e=>e.edge>0).map(e=>e.edge);
-  document.getElementById('k-edge').textContent=s10e.length?(s10e.reduce((a,b)=>a+b,0)/s10e.length*100).toFixed(2)+'%':'—';—';
-  document.getElementById('k-edge-s').textContent=s10e.length+' S10 opps';
-  
-  document.getElementById('k-obs').textContent=Object.keys(PH).length;
-  document.getElementById('k-obs-s').textContent=pts.toLocaleString()+' data points';
-  
-  document.getElementById('k-s1r').textContent=s1r.length;
-  const s1re=s1r.map(e=>e.edge).filter(e=>e>0);
-  document.getElementById('k-s1r-s').textContent=s1re.length?(s1re.reduce((a,b)=>a+b,0)/s1re.length*100).toFixed(2)+'% avg edge':'no data yet';vg edge':'no data';
-  document.getElementById('k-zv').textContent=zero.length;
-  document.getElementById('k-pts').textContent=pts.toLocaleString();
-  
-  const res=good.filter(e=>e.outcome);
-  const wins=res.filter(e=>e.outcome==='win');
-  document.getElementById('k-wr').textContent=res.length?Math.round(wins.length/res.length*100)+'%':'—';
-  document.getElementById('k-wr-s').textContent=wins.length+'W/'+res.length+' resolved';
-  
-  // Category donut — all entries reclassified
+
+function renderAll() { rOv(); rStrats(); rTrades(); rData(); rPatterns(); rSignals(); }
+
+function rOv() {
+  var clean = SL.filter(function(e){ return !e.strategy || e.strategy.indexOf('observer')===-1; });
+  var good  = clean.filter(function(e){ return (e.volume_24h||0)>=1000; });
+  var zero  = clean.filter(function(e){ return (e.volume_24h||0)===0; });
+  var s10   = good.filter(function(e){ return e.strategy==='s10_near_resolution'; });
+  var s1    = clean.filter(function(e){ return e.strategy==='s1_negrisk_arb'; });
+  var s1r   = s1.filter(function(e){ var ta=e.total_ask||0; return ta>0.5&&ta<1.0; });
+  var pts   = Object.values(PH).reduce(function(a,d){ return a+(d.points?d.points.length:0); },0);
+
+  document.getElementById('k-opps').textContent   = good.length;
+  document.getElementById('k-opps-s').textContent = 'S10:'+s10.length+' S1r:'+s1r.length+' total:'+clean.length;
+  var s10e = s10.filter(function(e){return e.edge>0;}).map(function(e){return e.edge;});
+  document.getElementById('k-edge').textContent   = s10e.length ? (s10e.reduce(function(a,b){return a+b;},0)/s10e.length*100).toFixed(2)+'%' : '—';
+  document.getElementById('k-edge-s').textContent = s10e.length+' S10 opps';
+  document.getElementById('k-s1r').textContent    = s1r.length;
+  var s1re = s1r.map(function(e){return e.edge;}).filter(function(v){return v>0;});
+  document.getElementById('k-s1r-s').textContent  = s1re.length ? (s1re.reduce(function(a,b){return a+b;},0)/s1re.length*100).toFixed(2)+'% avg edge' : 'no data yet';
+  document.getElementById('k-obs').textContent    = Object.keys(PH).length;
+  document.getElementById('k-obs-s').textContent  = pts.toLocaleString()+' data points';
+  document.getElementById('k-pts').textContent    = pts.toLocaleString();
+  document.getElementById('k-zv').textContent     = zero.length;
+  document.getElementById('k-tot').textContent    = SL.length;
+  var res=good.filter(function(e){return !!e.outcome;}), wins=res.filter(function(e){return e.outcome==='win';});
+  document.getElementById('k-wr').textContent     = res.length ? Math.round(wins.length/res.length*100)+'%' : '—';
+  document.getElementById('k-wr-s').textContent   = wins.length+'W / '+res.length+' resolved';
+
   dc('c-cat');
-  const cats={};
-  clean.forEach(e=>{const c=e.category||'other';cats[c]=(cats[c]||0)+1;});
-  const ckeys=Object.keys(cats).sort((a,b)=>cats[b]-cats[a]);
-  charts['c-cat']=new Chart(document.getElementById('c-cat'),{type:'doughnut',data:{
-    labels:ckeys,datasets:[{data:ckeys.map(k=>cats[k]),
-    backgroundColor:ckeys.map(cc),borderColor:'#161920',borderWidth:2}]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{position:'right',labels:{boxWidth:10,padding:8,font:{size:10},
-        generateLabels:chart=>{const ds=chart.data.datasets[0];
-          return chart.data.labels.map((l,i)=>({text:l+'('+ds.data[i]+')',
-          fillStyle:ds.backgroundColor[i],strokeStyle:'transparent',index:i}));}}}}
-    }});
-  
-  // Heatmap
-  const hourC=Array(24).fill(0);
-  good.forEach(e=>{if(e.hour_utc>=0&&e.hour_utc<24)hourC[e.hour_utc]++;});
-  const maxH=Math.max(...hourC,1);
-  const hm=document.getElementById('hm');hm.innerHTML='';
-  hourC.forEach((c,h)=>{
-    const a=0.08+c/maxH*0.92;
-    const el=document.createElement('div');el.className='hm-c tip';
-    el.style.background='rgba(168,85,247,'+a.toFixed(2)+')';
-    el.setAttribute('data-t',String(h).padStart(2,'0')+':00 UTC — '+c+' opportunities');
-    el.textContent=c>0?c:'';hm.appendChild(el);});
-  
-  // Edge dist (vol≥$1k only)
+  var cats={};
+  clean.forEach(function(e){ var c=e.category||'other'; cats[c]=(cats[c]||0)+1; });
+  var ckeys=Object.keys(cats).sort(function(a,b){return cats[b]-cats[a];});
+  charts['c-cat']=new Chart(document.getElementById('c-cat'),{type:'doughnut',data:{labels:ckeys,
+    datasets:[{data:ckeys.map(function(k){return cats[k];}),backgroundColor:ckeys.map(cc),borderColor:'#161920',borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{boxWidth:10,padding:8,font:{size:10}}}}}});
+
+  var hourC=Array(24).fill(0);
+  good.forEach(function(e){if(e.hour_utc>=0&&e.hour_utc<24)hourC[e.hour_utc]++;});
+  var maxH=Math.max.apply(null,hourC.concat([1]));
+  var hmEl=document.getElementById('hm'); hmEl.innerHTML='';
+  hourC.forEach(function(c,h){
+    var a=(0.08+c/maxH*0.92).toFixed(2);
+    var cell=document.createElement('div'); cell.className='hmc';
+    cell.style.background='rgba(168,85,247,'+a+')';
+    cell.setAttribute('data-tip',(h<10?'0':'')+h+':00 UTC — '+c+' opps');
+    cell.textContent=c>0?String(c):''; hmEl.appendChild(cell);
+  });
+
   dc('c-edge');
-  const eb={};
-  good.filter(e=>e.edge>0).forEach(e=>{const b=Math.floor(e.edge*100)+'%';eb[b]=(eb[b]||0)+1;});
-  const eks=Object.keys(eb).sort((a,b)=>+a-+b);
-  if(eks.length)charts['c-edge']=new Chart(document.getElementById('c-edge'),{type:'bar',data:{
-    labels:eks,datasets:[{data:eks.map(k=>eb[k]),backgroundColor:'rgba(168,85,247,.65)',borderRadius:3}]},
+  var eb={};
+  good.filter(function(e){return e.edge>0;}).forEach(function(e){var b=Math.floor(e.edge*100)+'%';eb[b]=(eb[b]||0)+1;});
+  var eks=Object.keys(eb).sort(function(a,b){return parseInt(a)-parseInt(b);});
+  if(eks.length) charts['c-edge']=new Chart(document.getElementById('c-edge'),{type:'bar',data:{labels:eks,
+    datasets:[{data:eks.map(function(k){return eb[k];}),backgroundColor:'rgba(168,85,247,.65)',borderRadius:3}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
       scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'}}}}});
-  
-  // Prob buckets
+
   dc('c-prob');
-  const pb={'<85%':0,'85-90%':0,'90-95%':0,'95-99%':0};
-  good.forEach(e=>{const p=(e.probability||0)*100;
-    if(p>=95)pb['95-99%']++;else if(p>=90)pb['90-95%']++;
-    else if(p>=85)pb['85-90%']++;else pb['<85%']++;});
-  charts['c-prob']=new Chart(document.getElementById('c-prob'),{type:'bar',data:{
-    labels:Object.keys(pb),datasets:[{data:Object.values(pb),
-    backgroundColor:['#64748b66','rgba(59,130,246,.7)','rgba(34,197,94,.7)','rgba(34,197,94,.95)'],borderRadius:4}]},
+  var pb={'<85%':0,'85-90%':0,'90-95%':0,'95-99%':0};
+  good.forEach(function(e){var p=(e.probability||0)*100;
+    if(p>=95)pb['95-99%']++;else if(p>=90)pb['90-95%']++;else if(p>=85)pb['85-90%']++;else pb['<85%']++;});
+  charts['c-prob']=new Chart(document.getElementById('c-prob'),{type:'bar',data:{labels:Object.keys(pb),
+    datasets:[{data:Object.values(pb),backgroundColor:['#64748b66','rgba(59,130,246,.7)','rgba(34,197,94,.7)','rgba(34,197,94,.95)'],borderRadius:4}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
       scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'}}}}});
-  
-  // Days
+
   dc('c-days');
-  const db={'<1d':0,'1-3d':0,'3-7d':0,'7d+':0};
-  good.forEach(e=>{const d=e.days_to_res||0;
+  var db={'<1d':0,'1-3d':0,'3-7d':0,'7d+':0};
+  good.forEach(function(e){var d=e.days_to_res||0;
     if(d<1)db['<1d']++;else if(d<3)db['1-3d']++;else if(d<7)db['3-7d']++;else db['7d+']++;});
-  charts['c-days']=new Chart(document.getElementById('c-days'),{type:'bar',data:{
-    labels:Object.keys(db),datasets:[{data:Object.values(db),
-    backgroundColor:['#ef444499','#f59e0b99','#3b82f699','#64748b66'],borderRadius:4}]},
+  charts['c-days']=new Chart(document.getElementById('c-days'),{type:'bar',data:{labels:Object.keys(db),
+    datasets:[{data:Object.values(db),backgroundColor:['#ef444499','#f59e0b99','#3b82f699','#64748b66'],borderRadius:4}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
       scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'}}}}});
-  
-  // Strategy mix
+
   dc('c-strat');
-  const sm={};clean.forEach(e=>{const s=e.strategy||'?';sm[s]=(sm[s]||0)+1;});
-  const skeys=Object.keys(sm);
-  const scols={s1_negrisk_arb:'rgba(20,184,166,.7)',s10_near_resolution:'rgba(168,85,247,.7)',
-    s11_inplay_momentum:'rgba(245,158,11,.7)'};
-  const slbls={s1_negrisk_arb:'S1',s10_near_resolution:'S10',s11_inplay_momentum:'S11'};
+  var sm={};
+  clean.forEach(function(e){var s=e.strategy||'other';sm[s]=(sm[s]||0)+1;});
+  var skeys=Object.keys(sm);
+  var scols={s1_negrisk_arb:'rgba(20,184,166,.7)',s10_near_resolution:'rgba(168,85,247,.7)',s11_inplay_momentum:'rgba(245,158,11,.7)'};
+  var slbls={s1_negrisk_arb:'S1',s10_near_resolution:'S10',s11_inplay_momentum:'S11'};
   charts['c-strat']=new Chart(document.getElementById('c-strat'),{type:'bar',data:{
-    labels:skeys.map(k=>slbls[k]||k.substring(0,4).toUpperCase()),
-    datasets:[{data:skeys.map(k=>sm[k]),backgroundColor:skeys.map(k=>scols[k]||'#64748b66'),borderRadius:4}]},
+    labels:skeys.map(function(k){return slbls[k]||k.substring(0,4).toUpperCase();}),
+    datasets:[{data:skeys.map(function(k){return sm[k];}),
+      backgroundColor:skeys.map(function(k){return scols[k]||'#64748b66';}),borderRadius:4}]},
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
       scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'}}}}});
 }
-function rStrats(){
-  const clean=SL.filter(e=>!e.strategy?.includes('observer'));
-  const avg=(arr,fn)=>arr.length?(arr.map(fn).reduce((a,b)=>a+b,0)/arr.length):null;
-  
-  const s1=clean.filter(e=>e.strategy==='s1_negrisk_arb');
-  const s1r=s1.filter(e=>{const ta=e.total_ask||0;return ta>0.5&&ta<1.0;});
-  document.getElementById('s1-cnt').textContent=s1r.length;
-  const s1e=avg(s1r.filter(e=>e.edge>0),e=>e.edge);
-  document.getElementById('s1-edge').textContent=s1e?(s1e*100).toFixed(2)+'%':'—';
-  const s1l=avg(s1.filter(e=>e.num_legs>0),e=>e.num_legs);
-  document.getElementById('s1-legs').textContent=s1l?s1l.toFixed(1):'—';
-  
-  const s10=clean.filter(e=>e.strategy==='s10_near_resolution'&&(e.volume_24h||0)>=1000);
-  document.getElementById('s10-cnt').textContent=s10.length;
-  const s10e=avg(s10.filter(e=>e.edge>0),e=>e.edge);
-  document.getElementById('s10-edge').textContent=s10e?(s10e*100).toFixed(2)+'%':'—';
-  const s10p=avg(s10.filter(e=>e.probability>0&&e.probability<0.999),e=>e.probability);
-  document.getElementById('s10-prob').textContent=s10p?(s10p*100).toFixed(1)+'%':'—';
-  
-  const s11=clean.filter(e=>e.strategy==='s11_inplay_momentum');
-  document.getElementById('s11-cnt').textContent=s11.length;
-  const s11e=avg(s11.filter(e=>e.edge>0),e=>e.edge);
-  document.getElementById('s11-edge').textContent=s11e?(s11e*100).toFixed(2)+'%':'—';
-  document.getElementById('s11-move').textContent='—';
+
+function rStrats() {
+  var clean=SL.filter(function(e){return !e.strategy||e.strategy.indexOf('observer')===-1;});
+  var s1=clean.filter(function(e){return e.strategy==='s1_negrisk_arb';});
+  var s1r=s1.filter(function(e){var ta=e.total_ask||0;return ta>0.5&&ta<1.0;});
+  document.getElementById('s1-cnt').textContent  = s1r.length;
+  var s1e=avg(s1r.filter(function(e){return e.edge>0;}),function(e){return e.edge;});
+  document.getElementById('s1-edge').textContent = s1e!==null?(s1e*100).toFixed(2)+'%':'—';
+  var s1l=avg(s1.filter(function(e){return e.num_legs>0;}),function(e){return e.num_legs;});
+  document.getElementById('s1-legs').textContent = s1l!==null?s1l.toFixed(1):'—';
+  var s10=clean.filter(function(e){return e.strategy==='s10_near_resolution'&&(e.volume_24h||0)>=1000;});
+  document.getElementById('s10-cnt').textContent  = s10.length;
+  var s10e=avg(s10.filter(function(e){return e.edge>0;}),function(e){return e.edge;});
+  document.getElementById('s10-edge').textContent = s10e!==null?(s10e*100).toFixed(2)+'%':'—';
+  var s10p=avg(s10.filter(function(e){return e.probability>0&&e.probability<0.999;}),function(e){return e.probability;});
+  document.getElementById('s10-prob').textContent = s10p!==null?(s10p*100).toFixed(1)+'%':'—';
+  var s11=clean.filter(function(e){return e.strategy==='s11_inplay_momentum';});
+  document.getElementById('s11-cnt').textContent  = s11.length;
+  var s11e=avg(s11.filter(function(e){return e.edge>0;}),function(e){return e.edge;});
+  document.getElementById('s11-edge').textContent = s11e!==null?(s11e*100).toFixed(2)+'%':'—';
+  var s11v=avg(s11.filter(function(e){return (e.volume_24h||0)>0;}),function(e){return e.volume_24h;});
+  document.getElementById('s11-vol').textContent  = s11v!==null?fv(s11v):'—';
 }
-function rTrades(){
-  const ex=SL.filter(e=>e.executed&&!e.strategy?.includes('observer')&&(e.volume_24h||0)>=1000);
-  const allExec=SL.filter(e=>e.executed&&!e.strategy?.includes('observer'));
-  const filtered=allExec.length-ex.length;
-  document.getElementById('t-tot').textContent=ex.length;
-  document.getElementById('t-open').textContent=ex.filter(e=>!e.outcome).length;
-  const res=ex.filter(e=>e.outcome);
-  document.getElementById('t-res').textContent=res.length;
-  document.getElementById('t-wr').textContent=res.length?Math.round(res.filter(e=>e.outcome==='win').length/res.length*100)+'%':'—';
-  if(filtered>0)document.getElementById('t-warn').textContent=filtered+' zero-vol trades hidden';
-  
-  if(!ex.length){document.getElementById('t-table').innerHTML='<div class="load">No trades with vol ≥ $1k yet</div>';return;}
-  const rows=[...ex].sort((a,b)=>b.ts_unix-a.ts_unix).map(e=>
-    '<tr>'
-    +'<td style="white-space:nowrap;color:var(--mu);font-size:11px">'+ago(e.ts)+'</td>'
-    +'<td>'+sp(e.strategy)+'</td>'
-    +'<td class="q tip" data-t="'+e.question.replace(/"/g,"'")+'" style="max-width:300px">'+e.question.substring(0,60)+'</td>'
-    +'<td>'+cp(e.category)+'</td>'
-    +'<td><span class="pill p-open">'+(e.action||'BUY')+'</span></td>'
-    +'<td>'+((e.probability||0)*100).toFixed(1)+'%</td>'
-    +'<td class="green"><b>'+((e.edge||0)*100).toFixed(2)+'%</b></td>'
-    +'<td>'+(e.score||0).toFixed(3)+'</td>'
-    +'<td>'+(e.days_to_res||0).toFixed(1)+'d</td>'
-    +'<td>$'+Number(e.volume_24h||0).toLocaleString(undefined,{maximumFractionDigits:0})+'</td>'
-    +'<td><span class="pill '+(e.outcome==='win'?'p-win':e.outcome==='loss'?'p-loss':'p-open')+'">'+(e.outcome||'open')+'</span></td>'
-    +'</tr>').join('');
-  document.getElementById('t-table').innerHTML=
-    '<table><thead><tr><th>Time</th><th>Strat</th><th class="tip" data-t="Hover row for full question">Question</th>'
-    +'<th>Category</th><th>Action</th><th class="tip" data-t="Win probability at entry">Prob</th>'
-    +'<th class="tip" data-t="Net edge = probability − ask − fee">Edge</th>'
-    +'<th class="tip" data-t="Composite score 0-1 (time + prob + edge + volume)">Score</th>'
-    +'<th class="tip" data-t="Days until market resolves">Days</th>'
-    +'<th class="tip" data-t="24h trading volume — must be ≥$1,000">Vol 24h</th>'
-    +'<th>Status</th></tr></thead><tbody>'+rows+'</tbody></table>';
-}
-function rData(){
-  const clean=SL.filter(e=>!e.strategy?.includes('observer'));
-  const good=clean.filter(e=>(e.volume_24h||0)>=1000);
-  const pts=Object.values(PH).reduce((a,d)=>a+(d.points?.length||0),0);
-  document.getElementById('d-all').textContent=SL.length;
-  document.getElementById('d-vol').textContent=good.length;
-  document.getElementById('d-pts').textContent=pts.toLocaleString();
-  document.getElementById('d-mkts').textContent=Object.keys(PH).length;
-  
-  const cats={};
-  clean.forEach(e=>{const c=e.category||'other';if(!cats[c])cats[c]={total:0,good:0,edges:[]};
-    cats[c].total++;if((e.volume_24h||0)>=1000)cats[c].good++;if(e.edge>0)cats[c].edges.push(e.edge);});
-  document.getElementById('d-cats').innerHTML=
-    Object.entries(cats).sort((a,b)=>b[1].total-a[1].total).map(([c,d])=>{
-      const pct=Math.round(d.total/clean.length*100);
-      const ae=d.edges.length?(d.edges.reduce((a,b)=>a+b,0)/d.edges.length*100).toFixed(2):0;
-      const col=cc(c);const tip=CT[c?.toLowerCase()]||c;
-      return '<div style="margin-bottom:11px">'
-        +'<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'
-        +'<span class="tip" style="color:'+col+';font-weight:500" data-t="'+tip+'">'+c+'</span>'
-        +'<span style="font-size:11px;color:var(--mu)">'+d.total+' total · '+d.good+' vol≥$1k · avg edge '+ae+'%</span>'
-        +'</div><div class="prog"><div class="prog-f" style="width:'+pct+'%;background:'+col+'"></div></div>'
-        +'</div>';}).join('');
-  
-  dc('c-vol');
-  const vb={};vb['$0']=0;vb['$1-999']=0;vb['$1k-10k']=0;vb['$10k-100k']=0;vb['$100k+']=0;
-  clean.forEach(e=>{const v=e.volume_24h||0;
-    if(v===0)vb['$0']++;else if(v<1000)vb['$1-999']++;
-    else if(v<10000)vb['$1k-10k']++;else if(v<100000)vb['$10k-100k']++;else vb['$100k+']++;});
-  charts['c-vol']=new Chart(document.getElementById('c-vol'),{type:'bar',data:{
-    labels:Object.keys(vb),datasets:[{data:Object.values(vb),
-    backgroundColor:['#ef444466','#64748b44','#3b82f699','#22c55e77','#22c55ecc'],borderRadius:5}]},
-    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw+' entries'}}},
-      scales:{x:{grid:{color:'#1e222d'}},y:{grid:{display:false}}}}});
-  
-  const recent=[...SL].sort((a,b)=>b.ts_unix-a.ts_unix).slice(0,50);
-  const rows2=recent.map(e=>{
-    const lowV=(e.volume_24h||0)<1000;
-    return '<tr style="'+(lowV?'opacity:0.4':'')+'">'
-      +'<td style="color:var(--mu);font-size:11px;white-space:nowrap">'+ago(e.ts)+'</td>'
-      +'<td>'+sp(e.strategy)+'</td>'
-      +'<td class="q tip" data-t="'+e.question.replace(/"/g,"'")+'" style="max-width:260px">'+e.question.substring(0,55)+'</td>'
-      +'<td>'+cp(e.category)+'</td>'
-      +'<td class="green">'+((e.edge||0)*100).toFixed(2)+'%</td>'
+
+function rTrades() {
+  var ex=SL.filter(function(e){return e.executed&&(!e.strategy||e.strategy.indexOf('observer')===-1)&&(e.volume_24h||0)>=1000;});
+  document.getElementById('t-tot').textContent  = ex.length;
+  document.getElementById('t-open').textContent = ex.filter(function(e){return !e.outcome;}).length;
+  var res=ex.filter(function(e){return !!e.outcome;});
+  document.getElementById('t-res').textContent  = res.length;
+  document.getElementById('t-wr').textContent   = res.length?Math.round(res.filter(function(e){return e.outcome==='win';}).length/res.length*100)+'%':'—';
+  if(!ex.length){document.getElementById('t-tbl').innerHTML='<div class="loading">No trades with vol &ge;$1k yet</div>';return;}
+  var rows=ex.slice().sort(function(a,b){return b.ts_unix-a.ts_unix;}).map(function(e){
+    var sp=e.outcome==='win'?'<span class="pill pwi">win</span>':e.outcome==='loss'?'<span class="pill plo">loss</span>':'<span class="pill pon">open</span>';
+    var q=(e.question||'').replace(/"/g,"'");
+    return '<tr><td style="white-space:nowrap;color:var(--mu);font-size:11px">'+ago(e.ts)+'</td>'
+      +'<td>'+stratPill(e.strategy)+'</td>'
+      +'<td class="q" data-tip="'+q+'" style="max-width:280px">'+(e.question||'').substring(0,55)+'</td>'
+      +'<td>'+catPill(e.category)+'</td>'
+      +'<td><span class="pill pon">'+(e.action||'BUY')+'</span></td>'
       +'<td>'+((e.probability||0)*100).toFixed(1)+'%</td>'
-      +'<td '+(lowV?'class="red" title="Below $1k threshold"':'')+'>$'+Number(e.volume_24h||0).toLocaleString(undefined,{maximumFractionDigits:0})+(lowV?' ⚠':'')+'</td>'
-      +'<td>'+(e.days_to_res||0).toFixed(1)+'d</td>'
-      +'<td>'+(e.executed?'<span class="pill p-win">exec</span>':'<span class="pill" style="background:var(--s2);color:var(--mu)">'+(e.skipped_reason?.includes('beyond')?'seen':'skip')+'</span>')+'</td>'
-      +'</tr>';}).join('');
-  document.getElementById('d-table').innerHTML=
-    '<table><thead><tr><th>Time</th><th>Strat</th><th class="tip" data-t="Hover row for full text">Question</th>'
-    +'<th>Cat</th><th>Edge</th><th>Prob</th><th class="tip" data-t="⚠ = below $1k filter · greyed row = excluded from analysis">Vol</th>'
-    +'<th>Days</th><th>Status</th></tr></thead><tbody>'+rows2+'</tbody></table>';
-}
-function rPatterns(){
-  const good=SL.filter(e=>!e.strategy?.includes('observer')&&(e.volume_24h||0)>=1000);
-  
-  dc('a-cat');
-  const catE={};
-  good.forEach(e=>{const c=e.category||'other';if(!catE[c])catE[c]=[];if(e.edge>0)catE[c].push(e.edge*100);});
-  const cks=Object.keys(catE).filter(k=>catE[k].length>0).sort((a,b)=>{
-    const aa=catE[a].reduce((x,y)=>x+y,0)/catE[a].length;
-    const bb=catE[b].reduce((x,y)=>x+y,0)/catE[b].length;return bb-aa;});
-  const cavg=cks.map(k=>+(catE[k].reduce((a,b)=>a+b,0)/catE[k].length).toFixed(3));
-  if(cks.length)charts['a-cat']=new Chart(document.getElementById('a-cat'),{type:'bar',data:{
-    labels:cks,datasets:[{data:cavg,backgroundColor:cks.map(k=>cc(k)+'aa'),
-    borderColor:cks.map(cc),borderWidth:1,borderRadius:5}]},
-    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
-      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw.toFixed(2)+'% avg edge'}}},
-      scales:{x:{grid:{color:'#1e222d'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false}}}}});
-  
-  dc('a-prob');
-  const pb2={};
-  good.forEach(e=>{if(e.edge>0&&e.probability>0){
-    const b=(Math.floor(e.probability*20)/20).toFixed(2);
-    if(!pb2[b])pb2[b]=[];pb2[b].push(e.edge*100);}});
-  const pbks=Object.keys(pb2).sort();
-  const pbavg=pbks.map(k=>+(pb2[k].reduce((a,b)=>a+b,0)/pb2[k].length).toFixed(3));
-  if(pbks.length)charts['a-prob']=new Chart(document.getElementById('a-prob'),{type:'line',data:{
-    labels:pbks.map(k=>Math.round(+k*100)+'%'),datasets:[{data:pbavg,
-    borderColor:'#a855f7',backgroundColor:'rgba(168,85,247,.1)',
-    borderWidth:2,fill:true,tension:.3,pointRadius:4,pointBackgroundColor:'#a855f7'}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{x:{grid:{color:'#1e222d'}},y:{grid:{color:'#1e222d'},ticks:{callback:v=>v+'%'}}}}});
-  
-  dc('a-dow');
-  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  const dowC=Array(7).fill(0);
-  good.forEach(e=>{if(e.weekday>=0&&e.weekday<7)dowC[e.weekday]++;});
-  charts['a-dow']=new Chart(document.getElementById('a-dow'),{type:'bar',data:{
-    labels:days,datasets:[{data:dowC,
-    backgroundColor:dowC.map((_,i)=>i<5?'rgba(59,130,246,.7)':'rgba(168,85,247,.7)'),borderRadius:4}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'}}}}});
-  
-  dc('a-days');
-  const db3={'<1d':[],'1-3d':[],'3-7d':[],'7d+':[]};
-  good.forEach(e=>{if(e.edge>0){const d=e.days_to_res||0;
-    if(d<1)db3['<1d'].push(e.edge*100);else if(d<3)db3['1-3d'].push(e.edge*100);
-    else if(d<7)db3['3-7d'].push(e.edge*100);else db3['7d+'].push(e.edge*100);}});
-  const dbavg=Object.values(db3).map(arr=>arr.length?+(arr.reduce((a,b)=>a+b,0)/arr.length).toFixed(3):0);
-  charts['a-days']=new Chart(document.getElementById('a-days'),{type:'bar',data:{
-    labels:Object.keys(db3),datasets:[{data:dbavg,
-    backgroundColor:['#ef444499','#f59e0b99','#3b82f699','#64748b66'],borderRadius:4}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'},ticks:{callback:v=>v+'%'}}}}});
-  
-  const top=[...good].sort((a,b)=>b.edge-a.edge).slice(0,20);
-  document.getElementById('a-top').innerHTML=top.length?
-    '<table><thead><tr><th class="tip" data-t="Hover for full text">Question</th><th>Cat</th>'
-    +'<th class="tip" data-t="Net edge after fees">Edge</th><th>Prob</th><th>Score</th>'
-    +'<th>Days</th><th>Vol</th><th>Strat</th></tr></thead><tbody>'
-    +top.map(e=>'<tr>'
-      +'<td class="q tip" data-t="'+e.question.replace(/"/g,"'")+'">'+e.question.substring(0,55)+'</td>'
-      +'<td>'+cp(e.category)+'</td>'
-      +'<td class="green"><b>'+((e.edge||0)*100).toFixed(2)+'%</b></td>'
-      +'<td>'+((e.probability||0)*100).toFixed(1)+'%</td>'
+      +'<td class="gr"><strong>'+((e.edge||0)*100).toFixed(2)+'%</strong></td>'
       +'<td>'+(e.score||0).toFixed(3)+'</td>'
       +'<td>'+(e.days_to_res||0).toFixed(1)+'d</td>'
-      +'<td>$'+Number(e.volume_24h||0).toLocaleString(undefined,{maximumFractionDigits:0})+'</td>'
-      +'<td>'+sp(e.strategy)+'</td></tr>').join('')+'</tbody></table>'
-    :'<div class="load">No vol≥$1k opportunities yet — needs next scan cycles</div>';
+      +'<td>'+fv(e.volume_24h)+'</td>'
+      +'<td>'+sp+'</td></tr>';
+  }).join('');
+  document.getElementById('t-tbl').innerHTML='<table><thead><tr><th>Time</th><th>Strat</th>'
+    +'<th data-tip="Hover for full question">Question</th><th>Category</th><th>Action</th>'
+    +'<th data-tip="Win probability at entry">Prob</th><th data-tip="Net edge after fees">Edge</th>'
+    +'<th data-tip="Composite score 0-1">Score</th><th>Days</th>'
+    +'<th data-tip="24h volume">Vol</th><th>Status</th>'
+    +'</tr></thead><tbody>'+rows+'</tbody></table>';
 }
-function rSignals(){
-  const obs=SL.filter(e=>e.strategy?.includes('observer'));
-  const byType={};
-  obs.forEach(e=>{const t=(e.skipped_reason||'').replace('observer_signal_','')||'signal';
-    byType[t]=(byType[t]||0)+1;});
-  document.getElementById('sig-u').textContent=byType.momentum_up||0;
-  document.getElementById('sig-d').textContent=byType.momentum_down||0;
-  document.getElementById('sig-s').textContent=byType.sharp_move||0;
-  document.getElementById('sig-r').textContent=byType.resolution_drift||0;
-  
-  if(!obs.length){return;}
-  const tcol={momentum_up:'var(--green)',momentum_down:'var(--red)',
-    sharp_move:'var(--purple)',resolution_drift:'var(--blue)',volume_spike:'var(--amber)'};
-  const ttip={
-    momentum_up:'Consistent price increase over 2+ snapshots
-S11 strategy: BUY YES at current price
-Expects convergence to 0.99 at resolution',
-    momentum_down:'Consistent price decrease over 2+ snapshots
-S11 strategy: BUY NO side
-Winner becoming clear',
-    sharp_move:'Single-scan jump >8%
-May reverse — watch next cycle
-Do not trade until direction confirmed',
-    resolution_drift:'High-prob market (0.88-0.97) resolving soon
-S10 prime target
-Volume + proximity = high confidence',
-    volume_spike:'Unusual volume spike (>3x average)
-Smart money entering
-Follow direction of price move'
-  };
-  const sorted=[...obs].sort((a,b)=>b.edge-a.edge).slice(0,30);
-  document.getElementById('sig-list').innerHTML=sorted.map(e=>{
-    const t=(e.skipped_reason||'').replace('observer_signal_','')||'signal';
-    const col=tcol[t]||'var(--mu)';const tip=ttip[t]||t;
-    const note=e.metadata?.signal_note||'';
+
+function rData() {
+  var clean=SL.filter(function(e){return !e.strategy||e.strategy.indexOf('observer')===-1;});
+  var good=clean.filter(function(e){return (e.volume_24h||0)>=1000;});
+  var pts=Object.values(PH).reduce(function(a,d){return a+(d.points?d.points.length:0);},0);
+  document.getElementById('d-all').textContent  = SL.length;
+  document.getElementById('d-vol').textContent  = good.length;
+  document.getElementById('d-pts').textContent  = pts.toLocaleString();
+  document.getElementById('d-mkts').textContent = Object.keys(PH).length;
+  var cats={};
+  clean.forEach(function(e){var c=e.category||'other';if(!cats[c])cats[c]={total:0,good:0,edges:[]};
+    cats[c].total++;if((e.volume_24h||0)>=1000)cats[c].good++;if(e.edge>0)cats[c].edges.push(e.edge);});
+  document.getElementById('d-cats').innerHTML=Object.entries(cats).sort(function(a,b){return b[1].total-a[1].total;}).map(function(en){
+    var c=en[0],d=en[1];
+    var pct=Math.round(d.total/clean.length*100);
+    var ae=d.edges.length?(d.edges.reduce(function(a,b){return a+b;},0)/d.edges.length*100).toFixed(2):'0.00';
+    var col=cc(c),tip=CT[(c||'').toLowerCase()]||c;
+    return '<div style="margin-bottom:11px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'
+      +'<span data-tip="'+tip+'" style="color:'+col+';font-weight:500">'+c+'</span>'
+      +'<span style="font-size:11px;color:var(--mu)">'+d.total+' total &middot; '+d.good+' vol&ge;$1k &middot; avg edge '+ae+'%</span>'
+      +'</div><div class="prog"><div class="pf" style="width:'+pct+'%;background:'+col+'"></div></div></div>';
+  }).join('');
+  dc('c-vol');
+  var vb={'$0':0,'$1-999':0,'$1k-10k':0,'$10k-100k':0,'$100k+':0};
+  clean.forEach(function(e){var v=e.volume_24h||0;
+    if(v===0)vb['$0']++;else if(v<1000)vb['$1-999']++;else if(v<10000)vb['$1k-10k']++;
+    else if(v<100000)vb['$10k-100k']++;else vb['$100k+']++;});
+  charts['c-vol']=new Chart(document.getElementById('c-vol'),{type:'bar',data:{labels:Object.keys(vb),
+    datasets:[{data:Object.values(vb),backgroundColor:['#ef444466','#64748b44','#3b82f699','#22c55e77','#22c55ecc'],borderRadius:5}]},
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},
+      scales:{x:{grid:{color:'#1e222d'}},y:{grid:{display:false}}}}});
+  var recent=SL.slice().sort(function(a,b){return b.ts_unix-a.ts_unix;}).slice(0,50);
+  var rows2=recent.map(function(e){
+    var lv=(e.volume_24h||0)<1000;
+    var q=(e.question||'').replace(/"/g,"'");
+    var vol=lv?'<td style="color:var(--re)">'+fv(e.volume_24h)+' &#9888;</td>':'<td>'+fv(e.volume_24h)+'</td>';
+    var exec=e.executed?'<span class="pill pwi">exec</span>':'<span class="pill" style="background:var(--s2);color:var(--mu)">'+(e.skipped_reason&&e.skipped_reason.indexOf('beyond')!==-1?'seen':'skip')+'</span>';
+    return '<tr style="'+(lv?'opacity:0.4':'')+'"><td style="color:var(--mu);font-size:11px;white-space:nowrap">'+ago(e.ts)+'</td>'
+      +'<td>'+stratPill(e.strategy)+'</td>'
+      +'<td class="q" data-tip="'+q+'" style="max-width:260px">'+(e.question||'').substring(0,50)+'</td>'
+      +'<td>'+catPill(e.category)+'</td>'
+      +'<td class="gr">'+((e.edge||0)*100).toFixed(2)+'%</td>'
+      +'<td>'+((e.probability||0)*100).toFixed(1)+'%</td>'
+      +vol+'<td>'+(e.days_to_res||0).toFixed(1)+'d</td>'
+      +'<td>'+exec+'</td></tr>';
+  }).join('');
+  document.getElementById('d-tbl').innerHTML='<table><thead><tr><th>Time</th><th>Strat</th>'
+    +'<th data-tip="Hover for full text">Question</th><th>Cat</th><th>Edge</th><th>Prob</th>'
+    +'<th data-tip="Warning = below $1k">Vol</th><th>Days</th><th>Status</th>'
+    +'</tr></thead><tbody>'+rows2+'</tbody></table>';
+}
+
+function rPatterns() {
+  var good=SL.filter(function(e){return (!e.strategy||e.strategy.indexOf('observer')===-1)&&(e.volume_24h||0)>=1000;});
+  dc('a-cat');
+  var catE={};
+  good.forEach(function(e){var c=e.category||'other';if(!catE[c])catE[c]=[];if(e.edge>0)catE[c].push(e.edge*100);});
+  var ck=Object.keys(catE).filter(function(k){return catE[k].length>0;}).sort(function(a,b){
+    return catE[b].reduce(function(x,y){return x+y;},0)/catE[b].length - catE[a].reduce(function(x,y){return x+y;},0)/catE[a].length;});
+  var ca=ck.map(function(k){return parseFloat((catE[k].reduce(function(a,b){return a+b;},0)/catE[k].length).toFixed(3));});
+  if(ck.length) charts['a-cat']=new Chart(document.getElementById('a-cat'),{type:'bar',data:{labels:ck,
+    datasets:[{data:ca,backgroundColor:ck.map(function(k){return cc(k)+'aa';}),borderColor:ck.map(cc),borderWidth:1,borderRadius:5}]},
+    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false},
+      tooltip:{callbacks:{label:function(c){return c.raw.toFixed(2)+'% avg edge';}}}},
+      scales:{x:{grid:{color:'#1e222d'},ticks:{callback:function(v){return v+'%';}}},y:{grid:{display:false}}}}});
+  dc('a-prob');
+  var pb2={};
+  good.forEach(function(e){if(e.edge>0&&e.probability>0){var b=(Math.floor(e.probability*20)/20).toFixed(2);if(!pb2[b])pb2[b]=[];pb2[b].push(e.edge*100);}});
+  var pk=Object.keys(pb2).sort();
+  var pa=pk.map(function(k){return parseFloat((pb2[k].reduce(function(a,b){return a+b;},0)/pb2[k].length).toFixed(3));});
+  if(pk.length) charts['a-prob']=new Chart(document.getElementById('a-prob'),{type:'line',data:{
+    labels:pk.map(function(k){return Math.round(parseFloat(k)*100)+'%';}),
+    datasets:[{data:pa,borderColor:'#a855f7',backgroundColor:'rgba(168,85,247,.1)',borderWidth:2,fill:true,tension:.3,pointRadius:4,pointBackgroundColor:'#a855f7'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{grid:{color:'#1e222d'}},y:{grid:{color:'#1e222d'},ticks:{callback:function(v){return v+'%';}}}}}});
+  dc('a-dow');
+  var days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],dc2=Array(7).fill(0);
+  good.forEach(function(e){if(e.weekday>=0&&e.weekday<7)dc2[e.weekday]++;});
+  charts['a-dow']=new Chart(document.getElementById('a-dow'),{type:'bar',data:{labels:days,
+    datasets:[{data:dc2,backgroundColor:dc2.map(function(_,i){return i<5?'rgba(59,130,246,.7)':'rgba(168,85,247,.7)';}),borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'}}}}});
+  dc('a-days');
+  var dB={'<1d':[],'1-3d':[],'3-7d':[],'7d+':[]};
+  good.forEach(function(e){if(e.edge>0){var d=e.days_to_res||0;
+    if(d<1)dB['<1d'].push(e.edge*100);else if(d<3)dB['1-3d'].push(e.edge*100);
+    else if(d<7)dB['3-7d'].push(e.edge*100);else dB['7d+'].push(e.edge*100);}});
+  var dA=Object.values(dB).map(function(arr){return arr.length?parseFloat((arr.reduce(function(a,b){return a+b;},0)/arr.length).toFixed(3)):0;});
+  charts['a-days']=new Chart(document.getElementById('a-days'),{type:'bar',data:{labels:Object.keys(dB),
+    datasets:[{data:dA,backgroundColor:['#ef444499','#f59e0b99','#3b82f699','#64748b66'],borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'},ticks:{callback:function(v){return v+'%';}}}}}});
+  var top=good.slice().sort(function(a,b){return b.edge-a.edge;}).slice(0,20);
+  if(top.length){
+    var tr=top.map(function(e){var q=(e.question||'').replace(/"/g,"'");
+      return '<tr><td class="q" data-tip="'+q+'" style="max-width:300px">'+(e.question||'').substring(0,55)+'</td>'
+        +'<td>'+catPill(e.category)+'</td><td class="gr"><strong>'+((e.edge||0)*100).toFixed(2)+'%</strong></td>'
+        +'<td>'+((e.probability||0)*100).toFixed(1)+'%</td><td>'+(e.score||0).toFixed(3)+'</td>'
+        +'<td>'+(e.days_to_res||0).toFixed(1)+'d</td><td>'+fv(e.volume_24h)+'</td>'
+        +'<td>'+stratPill(e.strategy)+'</td></tr>';}).join('');
+    document.getElementById('a-top').innerHTML='<table><thead><tr><th data-tip="Hover for full text">Question</th>'
+      +'<th>Cat</th><th data-tip="Net edge after fees">Edge</th><th>Prob</th>'
+      +'<th data-tip="Score 0-1">Score</th><th>Days</th><th>Vol</th><th>Strat</th>'
+      +'</tr></thead><tbody>'+tr+'</tbody></table>';
+  } else {
+    document.getElementById('a-top').innerHTML='<div class="loading">No vol &ge;$1k opportunities yet</div>';
+  }
+}
+
+function rSignals() {
+  var obs=SL.filter(function(e){return e.strategy&&e.strategy.indexOf('observer')!==-1;});
+  var bt={};
+  obs.forEach(function(e){var t=(e.skipped_reason||'').replace('observer_signal_','')||'signal';bt[t]=(bt[t]||0)+1;});
+  document.getElementById('sig-u').textContent = bt.momentum_up||0;
+  document.getElementById('sig-d').textContent = bt.momentum_down||0;
+  document.getElementById('sig-s').textContent = bt.sharp_move||0;
+  document.getElementById('sig-r').textContent = bt.resolution_drift||0;
+  if(!obs.length) return;
+  var tc={momentum_up:'var(--gr)',momentum_down:'var(--re)',sharp_move:'var(--pu)',resolution_drift:'var(--bl)',volume_spike:'var(--am)'};
+  var tt={momentum_up:'Consistent price rise over 2+ snapshots\nS11: BUY YES',
+    momentum_down:'Consistent price fall over 2+ snapshots\nS11: BUY NO',
+    sharp_move:'Single-scan jump above 8%\nMay reverse — watch next cycle',
+    resolution_drift:'High-prob (0.88-0.97) resolving soon\nS10 prime target',
+    volume_spike:'Volume above 3x average\nSmart money entering'};
+  var sorted=obs.slice().sort(function(a,b){return b.edge-a.edge;}).slice(0,30);
+  document.getElementById('sig-list').innerHTML=sorted.map(function(e){
+    var t=(e.skipped_reason||'').replace('observer_signal_','')||'signal';
+    var col=tc[t]||'var(--mu)',tip=tt[t]||t;
+    var note=e.metadata&&e.metadata.signal_note?e.metadata.signal_note:'';
+    var q=(e.question||'').replace(/"/g,"'");
     return '<div style="background:var(--s2);border-radius:8px;padding:14px;margin-bottom:10px;border-left:3px solid '+col+'">'
-      +'<div class="tip" style="font-size:10px;text-transform:uppercase;color:'+col+';font-weight:600;margin-bottom:4px" data-t="'+tip+'">'+t.replace(/_/g,' ')+'</div>'
-      +'<div class="tip" style="font-size:13px;margin-bottom:6px" data-t="'+e.question.replace(/"/g,"'")+'" >'+e.question.substring(0,100)+'</div>'
-      +'<div style="display:flex;gap:8px;margin-bottom:'+(note?'6':'0')+'px;flex-wrap:wrap">'
-      +cp(e.category)
-      +'<span class="pill tip" style="background:var(--s1);color:var(--mu)" data-t="Signal strength 0-1
-Higher = more confident momentum">strength '+e.edge.toFixed(3)+'</span>'
-      +'<span style="font-size:11px;color:var(--mu)">'+ago(e.ts)+'</span>'
-      +'</div>'
+      +'<div data-tip="'+tip+'" style="font-size:10px;text-transform:uppercase;color:'+col+';font-weight:600;margin-bottom:4px">'+t.replace(/_/g,' ')+'</div>'
+      +'<div data-tip="'+q+'" style="font-size:13px;margin-bottom:6px">'+(e.question||'').substring(0,100)+'</div>'
+      +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:'+(note?'6':'0')+'px">'
+      +catPill(e.category)+'<span class="pill" style="background:var(--s1);color:var(--mu)" data-tip="Signal strength 0-1">strength '+e.edge.toFixed(3)+'</span>'
+      +'<span style="font-size:11px;color:var(--mu)">'+ago(e.ts)+'</span></div>'
       +(note?'<div style="font-size:12px;color:var(--mu);line-height:1.5">'+note+'</div>':'')
-      +'</div>';}).join('');
+      +'</div>';
+  }).join('');
 }
-loadAll();setInterval(loadAll,300000);
-</script></body></html>
+
+loadAll();
+setInterval(loadAll, 300000);
+
+</script>
+</body>
+</html>
