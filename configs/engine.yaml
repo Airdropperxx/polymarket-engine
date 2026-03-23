@@ -1,15 +1,16 @@
 engine:
-  version: "3.3"
+  version: "3.4"
   capital_usdc: 100.00
   dry_run: false
 
-  max_per_cycle: 25           # raised from 10 — more trades per cycle
-  poll_interval_seconds: 1800
+  max_per_cycle: 25              # top 25 trades by edge per cycle
+  s1_reserved_slots: 8           # S1 zero-risk arb always gets 8 of 25 slots
+  poll_interval_seconds: 300     # 5 min
 
   risk:
     max_position_pct: 0.40
     max_daily_loss_pct: 0.99
-    max_open_positions: 200   # raised from 50 — was blocking all new trades
+    max_open_positions: 500      # effectively unlimited — cap is profitability not count
     min_edge_after_fees: 0.001
 
   allocations:
