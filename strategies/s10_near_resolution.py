@@ -171,3 +171,6 @@ class S10NearResolution(BaseStrategy):
                      f"p={meta.get('probability',0):.2f} {meta.get('days_left',0):.1f}d "
                      f"ROI={roi:.1%} [{obs_flag}]"],
         )
+
+# Backwards-compatible alias used by tests
+NearResolutionStrategy = S10NearResolution
