@@ -35,6 +35,41 @@ def commit_data():
     except Exception as e:
         log.warning("git_commit_failed", error=str(e))
 
+
+def build_observer_hints(signals: list) -> dict:
+    """
+    Convert raw observer signal list into a structured hints dict.
+    Strategies consume this to prioritise specific markets instead of
+    brute-force scanning all markets.
+
+    Hint keys:
+      resolution_drift  -> S10 NearResolution: scan these first
+      momentum_up       -> S11 InplayMomentum: upward momentum candidates
+      momentum_down     -> S11 InplayMomentum: downward momentum candidates
+      sharp_move        -> S11 InplayMomentum: reversion candidates
+      negrisk_imbalance -> S1 NegRiskArb: group already diverging from 1.0
+      volume_spike      -> any strategy: smart money entering
+    """
+    hints: dict = {}
+    for sig in signals:
+        sig_type = sig.get("type", "")
+        mid      = sig.get("market_id", "")
+        if not sig_type or not mid:
+            continue
+        if sig_type not in hints:
+            hints[sig_type] = []
+        hints[sig_type].append(mid)
+
+    # Deduplicate while preserving order
+    hints = {k: list(dict.fromkeys(v)) for k, v in hints.items()}
+
+    total = sum(len(v) for v in hints.values())
+    log.info("observer_hints_built",
+             types=list(hints.keys()),
+             total_hinted_markets=total)
+    return hints
+
+
 def main():
     start   = time.time()
     dry_run = os.environ.get("DRY_RUN", "true").lower() == "true"
@@ -61,9 +96,9 @@ def main():
 
     # ── Observer: record price history + detect signals ───────────────────
     from engines.market_observer import MarketObserver
-    observer = MarketObserver(config)
+    observer  = MarketObserver(config)
     observer.observe(markets)
-    signals  = observer.detect_signals(markets)
+    signals   = observer.detect_signals(markets)
     obs_stats = observer.get_stats()
 
     log.info("observer_stats",
@@ -71,7 +106,7 @@ def main():
              total_data_points=obs_stats["total_data_points"],
              signals_found=len(signals))
 
-    # Log top signals
+    # Log top signals to console
     for s in signals[:5]:
         log.info("signal_detected",
                  type=s["type"],
@@ -80,6 +115,9 @@ def main():
                  yes_price=s.get("yes_price"),
                  question=s.get("question","")[:70],
                  note=s.get("note","")[:100])
+
+    # Build structured hints dict for strategies
+    observer_hints = build_observer_hints(signals)
 
     # ── Signal Engine ─────────────────────────────────────────────────────
     from engines.signal_engine import SignalEngine
@@ -94,7 +132,9 @@ def main():
     signal_engine.register(S8LogicalArb())
     signal_engine.register(S11InplayMomentum())
 
-    cycle    = signal_engine.run_one_cycle(markets, groups)
+    # Pass observer hints so strategies can prioritise signal-flagged markets
+    cycle    = signal_engine.run_one_cycle(markets, groups,
+                                           observer_hints=observer_hints)
     all_opps = cycle.get("opportunities", [])
     log.info("signal_scan_complete",
              markets_scanned=len(markets),
@@ -146,7 +186,7 @@ def main():
     for opp in all_opps[max_per:max_per+50]:
         exec_engine.log_opportunity(opp, False, "beyond_max_per_cycle")
 
-    # Also log observer signals into scan_log for dashboard analysis
+    # Log observer signals to scan_log for dashboard visibility
     for sig in signals[:20]:
         exec_engine.log_opportunity(
             type("Opp", (), {
@@ -159,13 +199,18 @@ def main():
                 "score": sig.get("strength", 0),
                 "time_to_resolution_sec": 0,
                 "metadata": {
-                    "category": sig.get("category",""),
-                    "volume_24h": sig.get("volume", 0),
-                    "buy_price": sig.get("yes_price", 0),
+                    "category":    sig.get("category",""),
+                    "volume_24h":  sig.get("volume", 0),
+                    "buy_price":   sig.get("yes_price", 0),
                     "fee": 0, "spread": 0, "fee_rate_bps": 0,
                     "num_legs": 1, "total_ask": 0,
                     "signal_type": sig["type"],
                     "signal_note": sig.get("note",""),
+                    # Tag whether this signal produced a downstream opportunity
+                    "hinted_to_strategies": [
+                        s.name for s in signal_engine.strategies
+                        if sig["market_id"] in observer_hints.get(sig["type"], [])
+                    ],
                 }
             })(), False, f"observer_signal_{sig['type']}"
         )
@@ -177,7 +222,7 @@ def main():
             if exec_engine.check_and_settle(pos):
                 resolved_count += 1
         except Exception as e:
-            log.warning("resolve_failed", error=str(e))
+            log.warning("settle_failed", error=str(e))
 
     if resolved_count > 0:
         try:
@@ -203,7 +248,9 @@ def main():
              dry_run=dry_run, elapsed_sec=round(time.time()-start,1),
              markets=len(markets), opportunities=len(all_opps),
              trades=trades_executed, resolved=resolved_count,
-             observer_points=obs_stats["total_data_points"])
+             observer_points=obs_stats["total_data_points"],
+             observer_signals=len(signals),
+             observer_hint_types=list(observer_hints.keys()))
     sys.exit(0)
 
 if __name__ == "__main__":
