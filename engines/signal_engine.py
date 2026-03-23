@@ -23,7 +23,7 @@ log = structlog.get_logger(component="signal_engine")
 
 
 class SignalEngine:
-    def __init__(self, config: dict):
+    def __init__(self, config: dict, data_engine=None, **kwargs):
         self.config:    dict                 = config
         self.strategies: list[BaseStrategy]  = []
 
