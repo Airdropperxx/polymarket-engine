@@ -9,8 +9,7 @@ s10_near_resolution:
   max_position_pct: 0.40
   kelly_fraction: 0.25
   threshold: 0.25
-  # Observer integration: resolution_drift signals pre-prioritise scan
-  observer_boost: true               # when true, drift-signal markets scanned first
+  observer_boost: true               # resolution_drift signals scanned first
   review:
     track_metrics: [win_rate, avg_roi, avg_days_left, category_breakdown]
     rebalance_trigger: weekly
