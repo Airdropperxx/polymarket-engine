@@ -38,17 +38,18 @@ jobs:
 
       - name: Verify allocations sum to 1.0
         run: |
-          python -c "
+          python - <<'PYEOF'
           import yaml
-          cfg = yaml.safe_load(open('configs/engine.yaml'))
-          total = sum(cfg['engine']['allocations'].values())
+          cfg    = yaml.safe_load(open('configs/engine.yaml'))
+          allocs = cfg['engine']['allocations']
+          total  = sum(allocs.values())
           assert abs(total - 1.0) < 0.001, f'FAILED: allocations sum to {total}'
-          print(f'Allocations OK: {cfg["engine"]["allocations"]}')
-          "
+          print(f'Allocations OK: {allocs}')
+          PYEOF
 
       - name: Check no hardcoded fee rates
         run: |
-          if grep -rn 'feeRateBps\s*=\s*[0-9]' engines/ strategies/ 2>/dev/null; then
+          if grep -rn 'feeRateBps[[:space:]]*=[[:space:]]*[0-9]' engines/ strategies/ 2>/dev/null; then
             echo "FAILED: hardcoded feeRateBps found"
             exit 1
           fi
