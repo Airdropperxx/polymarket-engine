@@ -364,7 +364,7 @@ const CT={
 };
 function cc(c){return CC[c]||'#64748b';}
 function cp(c){const col=cc(c),tip=CT[c?.toLowerCase()]||c||'—';
-  return '<span class="pill" style="background:'+col+'22;color:'+col+'" data-tip="'+tip+'">'+(c||'other').substring(0,14)+'</span>';)+'</span>';}
+  return '<span class="pill" style="background:'+col+'22;color:'+col+'" data-tip="'+tip+'">'+(c||'other').substring(0,14)+'</span>';}
 const STRAT={
   s1_negrisk_arb:{label:'S1',cls:'ps1',tip:'S1 NegRisk Arbitrage\nMath: sum(YES ask) < 1.0 = guaranteed profit\nWin rate: ~100%',link:'strategies/s1_negrisk_arb.py'},
   s10_near_resolution:{label:'S10',cls:'ps10',tip:'S10 Near-Resolution Harvest\nHigh-prob (0.85-0.989), 7 day window\nTarget win rate: 88-95%',link:'strategies/s10_near_resolution.py'},
