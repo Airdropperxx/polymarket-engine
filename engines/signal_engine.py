@@ -33,8 +33,6 @@ class SignalEngine:
         log.info("strategy_registered", name=strategy.name)
 
     def run_one_cycle(self,
-        markets = markets if markets is not None else []
-        groups  = groups  if groups  is not None else {}
                       markets:        list[MarketState] = None,
                       groups:         dict[str, list[MarketState]] = None,
                       observer_hints: dict | None = None) -> dict:
@@ -52,6 +50,8 @@ class SignalEngine:
         Strategies read hints via config["observer_hints"] injected per-cycle.
         Returns summary dict. NEVER raises.
         """
+        markets = markets if markets is not None else []
+        groups  = groups  if groups  is not None else {}
         start       = time.time()
         all_opps:   list[Opportunity] = []
         scan_errors = 0
