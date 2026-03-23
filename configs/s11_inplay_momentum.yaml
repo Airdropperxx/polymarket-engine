@@ -3,7 +3,7 @@ s11_inplay_momentum:
   min_total_move: 0.20
   min_price_after_move: 0.60
   max_price_after_move: 0.92
-  min_volume_24h: 50000.0
+  min_volume_24h: 100000.0    # $100k minimum: live games only
   max_days_to_resolution: 2.0
   min_observations: 2
   min_edge_after_fees: 0.005
