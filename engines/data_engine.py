@@ -207,7 +207,7 @@ class DataEngine:
 
     def fetch_all_markets(self) -> list:
         try:
-            raw_markets = self._paginate()
+            raw_markets = self._fetch_markets_paginated()
             if not raw_markets:
                 log.warning("gamma_returned_empty_using_cache")
                 return self._cache
@@ -257,7 +257,7 @@ class DataEngine:
         )
 
     def _fetch_markets_paginated(self) -> list:
-        """Alias for _paginate — used by tests."""
+        """Main pagination entry point — called by fetch_all_markets and mocked in tests."""
         return self._paginate()
 
     @staticmethod
