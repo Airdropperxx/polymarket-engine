@@ -1,22 +1,21 @@
 engine:
-  version: "3.2"
+  version: "3.3"
   capital_usdc: 100.00
   dry_run: false
 
-  max_per_cycle: 10
+  max_per_cycle: 25           # raised from 10 — more trades per cycle
   poll_interval_seconds: 1800
 
   risk:
     max_position_pct: 0.40
     max_daily_loss_pct: 0.99
-    max_open_positions: 50
+    max_open_positions: 200   # raised from 50 — was blocking all new trades
     min_edge_after_fees: 0.001
 
   allocations:
-    s10_near_resolution: 0.50
-    s1_negrisk_arb: 0.30
+    s1_negrisk_arb: 0.45
+    s10_near_resolution: 0.40
     s11_inplay_momentum: 0.15
-    s8_logical_arb: 0.05
 
   monitoring:
     telegram_alerts: true
