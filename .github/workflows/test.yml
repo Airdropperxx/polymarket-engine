@@ -41,9 +41,9 @@ jobs:
           python -c "
           import yaml
           cfg = yaml.safe_load(open('configs/engine.yaml'))
-          total = sum(cfg['allocations'].values())
+          total = sum(cfg['engine']['allocations'].values())
           assert abs(total - 1.0) < 0.001, f'FAILED: allocations sum to {total}'
-          print(f'Allocations OK: {cfg[\"allocations\"]}')
+          print(f'Allocations OK: {cfg["engine"]["allocations"]}')
           "
 
       - name: Check no hardcoded fee rates
