@@ -45,7 +45,7 @@ class ReviewEngine:
         self.state  = state_engine
         self.config = config
 
-    def run_after_resolution(self) -> dict:
+    def run_after_resolution(self, market_id: str = None) -> dict:
         return self._run(window_hours=48)
 
     def run_daily_review(self) -> dict:
@@ -108,13 +108,16 @@ class ReviewEngine:
             log.error("review_engine_failed", error=str(e))
             return {"status": "error"}
 
-    def _apply_updates(self, lessons_data: dict, updates: dict) -> None:
+    def _apply_updates(self, updates: dict, lessons_data: dict) -> None:
         """Apply allocation deltas and new lessons. Never crashes."""
         try:
             # Add new lessons
             for lesson in updates.get("new_lessons", []):
                 if lesson and len(lesson) > 10:
                     lessons_data.setdefault("lessons", []).append(lesson)
+            # Cap at 20 lessons (keep most recent)
+            if len(lessons_data.get("lessons", [])) > 20:
+                lessons_data["lessons"] = lessons_data["lessons"][-20:]
 
             # Deprecate old lessons
             deprecated_idx = sorted(
