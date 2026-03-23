@@ -356,25 +356,17 @@ const CT={
 };
 function cc(c){return CC[c]||'#64748b';}
 function cp(c){const col=cc(c),tip=CT[c?.toLowerCase()]||c||'—';
-  return '<span class="pill tip" style="background:'+col+'22;color:'+col+'" data-t="'+tip+'">'+((c||'—').substring(0,14))+'</span>';}
+  return '<span class="pill" style="background:'+col+'22;color:'+col+'" data-tip="'+tip+'">'+(c||'other').substring(0,14)+'</span>';)+'</span>';}
 const STRAT={
-  s1_negrisk_arb:{label:'S1',cls:'p-s1',tip:'S1 NegRisk Arbitrage
-Math guarantee: buy all YES where sum(ask) < 1.0
-Win rate: ~100%',link:'strategies/s1_negrisk_arb.py'},
-  s10_near_resolution:{label:'S10',cls:'p-s10',tip:'S10 Near-Resolution Harvest
-High-prob markets (0.85-0.989) resolving in 7 days
-Win rate: 88-95% target',link:'strategies/s10_near_resolution.py'},
-  s11_inplay_momentum:{label:'S11',cls:'p-s11',tip:'S11 In-Play Momentum
-Sports markets moving 20%+ during live games
-Uses Observer price history — no extra infra',link:'strategies/s11_inplay_momentum.py'},
-  s8_logical_arb:{label:'S8',cls:'p-s8',tip:'S8 Logical Impossibility Arb
-Mutually exclusive markets both >50%
-Disabled: needs PyTorch (too large for GHA)',link:'strategies/s8_logical_arb.py'},
+  s1_negrisk_arb:{label:'S1',cls:'ps1',tip:'S1 NegRisk Arbitrage\nMath: sum(YES ask) < 1.0 = guaranteed profit\nWin rate: ~100%',link:'strategies/s1_negrisk_arb.py'},
+  s10_near_resolution:{label:'S10',cls:'ps10',tip:'S10 Near-Resolution Harvest\nHigh-prob (0.85-0.989), 7 day window\nTarget win rate: 88-95%',link:'strategies/s10_near_resolution.py'},
+  s11_inplay_momentum:{label:'S11',cls:'ps11',tip:'S11 In-Play Momentum\nSports markets 20%+ during live games\nUses Observer data — no extra infra',link:'strategies/s11_inplay_momentum.py'},
+  s8_logical_arb:{label:'S8',cls:'ps8',tip:'S8 Logical Impossibility Arb\nMutually exclusive markets both >50%\nDisabled: needs PyTorch 1.5GB',link:'strategies/s8_logical_arb.py'},
 };
 function sp(s){
-  const d=STRAT[s];if(!d)return '<span class="pill p-obs tip" data-t="Observer signal">OBS</span>';
+  const d=STRAT[s];if(!d)return '<span class="pill pob" data-tip="Observer signal">OBS</span>';
   const url='https://github.com/'+OWN+'/'+REPO+'/blob/main/'+d.link;
-  return '<a href="'+url+'" target="_blank" class="pill '+d.cls+' tip" style="text-decoration:none" data-t="'+d.tip+'">'+d.label+'</a>';
+  return '<a href="'+url+'" target="_blank" class="pill '+d.cls+'" style="text-decoration:none" data-tip="'+d.tip+'">'+d.label+'</a>';+d.label+'</a>';
 }
 async function loadAll(){
   document.getElementById('upd').textContent='Loading...';
@@ -404,7 +396,7 @@ function rOv(){
   document.getElementById('k-opps-s').textContent='S10:'+s10.length+' S1r:'+s1r.length+' total:'+clean.length;
   
   const s10e=s10.filter(e=>e.edge>0).map(e=>e.edge);
-  document.getElementById('k-edge').textContent=s10e.length?(s10e.reduce((a,b)=>a+b,0)/s10e.length*100).toFixed(2)+'%':'—';
+  document.getElementById('k-edge').textContent=s10e.length?(s10e.reduce((a,b)=>a+b,0)/s10e.length*100).toFixed(2)+'%':'—';—';
   document.getElementById('k-edge-s').textContent=s10e.length+' S10 opps';
   
   document.getElementById('k-obs').textContent=Object.keys(PH).length;
@@ -412,7 +404,7 @@ function rOv(){
   
   document.getElementById('k-s1r').textContent=s1r.length;
   const s1re=s1r.map(e=>e.edge).filter(e=>e>0);
-  document.getElementById('k-s1r-s').textContent=s1re.length?(s1re.reduce((a,b)=>a+b,0)/s1re.length*100).toFixed(2)+'% avg edge':'no data';
+  document.getElementById('k-s1r-s').textContent=s1re.length?(s1re.reduce((a,b)=>a+b,0)/s1re.length*100).toFixed(2)+'% avg edge':'no data yet';vg edge':'no data';
   document.getElementById('k-zv').textContent=zero.length;
   document.getElementById('k-pts').textContent=pts.toLocaleString();
   
