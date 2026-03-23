@@ -224,7 +224,7 @@ class ExecutionEngine:
         return market_state.fee_rate_bps if market_state else 200
 
     def _get_clob_client(self):
-        if self._clob is None:
+        if self._client is None:
             try:
                 from py_clob_client.client import ClobClient
                 from py_clob_client.clob_types import ApiCreds
@@ -233,7 +233,7 @@ class ExecutionEngine:
                     api_secret = os.environ["POLYMARKET_API_SECRET"],
                     api_passphrase = os.environ["POLYMARKET_PASSPHRASE"],
                 )
-                self._clob = ClobClient(
+                self._client = ClobClient(
                     host           = "https://clob.polymarket.com",
                     chain_id       = 137,
                     private_key    = os.environ["POLYMARKET_PRIVATE_KEY"],
@@ -244,7 +244,7 @@ class ExecutionEngine:
             except Exception as e:
                 log.error("clob_client_init_failed", error=str(e))
                 return None
-        return self._clob
+        return self._client
 
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(min=2, max=10))
     def _submit_order(self, opp, strategy, size_usdc, fee_rate_bps):
