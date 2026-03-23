@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Polymarket Engine — Dashboard</title>
+<title>Polymarket Engine</title>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.min.js"></script>
 <style>
 :root{--bg:#0d0f14;--s1:#161920;--s2:#1e222d;--bd:#2a2f3d;--tx:#e2e8f0;--mu:#64748b;
@@ -11,267 +11,366 @@
 --teal:#14b8a6;--pink:#ec4899;--fn:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif}
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--bg);color:var(--tx);font-family:var(--fn);font-size:14px}
+a{color:var(--blue);text-decoration:none}a:hover{text-decoration:underline}
 header{background:var(--s1);border-bottom:1px solid var(--bd);padding:14px 24px;
 display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
 header h1{font-size:17px;font-weight:600}
-.tabs{display:flex;gap:2px;padding:0 24px;background:var(--s1);border-bottom:1px solid var(--bd)}
-.tab{padding:10px 18px;cursor:pointer;font-size:13px;color:var(--mu);border-bottom:2px solid transparent;
-transition:all .15s;white-space:nowrap}
-.tab.active{color:var(--tx);border-bottom-color:var(--blue)}
-.tab:hover{color:var(--tx)}
-.tab-content{display:none;padding:24px;max-width:1400px;margin:0 auto}
-.tab-content.active{display:block}
+.nav{display:flex;gap:2px;padding:0 24px;background:var(--s1);border-bottom:1px solid var(--bd);overflow-x:auto}
+.nav-tab{padding:10px 16px;cursor:pointer;font-size:13px;color:var(--mu);
+border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap}
+.nav-tab.active{color:var(--tx);border-bottom-color:var(--blue)}
+.nav-tab:hover{color:var(--tx)}
+.page{display:none;padding:24px;max-width:1400px;margin:0 auto}
+.page.active{display:block}
 .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:20px}
 .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:20px}
 .g2{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:20px}
-.g2l{display:grid;grid-template-columns:2fr 1fr;gap:16px;margin-bottom:20px}
 .card{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:18px}
 .card h2{font-size:11px;color:var(--mu);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
 .stat{font-size:26px;font-weight:700;line-height:1.1}
-.sub{font-size:11px;color:var(--mu);margin-top:3px}
+.sub{font-size:11px;color:var(--mu);margin-top:4px}
 .sec{font-size:14px;font-weight:600;margin-bottom:14px}
 .green{color:var(--green)}.red{color:var(--red)}.amber{color:var(--amber)}
 .blue{color:var(--blue)}.purple{color:var(--purple)}.teal{color:var(--teal)}
-.ch{position:relative;height:200px}
-.ch-lg{position:relative;height:280px}
-.ch-xl{position:relative;height:340px}
+.ch{position:relative;height:200px}.ch-lg{position:relative;height:260px}
 table{width:100%;border-collapse:collapse;font-size:12px}
 th{text-align:left;padding:8px 10px;color:var(--mu);font-weight:500;
 border-bottom:1px solid var(--bd);font-size:10px;text-transform:uppercase;letter-spacing:.4px}
 td{padding:8px 10px;border-bottom:1px solid var(--bd);vertical-align:middle}
-tr:last-child td{border-bottom:none}
-tr:hover td{background:var(--s2)}
-.q-cell{max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.pill{display:inline-block;border-radius:4px;padding:1px 7px;font-size:11px;font-weight:500}
-.p-s10{background:rgba(168,85,247,.15);color:var(--purple)}
-.p-s1{background:rgba(20,184,166,.15);color:var(--teal)}
-.p-s8{background:rgba(59,130,246,.15);color:var(--blue)}
-.p-obs{background:rgba(236,72,153,.15);color:var(--pink)}
+tr:last-child td{border-bottom:none}tr:hover td{background:var(--s2)}
+.q-cell{max-width:340px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:help}
+.pill{display:inline-block;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:500;cursor:default}
+.p-s10{background:rgba(168,85,247,.18);color:var(--purple)}
+.p-s1{background:rgba(20,184,166,.18);color:var(--teal)}
+.p-s11{background:rgba(245,158,11,.18);color:var(--amber)}
+.p-s8{background:rgba(59,130,246,.18);color:var(--blue)}
+.p-obs{background:rgba(236,72,153,.18);color:var(--pink)}
 .p-open{background:rgba(59,130,246,.15);color:var(--blue)}
 .p-win{background:rgba(34,197,94,.15);color:var(--green)}
 .p-loss{background:rgba(239,68,68,.15);color:var(--red)}
-.p-dry{background:rgba(100,116,139,.15);color:var(--mu)}
-.cat-pill{display:inline-block;border-radius:4px;padding:1px 7px;font-size:11px}
 .loading{color:var(--mu);text-align:center;padding:32px;font-size:13px}
 #dot{width:8px;height:8px;border-radius:50%;background:var(--mu);display:inline-block;margin-right:8px}
 #dot.ok{background:var(--green);box-shadow:0 0 6px var(--green)}
-.mode{border:1px solid var(--amber);color:var(--amber);border-radius:6px;
-padding:3px 10px;font-size:12px}
-btn{background:var(--s2);border:1px solid var(--bd);color:var(--tx);
-padding:6px 14px;border-radius:6px;font-size:12px;cursor:pointer}
+.mode-badge{border:1px solid var(--amber);color:var(--amber);border-radius:6px;padding:3px 10px;font-size:12px}
 .prog{background:var(--s2);border-radius:3px;height:5px;overflow:hidden;margin-top:5px}
 .prog-f{height:100%;border-radius:3px}
-.hm{display:grid;grid-template-columns:repeat(24,1fr);gap:2px}
-.hm-c{height:26px;border-radius:2px;display:flex;align-items:center;
-justify-content:center;font-size:9px;color:rgba(255,255,255,.4)}
-.insight{background:var(--s2);border-radius:8px;padding:14px;margin-bottom:10px;
-border-left:3px solid var(--bd)}
-.insight.up{border-left-color:var(--green)}
-.insight.down{border-left-color:var(--red)}
-.insight.spike{border-left-color:var(--amber)}
-.insight.drift{border-left-color:var(--blue)}
-.insight.sharp{border-left-color:var(--purple)}
-.insight-type{font-size:10px;text-transform:uppercase;letter-spacing:.4px;
-font-weight:600;margin-bottom:4px}
-.insight-q{font-size:13px;margin-bottom:6px;color:var(--tx)}
-.insight-note{font-size:12px;color:var(--mu);line-height:1.5}
-.tag{display:inline-block;border-radius:4px;padding:1px 6px;font-size:10px;
-background:var(--s2);color:var(--mu);margin-right:4px}
+.hm{display:grid;grid-template-columns:repeat(24,1fr);gap:2px;margin-top:8px}
+.hm-c{height:28px;border-radius:2px;display:flex;align-items:center;justify-content:center;
+font-size:9px;color:rgba(255,255,255,.5);cursor:help}
+/* Tooltip */
+[data-tip]{position:relative}
+[data-tip]:hover::after{content:attr(data-tip);position:absolute;bottom:100%;left:50%;
+transform:translateX(-50%);background:#1e222d;border:1px solid #2a2f3d;color:#e2e8f0;
+padding:6px 10px;border-radius:6px;font-size:11px;white-space:pre-wrap;max-width:280px;
+z-index:999;line-height:1.5;pointer-events:none;margin-bottom:4px;font-weight:400;
+box-shadow:0 4px 12px rgba(0,0,0,.4)}
+[data-tip]:hover::before{content:'';position:absolute;bottom:100%;left:50%;
+transform:translateX(-50%);border:5px solid transparent;border-top-color:#2a2f3d;z-index:999;margin-bottom:-1px}
+/* Strategy cards */
+.strat-card{background:var(--s1);border:1px solid var(--bd);border-radius:12px;
+padding:20px;position:relative;overflow:hidden}
+.strat-card::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%;border-radius:12px 0 0 12px}
+.strat-card.s1::before{background:var(--teal)}
+.strat-card.s10::before{background:var(--purple)}
+.strat-card.s11::before{background:var(--amber)}
+.strat-card.s8::before{background:var(--blue)}
+.strat-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.strat-name{font-size:15px;font-weight:600}
+.strat-status{font-size:11px;padding:2px 8px;border-radius:4px}
+.strat-status.active{background:rgba(34,197,94,.15);color:var(--green)}
+.strat-status.disabled{background:rgba(100,116,139,.15);color:var(--mu)}
+.strat-meta{font-size:12px;color:var(--mu);line-height:1.7;margin-bottom:14px}
+.strat-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
+.strat-stat{background:var(--s2);border-radius:8px;padding:10px;text-align:center}
+.strat-stat .val{font-size:18px;font-weight:700;display:block}
+.strat-stat .lbl{font-size:10px;color:var(--mu);margin-top:2px}
+.strat-links{display:flex;gap:10px;flex-wrap:wrap}
+.strat-link{font-size:11px;color:var(--blue);background:var(--s2);border:1px solid var(--bd);
+border-radius:4px;padding:3px 8px;cursor:pointer}
+.strat-link:hover{border-color:var(--blue)}
 @media(max-width:900px){.g4{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr}}
-@media(max-width:600px){.g4,.g3,.g2,.g2l{grid-template-columns:1fr}}
+@media(max-width:600px){.g4,.g3,.g2{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
-
 <header>
   <div style="display:flex;align-items:center;gap:10px">
     <span id="dot"></span>
-    <h1>Polymarket Engine</h1>
-    <span class="mode" id="mode-badge">DRY RUN</span>
+    <h1 data-tip="Polymarket prediction market trading engine&#10;Runs on GitHub Actions free tier">Polymarket Engine</h1>
+    <span class="mode-badge" id="mode-badge">DRY RUN</span>
   </div>
   <div style="display:flex;gap:10px;align-items:center">
     <span id="updated" style="font-size:11px;color:var(--mu)">—</span>
     <button onclick="loadAll()" style="background:var(--s2);border:1px solid var(--bd);
-      color:var(--tx);padding:5px 12px;border-radius:6px;font-size:12px;cursor:pointer">
-      Refresh
-    </button>
+      color:var(--tx);padding:5px 12px;border-radius:6px;font-size:12px;cursor:pointer">Refresh</button>
   </div>
 </header>
 
-<div class="tabs">
-  <div class="tab active" onclick="switchTab('overview')">Overview</div>
-  <div class="tab" onclick="switchTab('trades')">Trades</div>
-  <div class="tab" onclick="switchTab('data')">Data Collected</div>
-  <div class="tab" onclick="switchTab('analysis')">Pattern Analysis</div>
-  <div class="tab" onclick="switchTab('signals')">Observer Signals</div>
-  <div class="tab" onclick="switchTab('strategy')">Strategy Refinement</div>
+<div class="nav">
+  <div class="nav-tab active" onclick="showPage('overview',this)">Overview</div>
+  <div class="nav-tab" onclick="showPage('strategies',this)">Strategies</div>
+  <div class="nav-tab" onclick="showPage('trades',this)">Trades</div>
+  <div class="nav-tab" onclick="showPage('data',this)">Data</div>
+  <div class="nav-tab" onclick="showPage('analysis',this)">Patterns</div>
+  <div class="nav-tab" onclick="showPage('signals',this)">Signals</div>
 </div>
 
-<!-- ══ TAB 1: OVERVIEW ══════════════════════════════════════════════════ -->
-<div class="tab-content active" id="tab-overview">
-  <div class="g4" id="kpis">
-    <div class="card"><h2>Balance</h2><div class="stat" id="k-bal">—</div><div class="sub" id="k-bal-s">—</div></div>
-    <div class="card"><h2>Opportunities Seen</h2><div class="stat purple" id="k-opps">—</div><div class="sub" id="k-opps-s">—</div></div>
-    <div class="card"><h2>Avg Edge</h2><div class="stat amber" id="k-edge">—</div><div class="sub" id="k-edge-s">—</div></div>
-    <div class="card"><h2>Avg Probability</h2><div class="stat" id="k-prob">—</div><div class="sub" id="k-prob-s">—</div></div>
+<!-- OVERVIEW -->
+<div class="page active" id="page-overview">
+  <div class="g4">
+    <div class="card"><h2 data-tip="Total USDC capital in engine. Currently dry-run — no real money at risk">Balance</h2>
+      <div class="stat green" id="k-bal">$100.00</div><div class="sub">Dry-run capital</div></div>
+    <div class="card"><h2 data-tip="All opportunities logged to scan_log.json this session">Opportunities Seen</h2>
+      <div class="stat purple" id="k-opps">—</div><div class="sub" id="k-opps-s">—</div></div>
+    <div class="card"><h2 data-tip="Average edge across all S10/S11 opportunities (S1 arb is always 100%)">Avg Edge (S10)</h2>
+      <div class="stat amber" id="k-edge">—</div><div class="sub" id="k-edge-s">—</div></div>
+    <div class="card"><h2 data-tip="Markets being tracked for price movement by MarketObserver engine">Markets Tracked</h2>
+      <div class="stat blue" id="k-tracked">—</div><div class="sub" id="k-tracked-s">—</div></div>
   </div>
   <div class="g4">
-    <div class="card"><h2>Markets Tracked</h2><div class="stat blue" id="k-tracked">—</div><div class="sub">By observer</div></div>
-    <div class="card"><h2>Data Points</h2><div class="stat teal" id="k-pts">—</div><div class="sub">Price history records</div></div>
-    <div class="card"><h2>Active Signals</h2><div class="stat" id="k-sigs">—</div><div class="sub">From observer engine</div></div>
-    <div class="card"><h2>Win Rate</h2><div class="stat green" id="k-wr">—</div><div class="sub" id="k-wr-s">Resolved trades</div></div>
+    <div class="card"><h2 data-tip="Trades executed this session (dry-run: no real money)">Dry Trades</h2>
+      <div class="stat" id="k-trades">—</div><div class="sub" id="k-trades-s">—</div></div>
+    <div class="card"><h2 data-tip="Real NegRisk arb groups found after filtering phantom arb (total_ask 0.50-0.99, legs 0.03-0.97)">Real S1 Arb Groups</h2>
+      <div class="stat teal" id="k-s1real">—</div><div class="sub">total_ask 0.50-0.99</div></div>
+    <div class="card"><h2 data-tip="Price time-series data points collected by MarketObserver across all tracked markets">Price History Points</h2>
+      <div class="stat" id="k-pts">—</div><div class="sub">Observer data</div></div>
+    <div class="card"><h2 data-tip="Opportunities with $1000+ 24h volume (filtered — zero-volume trades excluded)">Vol > $1k Opps</h2>
+      <div class="stat green" id="k-highvol">—</div><div class="sub">Filtered opportunities</div></div>
   </div>
   <div class="g2">
-    <div class="card"><div class="sec">Cumulative edge captured (dry-run)</div><div class="ch-lg"><canvas id="c-pnl"></canvas></div></div>
-    <div class="card"><div class="sec">Opportunities by hour (UTC)</div>
-      <div class="hm" id="heatmap" style="margin-top:8px"></div>
+    <div class="card"><div class="sec">Category breakdown</div>
+      <div class="ch-lg"><canvas id="c-cat"></canvas></div></div>
+    <div class="card"><div class="sec">Opportunity heatmap by hour (UTC)</div>
+      <div class="hm" id="heatmap"></div>
       <div style="display:flex;justify-content:space-between;margin-top:4px">
         <span style="font-size:9px;color:var(--mu)">00h</span>
         <span style="font-size:9px;color:var(--mu)">23h</span>
       </div>
-      <div style="margin-top:12px" class="sec" style="font-size:12px">Category breakdown</div>
-      <div class="ch" style="margin-top:8px"><canvas id="c-cat"></canvas></div>
-    </div>
+      <div style="margin-top:16px" class="sec">Edge distribution</div>
+      <div class="ch"><canvas id="c-edge"></canvas></div></div>
   </div>
   <div class="g3">
-    <div class="card"><div class="sec">Edge distribution</div><div class="ch"><canvas id="c-edge"></canvas></div></div>
     <div class="card"><div class="sec">Probability buckets</div><div class="ch"><canvas id="c-prob"></canvas></div></div>
     <div class="card"><div class="sec">Days to resolution</div><div class="ch"><canvas id="c-days"></canvas></div></div>
+    <div class="card"><div class="sec">Strategy mix</div><div class="ch"><canvas id="c-strat"></canvas></div></div>
   </div>
 </div>
 
-<!-- ══ TAB 2: TRADES ════════════════════════════════════════════════════ -->
-<div class="tab-content" id="tab-trades">
-  <div class="g4" style="margin-bottom:20px">
-    <div class="card"><h2>Total Dry Trades</h2><div class="stat purple" id="t-total">—</div></div>
-    <div class="card"><h2>Open Positions</h2><div class="stat blue" id="t-open">—</div></div>
-    <div class="card"><h2>Resolved</h2><div class="stat teal" id="t-resolved">—</div></div>
-    <div class="card"><h2>Win Rate</h2><div class="stat green" id="t-wr">—</div></div>
+<!-- STRATEGIES -->
+<div class="page" id="page-strategies">
+  <div style="margin-bottom:20px">
+    <div style="font-size:13px;color:var(--mu);line-height:1.8;background:var(--s2);
+      border-radius:10px;padding:16px;border:1px solid var(--bd)">
+      All strategies are deployed in dry-run mode collecting pattern data.
+      Hover any metric label for an explanation. Click strategy links to view the source.
+    </div>
   </div>
-  <div class="card" style="margin-bottom:20px">
-    <div class="sec">All trades (newest first)</div>
+
+  <!-- S1 -->
+  <div class="strat-card s1" style="margin-bottom:16px">
+    <div class="strat-header">
+      <div>
+        <span class="strat-name" data-tip="NegRisk Arbitrage&#10;Mathematical guarantee: in a NegRisk group exactly one outcome resolves YES.&#10;If sum(YES ask prices) < 1.0, buying all YES is risk-free profit.">
+          S1 — NegRisk Arbitrage
+        </span>
+        <div style="font-size:11px;color:var(--mu);margin-top:2px">Mathematical arb · Win rate ~100%</div>
+      </div>
+      <span class="strat-status active" data-tip="Strategy is enabled and scanning every 30 minutes">Active</span>
+    </div>
+    <div class="strat-meta">
+      Scans NegRisk groups where the sum of all YES ask prices is below 1.0. Buying all YES outcomes guarantees
+      exactly one pays out — the implied profit is the gap between what you paid and $1.00.
+      Filters: legs must be 0.03–0.97 (not already resolved), total_ask must be 0.50–0.99, volume ≥ $1,000/day.
+    </div>
+    <div class="strat-stats">
+      <div class="strat-stat">
+        <span class="val teal" id="s1-count">—</span>
+        <span class="lbl" data-tip="Opportunities found and logged (after phantom arb filter)">Opportunities</span>
+      </div>
+      <div class="strat-stat">
+        <span class="val green" id="s1-edge">—</span>
+        <span class="lbl" data-tip="Average edge = 1.0 - total_ask - fees. This is guaranteed profit per share set.">Avg Edge</span>
+      </div>
+      <div class="strat-stat">
+        <span class="val" id="s1-legs">—</span>
+        <span class="lbl" data-tip="Average number of outcomes in NegRisk groups found">Avg Legs</span>
+      </div>
+    </div>
+    <div class="strat-links">
+      <a class="strat-link" href="https://github.com/Airdropperxx/polymarket-engine/blob/main/strategies/s1_negrisk_arb.py" target="_blank">📄 Strategy code</a>
+      <a class="strat-link" href="https://github.com/Airdropperxx/polymarket-engine/blob/main/configs/s1_negrisk.yaml" target="_blank">⚙️ Config</a>
+      <span class="strat-link" data-tip="sum(YES ask) < 1.0 − fees&#10;Filter: price 0.03-0.97 per leg&#10;Min volume: $1000/day&#10;Min edge: 0.5%">📐 Formula</span>
+    </div>
+  </div>
+
+  <!-- S10 -->
+  <div class="strat-card s10" style="margin-bottom:16px">
+    <div class="strat-header">
+      <div>
+        <span class="strat-name" data-tip="Near-Resolution Harvest&#10;Buys high-probability outcomes (0.85-0.989) resolving within 7 days.&#10;Edge: market is still trading below the true outcome probability.">
+          S10 — Near-Resolution Harvest
+        </span>
+        <div style="font-size:11px;color:var(--mu);margin-top:2px">Probabilistic · Win rate 88–95% target</div>
+      </div>
+      <span class="strat-status active">Active</span>
+    </div>
+    <div class="strat-meta">
+      Finds markets where one outcome is 85–98.9% certain and resolves within 7 days.
+      The edge comes from the market still trading below the true probability — usually due to
+      liquidity thin spots or slow price discovery. Filters: volume ≥ $1,000/day, spread ≤ 5%,
+      price strictly below 0.989 (excludes already-resolved markets).
+    </div>
+    <div class="strat-stats">
+      <div class="strat-stat">
+        <span class="val purple" id="s10-count">—</span>
+        <span class="lbl" data-tip="Opportunities found with volume > $1k">Opportunities</span>
+      </div>
+      <div class="strat-stat">
+        <span class="val green" id="s10-edge">—</span>
+        <span class="lbl" data-tip="edge = probability - ask_price - fee_per_share">Avg Edge</span>
+      </div>
+      <div class="strat-stat">
+        <span class="val" id="s10-prob">—</span>
+        <span class="lbl" data-tip="Average win probability of opportunities found (should be 0.85-0.989)">Avg Prob</span>
+      </div>
+    </div>
+    <div class="strat-links">
+      <a class="strat-link" href="https://github.com/Airdropperxx/polymarket-engine/blob/main/strategies/s10_near_resolution.py" target="_blank">📄 Strategy code</a>
+      <a class="strat-link" href="https://github.com/Airdropperxx/polymarket-engine/blob/main/configs/s10_near_resolution.yaml" target="_blank">⚙️ Config</a>
+      <span class="strat-link" data-tip="edge = p − ask − calc_fee(ask)×ask&#10;calc_fee(p) = 2.25×(p×(1−p))²&#10;Min prob: 0.85 | Max prob: 0.989&#10;Max window: 7 days | Min vol: $1k">📐 Formula</span>
+    </div>
+  </div>
+
+  <!-- S11 -->
+  <div class="strat-card s11" style="margin-bottom:16px">
+    <div class="strat-header">
+      <div>
+        <span class="strat-name" data-tip="In-Play Momentum&#10;Detects sports markets moving consistently in one direction during live games.&#10;Uses MarketObserver price history — no extra infrastructure needed.">
+          S11 — In-Play Momentum
+        </span>
+        <div style="font-size:11px;color:var(--mu);margin-top:2px">NEW · Momentum · Building data</div>
+      </div>
+      <span class="strat-status active">Active</span>
+    </div>
+    <div class="strat-meta">
+      Detects sports markets moving >20% in the same direction across multiple Observer snapshots.
+      Buys into the momentum when price is 0.60–0.92 (still has room to run to 0.99 at final whistle).
+      Discovered from live data: Real Madrid moved +55% in 56 minutes during a live game.
+      Needs 2+ Observer cycles to build price history before firing.
+    </div>
+    <div class="strat-stats">
+      <div class="strat-stat">
+        <span class="val amber" id="s11-count">—</span>
+        <span class="lbl" data-tip="Opportunities found using Observer momentum data">Opportunities</span>
+      </div>
+      <div class="strat-stat">
+        <span class="val green" id="s11-edge">—</span>
+        <span class="lbl" data-tip="Average net edge after fees">Avg Edge</span>
+      </div>
+      <div class="strat-stat">
+        <span class="val" id="s11-move">—</span>
+        <span class="lbl" data-tip="Average price move that triggered the signal">Avg Move</span>
+      </div>
+    </div>
+    <div class="strat-links">
+      <a class="strat-link" href="https://github.com/Airdropperxx/polymarket-engine/blob/main/strategies/s11_inplay_momentum.py" target="_blank">📄 Strategy code</a>
+      <a class="strat-link" href="https://github.com/Airdropperxx/polymarket-engine/blob/main/configs/s11_inplay_momentum.yaml" target="_blank">⚙️ Config</a>
+      <span class="strat-link" data-tip="Signal: price moved ≥20% same direction&#10;Buy zone: 0.60–0.92&#10;Min volume: $100k/day (live games)&#10;Max window: 2 days">📐 Signal logic</span>
+    </div>
+  </div>
+
+  <!-- S8 -->
+  <div class="strat-card s8" style="margin-bottom:16px">
+    <div class="strat-header">
+      <div>
+        <span class="strat-name" data-tip="Logical Impossibility Arbitrage&#10;Uses sentence embeddings to find pairs of questions that cannot both resolve YES.&#10;Disabled: requires sentence-transformers (torch, 1.5GB) — too heavy for GitHub Actions.">
+          S8 — Logical Impossibility Arb
+        </span>
+        <div style="font-size:11px;color:var(--mu);margin-top:2px">Disabled at MVP · Needs local/VPS</div>
+      </div>
+      <span class="strat-status disabled" data-tip="Disabled: sentence-transformers pulls PyTorch (1.5GB) which breaks GitHub Actions dependency resolution">Disabled</span>
+    </div>
+    <div class="strat-meta">
+      Finds pairs of markets that are logically mutually exclusive but both priced above 0.50.
+      Uses cosine similarity on question embeddings to find candidates, then Claude Haiku to confirm.
+      Enable when: capital > $500 and running locally or on a VPS.
+    </div>
+    <div class="strat-links">
+      <a class="strat-link" href="https://github.com/Airdropperxx/polymarket-engine/blob/main/strategies/s8_logical_arb.py" target="_blank">📄 Strategy code</a>
+      <a class="strat-link" href="https://github.com/Airdropperxx/polymarket-engine/blob/main/configs/s8_logical.yaml" target="_blank">⚙️ Config</a>
+      <span class="strat-link" data-tip="Enable by setting s8_logical_arb.enabled: true in configs/s8_logical.yaml&#10;Requires: pip install sentence-transformers">🔧 How to enable</span>
+    </div>
+  </div>
+</div>
+
+<!-- TRADES -->
+<div class="page" id="page-trades">
+  <div class="g4" style="margin-bottom:20px">
+    <div class="card"><h2 data-tip="Trades logged in scan_log (with volume > $1k)">Total Trades</h2><div class="stat purple" id="t-total">—</div></div>
+    <div class="card"><h2 data-tip="Trades still open (not yet resolved)">Open</h2><div class="stat blue" id="t-open">—</div></div>
+    <div class="card"><h2 data-tip="Trades that have resolved (won or lost)">Resolved</h2><div class="stat teal" id="t-res">—</div></div>
+    <div class="card"><h2 data-tip="Win rate on resolved trades">Win Rate</h2><div class="stat green" id="t-wr">—</div></div>
+  </div>
+  <div class="card">
+    <div class="sec">All trades — hover question text for full market name</div>
     <div id="trades-table" style="overflow-x:auto"><div class="loading">Loading...</div></div>
   </div>
 </div>
 
-<!-- ══ TAB 3: DATA COLLECTED ════════════════════════════════════════════ -->
-<div class="tab-content" id="tab-data">
+<!-- DATA -->
+<div class="page" id="page-data">
   <div class="g4" style="margin-bottom:20px">
-    <div class="card"><h2>Scan Log Entries</h2><div class="stat purple" id="d-entries">—</div><div class="sub">All opportunities ever seen</div></div>
-    <div class="card"><h2>Price History Points</h2><div class="stat teal" id="d-pts">—</div><div class="sub">Time-series data points</div></div>
-    <div class="card"><h2>Markets in History</h2><div class="stat blue" id="d-mkts">—</div><div class="sub">Unique markets tracked</div></div>
-    <div class="card"><h2>Data Span</h2><div class="stat amber" id="d-span">—</div><div class="sub">Oldest to newest</div></div>
+    <div class="card"><h2 data-tip="Total entries in data/scan_log.json across all strategies and signals">Scan Log Entries</h2><div class="stat purple" id="d-sl">—</div></div>
+    <div class="card"><h2 data-tip="Entries with volume > $1000 (real tradeable markets)">With Vol > $1k</h2><div class="stat green" id="d-vol">—</div></div>
+    <div class="card"><h2 data-tip="Price time-series data points in data/price_history.json">Price History</h2><div class="stat teal" id="d-ph">—</div></div>
+    <div class="card"><h2 data-tip="Unique markets being tracked by MarketObserver">Markets</h2><div class="stat blue" id="d-mkts">—</div></div>
   </div>
   <div class="g2">
     <div class="card">
-      <div class="sec">Data by category</div>
+      <div class="sec" data-tip="How opportunities break down by market category">By category</div>
       <div id="d-cats"><div class="loading">Loading...</div></div>
     </div>
     <div class="card">
-      <div class="sec">Volume distribution of tracked markets</div>
+      <div class="sec" data-tip="24h volume distribution of opportunities — zero-volume = phantom arb or old data">Volume tiers</div>
       <div class="ch-lg"><canvas id="c-vol"></canvas></div>
     </div>
   </div>
-  <div class="card" style="margin-bottom:20px">
-    <div class="sec">Recent scan log (last 40 entries, all fields visible)</div>
-    <div id="scanlog-full" style="overflow-x:auto"><div class="loading">Loading...</div></div>
+  <div class="card">
+    <div class="sec">Scan log — last 40 entries (hover question for full text)</div>
+    <div id="sl-table" style="overflow-x:auto"><div class="loading">Loading...</div></div>
   </div>
 </div>
 
-<!-- ══ TAB 4: PATTERN ANALYSIS ══════════════════════════════════════════ -->
-<div class="tab-content" id="tab-analysis">
-  <div style="background:var(--s2);border-radius:10px;padding:16px;margin-bottom:20px;
-    border:1px solid var(--bd)">
-    <div style="font-size:13px;font-weight:600;margin-bottom:8px">What patterns can we detect from this data?</div>
-    <div style="font-size:12px;color:var(--mu);line-height:1.7">
-      <b style="color:var(--tx)">1. Time-of-day alpha</b> — Certain hours produce more high-edge opportunities. 
-      US market open (13-16 UTC) tends to move crypto/finance markets. Sports create spikes at game times.<br>
-      <b style="color:var(--tx)">2. Category edge curves</b> — Finance/crypto markets at p=0.90-0.95 have historically 
-      higher resolution accuracy than politics at same probability.<br>
-      <b style="color:var(--tx)">3. Volume-to-probability correlation</b> — High volume + high probability = 
-      confident market, lower reversal risk. Low volume + high probability = dangerous.<br>
-      <b style="color:var(--tx)">4. Days-to-resolution curve</b> — Edge is highest 2-5 days before resolution, 
-      not day-of (when spreads widen and liquidity drains).<br>
-      <b style="color:var(--tx)">5. Price momentum</b> — Markets moving consistently in one direction for 3+ 
-      scans tend to continue. Observer engine tracks this per-market.<br>
-      <b style="color:var(--tx)">6. NegRisk group drift</b> — Groups where YES prices sum to 0.92-0.98 
-      (not 1.00) present real arb. Rare but high confidence when found.
-    </div>
-  </div>
-
-  <div class="g2">
-    <div class="card">
-      <div class="sec">Edge by category (are some categories more profitable?)</div>
-      <div class="ch-lg"><canvas id="a-cat-edge"></canvas></div>
-    </div>
-    <div class="card">
-      <div class="sec">Edge vs probability (optimal probability range)</div>
-      <div class="ch-lg"><canvas id="a-edge-prob"></canvas></div>
-    </div>
+<!-- PATTERNS -->
+<div class="page" id="page-analysis">
+  <div style="background:var(--s2);border-radius:10px;padding:14px;margin-bottom:20px;border:1px solid var(--bd);font-size:12px;color:var(--mu);line-height:1.8">
+    <b style="color:var(--tx)">What patterns are we mining?</b><br>
+    Time-of-day alpha · Category edge curves · Optimal probability range ·
+    Momentum signals (Observer) · Volume-to-probability correlation · NegRisk group drift
   </div>
   <div class="g2">
-    <div class="card">
-      <div class="sec">Opportunities by day of week</div>
-      <div class="ch"><canvas id="a-dow"></canvas></div>
-    </div>
-    <div class="card">
-      <div class="sec">Edge vs days to resolution</div>
-      <div class="ch"><canvas id="a-edge-days"></canvas></div>
-    </div>
+    <div class="card"><div class="sec" data-tip="Which category produces the highest average edge — tells you where to concentrate capital">Edge by category</div><div class="ch-lg"><canvas id="a-cat"></canvas></div></div>
+    <div class="card"><div class="sec" data-tip="How edge varies by probability bucket — optimal range is usually 0.88-0.95">Edge vs probability</div><div class="ch-lg"><canvas id="a-prob"></canvas></div></div>
   </div>
-  <div class="card" style="margin-bottom:20px">
-    <div class="sec">Top questions by edge (best-looking opportunities collected so far)</div>
-    <div id="a-top-opps" style="overflow-x:auto"><div class="loading">Loading...</div></div>
-  </div>
-</div>
-
-<!-- ══ TAB 5: OBSERVER SIGNALS ══════════════════════════════════════════ -->
-<div class="tab-content" id="tab-signals">
-  <div style="background:var(--s2);border-radius:10px;padding:16px;margin-bottom:20px;border:1px solid var(--bd)">
-    <div style="font-size:13px;font-weight:600;margin-bottom:8px">About the Market Observer Engine</div>
-    <div style="font-size:12px;color:var(--mu);line-height:1.7">
-      The observer polls the top 200 markets by volume every scan cycle (every 30 min) and stores a price snapshot.
-      Over time this builds a time-series that reveals how Polymarket prices move, not just what they are right now.<br><br>
-      <b style="color:var(--tx)">Useful for trading:</b>
-      Momentum signals (prices moving consistently) often precede full-price convergence — buying at 0.88 while it's 
-      moving to 0.95 captures more edge than waiting for 0.95. Volume spikes indicate smart-money entry — 
-      following the direction is usually profitable. Sharp single-scan jumps (>8%) often revert within 1-3 scans 
-      and can be faded (bet opposite direction). NegRisk group sum divergence alerts S1 arb before it's fully priced in.
-    </div>
-  </div>
-  <div class="g4" style="margin-bottom:20px">
-    <div class="card"><h2>Momentum Up</h2><div class="stat green" id="s-mu">—</div><div class="sub">Consistent YES price increase</div></div>
-    <div class="card"><h2>Momentum Down</h2><div class="stat red" id="s-md">—</div><div class="sub">Consistent NO price increase</div></div>
-    <div class="card"><h2>Sharp Moves</h2><div class="stat amber" id="s-sm">—</div><div class="sub">Single-scan jumps >8%</div></div>
-    <div class="card"><h2>Resolution Drift</h2><div class="stat blue" id="s-rd">—</div><div class="sub">High-prob near-expiry</div></div>
-  </div>
-  <div id="signals-list"><div class="loading">Loading observer signals...</div></div>
-</div>
-
-<!-- ══ TAB 6: STRATEGY REFINEMENT ═══════════════════════════════════════ -->
-<div class="tab-content" id="tab-strategy">
-  <div style="background:var(--s2);border-radius:10px;padding:16px;margin-bottom:20px;border:1px solid var(--bd)">
-    <div style="font-size:13px;font-weight:600;margin-bottom:10px">
-      How to use collected data to improve strategies
-    </div>
-    <div style="font-size:12px;color:var(--mu);line-height:1.8" id="refinement-insights">
-      Loading analysis...
-    </div>
-  </div>
-  <div class="g2" style="margin-bottom:20px">
-    <div class="card">
-      <div class="sec">S10 threshold recommendations</div>
-      <div id="s10-reco"><div class="loading">Analysing...</div></div>
-    </div>
-    <div class="card">
-      <div class="sec">S1 NegRisk group quality</div>
-      <div id="s1-reco"><div class="loading">Analysing...</div></div>
-    </div>
+  <div class="g2">
+    <div class="card"><div class="sec" data-tip="Which days of the week have the most opportunities">Day of week</div><div class="ch"><canvas id="a-dow"></canvas></div></div>
+    <div class="card"><div class="sec" data-tip="Edge vs how many days until resolution — closer = better for S10">Edge vs days to resolution</div><div class="ch"><canvas id="a-days"></canvas></div></div>
   </div>
   <div class="card">
-    <div class="sec">Lessons from scan log patterns</div>
-    <div id="lessons-table"><div class="loading">Loading...</div></div>
+    <div class="sec" data-tip="Top opportunities by edge, with volume > $1k">Top opportunities by edge (vol > $1k)</div>
+    <div id="a-top" style="overflow-x:auto"><div class="loading">Loading...</div></div>
   </div>
+</div>
+
+<!-- SIGNALS -->
+<div class="page" id="page-signals">
+  <div class="g4" style="margin-bottom:20px">
+    <div class="card"><h2 data-tip="Markets with consistent price increase over multiple Observer snapshots">Momentum Up</h2><div class="stat green" id="sig-up">—</div></div>
+    <div class="card"><h2 data-tip="Markets with consistent price decrease — bet NO side">Momentum Down</h2><div class="stat red" id="sig-dn">—</div></div>
+    <div class="card"><h2 data-tip="Markets that jumped >8% in one scan cycle — may reverse">Sharp Moves</h2><div class="stat amber" id="sig-sm">—</div></div>
+    <div class="card"><h2 data-tip="High-prob markets (0.88-0.97) resolving within 7 days — S10 prime targets">Resolution Drift</h2><div class="stat blue" id="sig-rd">—</div></div>
+  </div>
+  <div id="signals-list"><div class="loading">Loading Observer signals...</div></div>
 </div>
 
 <script>
@@ -284,11 +383,11 @@ Chart.defaults.font.size=11;
 let SL=[],PH={},LS={};
 const charts={};
 
-function switchTab(id){
-  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
-  document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('tab-'+id).classList.add('active');
-  event.target.classList.add('active');
+function showPage(id,el){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.nav-tab').forEach(t=>t.classList.remove('active'));
+  document.getElementById('page-'+id).classList.add('active');
+  el.classList.add('active');
 }
 
 async function gj(path){
@@ -298,7 +397,6 @@ async function gj(path){
 }
 
 function dc(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
-function $_(id){return document.getElementById(id);}
 function fmt(n,d=2){return isNaN(+n)?'—':(+n).toFixed(d);}
 function tAgo(iso){
   if(!iso)return'—';
@@ -309,31 +407,64 @@ function tAgo(iso){
   return Math.round(d/86400)+'d ago';
 }
 
+// Extended category colours
 const CAT_COLORS={
   crypto:'#f59e0b',sports:'#22c55e',politics:'#ef4444',finance:'#3b82f6',
-  tech:'#a855f7',geopolitics:'#14b8a6',other:'#64748b',entertainment:'#ec4899',
-  science:'#84cc16'
+  tech:'#a855f7',geopolitics:'#14b8a6',weather:'#60a5fa',entertainment:'#ec4899',
+  social_media:'#f97316',shipping:'#84cc16',science:'#8b5cf6',other:'#64748b',
+  '(empty)':'#374151'
 };
+const CAT_TIPS={
+  crypto:'Cryptocurrency & blockchain price markets',
+  sports:'Sports game outcomes, scores, tournaments',
+  politics:'Elections, government decisions, political events',
+  finance:'Stock prices, economic indicators, company earnings',
+  tech:'AI, software, tech company events',
+  geopolitics:'Wars, conflicts, international relations',
+  weather:'Temperature & weather prediction markets',
+  entertainment:'Netflix, TV shows, movies, reality TV, music',
+  social_media:'Tweet counts, follower metrics, social engagement',
+  shipping:'Maritime shipping, trade route volumes',
+  science:'Space, research, academic outcomes',
+  other:'Uncategorised markets'
+};
+
 function catColor(c){return CAT_COLORS[c?.toLowerCase()]||'#64748b';}
 
 function catPill(c){
   const col=catColor(c);
-  return `<span style="display:inline-block;border-radius:4px;padding:1px 7px;
-    font-size:11px;background:${col}22;color:${col}">${c||'—'}</span>`;
+  const tip=CAT_TIPS[c?.toLowerCase()]||c;
+  return `<span style="display:inline-block;border-radius:4px;padding:1px 7px;font-size:11px;
+    background:${col}22;color:${col}" data-tip="${tip}">${c||'—'}</span>`;
 }
 
 function stratPill(s){
-  if(!s)return'—';
-  if(s.includes('s10'))return`<span class="pill p-s10">S10</span>`;
-  if(s.includes('s1'))return`<span class="pill p-s1">S1</span>`;
-  if(s.includes('s8'))return`<span class="pill p-s8">S8</span>`;
-  if(s.includes('observer'))return`<span class="pill p-obs">OBS</span>`;
-  return`<span class="pill p-dry">${s}</span>`;
+  const tips={
+    s1_negrisk_arb:'S1 NegRisk Arb — Mathematical guarantee: buy all YES in a group where sum < 1.0',
+    s10_near_resolution:'S10 Near-Resolution — High-prob markets (0.85-0.989) resolving within 7 days',
+    s11_inplay_momentum:'S11 In-Play Momentum — Sports markets moving 20%+ during live games',
+    s8_logical_arb:'S8 Logical Arb — Mutually exclusive markets both priced above 50% (disabled)',
+  };
+  const links={
+    s1_negrisk_arb:'strategies/s1_negrisk_arb.py',
+    s10_near_resolution:'strategies/s10_near_resolution.py',
+    s11_inplay_momentum:'strategies/s11_inplay_momentum.py',
+    s8_logical_arb:'strategies/s8_logical_arb.py',
+  };
+  const classes={s1_negrisk_arb:'p-s1',s10_near_resolution:'p-s10',
+    s11_inplay_momentum:'p-s11',s8_logical_arb:'p-s8'};
+  const labels={s1_negrisk_arb:'S1',s10_near_resolution:'S10',
+    s11_inplay_momentum:'S11',s8_logical_arb:'S8'};
+  const cls=classes[s]||'p-obs';
+  const label=labels[s]||s?.substring(0,4)||'?';
+  const tip=tips[s]||s;
+  const link=links[s];
+  const href=link?`href="https://github.com/${OWNER}/${REPO}/blob/main/${link}" target="_blank"`:'';
+  return `<a ${href} class="pill ${cls}" data-tip="${tip}" style="text-decoration:none">${label}</a>`;
 }
 
-// ── Load data ──────────────────────────────────────────────────────────
 async function loadAll(){
-  $_('updated').textContent='Loading...';
+  document.getElementById('updated').textContent='Loading...';
   try{
     [SL,PH,LS]=await Promise.all([
       gj('data/scan_log.json').catch(()=>[]),
@@ -342,187 +473,194 @@ async function loadAll(){
     ]);
     if(!Array.isArray(SL))SL=[];
     renderAll();
-    $_('updated').textContent='Updated '+new Date().toLocaleTimeString();
-    $_('dot').className=SL.length>0?'ok':'';
-  }catch(e){
-    $_('updated').textContent='Error: '+e.message;
-  }
+    document.getElementById('updated').textContent='Updated '+new Date().toLocaleTimeString();
+    document.getElementById('dot').className=SL.length>0?'ok':'';
+  }catch(e){document.getElementById('updated').textContent='Error: '+e.message;}
 }
 
 function renderAll(){
-  renderKPIs();renderOverviewCharts();
-  renderTrades();renderData();renderAnalysis();
-  renderSignals();renderStrategy();
+  renderOverview();renderStrategyStats();renderTrades();
+  renderData();renderAnalysis();renderSignals();
 }
 
-// ── KPIs ───────────────────────────────────────────────────────────────
-function renderKPIs(){
-  const executed=SL.filter(e=>e.executed&&!e.strategy?.includes('observer'));
-  const probs=SL.map(e=>e.probability).filter(p=>p>0&&p<0.99);
-  const edges=SL.map(e=>e.edge).filter(e=>e>0);
+// ── Overview ───────────────────────────────────────────────────────────
+function renderOverview(){
+  const clean=SL.filter(e=>!e.strategy?.includes('observer'));
+  const highVol=clean.filter(e=>(e.volume_24h||0)>=1000);
+  const executed=clean.filter(e=>e.executed);
+  const s10=clean.filter(e=>e.strategy?.includes('s10'));
+  const s1=clean.filter(e=>e.strategy?.includes('s1'));
+  const s11=clean.filter(e=>e.strategy?.includes('s11'));
   const pts=Object.values(PH).reduce((a,d)=>a+(d.points?.length||0),0);
   const sigs=SL.filter(e=>e.strategy?.includes('observer'));
 
-  $_('k-bal').textContent='$100.00';
-  $_('k-bal-s').textContent='Dry-run capital';
-  $_('k-opps').textContent=executed.length;
-  const s10count=SL.filter(e=>e.strategy?.includes('s10')).length;
-  const s1cnt=SL.filter(e=>e.strategy?.includes('s1')).length;
-  $_('k-opps-s').textContent=`S10:${s10count} S1:${s1cnt} total:${SL.length}`;
-  $_('k-edge').textContent=edges.length?((edges.reduce((a,b)=>a+b,0)/edges.length)*100).toFixed(2)+'%':'—';
-  $_('k-edge-s').textContent='Across '+edges.length+' observations';
+  document.getElementById('k-opps').textContent=clean.length;
+  document.getElementById('k-opps-s').textContent='S10:'+s10.length+' S1:'+s1.length+' S11:'+s11.length;
 
-  const avgP=probs.length?(probs.reduce((a,b)=>a+b,0)/probs.length*100).toFixed(1)+'%':'—';
-  $_('k-prob').textContent=avgP;
-  const pEl=$_('k-prob');
-  // S1 NegRisk arb legitimately has p=1.0 (mathematical guarantee)
-  // S10 should be 0.85-0.99 — show breakdown
-  const s10probs=SL.filter(e=>e.strategy?.includes('s10')&&e.probability>0).map(e=>e.probability);
-  const s1count=SL.filter(e=>e.strategy?.includes('s1')).length;
-  if(s10probs.length){
-    const s10avg=(s10probs.reduce((a,b)=>a+b,0)/s10probs.length*100).toFixed(1);
-    pEl.className='stat green'; pEl.textContent=s10avg+'%';
-    $_('k-prob').nextElementSibling.textContent='S10 avg · S1 always 100% (arb)';
-  } else {
-    pEl.className='stat';
-    $_('k-prob').nextElementSibling.textContent='S1 arb=100%, S10 not yet running';
-  }
+  const s10edges=s10.filter(e=>e.edge>0&&(e.volume_24h||0)>=1000).map(e=>e.edge);
+  document.getElementById('k-edge').textContent=s10edges.length?
+    (s10edges.reduce((a,b)=>a+b,0)/s10edges.length*100).toFixed(2)+'%':'—';
+  document.getElementById('k-edge-s').textContent=s10edges.length+' S10 opps with vol>$1k';
 
-  $_('k-tracked').textContent=Object.keys(PH).length;
-  $_('k-pts').textContent=pts.toLocaleString();
-  $_('k-sigs').textContent=sigs.length;
-  $_('k-wr').textContent='—';
-  $_('k-wr-s').textContent='Awaiting resolutions';
-}
+  document.getElementById('k-tracked').textContent=Object.keys(PH).length;
+  document.getElementById('k-tracked-s').textContent=pts.toLocaleString()+' data points';
+  document.getElementById('k-trades').textContent=executed.length;
+  document.getElementById('k-trades-s').textContent=executed.filter(e=>(e.volume_24h||0)>=1000).length+' with vol>$1k';
 
-// ── Overview charts ────────────────────────────────────────────────────
-function renderOverviewCharts(){
-  // P&L curve
-  dc('c-pnl');
-  const exo=SL.filter(e=>e.executed&&!e.strategy?.includes('observer'))
-              .sort((a,b)=>a.ts_unix-b.ts_unix);
-  if(exo.length>1){
-    let cum=0;const labels=[],data=[];
-    exo.forEach((e,i)=>{cum+=(e.edge||0)*(e.buy_price||0.9)*40;labels.push(i+1);data.push(+cum.toFixed(3));});
-    charts['c-pnl']=new Chart($_('c-pnl'),{type:'line',data:{labels,datasets:[{
-      data,borderColor:data[data.length-1]>=0?'#22c55e':'#ef4444',
-      backgroundColor:data[data.length-1]>=0?'rgba(34,197,94,.08)':'rgba(239,68,68,.08)',
-      borderWidth:2,fill:true,tension:.3,pointRadius:0}]},
-      options:{responsive:true,maintainAspectRatio:false,
-        plugins:{legend:{display:false}},
-        scales:{x:{grid:{color:'#1e222d'},ticks:{maxTicksLimit:8}},
-                y:{grid:{color:'#1e222d'},ticks:{callback:v=>'$'+v.toFixed(2)}}}}
-    });
-  }
-
-  // Heatmap
-  const hourC=Array(24).fill(0);
-  SL.filter(e=>!e.strategy?.includes('observer')).forEach(e=>{
-    if(e.hour_utc>=0&&e.hour_utc<24)hourC[e.hour_utc]++;
-  });
-  const maxH=Math.max(...hourC,1);
-  const hm=$_('heatmap');hm.innerHTML='';
-  hourC.forEach((c,h)=>{
-    const a=0.08+c/maxH*0.92;
-    const el=document.createElement('div');
-    el.className='hm-c';
-    el.style.background=`rgba(168,85,247,${a.toFixed(2)})`;
-    el.title=`${String(h).padStart(2,'0')}:00 UTC — ${c} opps`;
-    el.textContent=c>0?c:'';
-    hm.appendChild(el);
-  });
+  // Real S1 arb
+  const realS1=s1.filter(e=>{const ta=e.total_ask||0;return ta>0.5&&ta<1.0;});
+  document.getElementById('k-s1real').textContent=realS1.length;
+  document.getElementById('k-pts').textContent=pts.toLocaleString();
+  document.getElementById('k-highvol').textContent=highVol.length;
 
   // Category donut
   dc('c-cat');
   const cats={};
-  SL.filter(e=>!e.strategy?.includes('observer')).forEach(e=>{
-    const c=e.category||'other';cats[c]=(cats[c]||0)+1;
+  clean.forEach(e=>{const c=e.category||'(empty)';cats[c]=(cats[c]||0)+1;});
+  const ckeys=Object.keys(cats).sort((a,b)=>cats[b]-cats[a]);
+  charts['c-cat']=new Chart(document.getElementById('c-cat'),{type:'doughnut',data:{
+    labels:ckeys,datasets:[{data:ckeys.map(k=>cats[k]),
+    backgroundColor:ckeys.map(catColor),borderColor:'#161920',borderWidth:2}]},
+    options:{responsive:true,maintainAspectRatio:false,
+      plugins:{legend:{position:'right',labels:{boxWidth:10,padding:8,font:{size:10}}}}}
   });
-  if(Object.keys(cats).length){
-    const labels=Object.keys(cats),data=labels.map(l=>cats[l]);
-    charts['c-cat']=new Chart($_('c-cat'),{type:'doughnut',data:{labels,datasets:[{
-      data,backgroundColor:labels.map(catColor),borderColor:'#161920',borderWidth:2}]},
-      options:{responsive:true,maintainAspectRatio:false,
-        plugins:{legend:{position:'right',labels:{boxWidth:10,padding:10,font:{size:11}}}}}
-    });
-  }
+
+  // Heatmap
+  const hourC=Array(24).fill(0);
+  clean.forEach(e=>{if(e.hour_utc>=0&&e.hour_utc<24)hourC[e.hour_utc]++;});
+  const maxH=Math.max(...hourC,1);
+  const hm=document.getElementById('heatmap');hm.innerHTML='';
+  hourC.forEach((c,h)=>{
+    const a=0.08+c/maxH*0.92;
+    const el=document.createElement('div');
+    el.className='hm-c';el.style.background=`rgba(168,85,247,${a.toFixed(2)})`;
+    el.setAttribute('data-tip',`${String(h).padStart(2,'0')}:00 UTC — ${c} opportunities`);
+    el.textContent=c>0?c:'';hm.appendChild(el);
+  });
 
   // Edge distribution
   dc('c-edge');
-  const eBuckets={};
-  SL.filter(e=>e.edge>0&&!e.strategy?.includes('observer')).forEach(e=>{
-    const b=(Math.floor(e.edge*100)).toString()+'%';eBuckets[b]=(eBuckets[b]||0)+1;
-  });
-  if(Object.keys(eBuckets).length){
-    const ks=Object.keys(eBuckets).sort((a,b)=>+a-+b);
-    dc('c-edge');
-    charts['c-edge']=new Chart($_('c-edge'),{type:'bar',data:{labels:ks,datasets:[{
-      data:ks.map(k=>eBuckets[k]),backgroundColor:'rgba(168,85,247,.65)',
-      borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,
-        plugins:{legend:{display:false}},
+  const eb={};
+  clean.filter(e=>e.edge>0&&(e.volume_24h||0)>=1000).forEach(e=>{
+    const b=Math.floor(e.edge*100)+'%';eb[b]=(eb[b]||0)+1;});
+  if(Object.keys(eb).length){
+    const ks=Object.keys(eb).sort((a,b)=>+a-+b);
+    charts['c-edge']=new Chart(document.getElementById('c-edge'),{type:'bar',data:{
+      labels:ks,datasets:[{data:ks.map(k=>eb[k]),backgroundColor:'rgba(168,85,247,.65)',borderRadius:3}]},
+      options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
         scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'}}}}
     });
   }
 
-  // Probability buckets
+  // Prob buckets
   dc('c-prob');
-  const pb={'<85%':0,'85-90%':0,'90-95%':0,'95-99%':0,'99%+':0};
-  SL.filter(e=>!e.strategy?.includes('observer')).forEach(e=>{
+  const pb={'<85%':0,'85-90%':0,'90-95%':0,'95-99%':0};
+  clean.filter(e=>(e.volume_24h||0)>=1000).forEach(e=>{
     const p=(e.probability||0)*100;
-    if(p>=99)pb['99%+']++;
-    else if(p>=95)pb['95-99%']++;
-    else if(p>=90)pb['90-95%']++;
-    else if(p>=85)pb['85-90%']++;
-    else pb['<85%']++;
+    if(p>=95)pb['95-99%']++;else if(p>=90)pb['90-95%']++;
+    else if(p>=85)pb['85-90%']++;else pb['<85%']++;
   });
-  charts['c-prob']=new Chart($_('c-prob'),{type:'bar',data:{
+  charts['c-prob']=new Chart(document.getElementById('c-prob'),{type:'bar',data:{
     labels:Object.keys(pb),datasets:[{data:Object.values(pb),
-    backgroundColor:['#64748b','rgba(59,130,246,.7)','rgba(34,197,94,.7)','rgba(34,197,94,.9)','rgba(239,68,68,.7)'],
-    borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false}},
+    backgroundColor:['#64748b66','rgba(59,130,246,.7)','rgba(34,197,94,.7)','rgba(34,197,94,.9)'],borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
       scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'}}}}
   });
 
-  // Days to resolution
+  // Days
   dc('c-days');
   const db={'<1d':0,'1-3d':0,'3-7d':0,'7d+':0};
-  SL.filter(e=>!e.strategy?.includes('observer')).forEach(e=>{
+  clean.filter(e=>(e.volume_24h||0)>=1000).forEach(e=>{
     const d=e.days_to_res||0;
     if(d<1)db['<1d']++;else if(d<3)db['1-3d']++;else if(d<7)db['3-7d']++;else db['7d+']++;
   });
-  charts['c-days']=new Chart($_('c-days'),{type:'bar',data:{
+  charts['c-days']=new Chart(document.getElementById('c-days'),{type:'bar',data:{
     labels:Object.keys(db),datasets:[{data:Object.values(db),
     backgroundColor:['#ef444499','#f59e0b99','#3b82f699','#64748b66'],borderRadius:4}]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false}},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'}}}}
+  });
+
+  // Strategy mix
+  dc('c-strat');
+  const sm={};
+  clean.forEach(e=>{const s=e.strategy||'other';sm[s]=(sm[s]||0)+1;});
+  const skeys=Object.keys(sm);
+  const scols={'s1_negrisk_arb':'rgba(20,184,166,.7)','s10_near_resolution':'rgba(168,85,247,.7)',
+    's11_inplay_momentum':'rgba(245,158,11,.7)'};
+  charts['c-strat']=new Chart(document.getElementById('c-strat'),{type:'bar',data:{
+    labels:skeys.map(k=>k.replace('_negrisk_arb','').replace('_near_resolution','').replace('_inplay_momentum','').replace('_logical_arb','').toUpperCase()),
+    datasets:[{data:skeys.map(k=>sm[k]),backgroundColor:skeys.map(k=>scols[k]||'#64748b66'),borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
       scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'}}}}
   });
 }
 
-// ── Trades tab ─────────────────────────────────────────────────────────
-function renderTrades(){
-  const ex=SL.filter(e=>e.executed&&!e.strategy?.includes('observer'));
-  $_('t-total').textContent=ex.length;
-  $_('t-open').textContent=ex.filter(e=>!e.outcome).length;
-  const res=ex.filter(e=>e.outcome);
-  $_('t-resolved').textContent=res.length;
-  $_('t-wr').textContent=res.length?Math.round(res.filter(e=>e.outcome==='win').length/res.length*100)+'%':'—';
+// ── Strategy stats ─────────────────────────────────────────────────────
+function renderStrategyStats(){
+  const clean=SL.filter(e=>!e.strategy?.includes('observer'));
+  const s1=clean.filter(e=>e.strategy==='s1_negrisk_arb');
+  const s10=clean.filter(e=>e.strategy==='s10_near_resolution');
+  const s11=clean.filter(e=>e.strategy==='s11_inplay_momentum');
 
-  const sorted=[...ex].sort((a,b)=>b.ts_unix-a.ts_unix);
+  const avg=(arr,fn)=>arr.length?(arr.map(fn).reduce((a,b)=>a+b,0)/arr.length):null;
+
+  document.getElementById('s1-count').textContent=s1.length;
+  const s1e=avg(s1.filter(e=>e.total_ask>0.5&&e.total_ask<1.0),e=>e.edge);
+  document.getElementById('s1-edge').textContent=s1e?(s1e*100).toFixed(2)+'%':'—';
+  const s1l=avg(s1.filter(e=>e.num_legs>0),e=>e.num_legs);
+  document.getElementById('s1-legs').textContent=s1l?s1l.toFixed(1):'—';
+
+  document.getElementById('s10-count').textContent=s10.filter(e=>(e.volume_24h||0)>=1000).length;
+  const s10e=avg(s10.filter(e=>e.edge>0&&(e.volume_24h||0)>=1000),e=>e.edge);
+  document.getElementById('s10-edge').textContent=s10e?(s10e*100).toFixed(2)+'%':'—';
+  const s10p=avg(s10.filter(e=>e.probability>0&&e.probability<0.999),e=>e.probability);
+  document.getElementById('s10-prob').textContent=s10p?(s10p*100).toFixed(1)+'%':'—';
+
+  document.getElementById('s11-count').textContent=s11.length;
+  const s11e=avg(s11.filter(e=>e.edge>0),e=>e.edge);
+  document.getElementById('s11-edge').textContent=s11e?(s11e*100).toFixed(2)+'%':'—';
+  const s11m=avg(s11.filter(e=>e.metadata?.total_move),e=>Math.abs(e.metadata.total_move));
+  document.getElementById('s11-move').textContent=s11m?(s11m*100).toFixed(0)+'%':'—';
+}
+
+// ── Trades ─────────────────────────────────────────────────────────────
+function renderTrades(){
+  const clean=SL.filter(e=>e.executed&&!e.strategy?.includes('observer')&&(e.volume_24h||0)>=1000);
+  document.getElementById('t-total').textContent=clean.length;
+  document.getElementById('t-open').textContent=clean.filter(e=>!e.outcome).length;
+  const res=clean.filter(e=>e.outcome);
+  document.getElementById('t-res').textContent=res.length;
+  document.getElementById('t-wr').textContent=res.length?
+    Math.round(res.filter(e=>e.outcome==='win').length/res.length*100)+'%':'—';
+
+  const sorted=[...clean].sort((a,b)=>b.ts_unix-a.ts_unix);
   if(!sorted.length){
-    $_('trades-table').innerHTML='<div class="loading">No trades yet</div>';return;
+    document.getElementById('trades-table').innerHTML='<div class="loading">No trades with vol>$1k yet</div>';
+    return;
   }
-  $_('trades-table').innerHTML=`<table>
-    <thead><tr><th>Time</th><th>Strategy</th><th>Question</th><th>Category</th>
-    <th>Action</th><th>Prob</th><th>Edge</th><th>Score</th><th>Days</th><th>Vol</th><th>Status</th></tr></thead>
+  document.getElementById('trades-table').innerHTML=`<table>
+    <thead><tr>
+      <th data-tip="Time since trade was logged">Time</th>
+      <th data-tip="Strategy that found the opportunity">Strategy</th>
+      <th data-tip="Hover for full question text">Question</th>
+      <th data-tip="Market category">Cat</th>
+      <th data-tip="Action taken">Action</th>
+      <th data-tip="Win probability at time of trade">Prob</th>
+      <th data-tip="Net edge after fees">Edge</th>
+      <th data-tip="Composite opportunity score 0-1">Score</th>
+      <th data-tip="Days until market resolves">Days</th>
+      <th data-tip="24h trading volume on Polymarket">Vol</th>
+      <th data-tip="Current status of the trade">Status</th>
+    </tr></thead>
     <tbody>${sorted.map(e=>`<tr>
-      <td style="white-space:nowrap;color:var(--mu)">${tAgo(e.ts)}</td>
+      <td style="white-space:nowrap;color:var(--mu);font-size:11px">${tAgo(e.ts)}</td>
       <td>${stratPill(e.strategy)}</td>
-      <td title="${e.question}" style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.question}</td>
+      <td class="q-cell" data-tip="${e.question}">${e.question}</td>
       <td>${catPill(e.category)}</td>
       <td><span class="pill p-open">${e.action||'BUY'}</span></td>
       <td>${((e.probability||0)*100).toFixed(1)}%</td>
-      <td class="green">${((e.edge||0)*100).toFixed(2)}%</td>
+      <td class="green"><b>${((e.edge||0)*100).toFixed(2)}%</b></td>
       <td>${(e.score||0).toFixed(3)}</td>
       <td>${(e.days_to_res||0).toFixed(1)}d</td>
       <td>$${Number(e.volume_24h||0).toLocaleString(undefined,{maximumFractionDigits:0})}</td>
@@ -530,130 +668,104 @@ function renderTrades(){
     </tr>`).join('')}</tbody></table>`;
 }
 
-// ── Data Collected tab ─────────────────────────────────────────────────
+// ── Data ───────────────────────────────────────────────────────────────
 function renderData(){
+  const clean=SL.filter(e=>!e.strategy?.includes('observer'));
+  const highVol=clean.filter(e=>(e.volume_24h||0)>=1000);
   const pts=Object.values(PH).reduce((a,d)=>a+(d.points?.length||0),0);
-  $_('d-entries').textContent=SL.length.toLocaleString();
-  $_('d-pts').textContent=pts.toLocaleString();
-  $_('d-mkts').textContent=Object.keys(PH).length.toLocaleString();
-
-  // Date span
-  const allTs=SL.map(e=>e.ts_unix).filter(Boolean).sort((a,b)=>a-b);
-  if(allTs.length>=2){
-    const days=Math.round((allTs[allTs.length-1]-allTs[0])/86400*10)/10;
-    $_('d-span').textContent=days+'d';
-  }else $_('d-span').textContent='—';
+  document.getElementById('d-sl').textContent=SL.length;
+  document.getElementById('d-vol').textContent=highVol.length;
+  document.getElementById('d-ph').textContent=pts.toLocaleString();
+  document.getElementById('d-mkts').textContent=Object.keys(PH).length;
 
   // By category
-  const catData={};
-  SL.forEach(e=>{
-    const c=e.category||'other';
-    if(!catData[c])catData[c]={total:0,executed:0,edges:[]};
-    catData[c].total++;
-    if(e.executed)catData[c].executed++;
-    if(e.edge>0)catData[c].edges.push(e.edge);
-  });
-  const sorted=Object.entries(catData).sort((a,b)=>b[1].total-a[1].total);
-  $_('d-cats').innerHTML=sorted.map(([cat,d])=>{
-    const pct=Math.round(d.total/SL.length*100);
-    const avgE=d.edges.length?(d.edges.reduce((a,b)=>a+b,0)/d.edges.length*100).toFixed(2):'0.00';
-    const col=catColor(cat);
-    return`<div style="margin-bottom:14px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
-        ${catPill(cat)}
-        <span style="font-size:11px;color:var(--mu)">${d.total} entries (${pct}%) · avg edge ${avgE}%</span>
-      </div>
-      <div class="prog"><div class="prog-f" style="width:${pct}%;background:${col}"></div></div>
-    </div>`;
-  }).join('');
+  const cats={};
+  clean.forEach(e=>{const c=e.category||'(empty)';if(!cats[c])cats[c]={total:0,vol:0,edges:[]};
+    cats[c].total++;if((e.volume_24h||0)>0)cats[c].vol++;if(e.edge>0)cats[c].edges.push(e.edge);});
+  document.getElementById('d-cats').innerHTML=
+    Object.entries(cats).sort((a,b)=>b[1].total-a[1].total).map(([c,d])=>{
+      const pct=Math.round(d.total/clean.length*100);
+      const ae=d.edges.length?(d.edges.reduce((a,b)=>a+b,0)/d.edges.length*100).toFixed(2):0;
+      const col=catColor(c);
+      const tip=CAT_TIPS[c?.toLowerCase()]||c;
+      return`<div style="margin-bottom:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">
+          <span data-tip="${tip}" style="color:${col};font-weight:500;cursor:help">${c}</span>
+          <span style="font-size:11px;color:var(--mu)">${d.total} opps · avg edge ${ae}%</span>
+        </div>
+        <div class="prog"><div class="prog-f" style="width:${pct}%;background:${col}"></div></div>
+      </div>`;
+    }).join('');
 
-  // Volume chart
+  // Volume tier chart
   dc('c-vol');
-  const vBuckets={'$0-100':0,'$100-1k':0,'$1k-10k':0,'$10k+':0};
-  SL.forEach(e=>{
-    const v=e.volume_24h||0;
-    if(v<100)vBuckets['$0-100']++;
-    else if(v<1000)vBuckets['$100-1k']++;
-    else if(v<10000)vBuckets['$1k-10k']++;
-    else vBuckets['$10k+']++;
-  });
-  charts['c-vol']=new Chart($_('c-vol'),{type:'bar',data:{
-    labels:Object.keys(vBuckets),datasets:[{data:Object.values(vBuckets),
-    backgroundColor:['#64748b66','#3b82f699','#22c55e99','#f59e0b99'],borderRadius:6}]},
+  const vb={$0:0,`$1-999`:0,`$1k-10k`:0,`$10k+`:0};
+  clean.forEach(e=>{const v=e.volume_24h||0;
+    if(v===0)vb[$0]++;else if(v<1000)vb[`$1-999`]++;
+    else if(v<10000)vb[`$1k-10k`]++;else vb[`$10k+`]++;});
+  charts['c-vol']=new Chart(document.getElementById('c-vol'),{type:'bar',data:{
+    labels:Object.keys(vb),datasets:[{data:Object.values(vb),
+    backgroundColor:['#ef444466','#64748b66','#3b82f699','#22c55e99'],borderRadius:6}]},
     options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
-      plugins:{legend:{display:false}},
-      scales:{x:{grid:{color:'#1e222d'}},y:{grid:{display:false}}}}
+      plugins:{legend:{display:false}},scales:{x:{grid:{color:'#1e222d'}},y:{grid:{display:false}}}}
   });
 
-  // Full scan log table
+  // Scan log table
   const recent=[...SL].sort((a,b)=>b.ts_unix-a.ts_unix).slice(0,40);
-  $_('scanlog-full').innerHTML=`<table>
-    <thead><tr><th>Time</th><th>Strategy</th><th>Question</th><th>Category</th>
-    <th>Edge</th><th>Prob</th><th>Score</th><th>Days</th><th>Vol 24h</th>
-    <th>Spread</th><th>Executed</th></tr></thead>
-    <tbody>${recent.map(e=>`<tr>
-      <td style="white-space:nowrap;color:var(--mu);font-size:11px">${tAgo(e.ts)}</td>
+  document.getElementById('sl-table').innerHTML=`<table>
+    <thead><tr>
+      <th>Time</th><th>Strategy</th><th>Question</th><th>Category</th>
+      <th data-tip="Net edge after fees">Edge</th>
+      <th data-tip="Win probability">Prob</th>
+      <th data-tip="24h volume — filter: >$1k for real trades">Vol 24h</th>
+      <th data-tip="Days until resolution">Days</th>
+      <th data-tip="Was this trade executed or skipped?">Exec</th>
+    </tr></thead>
+    <tbody>${recent.map(e=>`<tr${(e.volume_24h||0)<1000?' style="opacity:0.5"':''}>
+      <td style="color:var(--mu);font-size:11px;white-space:nowrap">${tAgo(e.ts)}</td>
       <td>${stratPill(e.strategy)}</td>
-      <td title="${e.question}" style="max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.question}</td>
+      <td class="q-cell" data-tip="${e.question}">${e.question}</td>
       <td>${catPill(e.category)}</td>
       <td class="green">${((e.edge||0)*100).toFixed(2)}%</td>
       <td>${((e.probability||0)*100).toFixed(1)}%</td>
-      <td>${(e.score||0).toFixed(3)}</td>
+      <td${(e.volume_24h||0)<1000?' class="red"':''}>${(e.volume_24h||0)===0?'$0 ⚠':'$'+Number(e.volume_24h||0).toLocaleString(undefined,{maximumFractionDigits:0})}</td>
       <td>${(e.days_to_res||0).toFixed(1)}d</td>
-      <td>$${Number(e.volume_24h||0).toLocaleString(undefined,{maximumFractionDigits:0})}</td>
-      <td>${((e.spread||0)*100).toFixed(1)}%</td>
-      <td>${e.executed?'<span class="pill p-win">yes</span>':
-        `<span class="pill p-dry" title="${e.skipped_reason||''}" style="cursor:help">no</span>`}</td>
+      <td>${e.executed?'<span class="pill p-win">yes</span>':`<span class="pill" style="background:var(--s2);color:var(--mu)" title="${e.skipped_reason||''}">${e.skipped_reason?.includes('beyond')?'seen':'no'}</span>`}</td>
     </tr>`).join('')}</tbody></table>`;
 }
 
-// ── Pattern Analysis tab ───────────────────────────────────────────────
+// ── Patterns ───────────────────────────────────────────────────────────
 function renderAnalysis(){
-  const clean=SL.filter(e=>!e.strategy?.includes('observer'));
+  const clean=SL.filter(e=>!e.strategy?.includes('observer')&&(e.volume_24h||0)>=1000);
 
   // Edge by category
-  dc('a-cat-edge');
+  dc('a-cat');
   const catE={};
-  clean.forEach(e=>{
-    const c=e.category||'other';
-    if(!catE[c])catE[c]=[];
-    if(e.edge>0)catE[c].push(e.edge*100);
-  });
-  const catKeys=Object.keys(catE).filter(k=>catE[k].length>0);
-  const catAvgs=catKeys.map(k=>+(catE[k].reduce((a,b)=>a+b,0)/catE[k].length).toFixed(3));
-  charts['a-cat-edge']=new Chart($_('a-cat-edge'),{type:'bar',data:{
-    labels:catKeys,datasets:[{data:catAvgs,
-    backgroundColor:catKeys.map(k=>catColor(k)+'99'),
-    borderColor:catKeys.map(catColor),borderWidth:1,borderRadius:6}]},
+  clean.forEach(e=>{const c=e.category||'other';if(!catE[c])catE[c]=[];if(e.edge>0)catE[c].push(e.edge*100);});
+  const cks=Object.keys(catE).filter(k=>catE[k].length>0);
+  const cavg=cks.map(k=>+(catE[k].reduce((a,b)=>a+b,0)/catE[k].length).toFixed(3));
+  charts['a-cat']=new Chart(document.getElementById('a-cat'),{type:'bar',data:{
+    labels:cks,datasets:[{data:cavg,backgroundColor:cks.map(k=>catColor(k)+'aa'),
+    borderColor:cks.map(catColor),borderWidth:1,borderRadius:5}]},
     options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
-      plugins:{legend:{display:false},
-        tooltip:{callbacks:{label:c=>`Avg edge: ${c.raw.toFixed(2)}%`}}},
-      scales:{x:{grid:{color:'#1e222d'},ticks:{callback:v=>v+'%'}},
-              y:{grid:{display:false}}}}
+      plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw.toFixed(2)+'% avg edge'}}},
+      scales:{x:{grid:{color:'#1e222d'},ticks:{callback:v=>v+'%'}},y:{grid:{display:false}}}}
   });
 
-  // Edge vs probability scatter (bucketed)
-  dc('a-edge-prob');
-  const probBuckets={};
-  clean.forEach(e=>{
-    if(e.edge>0&&e.probability>0){
-      const b=(Math.floor(e.probability*20)/20).toFixed(2);
-      if(!probBuckets[b])probBuckets[b]=[];
-      probBuckets[b].push(e.edge*100);
-    }
-  });
-  const pbKeys=Object.keys(probBuckets).sort();
-  const pbAvgs=pbKeys.map(k=>+(probBuckets[k].reduce((a,b)=>a+b,0)/probBuckets[k].length).toFixed(3));
-  charts['a-edge-prob']=new Chart($_('a-edge-prob'),{type:'line',data:{
-    labels:pbKeys.map(k=>Math.round(+k*100)+'%'),datasets:[{
-      data:pbAvgs,borderColor:'#a855f7',backgroundColor:'rgba(168,85,247,.1)',
-      borderWidth:2,fill:true,tension:.3,pointRadius:4,
-      pointBackgroundColor:'#a855f7'}]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false}},
-      scales:{x:{grid:{color:'#1e222d'},title:{display:true,text:'Probability bucket',color:'#64748b'}},
-              y:{grid:{color:'#1e222d'},ticks:{callback:v=>v+'%'},
-                 title:{display:true,text:'Avg edge %',color:'#64748b'}}}}
+  // Edge vs probability
+  dc('a-prob');
+  const pb={};
+  clean.forEach(e=>{if(e.edge>0&&e.probability>0){
+    const b=(Math.floor(e.probability*20)/20).toFixed(2);
+    if(!pb[b])pb[b]=[];pb[b].push(e.edge*100);}});
+  const pbks=Object.keys(pb).sort();
+  const pbavg=pbks.map(k=>+(pb[k].reduce((a,b)=>a+b,0)/pb[k].length).toFixed(3));
+  charts['a-prob']=new Chart(document.getElementById('a-prob'),{type:'line',data:{
+    labels:pbks.map(k=>Math.round(+k*100)+'%'),datasets:[{data:pbavg,
+    borderColor:'#a855f7',backgroundColor:'rgba(168,85,247,.1)',
+    borderWidth:2,fill:true,tension:.3,pointRadius:4,pointBackgroundColor:'#a855f7'}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{grid:{color:'#1e222d'}},y:{grid:{color:'#1e222d'},ticks:{callback:v=>v+'%'}}}}
   });
 
   // Day of week
@@ -661,45 +773,34 @@ function renderAnalysis(){
   const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
   const dowC=Array(7).fill(0);
   clean.forEach(e=>{if(e.weekday>=0&&e.weekday<7)dowC[e.weekday]++;});
-  charts['a-dow']=new Chart($_('a-dow'),{type:'bar',data:{
+  charts['a-dow']=new Chart(document.getElementById('a-dow'),{type:'bar',data:{
     labels:days,datasets:[{data:dowC,
-    backgroundColor:dowC.map((_,i)=>i<5?'rgba(59,130,246,.7)':'rgba(168,85,247,.7)'),
-    borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false}},
+    backgroundColor:dowC.map((_,i)=>i<5?'rgba(59,130,246,.7)':'rgba(168,85,247,.7)'),borderRadius:4}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
       scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'}}}}
   });
 
   // Edge vs days
-  dc('a-edge-days');
-  const dayBuckets={'<1d':[],'1-3d':[],'3-7d':[],'7d+':[]};
-  clean.forEach(e=>{
-    if(e.edge>0){
-      const d=e.days_to_res||0;
-      if(d<1)dayBuckets['<1d'].push(e.edge*100);
-      else if(d<3)dayBuckets['1-3d'].push(e.edge*100);
-      else if(d<7)dayBuckets['3-7d'].push(e.edge*100);
-      else dayBuckets['7d+'].push(e.edge*100);
-    }
-  });
-  const dbKeys=Object.keys(dayBuckets);
-  const dbAvgs=dbKeys.map(k=>dayBuckets[k].length?
-    +(dayBuckets[k].reduce((a,b)=>a+b,0)/dayBuckets[k].length).toFixed(3):0);
-  charts['a-edge-days']=new Chart($_('a-edge-days'),{type:'bar',data:{
-    labels:dbKeys,datasets:[{data:dbAvgs,
+  dc('a-days');
+  const db2={'<1d':[],'1-3d':[],'3-7d':[],'7d+':[]};
+  clean.forEach(e=>{if(e.edge>0){const d=e.days_to_res||0;
+    if(d<1)db2['<1d'].push(e.edge*100);else if(d<3)db2['1-3d'].push(e.edge*100);
+    else if(d<7)db2['3-7d'].push(e.edge*100);else db2['7d+'].push(e.edge*100);}});
+  const dbks=Object.keys(db2);
+  const dbavg=dbks.map(k=>db2[k].length?+(db2[k].reduce((a,b)=>a+b,0)/db2[k].length).toFixed(3):0);
+  charts['a-days']=new Chart(document.getElementById('a-days'),{type:'bar',data:{
+    labels:dbks,datasets:[{data:dbavg,
     backgroundColor:['#ef444499','#f59e0b99','#3b82f699','#64748b66'],borderRadius:4}]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false}},
-      scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'},
-              ticks:{callback:v=>v+'%'}}}}
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+      scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'},ticks:{callback:v=>v+'%'}}}}
   });
 
-  // Top opportunities by edge
-  const topOpps=[...clean].sort((a,b)=>b.edge-a.edge).slice(0,20);
-  $_('a-top-opps').innerHTML=`<table>
-    <thead><tr><th>Question</th><th>Category</th><th>Edge</th><th>Prob</th>
-    <th>Score</th><th>Days</th><th>Volume</th><th>Strategy</th></tr></thead>
-    <tbody>${topOpps.map(e=>`<tr>
-      <td title="${e.question}" style="max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.question}</td>
+  // Top opportunities
+  const top=[...clean].sort((a,b)=>b.edge-a.edge).slice(0,20);
+  document.getElementById('a-top').innerHTML=top.length?(`<table>
+    <thead><tr><th>Question</th><th>Cat</th><th>Edge</th><th>Prob</th><th>Score</th><th>Days</th><th>Vol</th><th>Strat</th></tr></thead>
+    <tbody>`+top.map(e=>`<tr>
+      <td class="q-cell" data-tip="${e.question}">${e.question}</td>
       <td>${catPill(e.category)}</td>
       <td class="green"><b>${((e.edge||0)*100).toFixed(2)}%</b></td>
       <td>${((e.probability||0)*100).toFixed(1)}%</td>
@@ -707,151 +808,46 @@ function renderAnalysis(){
       <td>${(e.days_to_res||0).toFixed(1)}d</td>
       <td>$${Number(e.volume_24h||0).toLocaleString(undefined,{maximumFractionDigits:0})}</td>
       <td>${stratPill(e.strategy)}</td>
-    </tr>`).join('')}</tbody></table>`;
+    </tr>`).join('')+'</tbody></table>'):'<div class="loading">Need vol>$1k opportunities</div>';
 }
 
-// ── Observer Signals tab ───────────────────────────────────────────────
+// ── Signals ────────────────────────────────────────────────────────────
 function renderSignals(){
   const obs=SL.filter(e=>e.strategy?.includes('observer'));
   const byType={};
-  obs.forEach(e=>{
-    const t=e.metadata?.signal_type||e.strategy?.split('_').slice(1).join('_')||'unknown';
-    byType[t]=(byType[t]||0)+1;
-  });
-  $_('s-mu').textContent=byType.momentum_up||0;
-  $_('s-md').textContent=byType.momentum_down||0;
-  $_('s-sm').textContent=byType.sharp_move||0;
-  $_('s-rd').textContent=byType.resolution_drift||0;
+  obs.forEach(e=>{const t=e.skipped_reason?.replace('observer_signal_','')||'signal';
+    byType[t]=(byType[t]||0)+1;});
+  document.getElementById('sig-up').textContent=byType.momentum_up||0;
+  document.getElementById('sig-dn').textContent=byType.momentum_down||0;
+  document.getElementById('sig-sm').textContent=byType.sharp_move||0;
+  document.getElementById('sig-rd').textContent=byType.resolution_drift||0;
 
   if(!obs.length){
-    $_('signals-list').innerHTML='<div class="loading">No observer signals yet — observer needs a few scan cycles to build history</div>';
+    document.getElementById('signals-list').innerHTML=
+      '<div class="loading">No Observer signals yet — MarketObserver needs 3+ scan cycles to build momentum data</div>';
     return;
   }
-
-  const typeClass={momentum_up:'up',momentum_down:'down',sharp_move:'sharp',
-                   resolution_drift:'drift',volume_spike:'spike'};
-  const typeColor={momentum_up:'var(--green)',momentum_down:'var(--red)',
-                   sharp_move:'var(--purple)',resolution_drift:'var(--blue)',
-                   volume_spike:'var(--amber)'};
-
+  const typeColors={momentum_up:'var(--green)',momentum_down:'var(--red)',
+    sharp_move:'var(--purple)',resolution_drift:'var(--blue)',volume_spike:'var(--amber)'};
   const sorted=[...obs].sort((a,b)=>b.edge-a.edge).slice(0,30);
-  $_('signals-list').innerHTML=sorted.map(e=>{
-    const t=e.metadata?.signal_type||'signal';
-    const note=e.metadata?.signal_note||e.skipped_reason||'';
-    return`<div class="insight ${typeClass[t]||''}">
-      <div class="insight-type" style="color:${typeColor[t]||'var(--mu)'}">${t.replace(/_/g,' ')}</div>
-      <div class="insight-q">${e.question}</div>
-      <div style="display:flex;gap:8px;margin-bottom:6px">
+  document.getElementById('signals-list').innerHTML=sorted.map(e=>{
+    const t=e.skipped_reason?.replace('observer_signal_','')||'signal';
+    const note=e.metadata?.signal_note||'';
+    const col=typeColors[t]||'var(--mu)';
+    return`<div style="background:var(--s2);border-radius:8px;padding:14px;margin-bottom:10px;
+      border-left:3px solid ${col}">
+      <div style="font-size:10px;text-transform:uppercase;color:${col};font-weight:600;margin-bottom:4px"
+        data-tip="Signal type from MarketObserver engine">${t.replace(/_/g,' ')}</div>
+      <div style="font-size:13px;margin-bottom:6px" data-tip="${e.question}">${e.question.substring(0,100)}</div>
+      <div style="display:flex;gap:8px;margin-bottom:6px;flex-wrap:wrap">
         ${catPill(e.category)}
-        <span class="tag">p=${((e.probability||0)*100).toFixed(1)}%</span>
-        <span class="tag">strength=${((e.edge||0)).toFixed(3)}</span>
-        <span class="tag">${tAgo(e.ts)}</span>
+        <span style="font-size:11px;background:var(--s1);border:1px solid var(--bd);border-radius:4px;
+          padding:1px 7px;color:var(--mu)" data-tip="Signal strength 0-1">strength=${e.edge.toFixed(3)}</span>
+        <span style="font-size:11px;color:var(--mu)">${tAgo(e.ts)}</span>
       </div>
-      <div class="insight-note">${note}</div>
+      ${note?(`<div style="font-size:12px;color:var(--mu);line-height:1.5">${note}</div>`):''}
     </div>`;
   }).join('');
-}
-
-// ── Strategy Refinement tab ────────────────────────────────────────────
-function renderStrategy(){
-  const clean=SL.filter(e=>!e.strategy?.includes('observer'));
-  if(!clean.length){
-    $_('refinement-insights').innerHTML='No data collected yet. Run a few scan cycles first.';
-    $_('s10-reco').innerHTML='<div class="loading">Needs data</div>';
-    $_('s1-reco').innerHTML='<div class="loading">Needs data</div>';
-    $_('lessons-table').innerHTML='<div class="loading">Needs data</div>';
-    return;
-  }
-
-  // Insights
-  const insights=[];
-  const catE={};
-  clean.forEach(e=>{
-    const c=e.category||'other';
-    if(!catE[c])catE[c]=[];
-    if(e.edge>0)catE[c].push(e.edge);
-  });
-  const bestCat=Object.entries(catE).sort((a,b)=>
-    b[1].reduce((x,y)=>x+y,0)/b[1].length - a[1].reduce((x,y)=>x+y,0)/a[1].length
-  )[0];
-  if(bestCat)insights.push(
-    `<b style="color:var(--green)">${bestCat[0]}</b> markets have the highest average edge 
-    (${(bestCat[1].reduce((a,b)=>a+b,0)/bestCat[1].length*100).toFixed(2)}%) — 
-    increase S10 allocation to ${bestCat[0]} markets.`
-  );
-
-  const highProbOpps=clean.filter(e=>e.probability>=0.95&&e.probability<0.99);
-  if(highProbOpps.length>5)insights.push(
-    `${highProbOpps.length} opportunities found at p=0.95-0.99 range. 
-    This is the sweet spot: high certainty, fees still tiny, spread manageable. 
-    Consider lowering S10 <b>min_probability</b> threshold if currently above 0.90.`
-  );
-
-  const p99=clean.filter(e=>e.probability>=0.99);
-  if(p99.length>0)insights.push(
-    `<b style="color:var(--red)">${p99.length}</b> opportunities had probability ≥ 99% — 
-    these are already-resolved markets. The <b>max_probability: 0.989</b> filter should block these. 
-    If still appearing, check that the latest data_engine.py is deployed.`
-  );
-
-  const lowVol=clean.filter(e=>e.volume_24h<200&&e.executed);
-  if(lowVol.length>0)insights.push(
-    `${lowVol.length} executed trades had volume < $200. In live trading, low-volume 
-    markets have wide real spreads that eat edge. Consider raising <b>min_volume_24h to 200</b>.`
-  );
-
-  $_('refinement-insights').innerHTML='<ul style="list-style:none">'+
-    insights.map(i=>`<li style="padding:8px 0;border-bottom:1px solid var(--bd);
-      font-size:12px;color:var(--mu);line-height:1.6">${i}</li>`).join('')+
-    '</ul>';
-
-  // S10 recommendations
-  const s10=clean.filter(e=>e.strategy?.includes('s10'));
-  if(s10.length>0){
-    const avgProb=(s10.map(e=>e.probability).reduce((a,b)=>a+b,0)/s10.length*100).toFixed(1);
-    const avgEdge=(s10.map(e=>e.edge).filter(e=>e>0).reduce((a,b,_,arr)=>a+b/arr.length,0)*100).toFixed(3);
-    const avgDays=(s10.map(e=>e.days_to_res).reduce((a,b)=>a+b,0)/s10.length).toFixed(1);
-    $_('s10-reco').innerHTML=`
-      <div style="font-size:12px;color:var(--mu);line-height:1.8">
-        Based on <b style="color:var(--tx)">${s10.length} S10 opportunities</b> collected:<br>
-        Average probability: <b style="color:var(--tx)">${avgProb}%</b><br>
-        Average edge: <b style="color:var(--green)">${avgEdge}%</b><br>
-        Average days to resolution: <b style="color:var(--tx)">${avgDays}d</b><br><br>
-        ${parseFloat(avgProb)>99?
-          '<b style="color:var(--red)">Warning:</b> avg prob >99% means resolved markets leaking through. Deploy latest data_engine.py.':
-          parseFloat(avgProb)<88?
-          'Consider raising min_probability to 0.88+ to improve signal quality.':
-          '<b style="color:var(--green)">Probability range looks healthy.</b>'}
-      </div>`;
-  }else{
-    $_('s10-reco').innerHTML='<div class="loading">No S10 data yet</div>';
-  }
-
-  // S1 recommendations
-  const s1=clean.filter(e=>e.strategy?.includes('s1'));
-  if(s1.length>0){
-    $_('s1-reco').innerHTML=`<div style="font-size:12px;color:var(--mu);line-height:1.8">
-      <b style="color:var(--tx)">${s1.length} S1 NegRisk</b> opportunities found.<br>
-      Average edge: <b style="color:var(--green)">${(s1.filter(e=>e.edge>0).reduce((a,b,_,arr)=>a+b.edge/arr.length,0)*100).toFixed(3)}%</b><br>
-      Avg legs per group: <b style="color:var(--tx)">${(s1.reduce((a,b)=>a+(b.num_legs||0),0)/s1.length).toFixed(1)}</b><br><br>
-      NegRisk arb is rare but mathematically guaranteed. Keep scanning.
-    </div>`;
-  }else{
-    $_('s1-reco').innerHTML='<div class="loading">No S1 data yet — NegRisk arb is rare</div>';
-  }
-
-  // Lessons from lessons.json
-  const lessons=LS.lessons||[];
-  if(lessons.length){
-    $_('lessons-table').innerHTML=`<table>
-      <thead><tr><th>#</th><th>Lesson (from ReviewEngine)</th></tr></thead>
-      <tbody>${lessons.map((l,i)=>`<tr>
-        <td style="color:var(--mu);font-size:11px">${i+1}</td>
-        <td style="font-size:12px;line-height:1.5">${l}</td>
-      </tr>`).join('')}</tbody></table>`;
-  }else{
-    $_('lessons-table').innerHTML='<div class="loading">No lessons yet — ReviewEngine runs after first resolved trade</div>';
-  }
 }
 
 loadAll();
