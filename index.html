@@ -1,11 +1,3 @@
-/* Tooltip */
-[data-tip]{position:relative;cursor:help}
-[data-tip]:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;
-  transform:translateX(-50%);background:#1e222d;border:1px solid #3b4458;color:#e2e8f0;
-  padding:7px 11px;border-radius:8px;font-size:11px;line-height:1.55;white-space:pre-line;
-  max-width:260px;z-index:9999;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.5);font-weight:400}
-[data-tip]:hover::before{content:'';position:absolute;bottom:calc(100% + 1px);left:50%;
-  transform:translateX(-50%);border:5px solid transparent;border-top-color:#3b4458;z-index:9999;pointer-events:none}
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -23,6 +15,7 @@ header{background:var(--s1);border-bottom:1px solid var(--bd);padding:14px 24px;
 display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
 header h1{font-size:17px;font-weight:600}
 nav{display:flex;gap:2px;padding:0 24px;background:var(--s1);border-bottom:1px solid var(--bd);overflow-x:auto}
+/* FIX #1: .active not .on */
 .tab{padding:10px 16px;cursor:pointer;font-size:13px;color:var(--mu);
 border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;user-select:none}
 .tab.active,.tab:hover{color:var(--tx)}.tab.active{border-bottom-color:var(--blue)}
@@ -36,6 +29,7 @@ border-bottom:2px solid transparent;transition:all .15s;white-space:nowrap;user-
 .sec{font-size:14px;font-weight:600;margin-bottom:14px}
 .green{color:var(--green)}.red{color:var(--red)}.amber{color:var(--amber)}
 .blue{color:var(--blue)}.purple{color:var(--purple)}.teal{color:var(--teal)}
+.gr{color:var(--green)}.re{color:var(--red)}
 .ch{position:relative;height:200px}.ch-lg{position:relative;height:260px}
 table{width:100%;border-collapse:collapse;font-size:12px}
 th{text-align:left;padding:8px 10px;color:var(--mu);font-weight:500;
@@ -43,36 +37,34 @@ border-bottom:1px solid var(--bd);font-size:10px;text-transform:uppercase;letter
 td{padding:8px 10px;border-bottom:1px solid var(--bd);vertical-align:middle}
 tr:last-child td{border-bottom:none}tr:hover td{background:var(--s2)}
 .q{max-width:340px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:help}
+/* FIX #3: pill classes match JS (pwi/plo/pon/ps1/ps10/ps11/ps8/pob) */
 .pill{display:inline-block;border-radius:4px;padding:2px 8px;font-size:11px;font-weight:500}
-.p-s1{background:rgba(20,184,166,.18);color:var(--teal)}
-.p-s10{background:rgba(168,85,247,.18);color:var(--purple)}
-.p-s11{background:rgba(245,158,11,.18);color:var(--amber)}
-.p-s8{background:rgba(59,130,246,.18);color:var(--blue)}
-.p-obs{background:rgba(236,72,153,.18);color:var(--pink)}
-.p-open{background:rgba(59,130,246,.15);color:var(--blue)}
-.p-win{background:rgba(34,197,94,.15);color:var(--green)}
-.p-loss{background:rgba(239,68,68,.15);color:var(--red)}
+.pwi{background:rgba(34,197,94,.15);color:var(--green)}
+.plo{background:rgba(239,68,68,.15);color:var(--red)}
+.pon{background:rgba(59,130,246,.15);color:var(--blue)}
+.ps1{background:rgba(20,184,166,.18);color:var(--teal)}
+.ps10{background:rgba(168,85,247,.18);color:var(--purple)}
+.ps11{background:rgba(245,158,11,.18);color:var(--amber)}
+.ps8{background:rgba(59,130,246,.18);color:var(--blue)}
+.pob{background:rgba(236,72,153,.18);color:var(--pink)}
 .load{color:var(--mu);text-align:center;padding:32px;font-size:13px}
 #dot{width:8px;height:8px;border-radius:50%;background:var(--mu);display:inline-block;margin-right:8px}
 #dot.ok{background:var(--green);box-shadow:0 0 6px var(--green)}
 .badge{border:1px solid var(--amber);color:var(--amber);border-radius:6px;padding:3px 10px;font-size:12px}
 .prog{background:var(--s2);border-radius:3px;height:5px;overflow:hidden;margin-top:5px}
-.prog-f{height:100%;border-radius:3px}
+/* FIX #4: both .prog-f and .pf work */
+.prog-f,.pf{height:100%;border-radius:3px}
 .hm{display:grid;grid-template-columns:repeat(24,1fr);gap:2px;margin-top:8px}
-.hm-c{height:28px;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:9px;color:rgba(255,255,255,.5)}
-/* Tooltip system */
-.tip{position:relative;cursor:help}
-.tip::after{content:attr(data-t);position:absolute;bottom:calc(100% + 6px);left:50%;
+/* FIX #5: both .hm-c and .hmc work */
+.hm-c,.hmc{height:28px;border-radius:2px;display:flex;align-items:center;justify-content:center;font-size:9px;color:rgba(255,255,255,.5)}
+/* FIX #6: unified tooltip on data-tip — no .tip class dependency, no misplaced CSS block */
+[data-tip]{position:relative;cursor:help}
+[data-tip]:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 6px);left:50%;
 transform:translateX(-50%);background:#1e222d;border:1px solid #3b4458;color:#e2e8f0;
 padding:7px 11px;border-radius:8px;font-size:11px;line-height:1.55;white-space:pre-line;
-max-width:260px;z-index:9999;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.5);
-font-weight:400;opacity:0;transition:opacity .12s}
-.tip:hover::after{opacity:1}
-.tip::before{content:'';position:absolute;bottom:calc(100% + 1px);left:50%;
-transform:translateX(-50%);border:5px solid transparent;border-top-color:#3b4458;
-z-index:9999;pointer-events:none;opacity:0;transition:opacity .12s}
-.tip:hover::before{opacity:1}
-/* Strategy cards */
+max-width:260px;z-index:9999;pointer-events:none;box-shadow:0 4px 16px rgba(0,0,0,.5);font-weight:400}
+[data-tip]:hover::before{content:'';position:absolute;bottom:calc(100% + 1px);left:50%;
+transform:translateX(-50%);border:5px solid transparent;border-top-color:#3b4458;z-index:9999;pointer-events:none}
 .sc{background:var(--s1);border:1px solid var(--bd);border-radius:12px;padding:20px;
 position:relative;overflow:hidden;margin-bottom:16px}
 .sc::before{content:'';position:absolute;top:0;left:0;width:4px;height:100%}
@@ -96,468 +88,394 @@ border-radius:4px;padding:3px 9px;color:var(--blue);cursor:pointer;text-decorati
 @media(max-width:900px){.g4{grid-template-columns:1fr 1fr}.g3{grid-template-columns:1fr 1fr}}
 @media(max-width:600px){.g4,.g3,.g2{grid-template-columns:1fr}}
 </style></head><body>
+
 <header>
-  <div style="display:flex;align-items:center;gap:10px">
-    <span id="dot"></span>
-    <h1 class="tip" data-t="Polymarket prediction market engine&#10;GitHub Actions · Dry-run mode · 30min cycles">Polymarket Engine</h1>
-    <span class="badge" id="mode-badge">DRY RUN</span>
-  </div>
-  <div style="display:flex;gap:10px;align-items:center">
-    <span id="upd" style="font-size:11px;color:var(--mu)">—</span>
-    <button onclick="loadAll()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:5px 12px;border-radius:6px;font-size:12px;cursor:pointer">Refresh</button>
-  </div>
+<div style="display:flex;align-items:center;gap:10px">
+  <span id="dot"></span>
+  <h1 data-tip="Polymarket prediction market engine&#10;GitHub Actions · Dry-run mode · 30min cycles">Polymarket Engine</h1>
+  <span class="badge" id="mode-badge">DRY RUN</span>
+</div>
+<div style="display:flex;gap:10px;align-items:center">
+  <span id="upd" style="font-size:11px;color:var(--mu)">—</span>
+  <button onclick="loadAll()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:5px 12px;border-radius:6px;font-size:12px;cursor:pointer">Refresh</button>
+</div>
 </header>
+
 <nav>
-  <div class="tab active"  onclick="go('overview',this)">Overview</div>
+  <div class="tab active" onclick="go('overview',this)">Overview</div>
   <div class="tab" onclick="go('strategies',this)">Strategies</div>
   <div class="tab" onclick="go('trades',this)">Trades</div>
   <div class="tab" onclick="go('data',this)">Data</div>
   <div class="tab" onclick="go('patterns',this)">Patterns</div>
   <div class="tab" onclick="go('signals',this)">Signals</div>
 </nav>
+
+<!-- OVERVIEW -->
 <div class="page active" id="page-overview">
 <div class="g4">
-  <div class="card"><h2 class="tip" data-t="USDC capital deployed&#10;Currently dry-run — no real money spent">Balance</h2>
-    <div class="stat green">$100.00</div><div class="sub">Dry-run capital</div></div>
-  <div class="card"><h2 class="tip" data-t="Total opportunities found across all strategies&#10;vol ≥ $1k only (zero-vol filtered)">Opps (vol≥$1k)</h2>
-    <div class="stat purple" id="k-opps">—</div><div class="sub" id="k-opps-s">—</div></div>
-  <div class="card"><h2 class="tip" data-t="Average edge after fees for S10 opportunities&#10;S1 arb = 100% guaranteed, shown separately">S10 Avg Edge</h2>
-    <div class="stat amber" id="k-edge">—</div><div class="sub" id="k-edge-s">—</div></div>
-  <div class="card"><h2 class="tip" data-t="Markets being tracked by MarketObserver&#10;Records price every 30min to detect momentum">Observer Markets</h2>
-    <div class="stat blue" id="k-obs">—</div><div class="sub" id="k-obs-s">—</div></div>
+  <div class="card"><h2 data-tip="USDC capital deployed&#10;Currently dry-run — no real money spent">Balance</h2>
+  <div class="stat green">$100.00</div><div class="sub">Dry-run capital</div></div>
+  <div class="card"><h2 data-tip="Total opportunities found across all strategies&#10;vol >= $1k only (zero-vol filtered)">Opps (vol>=$1k)</h2>
+  <div class="stat purple" id="k-opps">—</div><div class="sub" id="k-opps-s">—</div></div>
+  <div class="card"><h2 data-tip="Average edge after fees for S10 opportunities&#10;S1 arb = 100% guaranteed, shown separately">S10 Avg Edge</h2>
+  <div class="stat amber" id="k-edge">—</div><div class="sub" id="k-edge-s">—</div></div>
+  <div class="card"><h2 data-tip="Markets being tracked by MarketObserver&#10;Records price every 30min to detect momentum">Observer Markets</h2>
+  <div class="stat blue" id="k-obs">—</div><div class="sub" id="k-obs-s">—</div></div>
 </div>
 <div class="g4">
-  <div class="card"><h2 class="tip" data-t="Real NegRisk arb groups found after phantom-arb filter&#10;Requires: total_ask 0.50–0.99, all legs 0.03–0.97&#10;These are mathematically guaranteed profits">Real S1 Arb</h2>
-    <div class="stat teal" id="k-s1r">—</div><div class="sub" id="k-s1r-s">avg edge</div></div>
-  <div class="card"><h2 class="tip" data-t="Zero-volume entries are old phantom arb (resolved games)&#10;All new scans require vol ≥ $1000/day&#10;These are shown greyed-out in Data tab">Zero-vol Filtered</h2>
-    <div class="stat" id="k-zv">—</div><div class="sub">excluded from analysis</div></div>
-  <div class="card"><h2 class="tip" data-t="Price time-series data points collected&#10;Each Observer scan adds 200 points&#10;Used by S11 momentum strategy">Price History Pts</h2>
-    <div class="stat" id="k-pts">—</div><div class="sub">Observer data</div></div>
-  <div class="card"><h2 class="tip" data-t="Win rate on resolved dry-run trades&#10;Will populate once markets resolve">Win Rate</h2>
-    <div class="stat green" id="k-wr">—</div><div class="sub" id="k-wr-s">resolved trades</div></div>
+  <div class="card"><h2 data-tip="Real NegRisk arb groups found after phantom-arb filter&#10;Requires: total_ask 0.50-0.99, all legs 0.03-0.97&#10;These are mathematically guaranteed profits">Real S1 Arb</h2>
+  <div class="stat teal" id="k-s1r">—</div><div class="sub" id="k-s1r-s">avg edge</div></div>
+  <div class="card"><h2 data-tip="Zero-volume entries are old phantom arb (resolved games)&#10;All new scans require vol >= $1000/day&#10;These are shown greyed-out in Data tab">Zero-vol Filtered</h2>
+  <div class="stat" id="k-zv">—</div><div class="sub">excluded from analysis</div></div>
+  <div class="card"><h2 data-tip="Price time-series data points collected&#10;Each Observer scan adds 200 points&#10;Used by S11 momentum strategy">Price History Pts</h2>
+  <div class="stat" id="k-pts">—</div><div class="sub">Observer data</div></div>
+  <div class="card"><h2 data-tip="Win rate on resolved dry-run trades&#10;Will populate once markets resolve">Win Rate</h2>
+  <div class="stat green" id="k-wr">—</div><div class="sub" id="k-wr-s">resolved trades</div></div>
 </div>
 <div class="g2">
-  <div class="card"><div class="sec tip" data-t="How opportunities break down by market type&#10;Hover each category for description">Category breakdown</div>
-    <div class="ch-lg"><canvas id="c-cat"></canvas></div></div>
+  <div class="card"><div class="sec" data-tip="How opportunities break down by market type&#10;Hover each category for description">Category breakdown</div>
+  <div class="ch-lg"><canvas id="c-cat"></canvas></div></div>
   <div class="card">
-    <div class="sec tip" data-t="Heat intensity = number of opportunities found at that hour UTC&#10;Brighter = more opportunities">Opportunity heatmap by hour UTC</div>
+    <div class="sec" data-tip="Heat intensity = number of opportunities found at that hour UTC&#10;Brighter = more opportunities">Opportunity heatmap by hour UTC</div>
     <div class="hm" id="hm"></div>
     <div style="display:flex;justify-content:space-between;margin-top:4px">
-      <span style="font-size:9px;color:var(--mu)">00h</span>
-      <span style="font-size:9px;color:var(--mu)">23h</span>
+      <span style="font-size:9px;color:var(--mu)">00h</span><span style="font-size:9px;color:var(--mu)">23h</span>
     </div>
-    <div class="sec" style="margin-top:16px;font-size:13px tip" data-t="Distribution of net edges (after fees) across all vol≥$1k opportunities">Edge distribution (vol≥$1k)</div>
+    <div class="sec" style="margin-top:16px;font-size:13px" data-tip="Distribution of net edges (after fees) across all vol>=$1k opportunities">Edge distribution (vol>=$1k)</div>
     <div class="ch"><canvas id="c-edge"></canvas></div>
   </div>
 </div>
 <div class="g3">
-  <div class="card"><div class="sec tip" data-t="Win probability buckets for vol≥$1k opportunities&#10;S10 targets 0.85-0.989 range">Probability buckets</div><div class="ch"><canvas id="c-prob"></canvas></div></div>
-  <div class="card"><div class="sec tip" data-t="Days until market resolves&#10;S10 targets < 7 days, S11 targets < 2 days">Days to resolution</div><div class="ch"><canvas id="c-days"></canvas></div></div>
-  <div class="card"><div class="sec tip" data-t="How many opportunities each strategy has found">Strategy mix</div><div class="ch"><canvas id="c-strat"></canvas></div></div>
+  <div class="card"><div class="sec" data-tip="Win probability buckets for vol>=$1k opportunities&#10;S10 targets 0.85-0.989 range">Probability buckets</div><div class="ch"><canvas id="c-prob"></canvas></div></div>
+  <div class="card"><div class="sec" data-tip="Days until market resolves&#10;S10 targets < 7 days, S11 targets < 2 days">Days to resolution</div><div class="ch"><canvas id="c-days"></canvas></div></div>
+  <div class="card"><div class="sec" data-tip="How many opportunities each strategy has found">Strategy mix</div><div class="ch"><canvas id="c-strat"></canvas></div></div>
 </div>
 </div>
+
+<!-- STRATEGIES -->
 <div class="page" id="page-strategies">
 <div style="background:var(--s2);border-radius:10px;padding:14px;margin-bottom:20px;border:1px solid var(--bd);font-size:12px;color:var(--mu);line-height:1.8">
-  All strategies run in <b style="color:var(--tx)">dry-run mode</b> — opportunities are logged but no real capital is spent.
-  Stats update live from <code>data/scan_log.json</code>. Hover any label for details. Click links to view source code.
+All strategies run in <b style="color:var(--tx)">dry-run mode</b> — opportunities are logged but no real capital is spent.
+Stats update live from <code>data/scan_log.json</code>. Hover any label for details. Click links to view source code.
 </div>
 <div class="sc s1">
-  <div class="sh">
-    <div>
-      <div class="sn tip" data-t="NegRisk Arbitrage&#10;Mathematical guarantee: in a NegRisk group&#10;exactly one outcome resolves YES.&#10;If sum(YES ask) < 1.0, buying all YES = risk-free profit.&#10;Win rate: ~100% (not probabilistic, it's math)">S1 — NegRisk Arbitrage</div>
-      <div class="sl">Mathematical arb · $30 allocation · Win rate ~100%</div>
-    </div>
-    <span class="ss on tip" data-t="Strategy is enabled and scanning every 30 minutes">Active</span>
-  </div>
-  <div class="sm">
-    Scans NegRisk groups where sum(YES ask prices) &lt; 1.0. Buying all YES outcomes guarantees exactly one pays out $1.00
-    — the profit is the gap between cost and payout. Phantom arb filter: legs must be priced 0.03–0.97 (not already resolved),
-    total_ask must be 0.50–0.99, and each leg must have ≥$1,000 volume/day.
-  </div>
+  <div class="sh"><div>
+    <div class="sn" data-tip="NegRisk Arbitrage&#10;Mathematical guarantee: in a NegRisk group&#10;exactly one outcome resolves YES.&#10;If sum(YES ask) < 1.0, buying all YES = risk-free profit.&#10;Win rate: ~100% (not probabilistic, it's math)">S1 — NegRisk Arbitrage</div>
+    <div class="sl">Mathematical arb · $30 allocation · Win rate ~100%</div>
+  </div><span class="ss on" data-tip="Strategy is enabled and scanning every 30 minutes">Active</span></div>
+  <div class="sm">Scans NegRisk groups where sum(YES ask prices) &lt; 1.0. Buying all YES outcomes guarantees exactly one pays out $1.00 — the profit is the gap between cost and payout. Phantom arb filter: legs must be priced 0.03–0.97 (not already resolved), total_ask must be 0.50–0.99, and each leg must have ≥$1,000 volume/day.</div>
   <div class="sg">
-    <div class="sg-box"><span class="sg-val teal" id="s1-cnt">—</span>
-      <span class="sg-lbl tip" data-t="Opportunities after phantom-arb filter&#10;(total_ask 0.50-0.99, legs 0.03-0.97, vol≥$1k)">Real Opportunities</span></div>
-    <div class="sg-box"><span class="sg-val green" id="s1-edge">—</span>
-      <span class="sg-lbl tip" data-t="Average guaranteed profit per set&#10;= 1.0 − total_ask − fees">Avg Edge</span></div>
-    <div class="sg-box"><span class="sg-val" id="s1-legs">—</span>
-      <span class="sg-lbl tip" data-t="Average number of outcomes per NegRisk group&#10;2 legs = team A vs B&#10;8+ legs = bracket/tournament">Avg Legs</span></div>
+    <div class="sg-box"><span class="sg-val teal" id="s1-cnt">—</span><span class="sg-lbl" data-tip="Opportunities after phantom-arb filter&#10;(total_ask 0.50-0.99, legs 0.03-0.97, vol>=$1k)">Real Opportunities</span></div>
+    <div class="sg-box"><span class="sg-val green" id="s1-edge">—</span><span class="sg-lbl" data-tip="Average guaranteed profit per set&#10;= 1.0 - total_ask - fees">Avg Edge</span></div>
+    <div class="sg-box"><span class="sg-val" id="s1-legs">—</span><span class="sg-lbl" data-tip="Average number of outcomes per NegRisk group&#10;2 legs = team A vs B&#10;8+ legs = bracket/tournament">Avg Legs</span></div>
   </div>
   <div class="sl-row">
     <a class="sl-btn" href="https://github.com/Airdropperxx/polymarket-engine/blob/main/strategies/s1_negrisk_arb.py" target="_blank">📄 Strategy code</a>
     <a class="sl-btn" href="https://github.com/Airdropperxx/polymarket-engine/blob/main/configs/s1_negrisk.yaml" target="_blank">⚙️ Config</a>
-    <span class="sl-btn tip" data-t="edge = 1.0 − sum(YES ask) − sum(fees)&#10;fee = 2.25 × (p × (1−p))² × p per leg&#10;Filter: 0.03 < each leg < 0.97&#10;Filter: 0.50 < total_ask < 1.00&#10;Filter: vol ≥ $1k per leg">📐 Formula</span>
-    <span class="sl-btn tip" data-t="Phantom arb: resolved games show YES=0.9995, NO=0.0005&#10;Sum = 0.001 = fake 99.9% edge&#10;Fix: reject legs where price < 0.03 or > 0.97">⚠️ Phantom arb fix</span>
+    <span class="sl-btn" data-tip="edge = 1.0 - sum(YES ask) - sum(fees)&#10;fee = 2.25 x (p x (1-p))^2 x p per leg&#10;Filter: 0.03 < each leg < 0.97&#10;Filter: 0.50 < total_ask < 1.00&#10;Filter: vol >= $1k per leg">📐 Formula</span>
+    <span class="sl-btn" data-tip="Phantom arb: resolved games show YES=0.9995, NO=0.0005&#10;Sum = 0.001 = fake 99.9% edge&#10;Fix: reject legs where price < 0.03 or > 0.97">⚠️ Phantom arb fix</span>
   </div>
 </div>
 <div class="sc s10">
-  <div class="sh">
-    <div>
-      <div class="sn tip" data-t="Near-Resolution Harvest&#10;Buys high-probability outcomes resolving within 7 days.&#10;Edge: market still trades below true probability&#10;due to thin liquidity or slow price discovery.&#10;Win rate: 88-95% target">S10 — Near-Resolution Harvest</div>
-      <div class="sl">Probabilistic · $50 allocation · Win rate 88–95% target</div>
-    </div>
-    <span class="ss on">Active</span>
-  </div>
-  <div class="sm">
-    Finds markets where YES or NO is priced at 0.85–0.989 and resolves within 7 days.
-    Filters: vol ≥ $1,000/day (new), spread ≤ 5%, price strictly below 0.989 (excludes already-resolved markets),
-    positive net edge after Polymarket fee formula. Category bonus: finance/crypto score higher than politics.
-  </div>
+  <div class="sh"><div>
+    <div class="sn" data-tip="Near-Resolution Harvest&#10;Buys high-probability outcomes resolving within 7 days.&#10;Edge: market still trades below true probability&#10;due to thin liquidity or slow price discovery.&#10;Win rate: 88-95% target">S10 — Near-Resolution Harvest</div>
+    <div class="sl">Probabilistic · $50 allocation · Win rate 88–95% target</div>
+  </div><span class="ss on">Active</span></div>
+  <div class="sm">Finds markets where YES or NO is priced at 0.85–0.989 and resolves within 7 days. Filters: vol ≥ $1,000/day, spread ≤ 5%, price strictly below 0.989 (excludes already-resolved markets), positive net edge after Polymarket fee formula. Category bonus: finance/crypto score higher than politics.</div>
   <div class="sg">
-    <div class="sg-box"><span class="sg-val purple" id="s10-cnt">—</span>
-      <span class="sg-lbl tip" data-t="Opportunities with vol≥$1k and price 0.85-0.989&#10;Zero before last scan cycle fix — check next run">Opportunities</span></div>
-    <div class="sg-box"><span class="sg-val green" id="s10-edge">—</span>
-      <span class="sg-lbl tip" data-t="edge = probability − ask_price − calc_fee(ask)×ask&#10;calc_fee(p) = 2.25 × (p×(1−p))²">Avg Edge</span></div>
-    <div class="sg-box"><span class="sg-val" id="s10-prob">—</span>
-      <span class="sg-lbl tip" data-t="Should be 0.85–0.989&#10;If showing 100% — max_probability filter not applied yet">Avg Prob</span></div>
+    <div class="sg-box"><span class="sg-val purple" id="s10-cnt">—</span><span class="sg-lbl" data-tip="Opportunities with vol>=$1k and price 0.85-0.989">Opportunities</span></div>
+    <div class="sg-box"><span class="sg-val green" id="s10-edge">—</span><span class="sg-lbl" data-tip="edge = probability - ask_price - calc_fee(ask)&#10;calc_fee(p) = 2.25 x (p x (1-p))^2">Avg Edge</span></div>
+    <div class="sg-box"><span class="sg-val" id="s10-prob">—</span><span class="sg-lbl" data-tip="Should be 0.85-0.989&#10;If showing 100% — max_probability filter not applied yet">Avg Prob</span></div>
   </div>
   <div class="sl-row">
     <a class="sl-btn" href="https://github.com/Airdropperxx/polymarket-engine/blob/main/strategies/s10_near_resolution.py" target="_blank">📄 Strategy code</a>
     <a class="sl-btn" href="https://github.com/Airdropperxx/polymarket-engine/blob/main/configs/s10_near_resolution.yaml" target="_blank">⚙️ Config</a>
-    <span class="sl-btn tip" data-t="Min prob: 0.85 | Max prob: 0.989&#10;Max window: 7 days | Min vol: $1,000/day&#10;Category bonus: finance +0.08, crypto +0.06&#10;Category penalty: politics −0.02, geo −0.04">📐 Scoring</span>
+    <span class="sl-btn" data-tip="Min prob: 0.85 | Max prob: 0.989&#10;Max window: 7 days | Min vol: $1,000/day&#10;Category bonus: finance +0.08, crypto +0.06&#10;Category penalty: politics -0.02, geo -0.04">📐 Scoring</span>
   </div>
 </div>
 <div class="sc s11">
-  <div class="sh">
-    <div>
-      <div class="sn tip" data-t="In-Play Momentum&#10;Detects sports markets moving ≥20% in same direction&#10;during live games using Observer price history.&#10;No extra infrastructure — reads price_history.json.&#10;Discovered from live data: Real Madrid +55% in 56min">S11 — In-Play Momentum</div>
-      <div class="sl">NEW · Momentum · $15 allocation · Building data</div>
-    </div>
-    <span class="ss on tip" data-t="Active — fires once Observer has 2+ snapshots of a moving market">Active</span>
-  </div>
-  <div class="sm">
-    Uses MarketObserver price history to detect sports markets with consistent momentum during live games.
-    Buys when price has moved ≥20% consistently AND is still in the 0.60–0.92 buy zone
-    (room left to run to 0.99 at final whistle). Requires ≥$100k volume (confirms game is live).
-    Needs 2+ Observer cycles to build signal.
-  </div>
+  <div class="sh"><div>
+    <div class="sn" data-tip="In-Play Momentum&#10;Detects sports markets moving >=20% in same direction&#10;during live games using Observer price history.&#10;No extra infrastructure — reads price_history.json.&#10;Discovered from live data: Real Madrid +55% in 56min">S11 — In-Play Momentum</div>
+    <div class="sl">NEW · Momentum · $15 allocation · Building data</div>
+  </div><span class="ss on" data-tip="Active — fires once Observer has 2+ snapshots of a moving market">Active</span></div>
+  <div class="sm">Uses MarketObserver price history to detect sports markets with consistent momentum during live games. Buys when price has moved ≥20% consistently AND is still in the 0.60–0.92 buy zone (room left to run to 0.99 at final whistle). Requires ≥$100k volume (confirms game is live). Needs 2+ Observer cycles to build signal.</div>
   <div class="sg">
-    <div class="sg-box"><span class="sg-val amber" id="s11-cnt">—</span>
-      <span class="sg-lbl tip" data-t="Momentum signals found&#10;Needs Observer data from multiple cycles">Signals</span></div>
-    <div class="sg-box"><span class="sg-val green" id="s11-edge">—</span>
-      <span class="sg-lbl tip" data-t="Net edge after fees&#10;Gross edge = 0.99 − entry_price">Avg Edge</span></div>
-    <div class="sg-box"><span class="sg-val" id="s11-move">—</span>
-      <span class="sg-lbl tip" data-t="Average price move that triggered the signal&#10;Higher = stronger momentum confirmation">Avg Move</span></div>
+    <div class="sg-box"><span class="sg-val amber" id="s11-cnt">—</span><span class="sg-lbl" data-tip="Momentum signals found&#10;Needs Observer data from multiple cycles">Signals</span></div>
+    <div class="sg-box"><span class="sg-val green" id="s11-edge">—</span><span class="sg-lbl" data-tip="Net edge after fees&#10;Gross edge = 0.99 - entry_price">Avg Edge</span></div>
+    <!-- FIX #2: id="s11-move" matches JS -->
+    <div class="sg-box"><span class="sg-val" id="s11-move">—</span><span class="sg-lbl" data-tip="Average price move that triggered the signal&#10;Higher = stronger momentum confirmation">Avg Move</span></div>
   </div>
   <div class="sl-row">
     <a class="sl-btn" href="https://github.com/Airdropperxx/polymarket-engine/blob/main/strategies/s11_inplay_momentum.py" target="_blank">📄 Strategy code</a>
     <a class="sl-btn" href="https://github.com/Airdropperxx/polymarket-engine/blob/main/configs/s11_inplay_momentum.yaml" target="_blank">⚙️ Config</a>
-    <span class="sl-btn tip" data-t="Signal: ≥20% move, all in same direction&#10;Buy zone: price 0.60–0.92&#10;Min vol: $100k/day (live game confirmed)&#10;Max window: 2 days to resolution">📐 Signal logic</span>
+    <span class="sl-btn" data-tip="Signal: >=20% move, all in same direction&#10;Buy zone: price 0.60-0.92&#10;Min vol: $100k/day (live game confirmed)&#10;Max window: 2 days to resolution">📐 Signal logic</span>
   </div>
 </div>
 <div class="sc s8">
-  <div class="sh">
-    <div>
-      <div class="sn tip" data-t="Logical Impossibility Arbitrage&#10;Finds pairs of markets that cannot both resolve YES.&#10;Uses sentence embeddings to detect semantic contradictions.&#10;Disabled: sentence-transformers pulls PyTorch (1.5GB)&#10;which breaks GitHub Actions dependency resolution.">S8 — Logical Impossibility Arb</div>
-      <div class="sl">Disabled at MVP · Needs local/VPS · Enable when capital > $500</div>
-    </div>
-    <span class="ss off tip" data-t="sentence-transformers requires PyTorch 1.5GB&#10;pip dep resolver fails in GitHub Actions&#10;Enable locally: set s8_logical_arb.enabled: true">Disabled</span>
-  </div>
-  <div class="sm">
-    Finds pairs of mutually exclusive markets both priced above 0.50.
-    Uses cosine similarity on question embeddings to find candidates, then Claude Haiku to confirm.
-    Target edge: both prices above 0.50 → sum > 1.0 → guaranteed one is mispriced.
-  </div>
+  <div class="sh"><div>
+    <div class="sn" data-tip="Logical Impossibility Arbitrage&#10;Finds pairs of markets that cannot both resolve YES.&#10;Uses sentence embeddings to detect semantic contradictions.&#10;Disabled: sentence-transformers pulls PyTorch (1.5GB)&#10;which breaks GitHub Actions dependency resolution.">S8 — Logical Impossibility Arb</div>
+    <div class="sl">Disabled at MVP · Needs local/VPS · Enable when capital > $500</div>
+  </div><span class="ss off" data-tip="sentence-transformers requires PyTorch 1.5GB&#10;pip dep resolver fails in GitHub Actions&#10;Enable locally: set s8_logical_arb.enabled: true">Disabled</span></div>
+  <div class="sm">Finds pairs of mutually exclusive markets both priced above 0.50. Uses cosine similarity on question embeddings to find candidates, then Claude Haiku to confirm. Target edge: both prices above 0.50 → sum > 1.0 → guaranteed one is mispriced.</div>
   <div class="sl-row">
     <a class="sl-btn" href="https://github.com/Airdropperxx/polymarket-engine/blob/main/strategies/s8_logical_arb.py" target="_blank">📄 Strategy code</a>
     <a class="sl-btn" href="https://github.com/Airdropperxx/polymarket-engine/blob/main/configs/s8_logical.yaml" target="_blank">⚙️ Config</a>
-    <span class="sl-btn tip" data-t="To enable locally:&#10;pip install sentence-transformers&#10;Set enabled: true in s8_logical.yaml&#10;Run python scripts/run_scan_cycle.py">🔧 How to enable</span>
+    <span class="sl-btn" data-tip="To enable locally:&#10;pip install sentence-transformers&#10;Set enabled: true in s8_logical.yaml&#10;Run python scripts/run_scan_cycle.py">🔧 How to enable</span>
   </div>
 </div>
 </div>
+
+<!-- TRADES -->
 <div class="page" id="page-trades">
 <div class="g4" style="margin-bottom:20px">
-  <div class="card"><h2 class="tip" data-t="Trades executed with vol≥$1k&#10;Zero-volume phantom trades excluded">Trades (vol≥$1k)</h2><div class="stat purple" id="t-tot">—</div></div>
-  <div class="card"><h2 class="tip" data-t="Positions still open — awaiting market resolution">Open</h2><div class="stat blue" id="t-open">—</div></div>
-  <div class="card"><h2 class="tip" data-t="Markets that have resolved (win or loss)">Resolved</h2><div class="stat teal" id="t-res">—</div></div>
-  <div class="card"><h2 class="tip" data-t="Win rate on resolved trades only&#10;Dry-run: no real money, but tracking accuracy">Win Rate</h2><div class="stat green" id="t-wr">—</div></div>
+  <div class="card"><h2 data-tip="Trades executed with vol>=$1k&#10;Zero-volume phantom trades excluded">Trades (vol>=$1k)</h2><div class="stat purple" id="t-tot">—</div></div>
+  <div class="card"><h2 data-tip="Positions still open — awaiting market resolution">Open</h2><div class="stat blue" id="t-open">—</div></div>
+  <div class="card"><h2 data-tip="Markets that have resolved (win or loss)">Resolved</h2><div class="stat teal" id="t-res">—</div></div>
+  <div class="card"><h2 data-tip="Win rate on resolved trades only&#10;Dry-run: no real money, but tracking accuracy">Win Rate</h2><div class="stat green" id="t-wr">—</div></div>
 </div>
 <div class="card">
   <div class="sec">All trades — hover question for full text · <span class="warn" id="t-warn"></span></div>
-  <div id="t-table" style="overflow-x:auto"><div class="load">Loading...</div></div>
+  <!-- FIX #2: id="t-tbl" matches JS -->
+  <div id="t-tbl" style="overflow-x:auto"><div class="load">Loading...</div></div>
 </div>
 </div>
+
+<!-- DATA -->
 <div class="page" id="page-data">
 <div class="g4" style="margin-bottom:20px">
-  <div class="card"><h2 class="tip" data-t="Total entries in scan_log.json&#10;Includes zero-vol (shown greyed out)&#10;and Observer signals">All Log Entries</h2><div class="stat purple" id="d-all">—</div></div>
-  <div class="card"><h2 class="tip" data-t="Entries with 24h volume ≥ $1,000&#10;These are real tradeable markets">Vol ≥ $1k</h2><div class="stat green" id="d-vol">—</div></div>
-  <div class="card"><h2 class="tip" data-t="Price time-series records in price_history.json&#10;Each scan adds ~200 points across 200 markets">Price History</h2><div class="stat teal" id="d-pts">—</div></div>
-  <div class="card"><h2 class="tip" data-t="Unique markets being price-tracked by Observer">Tracked Markets</h2><div class="stat blue" id="d-mkts">—</div></div>
+  <div class="card"><h2 data-tip="Total entries in scan_log.json&#10;Includes zero-vol (shown greyed out) and Observer signals">All Log Entries</h2><div class="stat purple" id="d-all">—</div></div>
+  <div class="card"><h2 data-tip="Entries with 24h volume >= $1,000&#10;These are real tradeable markets">Vol >= $1k</h2><div class="stat green" id="d-vol">—</div></div>
+  <div class="card"><h2 data-tip="Price time-series records in price_history.json&#10;Each scan adds ~200 points across 200 markets">Price History</h2><div class="stat teal" id="d-pts">—</div></div>
+  <div class="card"><h2 data-tip="Unique markets being price-tracked by Observer">Tracked Markets</h2><div class="stat blue" id="d-mkts">—</div></div>
 </div>
 <div class="g2">
   <div class="card">
-    <div class="sec tip" data-t="Opportunities by category — 166 entries reclassified&#10;from 'other/empty' using keyword matching">By category (reclassified)</div>
+    <div class="sec" data-tip="Opportunities by category — reclassified using keyword matching">By category (reclassified)</div>
     <div id="d-cats"><div class="load">Loading...</div></div>
   </div>
   <div class="card">
-    <div class="sec tip" data-t="$0 entries = old phantom arb (resolved games, no vol metadata)&#10;$1k+ = real tradeable markets — these are what we analyse">Volume tiers</div>
+    <div class="sec" data-tip="$0 entries = old phantom arb (resolved games, no vol metadata)&#10;$1k+ = real tradeable markets — these are what we analyse">Volume tiers</div>
     <div class="ch-lg"><canvas id="c-vol"></canvas></div>
   </div>
 </div>
 <div class="card">
-  <div class="sec">Scan log — last 50 entries · <span style="font-size:11px;color:var(--mu)">greyed = vol < $1k</span></div>
-  <div id="d-table" style="overflow-x:auto"><div class="load">Loading...</div></div>
+  <div class="sec">Scan log — last 50 entries · <span style="font-size:11px;color:var(--mu)">greyed = vol &lt; $1k</span></div>
+  <!-- FIX #2: id="d-tbl" matches JS -->
+  <div id="d-tbl" style="overflow-x:auto"><div class="load">Loading...</div></div>
 </div>
 </div>
+
+<!-- PATTERNS -->
 <div class="page" id="page-patterns">
 <div style="background:var(--s2);border-radius:10px;padding:14px;margin-bottom:20px;border:1px solid var(--bd);font-size:12px;color:var(--mu);line-height:1.8">
-  <b style="color:var(--tx)">Pattern mining (vol ≥ $1k only)</b> —
-  Time-of-day alpha · Category edge curves · Optimal probability range · Volume correlation · Day-of-week effects
+<b style="color:var(--tx)">Pattern mining (vol >= $1k only)</b> — Time-of-day alpha · Category edge curves · Optimal probability range · Volume correlation · Day-of-week effects
 </div>
 <div class="g2">
-  <div class="card"><div class="sec tip" data-t="Average edge per category&#10;Higher = more profitable signal&#10;Use to weight strategy allocations">Edge by category</div><div class="ch-lg"><canvas id="a-cat"></canvas></div></div>
-  <div class="card"><div class="sec tip" data-t="How edge varies by win probability&#10;Optimal zone is usually 0.88-0.95&#10;Too high (0.99+) = already resolved, too low = risky">Edge vs probability</div><div class="ch-lg"><canvas id="a-prob"></canvas></div></div>
+  <div class="card"><div class="sec" data-tip="Average edge per category&#10;Higher = more profitable signal&#10;Use to weight strategy allocations">Edge by category</div><div class="ch-lg"><canvas id="a-cat"></canvas></div></div>
+  <div class="card"><div class="sec" data-tip="How edge varies by win probability&#10;Optimal zone is usually 0.88-0.95&#10;Too high (0.99+) = already resolved, too low = risky">Edge vs probability</div><div class="ch-lg"><canvas id="a-prob"></canvas></div></div>
 </div>
 <div class="g2">
-  <div class="card"><div class="sec tip" data-t="Which weekday produces most opportunities&#10;Sports: Mon/Wed/Fri (game schedules)&#10;Finance: Mon/Fri (market open/close)">Opportunities by weekday</div><div class="ch"><canvas id="a-dow"></canvas></div></div>
-  <div class="card"><div class="sec tip" data-t="Edge vs time to resolution&#10;S10 sweet spot: 1-5 days&#10;Same-day: spreads widen, liquidity drains">Edge vs days to resolution</div><div class="ch"><canvas id="a-days"></canvas></div></div>
+  <div class="card"><div class="sec" data-tip="Which weekday produces most opportunities&#10;Sports: Mon/Wed/Fri (game schedules)&#10;Finance: Mon/Fri (market open/close)">Opportunities by weekday</div><div class="ch"><canvas id="a-dow"></canvas></div></div>
+  <div class="card"><div class="sec" data-tip="Edge vs time to resolution&#10;S10 sweet spot: 1-5 days&#10;Same-day: spreads widen, liquidity drains">Edge vs days to resolution</div><div class="ch"><canvas id="a-days"></canvas></div></div>
 </div>
 <div class="card">
-  <div class="sec tip" data-t="Top 20 highest-edge opportunities collected&#10;Filtered to vol≥$1k only">Top opportunities by edge (vol ≥ $1k)</div>
+  <div class="sec" data-tip="Top 20 highest-edge opportunities collected&#10;Filtered to vol>=$1k only">Top opportunities by edge (vol >= $1k)</div>
   <div id="a-top" style="overflow-x:auto"><div class="load">Loading...</div></div>
 </div>
 </div>
+
+<!-- SIGNALS -->
 <div class="page" id="page-signals">
 <div class="g4" style="margin-bottom:20px">
-  <div class="card"><h2 class="tip" data-t="Markets with consistent YES price increase over 2+ Observer snapshots&#10;S11 strategy targets these for BUY YES">Momentum Up</h2><div class="stat green" id="sig-u">—</div></div>
-  <div class="card"><h2 class="tip" data-t="Markets with consistent YES price decrease&#10;S11 strategy buys NO side">Momentum Down</h2><div class="stat red" id="sig-d">—</div></div>
-  <div class="card"><h2 class="tip" data-t="Markets that jumped or dropped >8% in a single scan cycle&#10;Often reverses — watch next cycle before trading">Sharp Moves</h2><div class="stat amber" id="sig-s">—</div></div>
-  <div class="card"><h2 class="tip" data-t="High-probability markets (0.88-0.97) resolving within 7 days&#10;S10 prime targets — approaching certainty">Resolution Drift</h2><div class="stat blue" id="sig-r">—</div></div>
+  <div class="card"><h2 data-tip="Markets with consistent YES price increase over 2+ Observer snapshots&#10;S11 strategy targets these for BUY YES">Momentum Up</h2><div class="stat green" id="sig-u">—</div></div>
+  <div class="card"><h2 data-tip="Markets with consistent YES price decrease&#10;S11 strategy buys NO side">Momentum Down</h2><div class="stat red" id="sig-d">—</div></div>
+  <div class="card"><h2 data-tip="Markets that jumped or dropped >8% in a single scan cycle&#10;Often reverses — watch next cycle before trading">Sharp Moves</h2><div class="stat amber" id="sig-s">—</div></div>
+  <div class="card"><h2 data-tip="High-probability markets (0.88-0.97) resolving within 7 days&#10;S10 prime targets — approaching certainty">Resolution Drift</h2><div class="stat blue" id="sig-r">—</div></div>
 </div>
 <div id="sig-list"><div class="load">No Observer signals yet — needs 3+ scan cycles to build momentum data</div></div>
 </div>
+
 <script>
 var OWN  = 'Airdropperxx';
 var REPO = 'polymarket-engine';
 var RAW  = 'https://raw.githubusercontent.com/' + OWN + '/' + REPO + '/main';
 
-Chart.defaults.color       = '#64748b';
+Chart.defaults.color = '#64748b';
 Chart.defaults.borderColor = '#2a2f3d';
 Chart.defaults.font.family = '-apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif';
-Chart.defaults.font.size   = 11;
+Chart.defaults.font.size = 11;
 
 var SL = [], PH = {}, LS = {};
 var charts = {};
 
+// FIX #1: go() uses .active, matching CSS
 function go(id, el) {
-  document.querySelectorAll('.pg').forEach(function(p) { p.classList.remove('on'); });
-  document.querySelectorAll('.tab').forEach(function(t) { t.classList.remove('on'); });
-  document.getElementById('page-' + id).classList.add('on');
-  el.classList.add('on');
+  document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+  document.querySelectorAll('.tab').forEach(function(t)  { t.classList.remove('active'); });
+  var pg = document.getElementById('page-' + id);
+  if (pg) pg.classList.add('active');
+  if (el) el.classList.add('active');
 }
 
 function gj(path) {
-  var url = RAW + '/' + path + '?_=' + Date.now();
-  return fetch(url).then(function(r) {
-    if (!r.ok) throw new Error(path + ' HTTP ' + r.status);
-    return r.json();
-  });
+  return fetch(RAW + '/' + path + '?_=' + Date.now())
+    .then(function(r) { if (!r.ok) throw new Error(path + ' HTTP ' + r.status); return r.json(); });
 }
-
 function dc(id) { if (charts[id]) { charts[id].destroy(); delete charts[id]; } }
-
 function ago(iso) {
   if (!iso) return '—';
   var d = (Date.now() - new Date(iso).getTime()) / 1000;
-  if (d < 60) return Math.round(d) + 's ago';
-  if (d < 3600) return Math.round(d / 60) + 'm ago';
-  if (d < 86400) return Math.round(d / 3600) + 'h ago';
-  return Math.round(d / 86400) + 'd ago';
+  if (d < 60)    return Math.round(d) + 's ago';
+  if (d < 3600)  return Math.round(d/60) + 'm ago';
+  if (d < 86400) return Math.round(d/3600) + 'h ago';
+  return Math.round(d/86400) + 'd ago';
 }
-
 function fv(v) {
-  v = v || 0;
-  if (v >= 1000000) return '$' + (v/1000000).toFixed(1) + 'M';
-  if (v >= 1000) return '$' + (v/1000).toFixed(0) + 'k';
-  if (v > 0) return '$' + Math.round(v);
+  v = v||0;
+  if (v>=1000000) return '$'+(v/1000000).toFixed(1)+'M';
+  if (v>=1000)    return '$'+(v/1000).toFixed(0)+'k';
+  if (v>0)        return '$'+Math.round(v);
   return '$0';
 }
-
-var CC = {
-  crypto:'#f59e0b',sports:'#22c55e',politics:'#ef4444',finance:'#3b82f6',
-  tech:'#a855f7',geopolitics:'#14b8a6',weather:'#60a5fa',entertainment:'#ec4899',
-  social_media:'#f97316',shipping:'#84cc16',science:'#8b5cf6',other:'#64748b'
-};
-var CT = {
-  crypto:'Cryptocurrency and blockchain price markets',
-  sports:'Sports game outcomes, scores, tournaments',
-  politics:'Elections, government decisions, political events',
-  finance:'Stock prices, economic indicators, earnings',
-  tech:'AI, software, hardware, tech company events',
-  geopolitics:'Wars, conflicts, international relations',
-  weather:'Daily temperature and weather prediction markets',
-  entertainment:'Netflix, TV shows, movies, reality TV, music',
-  social_media:'Tweet counts, follower metrics, post engagement',
-  shipping:'Maritime shipping volumes, trade route transits',
-  science:'Space launches, research outcomes, climate records',
-  other:'Uncategorised — classifies on next scan'
-};
-function cc(c) { return CC[c] || '#64748b'; }
-
+var CC={crypto:'#f59e0b',sports:'#22c55e',politics:'#ef4444',finance:'#3b82f6',tech:'#a855f7',geopolitics:'#14b8a6',weather:'#60a5fa',entertainment:'#ec4899',social_media:'#f97316',shipping:'#84cc16',science:'#8b5cf6',other:'#64748b'};
+var CT={crypto:'Cryptocurrency and blockchain price markets',sports:'Sports game outcomes, scores, tournaments',politics:'Elections, government decisions, political events',finance:'Stock prices, economic indicators, earnings',tech:'AI, software, hardware, tech company events',geopolitics:'Wars, conflicts, international relations',weather:'Daily temperature and weather prediction markets',entertainment:'Netflix, TV shows, movies, reality TV, music',social_media:'Tweet counts, follower metrics, post engagement',shipping:'Maritime shipping volumes, trade route transits',science:'Space launches, research outcomes, climate records',other:'Uncategorised — classifies on next scan'};
+function cc(c) { return CC[c]||'#64748b'; }
 function catPill(c) {
-  var col = cc(c);
-  var tip = CT[(c||'').toLowerCase()] || (c || 'other');
-  return '<span class="pill" style="background:' + col + '22;color:' + col + '" data-tip="' + tip + '">' + (c||'other').substring(0,14) + '</span>';
+  var col=cc(c), tip=CT[(c||'').toLowerCase()]||(c||'other');
+  return '<span class="pill" style="background:'+col+'22;color:'+col+'" data-tip="'+tip+'">'+(c||'other').substring(0,14)+'</span>';
 }
-
-var STRAT_INFO = {
-  s1_negrisk_arb:     {label:'S1',  cls:'ps1',  tip:'S1 NegRisk Arbitrage\nMath: sum(YES ask) < 1.0 = guaranteed profit\nWin rate: ~100%',             link:'strategies/s1_negrisk_arb.py'},
-  s10_near_resolution:{label:'S10', cls:'ps10', tip:'S10 Near-Resolution Harvest\nHigh-prob (0.85-0.989) in 7 days\nTarget win rate: 88-95%',           link:'strategies/s10_near_resolution.py'},
-  s11_inplay_momentum:{label:'S11', cls:'ps11', tip:'S11 In-Play Momentum\nSports markets 20%+ during live games\nUses Observer data — no extra infra', link:'strategies/s11_inplay_momentum.py'},
-  s8_logical_arb:     {label:'S8',  cls:'ps8',  tip:'S8 Logical Impossibility Arb\nMutually exclusive both >50%\nDisabled: needs PyTorch 1.5GB',        link:'strategies/s8_logical_arb.py'}
+var STRAT_INFO={
+  s1_negrisk_arb:      {label:'S1', cls:'ps1', tip:'S1 NegRisk Arbitrage\nMath: sum(YES ask) < 1.0 = guaranteed profit\nWin rate: ~100%',link:'strategies/s1_negrisk_arb.py'},
+  s10_near_resolution: {label:'S10',cls:'ps10',tip:'S10 Near-Resolution Harvest\nHigh-prob (0.85-0.989) in 7 days\nTarget win rate: 88-95%',link:'strategies/s10_near_resolution.py'},
+  s11_inplay_momentum: {label:'S11',cls:'ps11',tip:'S11 In-Play Momentum\nSports markets 20%+ during live games\nUses Observer data',link:'strategies/s11_inplay_momentum.py'},
+  s8_logical_arb:      {label:'S8', cls:'ps8', tip:'S8 Logical Impossibility Arb\nMutually exclusive both >50%\nDisabled: needs PyTorch 1.5GB',link:'strategies/s8_logical_arb.py'}
 };
-
 function stratPill(s) {
-  var info = STRAT_INFO[s];
+  var info=STRAT_INFO[s];
   if (!info) return '<span class="pill pob" data-tip="Observer signal">OBS</span>';
-  var url = 'https://github.com/' + OWN + '/' + REPO + '/blob/main/' + info.link;
-  return '<a href="' + url + '" target="_blank" class="pill ' + info.cls + '" style="text-decoration:none" data-tip="' + info.tip + '">' + info.label + '</a>';
+  var url='https://github.com/'+OWN+'/'+REPO+'/blob/main/'+info.link;
+  return '<a href="'+url+'" target="_blank" class="pill '+info.cls+'" style="text-decoration:none" data-tip="'+info.tip+'">'+info.label+'</a>';
 }
-
-function avg(arr, fn) {
-  var vals = arr.map(fn).filter(function(v) { return v !== null && !isNaN(v); });
+function avg(arr,fn) {
+  var vals=arr.map(fn).filter(function(v){return v!==null&&!isNaN(v);});
   if (!vals.length) return null;
-  return vals.reduce(function(a,b){return a+b;},0) / vals.length;
+  return vals.reduce(function(a,b){return a+b;},0)/vals.length;
 }
 
 function loadAll() {
-  document.getElementById('upd').textContent = 'Loading...';
+  document.getElementById('upd').textContent='Loading...';
   Promise.all([
-    gj('data/scan_log.json').catch(function(){ return []; }),
-    gj('data/price_history.json').catch(function(){ return {}; }),
-    gj('data/lessons.json').catch(function(){ return {}; })
-  ]).then(function(results) {
-    SL = Array.isArray(results[0]) ? results[0] : [];
-    PH = results[1] || {};
-    LS = results[2] || {};
+    gj('data/scan_log.json').catch(function(){return [];}),
+    gj('data/price_history.json').catch(function(){return {};}),
+    gj('data/lessons.json').catch(function(){return {};})
+  ]).then(function(res) {
+    SL=Array.isArray(res[0])?res[0]:[];
+    PH=res[1]||{};
+    LS=res[2]||{};
     renderAll();
-    document.getElementById('upd').textContent = 'Updated ' + new Date().toLocaleTimeString();
-    document.getElementById('dot').className = SL.length > 0 ? 'ok' : '';
-  }).catch(function(err) {
-    document.getElementById('upd').textContent = 'Error: ' + err.message;
+    document.getElementById('upd').textContent='Updated '+new Date().toLocaleTimeString();
+    document.getElementById('dot').className=SL.length>0?'ok':'';
+  }).catch(function(err){
+    document.getElementById('upd').textContent='Error: '+err.message;
+    document.getElementById('dot').className='';
   });
 }
+function renderAll(){rOv();rStrats();rTrades();rData();rPatterns();rSignals();}
 
-function renderAll() { rOv(); rStrats(); rTrades(); rData(); rPatterns(); rSignals(); }
-
-function rOv() {
-  var clean = SL.filter(function(e){ return !e.strategy || e.strategy.indexOf('observer')===-1; });
-  var good  = clean.filter(function(e){ return (e.volume_24h||0)>=1000; });
-  var zero  = clean.filter(function(e){ return (e.volume_24h||0)===0; });
-  var s10   = good.filter(function(e){ return e.strategy==='s10_near_resolution'; });
-  var s1    = clean.filter(function(e){ return e.strategy==='s1_negrisk_arb'; });
-  var s1r   = s1.filter(function(e){ var ta=e.total_ask||0; return ta>0.5&&ta<1.0; });
-  var pts   = Object.values(PH).reduce(function(a,d){ return a+(d.points?d.points.length:0); },0);
-
-  document.getElementById('k-opps').textContent   = good.length;
-  document.getElementById('k-opps-s').textContent = 'S10:'+s10.length+' S1r:'+s1r.length+' total:'+clean.length;
-  var s10e = s10.filter(function(e){return e.edge>0;}).map(function(e){return e.edge;});
-  document.getElementById('k-edge').textContent   = s10e.length ? (s10e.reduce(function(a,b){return a+b;},0)/s10e.length*100).toFixed(2)+'%' : '—';
-  document.getElementById('k-edge-s').textContent = s10e.length+' S10 opps';
-  document.getElementById('k-s1r').textContent    = s1r.length;
-  var s1re = s1r.map(function(e){return e.edge;}).filter(function(v){return v>0;});
-  document.getElementById('k-s1r-s').textContent  = s1re.length ? (s1re.reduce(function(a,b){return a+b;},0)/s1re.length*100).toFixed(2)+'% avg edge' : 'no data yet';
-  document.getElementById('k-obs').textContent    = Object.keys(PH).length;
-  document.getElementById('k-obs-s').textContent  = pts.toLocaleString()+' data points';
-  document.getElementById('k-pts').textContent    = pts.toLocaleString();
-  document.getElementById('k-zv').textContent     = zero.length;
-  document.getElementById('k-tot').textContent    = SL.length;
-  var res=good.filter(function(e){return !!e.outcome;}), wins=res.filter(function(e){return e.outcome==='win';});
-  document.getElementById('k-wr').textContent     = res.length ? Math.round(wins.length/res.length*100)+'%' : '—';
-  document.getElementById('k-wr-s').textContent   = wins.length+'W / '+res.length+' resolved';
-
+function rOv(){
+  var clean=SL.filter(function(e){return !e.strategy||e.strategy.indexOf('observer')===-1;});
+  var good=clean.filter(function(e){return (e.volume_24h||0)>=1000;});
+  var zero=clean.filter(function(e){return (e.volume_24h||0)===0;});
+  var s10=good.filter(function(e){return e.strategy==='s10_near_resolution';});
+  var s1=clean.filter(function(e){return e.strategy==='s1_negrisk_arb';});
+  var s1r=s1.filter(function(e){var ta=e.total_ask||0;return ta>0.5&&ta<1.0;});
+  var pts=Object.values(PH).reduce(function(a,d){return a+(d.points?d.points.length:0);},0);
+  document.getElementById('k-opps').textContent=good.length;
+  document.getElementById('k-opps-s').textContent='S10:'+s10.length+' S1r:'+s1r.length+' total:'+clean.length;
+  var s10e=s10.filter(function(e){return e.edge>0;}).map(function(e){return e.edge;});
+  document.getElementById('k-edge').textContent=s10e.length?(s10e.reduce(function(a,b){return a+b;},0)/s10e.length*100).toFixed(2)+'%':'—';
+  document.getElementById('k-edge-s').textContent=s10e.length+' S10 opps';
+  document.getElementById('k-s1r').textContent=s1r.length;
+  var s1re=s1r.map(function(e){return e.edge;}).filter(function(v){return v>0;});
+  document.getElementById('k-s1r-s').textContent=s1re.length?(s1re.reduce(function(a,b){return a+b;},0)/s1re.length*100).toFixed(2)+'% avg edge':'no data yet';
+  document.getElementById('k-obs').textContent=Object.keys(PH).length;
+  document.getElementById('k-obs-s').textContent=pts.toLocaleString()+' data points';
+  document.getElementById('k-pts').textContent=pts.toLocaleString();
+  document.getElementById('k-zv').textContent=zero.length;
+  var res=good.filter(function(e){return !!e.outcome;}),wins=res.filter(function(e){return e.outcome==='win';});
+  document.getElementById('k-wr').textContent=res.length?Math.round(wins.length/res.length*100)+'%':'—';
+  document.getElementById('k-wr-s').textContent=wins.length+'W / '+res.length+' resolved';
   dc('c-cat');
-  var cats={};
-  clean.forEach(function(e){ var c=e.category||'other'; cats[c]=(cats[c]||0)+1; });
+  var cats={};clean.forEach(function(e){var c=e.category||'other';cats[c]=(cats[c]||0)+1;});
   var ckeys=Object.keys(cats).sort(function(a,b){return cats[b]-cats[a];});
-  charts['c-cat']=new Chart(document.getElementById('c-cat'),{type:'doughnut',data:{labels:ckeys,
-    datasets:[{data:ckeys.map(function(k){return cats[k];}),backgroundColor:ckeys.map(cc),borderColor:'#161920',borderWidth:2}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{boxWidth:10,padding:8,font:{size:10}}}}}});
-
+  charts['c-cat']=new Chart(document.getElementById('c-cat'),{type:'doughnut',data:{labels:ckeys,datasets:[{data:ckeys.map(function(k){return cats[k];}),backgroundColor:ckeys.map(cc),borderColor:'#161920',borderWidth:2}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'right',labels:{boxWidth:10,padding:8,font:{size:10}}}}}});
   var hourC=Array(24).fill(0);
   good.forEach(function(e){if(e.hour_utc>=0&&e.hour_utc<24)hourC[e.hour_utc]++;});
   var maxH=Math.max.apply(null,hourC.concat([1]));
-  var hmEl=document.getElementById('hm'); hmEl.innerHTML='';
+  var hmEl=document.getElementById('hm');hmEl.innerHTML='';
   hourC.forEach(function(c,h){
     var a=(0.08+c/maxH*0.92).toFixed(2);
-    var cell=document.createElement('div'); cell.className='hmc';
+    var cell=document.createElement('div');
+    cell.className='hm-c hmc'; // FIX #5: both class names
     cell.style.background='rgba(168,85,247,'+a+')';
     cell.setAttribute('data-tip',(h<10?'0':'')+h+':00 UTC — '+c+' opps');
-    cell.textContent=c>0?String(c):''; hmEl.appendChild(cell);
+    cell.textContent=c>0?String(c):'';
+    hmEl.appendChild(cell);
   });
-
   dc('c-edge');
-  var eb={};
-  good.filter(function(e){return e.edge>0;}).forEach(function(e){var b=Math.floor(e.edge*100)+'%';eb[b]=(eb[b]||0)+1;});
+  var eb={};good.filter(function(e){return e.edge>0;}).forEach(function(e){var b=Math.floor(e.edge*100)+'%';eb[b]=(eb[b]||0)+1;});
   var eks=Object.keys(eb).sort(function(a,b){return parseInt(a)-parseInt(b);});
-  if(eks.length) charts['c-edge']=new Chart(document.getElementById('c-edge'),{type:'bar',data:{labels:eks,
-    datasets:[{data:eks.map(function(k){return eb[k];}),backgroundColor:'rgba(168,85,247,.65)',borderRadius:3}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'}}}}});
-
+  if(eks.length)charts['c-edge']=new Chart(document.getElementById('c-edge'),{type:'bar',data:{labels:eks,datasets:[{data:eks.map(function(k){return eb[k];}),backgroundColor:'rgba(168,85,247,.65)',borderRadius:3}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'}}}}});
   dc('c-prob');
   var pb={'<85%':0,'85-90%':0,'90-95%':0,'95-99%':0};
-  good.forEach(function(e){var p=(e.probability||0)*100;
-    if(p>=95)pb['95-99%']++;else if(p>=90)pb['90-95%']++;else if(p>=85)pb['85-90%']++;else pb['<85%']++;});
-  charts['c-prob']=new Chart(document.getElementById('c-prob'),{type:'bar',data:{labels:Object.keys(pb),
-    datasets:[{data:Object.values(pb),backgroundColor:['#64748b66','rgba(59,130,246,.7)','rgba(34,197,94,.7)','rgba(34,197,94,.95)'],borderRadius:4}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'}}}}});
-
+  good.forEach(function(e){var p=(e.probability||0)*100;if(p>=95)pb['95-99%']++;else if(p>=90)pb['90-95%']++;else if(p>=85)pb['85-90%']++;else pb['<85%']++;});
+  charts['c-prob']=new Chart(document.getElementById('c-prob'),{type:'bar',data:{labels:Object.keys(pb),datasets:[{data:Object.values(pb),backgroundColor:['#64748b66','rgba(59,130,246,.7)','rgba(34,197,94,.7)','rgba(34,197,94,.95)'],borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'}}}}});
   dc('c-days');
   var db={'<1d':0,'1-3d':0,'3-7d':0,'7d+':0};
-  good.forEach(function(e){var d=e.days_to_res||0;
-    if(d<1)db['<1d']++;else if(d<3)db['1-3d']++;else if(d<7)db['3-7d']++;else db['7d+']++;});
-  charts['c-days']=new Chart(document.getElementById('c-days'),{type:'bar',data:{labels:Object.keys(db),
-    datasets:[{data:Object.values(db),backgroundColor:['#ef444499','#f59e0b99','#3b82f699','#64748b66'],borderRadius:4}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'}}}}});
-
+  good.forEach(function(e){var d=e.days_to_res||0;if(d<1)db['<1d']++;else if(d<3)db['1-3d']++;else if(d<7)db['3-7d']++;else db['7d+']++;});
+  charts['c-days']=new Chart(document.getElementById('c-days'),{type:'bar',data:{labels:Object.keys(db),datasets:[{data:Object.values(db),backgroundColor:['#ef444499','#f59e0b99','#3b82f699','#64748b66'],borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'}}}}});
   dc('c-strat');
-  var sm={};
-  clean.forEach(function(e){var s=e.strategy||'other';sm[s]=(sm[s]||0)+1;});
+  var sm={};clean.forEach(function(e){var s=e.strategy||'other';sm[s]=(sm[s]||0)+1;});
   var skeys=Object.keys(sm);
   var scols={s1_negrisk_arb:'rgba(20,184,166,.7)',s10_near_resolution:'rgba(168,85,247,.7)',s11_inplay_momentum:'rgba(245,158,11,.7)'};
   var slbls={s1_negrisk_arb:'S1',s10_near_resolution:'S10',s11_inplay_momentum:'S11'};
-  charts['c-strat']=new Chart(document.getElementById('c-strat'),{type:'bar',data:{
-    labels:skeys.map(function(k){return slbls[k]||k.substring(0,4).toUpperCase();}),
-    datasets:[{data:skeys.map(function(k){return sm[k];}),
-      backgroundColor:skeys.map(function(k){return scols[k]||'#64748b66';}),borderRadius:4}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'}}}}});
+  charts['c-strat']=new Chart(document.getElementById('c-strat'),{type:'bar',data:{labels:skeys.map(function(k){return slbls[k]||k.substring(0,4).toUpperCase();}),datasets:[{data:skeys.map(function(k){return sm[k];}),backgroundColor:skeys.map(function(k){return scols[k]||'#64748b66';}),borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'}}}}});
 }
 
-function rStrats() {
+function rStrats(){
   var clean=SL.filter(function(e){return !e.strategy||e.strategy.indexOf('observer')===-1;});
   var s1=clean.filter(function(e){return e.strategy==='s1_negrisk_arb';});
   var s1r=s1.filter(function(e){var ta=e.total_ask||0;return ta>0.5&&ta<1.0;});
-  document.getElementById('s1-cnt').textContent  = s1r.length;
+  document.getElementById('s1-cnt').textContent=s1r.length;
   var s1e=avg(s1r.filter(function(e){return e.edge>0;}),function(e){return e.edge;});
-  document.getElementById('s1-edge').textContent = s1e!==null?(s1e*100).toFixed(2)+'%':'—';
+  document.getElementById('s1-edge').textContent=s1e!==null?(s1e*100).toFixed(2)+'%':'—';
   var s1l=avg(s1.filter(function(e){return e.num_legs>0;}),function(e){return e.num_legs;});
-  document.getElementById('s1-legs').textContent = s1l!==null?s1l.toFixed(1):'—';
+  document.getElementById('s1-legs').textContent=s1l!==null?s1l.toFixed(1):'—';
   var s10=clean.filter(function(e){return e.strategy==='s10_near_resolution'&&(e.volume_24h||0)>=1000;});
-  document.getElementById('s10-cnt').textContent  = s10.length;
+  document.getElementById('s10-cnt').textContent=s10.length;
   var s10e=avg(s10.filter(function(e){return e.edge>0;}),function(e){return e.edge;});
-  document.getElementById('s10-edge').textContent = s10e!==null?(s10e*100).toFixed(2)+'%':'—';
+  document.getElementById('s10-edge').textContent=s10e!==null?(s10e*100).toFixed(2)+'%':'—';
   var s10p=avg(s10.filter(function(e){return e.probability>0&&e.probability<0.999;}),function(e){return e.probability;});
-  document.getElementById('s10-prob').textContent = s10p!==null?(s10p*100).toFixed(1)+'%':'—';
+  document.getElementById('s10-prob').textContent=s10p!==null?(s10p*100).toFixed(1)+'%':'—';
   var s11=clean.filter(function(e){return e.strategy==='s11_inplay_momentum';});
-  document.getElementById('s11-cnt').textContent  = s11.length;
+  document.getElementById('s11-cnt').textContent=s11.length;
   var s11e=avg(s11.filter(function(e){return e.edge>0;}),function(e){return e.edge;});
-  document.getElementById('s11-edge').textContent = s11e!==null?(s11e*100).toFixed(2)+'%':'—';
-  var s11v=avg(s11.filter(function(e){return (e.volume_24h||0)>0;}),function(e){return e.volume_24h;});
-  document.getElementById('s11-vol').textContent  = s11v!==null?fv(s11v):'—';
+  document.getElementById('s11-edge').textContent=s11e!==null?(s11e*100).toFixed(2)+'%':'—';
+  // FIX #2: write to s11-move (id now exists in HTML)
+  var s11m=avg(s11.filter(function(e){return e.metadata&&e.metadata.price_move||e.price_move;}),function(e){return e.metadata?e.metadata.price_move:e.price_move;});
+  document.getElementById('s11-move').textContent=s11m!==null?(s11m*100).toFixed(1)+'%':'—';
 }
 
-function rTrades() {
+function rTrades(){
   var ex=SL.filter(function(e){return e.executed&&(!e.strategy||e.strategy.indexOf('observer')===-1)&&(e.volume_24h||0)>=1000;});
-  document.getElementById('t-tot').textContent  = ex.length;
-  document.getElementById('t-open').textContent = ex.filter(function(e){return !e.outcome;}).length;
+  document.getElementById('t-tot').textContent=ex.length;
+  document.getElementById('t-open').textContent=ex.filter(function(e){return !e.outcome;}).length;
   var res=ex.filter(function(e){return !!e.outcome;});
-  document.getElementById('t-res').textContent  = res.length;
-  document.getElementById('t-wr').textContent   = res.length?Math.round(res.filter(function(e){return e.outcome==='win';}).length/res.length*100)+'%':'—';
-  if(!ex.length){document.getElementById('t-tbl').innerHTML='<div class="loading">No trades with vol &ge;$1k yet</div>';return;}
-  var rows=ex.slice().sort(function(a,b){return b.ts_unix-a.ts_unix;}).map(function(e){
+  document.getElementById('t-res').textContent=res.length;
+  document.getElementById('t-wr').textContent=res.length?Math.round(res.filter(function(e){return e.outcome==='win';}).length/res.length*100)+'%':'—';
+  // FIX #2: write to t-tbl
+  if(!ex.length){document.getElementById('t-tbl').innerHTML='<div class="load">No trades with vol &ge;$1k yet</div>';return;}
+  var rows=ex.slice().sort(function(a,b){return (b.ts_unix||0)-(a.ts_unix||0);}).map(function(e){
     var sp=e.outcome==='win'?'<span class="pill pwi">win</span>':e.outcome==='loss'?'<span class="pill plo">loss</span>':'<span class="pill pon">open</span>';
     var q=(e.question||'').replace(/"/g,"'");
     return '<tr><td style="white-space:nowrap;color:var(--mu);font-size:11px">'+ago(e.ts)+'</td>'
@@ -572,157 +490,96 @@ function rTrades() {
       +'<td>'+fv(e.volume_24h)+'</td>'
       +'<td>'+sp+'</td></tr>';
   }).join('');
-  document.getElementById('t-tbl').innerHTML='<table><thead><tr><th>Time</th><th>Strat</th>'
-    +'<th data-tip="Hover for full question">Question</th><th>Category</th><th>Action</th>'
-    +'<th data-tip="Win probability at entry">Prob</th><th data-tip="Net edge after fees">Edge</th>'
-    +'<th data-tip="Composite score 0-1">Score</th><th>Days</th>'
-    +'<th data-tip="24h volume">Vol</th><th>Status</th>'
-    +'</tr></thead><tbody>'+rows+'</tbody></table>';
+  document.getElementById('t-tbl').innerHTML='<table><thead><tr><th>Time</th><th>Strat</th><th data-tip="Hover for full question">Question</th><th>Category</th><th>Action</th><th data-tip="Win probability at entry">Prob</th><th data-tip="Net edge after fees">Edge</th><th data-tip="Composite score 0-1">Score</th><th>Days</th><th data-tip="24h volume">Vol</th><th>Status</th></tr></thead><tbody>'+rows+'</tbody></table>';
 }
 
-function rData() {
+function rData(){
   var clean=SL.filter(function(e){return !e.strategy||e.strategy.indexOf('observer')===-1;});
   var good=clean.filter(function(e){return (e.volume_24h||0)>=1000;});
   var pts=Object.values(PH).reduce(function(a,d){return a+(d.points?d.points.length:0);},0);
-  document.getElementById('d-all').textContent  = SL.length;
-  document.getElementById('d-vol').textContent  = good.length;
-  document.getElementById('d-pts').textContent  = pts.toLocaleString();
-  document.getElementById('d-mkts').textContent = Object.keys(PH).length;
+  document.getElementById('d-all').textContent=SL.length;
+  document.getElementById('d-vol').textContent=good.length;
+  document.getElementById('d-pts').textContent=pts.toLocaleString();
+  document.getElementById('d-mkts').textContent=Object.keys(PH).length;
   var cats={};
-  clean.forEach(function(e){var c=e.category||'other';if(!cats[c])cats[c]={total:0,good:0,edges:[]};
-    cats[c].total++;if((e.volume_24h||0)>=1000)cats[c].good++;if(e.edge>0)cats[c].edges.push(e.edge);});
+  clean.forEach(function(e){var c=e.category||'other';if(!cats[c])cats[c]={total:0,good:0,edges:[]};cats[c].total++;if((e.volume_24h||0)>=1000)cats[c].good++;if(e.edge>0)cats[c].edges.push(e.edge);});
   document.getElementById('d-cats').innerHTML=Object.entries(cats).sort(function(a,b){return b[1].total-a[1].total;}).map(function(en){
     var c=en[0],d=en[1];
     var pct=Math.round(d.total/clean.length*100);
     var ae=d.edges.length?(d.edges.reduce(function(a,b){return a+b;},0)/d.edges.length*100).toFixed(2):'0.00';
     var col=cc(c),tip=CT[(c||'').toLowerCase()]||c;
-    return '<div style="margin-bottom:11px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px">'
-      +'<span data-tip="'+tip+'" style="color:'+col+';font-weight:500">'+c+'</span>'
-      +'<span style="font-size:11px;color:var(--mu)">'+d.total+' total &middot; '+d.good+' vol&ge;$1k &middot; avg edge '+ae+'%</span>'
-      +'</div><div class="prog"><div class="pf" style="width:'+pct+'%;background:'+col+'"></div></div></div>';
+    // FIX #4: class pf (which CSS now covers via .pf alias)
+    return '<div style="margin-bottom:11px"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px"><span data-tip="'+tip+'" style="color:'+col+';font-weight:500">'+c+'</span><span style="font-size:11px;color:var(--mu)">'+d.total+' total &middot; '+d.good+' vol&ge;$1k &middot; avg edge '+ae+'%</span></div><div class="prog"><div class="pf" style="width:'+pct+'%;background:'+col+'"></div></div></div>';
   }).join('');
   dc('c-vol');
   var vb={'$0':0,'$1-999':0,'$1k-10k':0,'$10k-100k':0,'$100k+':0};
-  clean.forEach(function(e){var v=e.volume_24h||0;
-    if(v===0)vb['$0']++;else if(v<1000)vb['$1-999']++;else if(v<10000)vb['$1k-10k']++;
-    else if(v<100000)vb['$10k-100k']++;else vb['$100k+']++;});
-  charts['c-vol']=new Chart(document.getElementById('c-vol'),{type:'bar',data:{labels:Object.keys(vb),
-    datasets:[{data:Object.values(vb),backgroundColor:['#ef444466','#64748b44','#3b82f699','#22c55e77','#22c55ecc'],borderRadius:5}]},
-    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},
-      scales:{x:{grid:{color:'#1e222d'}},y:{grid:{display:false}}}}});
-  var recent=SL.slice().sort(function(a,b){return b.ts_unix-a.ts_unix;}).slice(0,50);
+  clean.forEach(function(e){var v=e.volume_24h||0;if(v===0)vb['$0']++;else if(v<1000)vb['$1-999']++;else if(v<10000)vb['$1k-10k']++;else if(v<100000)vb['$10k-100k']++;else vb['$100k+']++;});
+  charts['c-vol']=new Chart(document.getElementById('c-vol'),{type:'bar',data:{labels:Object.keys(vb),datasets:[{data:Object.values(vb),backgroundColor:['#ef444466','#64748b44','#3b82f699','#22c55e77','#22c55ecc'],borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false}},scales:{x:{grid:{color:'#1e222d'}},y:{grid:{display:false}}}}});
+  var recent=SL.slice().sort(function(a,b){return (b.ts_unix||0)-(a.ts_unix||0);}).slice(0,50);
   var rows2=recent.map(function(e){
     var lv=(e.volume_24h||0)<1000;
     var q=(e.question||'').replace(/"/g,"'");
-    var vol=lv?'<td style="color:var(--re)">'+fv(e.volume_24h)+' &#9888;</td>':'<td>'+fv(e.volume_24h)+'</td>';
+    var vol=lv?'<td style="color:var(--red)">'+fv(e.volume_24h)+' &#9888;</td>':'<td>'+fv(e.volume_24h)+'</td>';
     var exec=e.executed?'<span class="pill pwi">exec</span>':'<span class="pill" style="background:var(--s2);color:var(--mu)">'+(e.skipped_reason&&e.skipped_reason.indexOf('beyond')!==-1?'seen':'skip')+'</span>';
-    return '<tr style="'+(lv?'opacity:0.4':'')+'"><td style="color:var(--mu);font-size:11px;white-space:nowrap">'+ago(e.ts)+'</td>'
-      +'<td>'+stratPill(e.strategy)+'</td>'
-      +'<td class="q" data-tip="'+q+'" style="max-width:260px">'+(e.question||'').substring(0,50)+'</td>'
-      +'<td>'+catPill(e.category)+'</td>'
-      +'<td class="gr">'+((e.edge||0)*100).toFixed(2)+'%</td>'
-      +'<td>'+((e.probability||0)*100).toFixed(1)+'%</td>'
-      +vol+'<td>'+(e.days_to_res||0).toFixed(1)+'d</td>'
-      +'<td>'+exec+'</td></tr>';
+    return '<tr style="'+(lv?'opacity:0.4':'')+'"><td style="color:var(--mu);font-size:11px;white-space:nowrap">'+ago(e.ts)+'</td><td>'+stratPill(e.strategy)+'</td><td class="q" data-tip="'+q+'" style="max-width:260px">'+(e.question||'').substring(0,50)+'</td><td>'+catPill(e.category)+'</td><td class="gr">'+((e.edge||0)*100).toFixed(2)+'%</td><td>'+((e.probability||0)*100).toFixed(1)+'%</td>'+vol+'<td>'+(e.days_to_res||0).toFixed(1)+'d</td><td>'+exec+'</td></tr>';
   }).join('');
-  document.getElementById('d-tbl').innerHTML='<table><thead><tr><th>Time</th><th>Strat</th>'
-    +'<th data-tip="Hover for full text">Question</th><th>Cat</th><th>Edge</th><th>Prob</th>'
-    +'<th data-tip="Warning = below $1k">Vol</th><th>Days</th><th>Status</th>'
-    +'</tr></thead><tbody>'+rows2+'</tbody></table>';
+  // FIX #2: write to d-tbl
+  document.getElementById('d-tbl').innerHTML='<table><thead><tr><th>Time</th><th>Strat</th><th data-tip="Hover for full text">Question</th><th>Cat</th><th>Edge</th><th>Prob</th><th data-tip="Warning = below $1k">Vol</th><th>Days</th><th>Status</th></tr></thead><tbody>'+rows2+'</tbody></table>';
 }
 
-function rPatterns() {
+function rPatterns(){
   var good=SL.filter(function(e){return (!e.strategy||e.strategy.indexOf('observer')===-1)&&(e.volume_24h||0)>=1000;});
   dc('a-cat');
-  var catE={};
-  good.forEach(function(e){var c=e.category||'other';if(!catE[c])catE[c]=[];if(e.edge>0)catE[c].push(e.edge*100);});
-  var ck=Object.keys(catE).filter(function(k){return catE[k].length>0;}).sort(function(a,b){
-    return catE[b].reduce(function(x,y){return x+y;},0)/catE[b].length - catE[a].reduce(function(x,y){return x+y;},0)/catE[a].length;});
+  var catE={};good.forEach(function(e){var c=e.category||'other';if(!catE[c])catE[c]=[];if(e.edge>0)catE[c].push(e.edge*100);});
+  var ck=Object.keys(catE).filter(function(k){return catE[k].length>0;}).sort(function(a,b){return catE[b].reduce(function(x,y){return x+y;},0)/catE[b].length-catE[a].reduce(function(x,y){return x+y;},0)/catE[a].length;});
   var ca=ck.map(function(k){return parseFloat((catE[k].reduce(function(a,b){return a+b;},0)/catE[k].length).toFixed(3));});
-  if(ck.length) charts['a-cat']=new Chart(document.getElementById('a-cat'),{type:'bar',data:{labels:ck,
-    datasets:[{data:ca,backgroundColor:ck.map(function(k){return cc(k)+'aa';}),borderColor:ck.map(cc),borderWidth:1,borderRadius:5}]},
-    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false},
-      tooltip:{callbacks:{label:function(c){return c.raw.toFixed(2)+'% avg edge';}}}},
-      scales:{x:{grid:{color:'#1e222d'},ticks:{callback:function(v){return v+'%';}}},y:{grid:{display:false}}}}});
+  if(ck.length)charts['a-cat']=new Chart(document.getElementById('a-cat'),{type:'bar',data:{labels:ck,datasets:[{data:ca,backgroundColor:ck.map(function(k){return cc(k)+'aa';}),borderColor:ck.map(cc),borderWidth:1,borderRadius:5}]},options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:function(c){return c.raw.toFixed(2)+'% avg edge';}}}},scales:{x:{grid:{color:'#1e222d'},ticks:{callback:function(v){return v+'%';}}},y:{grid:{display:false}}}}});
   dc('a-prob');
-  var pb2={};
-  good.forEach(function(e){if(e.edge>0&&e.probability>0){var b=(Math.floor(e.probability*20)/20).toFixed(2);if(!pb2[b])pb2[b]=[];pb2[b].push(e.edge*100);}});
+  var pb2={};good.forEach(function(e){if(e.edge>0&&e.probability>0){var b=(Math.floor(e.probability*20)/20).toFixed(2);if(!pb2[b])pb2[b]=[];pb2[b].push(e.edge*100);}});
   var pk=Object.keys(pb2).sort();
   var pa=pk.map(function(k){return parseFloat((pb2[k].reduce(function(a,b){return a+b;},0)/pb2[k].length).toFixed(3));});
-  if(pk.length) charts['a-prob']=new Chart(document.getElementById('a-prob'),{type:'line',data:{
-    labels:pk.map(function(k){return Math.round(parseFloat(k)*100)+'%';}),
-    datasets:[{data:pa,borderColor:'#a855f7',backgroundColor:'rgba(168,85,247,.1)',borderWidth:2,fill:true,tension:.3,pointRadius:4,pointBackgroundColor:'#a855f7'}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{x:{grid:{color:'#1e222d'}},y:{grid:{color:'#1e222d'},ticks:{callback:function(v){return v+'%';}}}}}});
+  if(pk.length)charts['a-prob']=new Chart(document.getElementById('a-prob'),{type:'line',data:{labels:pk.map(function(k){return Math.round(parseFloat(k)*100)+'%';}),datasets:[{data:pa,borderColor:'#a855f7',backgroundColor:'rgba(168,85,247,.1)',borderWidth:2,fill:true,tension:.3,pointRadius:4,pointBackgroundColor:'#a855f7'}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{color:'#1e222d'}},y:{grid:{color:'#1e222d'},ticks:{callback:function(v){return v+'%';}}}}}});
   dc('a-dow');
   var days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'],dc2=Array(7).fill(0);
   good.forEach(function(e){if(e.weekday>=0&&e.weekday<7)dc2[e.weekday]++;});
-  charts['a-dow']=new Chart(document.getElementById('a-dow'),{type:'bar',data:{labels:days,
-    datasets:[{data:dc2,backgroundColor:dc2.map(function(_,i){return i<5?'rgba(59,130,246,.7)':'rgba(168,85,247,.7)';}),borderRadius:4}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'}}}}});
+  charts['a-dow']=new Chart(document.getElementById('a-dow'),{type:'bar',data:{labels:days,datasets:[{data:dc2,backgroundColor:dc2.map(function(_,i){return i<5?'rgba(59,130,246,.7)':'rgba(168,85,247,.7)';}),borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'}}}}});
   dc('a-days');
   var dB={'<1d':[],'1-3d':[],'3-7d':[],'7d+':[]};
-  good.forEach(function(e){if(e.edge>0){var d=e.days_to_res||0;
-    if(d<1)dB['<1d'].push(e.edge*100);else if(d<3)dB['1-3d'].push(e.edge*100);
-    else if(d<7)dB['3-7d'].push(e.edge*100);else dB['7d+'].push(e.edge*100);}});
+  good.forEach(function(e){if(e.edge>0){var d=e.days_to_res||0;if(d<1)dB['<1d'].push(e.edge*100);else if(d<3)dB['1-3d'].push(e.edge*100);else if(d<7)dB['3-7d'].push(e.edge*100);else dB['7d+'].push(e.edge*100);}});
   var dA=Object.values(dB).map(function(arr){return arr.length?parseFloat((arr.reduce(function(a,b){return a+b;},0)/arr.length).toFixed(3)):0;});
-  charts['a-days']=new Chart(document.getElementById('a-days'),{type:'bar',data:{labels:Object.keys(dB),
-    datasets:[{data:dA,backgroundColor:['#ef444499','#f59e0b99','#3b82f699','#64748b66'],borderRadius:4}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-      scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'},ticks:{callback:function(v){return v+'%';}}}}}});
+  charts['a-days']=new Chart(document.getElementById('a-days'),{type:'bar',data:{labels:Object.keys(dB),datasets:[{data:dA,backgroundColor:['#ef444499','#f59e0b99','#3b82f699','#64748b66'],borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'},ticks:{callback:function(v){return v+'%';}}}}}});
   var top=good.slice().sort(function(a,b){return b.edge-a.edge;}).slice(0,20);
   if(top.length){
     var tr=top.map(function(e){var q=(e.question||'').replace(/"/g,"'");
-      return '<tr><td class="q" data-tip="'+q+'" style="max-width:300px">'+(e.question||'').substring(0,55)+'</td>'
-        +'<td>'+catPill(e.category)+'</td><td class="gr"><strong>'+((e.edge||0)*100).toFixed(2)+'%</strong></td>'
-        +'<td>'+((e.probability||0)*100).toFixed(1)+'%</td><td>'+(e.score||0).toFixed(3)+'</td>'
-        +'<td>'+(e.days_to_res||0).toFixed(1)+'d</td><td>'+fv(e.volume_24h)+'</td>'
-        +'<td>'+stratPill(e.strategy)+'</td></tr>';}).join('');
-    document.getElementById('a-top').innerHTML='<table><thead><tr><th data-tip="Hover for full text">Question</th>'
-      +'<th>Cat</th><th data-tip="Net edge after fees">Edge</th><th>Prob</th>'
-      +'<th data-tip="Score 0-1">Score</th><th>Days</th><th>Vol</th><th>Strat</th>'
-      +'</tr></thead><tbody>'+tr+'</tbody></table>';
+      return '<tr><td class="q" data-tip="'+q+'" style="max-width:300px">'+(e.question||'').substring(0,55)+'</td><td>'+catPill(e.category)+'</td><td class="gr"><strong>'+((e.edge||0)*100).toFixed(2)+'%</strong></td><td>'+((e.probability||0)*100).toFixed(1)+'%</td><td>'+(e.score||0).toFixed(3)+'</td><td>'+(e.days_to_res||0).toFixed(1)+'d</td><td>'+fv(e.volume_24h)+'</td><td>'+stratPill(e.strategy)+'</td></tr>';}).join('');
+    document.getElementById('a-top').innerHTML='<table><thead><tr><th data-tip="Hover for full text">Question</th><th>Cat</th><th data-tip="Net edge after fees">Edge</th><th>Prob</th><th data-tip="Score 0-1">Score</th><th>Days</th><th>Vol</th><th>Strat</th></tr></thead><tbody>'+tr+'</tbody></table>';
   } else {
-    document.getElementById('a-top').innerHTML='<div class="loading">No vol &ge;$1k opportunities yet</div>';
+    document.getElementById('a-top').innerHTML='<div class="load">No vol &ge;$1k opportunities yet</div>';
   }
 }
 
-function rSignals() {
+function rSignals(){
   var obs=SL.filter(function(e){return e.strategy&&e.strategy.indexOf('observer')!==-1;});
-  var bt={};
-  obs.forEach(function(e){var t=(e.skipped_reason||'').replace('observer_signal_','')||'signal';bt[t]=(bt[t]||0)+1;});
-  document.getElementById('sig-u').textContent = bt.momentum_up||0;
-  document.getElementById('sig-d').textContent = bt.momentum_down||0;
-  document.getElementById('sig-s').textContent = bt.sharp_move||0;
-  document.getElementById('sig-r').textContent = bt.resolution_drift||0;
-  if(!obs.length) return;
-  var tc={momentum_up:'var(--gr)',momentum_down:'var(--re)',sharp_move:'var(--pu)',resolution_drift:'var(--bl)',volume_spike:'var(--am)'};
-  var tt={momentum_up:'Consistent price rise over 2+ snapshots\nS11: BUY YES',
-    momentum_down:'Consistent price fall over 2+ snapshots\nS11: BUY NO',
-    sharp_move:'Single-scan jump above 8%\nMay reverse — watch next cycle',
-    resolution_drift:'High-prob (0.88-0.97) resolving soon\nS10 prime target',
-    volume_spike:'Volume above 3x average\nSmart money entering'};
+  var bt={};obs.forEach(function(e){var t=(e.skipped_reason||'').replace('observer_signal_','')||'signal';bt[t]=(bt[t]||0)+1;});
+  document.getElementById('sig-u').textContent=bt.momentum_up||0;
+  document.getElementById('sig-d').textContent=bt.momentum_down||0;
+  document.getElementById('sig-s').textContent=bt.sharp_move||0;
+  document.getElementById('sig-r').textContent=bt.resolution_drift||0;
+  if(!obs.length)return;
+  var tc={momentum_up:'var(--green)',momentum_down:'var(--red)',sharp_move:'var(--purple)',resolution_drift:'var(--blue)',volume_spike:'var(--amber)'};
+  var tt={momentum_up:'Consistent price rise over 2+ snapshots\nS11: BUY YES',momentum_down:'Consistent price fall over 2+ snapshots\nS11: BUY NO',sharp_move:'Single-scan jump above 8%\nMay reverse — watch next cycle',resolution_drift:'High-prob (0.88-0.97) resolving soon\nS10 prime target',volume_spike:'Volume above 3x average\nSmart money entering'};
   var sorted=obs.slice().sort(function(a,b){return b.edge-a.edge;}).slice(0,30);
   document.getElementById('sig-list').innerHTML=sorted.map(function(e){
     var t=(e.skipped_reason||'').replace('observer_signal_','')||'signal';
     var col=tc[t]||'var(--mu)',tip=tt[t]||t;
     var note=e.metadata&&e.metadata.signal_note?e.metadata.signal_note:'';
     var q=(e.question||'').replace(/"/g,"'");
-    return '<div style="background:var(--s2);border-radius:8px;padding:14px;margin-bottom:10px;border-left:3px solid '+col+'">'
-      +'<div data-tip="'+tip+'" style="font-size:10px;text-transform:uppercase;color:'+col+';font-weight:600;margin-bottom:4px">'+t.replace(/_/g,' ')+'</div>'
-      +'<div data-tip="'+q+'" style="font-size:13px;margin-bottom:6px">'+(e.question||'').substring(0,100)+'</div>'
-      +'<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:'+(note?'6':'0')+'px">'
-      +catPill(e.category)+'<span class="pill" style="background:var(--s1);color:var(--mu)" data-tip="Signal strength 0-1">strength '+e.edge.toFixed(3)+'</span>'
-      +'<span style="font-size:11px;color:var(--mu)">'+ago(e.ts)+'</span></div>'
-      +(note?'<div style="font-size:12px;color:var(--mu);line-height:1.5">'+note+'</div>':'')
-      +'</div>';
+    return '<div style="background:var(--s2);border-radius:8px;padding:14px;margin-bottom:10px;border-left:3px solid '+col+'"><div data-tip="'+tip+'" style="font-size:10px;text-transform:uppercase;color:'+col+';font-weight:600;margin-bottom:4px">'+t.replace(/_/g,' ')+'</div><div data-tip="'+q+'" style="font-size:13px;margin-bottom:6px">'+(e.question||'').substring(0,100)+'</div><div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:'+(note?'6':'0')+'px">'+catPill(e.category)+'<span class="pill" style="background:var(--s1);color:var(--mu)" data-tip="Signal strength 0-1">strength '+e.edge.toFixed(3)+'</span><span style="font-size:11px;color:var(--mu)">'+ago(e.ts)+'</span></div>'+(note?'<div style="font-size:12px;color:var(--mu);line-height:1.5">'+note+'</div>':'')+'</div>';
   }).join('');
 }
 
 loadAll();
 setInterval(loadAll, 300000);
-
 </script>
 </body>
 </html>
