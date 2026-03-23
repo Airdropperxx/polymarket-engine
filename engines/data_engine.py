@@ -146,15 +146,15 @@ class MarketState:
     yes_price:             float
     no_price:              float
     yes_bid:               float
-    yes_ask:               float
     no_bid:                float
-    no_ask:                float
     volume_24h:            float
     end_date_iso:          str
     seconds_to_resolution: int
     negrisk_group_id:      Optional[str]
     category:              str
     fee_rate_bps:          int
+    yes_ask:               float = 0.0
+    no_ask:                float = 0.0
     fetched_at:            float = field(default_factory=time.time)
 
     def is_stale(self, max_age_seconds: int = 300) -> bool:
