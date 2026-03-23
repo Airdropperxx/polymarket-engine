@@ -55,7 +55,7 @@ class ReviewEngine:
         recent = self.state.get_recent_resolved_trades(hours=window_hours)
         if not recent:
             log.info("review_skipped_no_trades")
-            return {"status": "skipped"}
+            return {"status": "skipped", "reason": "no_trades"}
 
         lessons_data = self.state.get_lessons()
         api_key      = os.environ.get("ANTHROPIC_API_KEY", "")
