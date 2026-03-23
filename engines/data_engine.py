@@ -103,7 +103,7 @@ def _categorise(tags: list, question: str) -> str:
     if words & _SOCIAL    or any(k in q for k in _SOCIAL):    return "social_media"
     if words & _SHIPPING  or any(k in q for k in _SHIPPING):  return "shipping"
     if words & _FINANCE   or any(k in q for k in _FINANCE):   return "finance"
-    if words & _TECH      or any(k in q for k in _TECH):      return "tech"
+    if words & _TECH      or any(k in q for k in _TECH if len(k) > 4): return "tech"
     if words & _POLITICS  or any(k in q for k in _POLITICS):  return "politics"
     if words & _GEO       or any(k in q for k in _GEO):       return "geopolitics"
     return "other"
