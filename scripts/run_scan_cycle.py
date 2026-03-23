@@ -1,8 +1,7 @@
 """
 scripts/run_scan_cycle.py
-v3: always collect data (observer + scan) even when at position cap.
-    execution gated separately. S1 zero-risk arb gets priority slots.
-    top-25 selected by edge DESC within strategy tiers.
+v4: pass groups to observer.detect_signals; wire spread_widening hint;
+    always collect data even at position cap.
 """
 import os, sys, time, subprocess
 from pathlib import Path
@@ -40,7 +39,7 @@ def commit_data():
 
 
 def build_observer_hints(signals: list) -> dict:
-    """Convert raw observer signal list into a typed hints dict for strategies."""
+    """Convert raw observer signals into a typed hints dict for strategies."""
     hints: dict = {}
     for sig in signals:
         sig_type = sig.get("type", "")
@@ -56,21 +55,16 @@ def build_observer_hints(signals: list) -> dict:
 
 def select_top_trades(all_opps, max_per: int, s1_slots: int) -> list:
     """
-    Select the best trades for execution:
-      - S1 (zero-risk arb) fills its reserved slots first, sorted by edge DESC
-      - Remaining slots filled by all other strategies sorted by edge DESC
-      - This ensures guaranteed-profit arbs are never starved by S10 volume
+    Select best trades for execution:
+    - S1 zero-risk arb fills its reserved slots first (sorted by edge DESC)
+    - Remaining slots go to highest-edge opportunities from other strategies
     """
-    s1_opps    = [o for o in all_opps if o.strategy == "s1_negrisk_arb"]
-    other_opps = [o for o in all_opps if o.strategy != "s1_negrisk_arb"]
-
-    # Sort each bucket by edge descending (pure profit, not composite score)
-    s1_opps.sort(key=lambda o: o.edge, reverse=True)
-    other_opps.sort(key=lambda o: o.edge, reverse=True)
-
-    selected   = s1_opps[:s1_slots]
-    remaining  = max_per - len(selected)
-    selected  += other_opps[:remaining]
+    s1_opps    = sorted([o for o in all_opps if o.strategy == "s1_negrisk_arb"],
+                        key=lambda o: o.edge, reverse=True)
+    other_opps = sorted([o for o in all_opps if o.strategy != "s1_negrisk_arb"],
+                        key=lambda o: o.edge, reverse=True)
+    selected  = s1_opps[:s1_slots]
+    selected += other_opps[:max_per - len(selected)]
     return selected
 
 
@@ -79,12 +73,11 @@ def main():
     dry_run = os.environ.get("DRY_RUN", "true").lower() == "true"
     log.info("scan_cycle_start", dry_run=dry_run)
 
-    config  = load_config()
-    engine  = config.get("engine", {})
-    capital = float(engine.get("capital_usdc", 100.0))
-    risk    = engine.get("risk", {})
-    max_per = int(engine.get("max_per_cycle", 25))
-    # S1 zero-risk arb reserved slots (rest go to highest-edge other strategies)
+    config   = load_config()
+    engine   = config.get("engine", {})
+    capital  = float(engine.get("capital_usdc", 100.0))
+    risk     = engine.get("risk", {})
+    max_per  = int(engine.get("max_per_cycle", 25))
     s1_slots = int(engine.get("s1_reserved_slots", 8))
 
     # ── Data ──────────────────────────────────────────────────────────────
@@ -100,11 +93,12 @@ def main():
         log.error("no_markets_available")
         commit_data(); sys.exit(0)
 
-    # ── Observer: ALWAYS runs — data collection is unconditional ──────────
+    # ── Observer: ALWAYS runs unconditionally ─────────────────────────────
     from engines.market_observer import MarketObserver
     observer  = MarketObserver(config)
     observer.observe(markets)
-    signals   = observer.detect_signals(markets)
+    # Pass groups so negrisk_imbalance signals can be detected
+    signals   = observer.detect_signals(markets, groups=groups)
     obs_stats = observer.get_stats()
 
     log.info("observer_stats",
@@ -121,7 +115,7 @@ def main():
 
     observer_hints = build_observer_hints(signals)
 
-    # ── Strategy scan: ALWAYS runs — opportunities always collected ────────
+    # ── Strategy scan: ALWAYS runs unconditionally ────────────────────────
     from engines.signal_engine import SignalEngine
     from strategies.s10_near_resolution import S10NearResolution
     from strategies.s1_negrisk_arb import S1NegRiskArb
@@ -160,32 +154,31 @@ def main():
     state_engine = StateEngine("data/trades.db", "data/lessons.json", capital)
     exec_engine  = ExecutionEngine(state_engine, data_engine, config, dry_run)
 
-    # Risk guards
+    # Daily loss guard
     daily_pnl      = state_engine.get_daily_pnl()
     max_daily_loss = capital * float(risk.get("max_daily_loss_pct", 0.99))
     if daily_pnl < -max_daily_loss:
         log.warning("daily_loss_limit", daily_pnl=daily_pnl)
-        # Still log all opps and signals for data before exiting
         for opp in all_opps:
             exec_engine.log_opportunity(opp, False, "daily_loss_limit")
         _log_signals(exec_engine, signals, signal_engine, observer_hints)
         commit_data(); sys.exit(0)
 
-    # Check position cap — but DON'T exit, just skip execution
-    open_count   = state_engine.get_open_position_count()
-    max_open     = int(risk.get("max_open_positions", 200))
-    can_execute  = open_count < max_open
+    # Position cap check — does NOT exit, just skips execution
+    open_count  = state_engine.get_open_position_count()
+    max_open    = int(risk.get("max_open_positions", 500))
+    can_execute = open_count < max_open
     if not can_execute:
         log.info("at_position_cap", open=open_count, max=max_open,
-                 note="continuing to log opportunities and resolve positions")
+                 note="logging opps and resolving positions, skipping new execution")
 
-    # Select top trades by edge (S1 priority slots + highest-edge others)
+    # Select top trades (S1 priority + highest-edge others)
     to_execute = select_top_trades(all_opps, max_per, s1_slots) if can_execute else []
     to_log_only = [o for o in all_opps if o not in to_execute]
 
     strategy_map    = {s.name: s for s in signal_engine.strategies}
     trades_executed = 0
-    local_open      = open_count  # track locally so gate stays accurate mid-loop
+    local_open      = open_count
 
     for opp in to_execute:
         if trades_executed >= max_per:
@@ -202,7 +195,6 @@ def main():
             trades_executed += 1
             local_open      += 1
 
-    # Log all non-executed opportunities with reason
     for opp in to_log_only:
         reason = "beyond_max_per_cycle" if can_execute else "at_position_cap"
         exec_engine.log_opportunity(opp, False, reason)
@@ -212,7 +204,7 @@ def main():
              at_cap=not can_execute,
              open_positions=local_open)
 
-    # Log observer signals
+    # Log observer signals (always)
     _log_signals(exec_engine, signals, signal_engine, observer_hints)
 
     # ── Resolutions: ALWAYS runs ───────────────────────────────────────────
@@ -251,12 +243,12 @@ def main():
              trades=trades_executed, resolved=resolved_count,
              open_positions=local_open,
              observer_points=obs_stats["total_data_points"],
-             observer_signals=len(signals))
+             observer_signals=len(signals),
+             signal_types=list(observer_hints.keys()))
     sys.exit(0)
 
 
 def _log_signals(exec_engine, signals, signal_engine, observer_hints):
-    """Log observer signals to scan_log for dashboard visibility."""
     for sig in signals[:20]:
         exec_engine.log_opportunity(
             type("Opp", (), {
