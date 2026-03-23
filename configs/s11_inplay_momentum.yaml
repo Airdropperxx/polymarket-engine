@@ -1,15 +1,20 @@
 s11_inplay_momentum:
   enabled: true
-  min_total_move: 0.20
-  min_price_after_move: 0.60
-  max_price_after_move: 0.92
-  min_volume_24h: 100000.0    # $100k minimum: live games only
-  max_days_to_resolution: 2.0
+  # Lowered from 0.20 — observer is seeing 8-15% moves which are real signal
+  min_total_move: 0.08
+  # Lowered from 50000 — many sports markets are 5-20k volume, still liquid
+  min_volume_24h: 5000.0
+  min_price_after_move: 0.55
+  max_price_after_move: 0.95
+  # Extended from 2.0 — catch same-week sports + crypto markets
+  max_days_to_resolution: 3.0
   min_observations: 2
-  min_edge_after_fees: 0.005
+  min_edge_after_fees: 0.003
   max_position_pct: 0.15
   kelly_fraction: 0.25
-  threshold: 0.35
+  threshold: 0.30
+  # Observer integration: momentum signals pre-filter markets for S11
+  observer_boost: true               # use momentum_up/down signals as priority list
   review:
-    track_metrics: [win_rate, avg_move, avg_volume, category_breakdown]
+    track_metrics: [win_rate, avg_roi, avg_move, category_breakdown]
     rebalance_trigger: weekly
