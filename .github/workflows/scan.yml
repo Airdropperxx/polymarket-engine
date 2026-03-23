@@ -2,7 +2,7 @@ name: Market Scanner
 
 on:
   schedule:
-    - cron: '*/30 * * * *'
+    - cron: '*/10 * * * *'   # every 10 min (was 30)
   workflow_dispatch:
 
 concurrency:
@@ -17,7 +17,7 @@ permissions:
 jobs:
   scan:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 8        # tighter than 15 — fail fast, next run picks up
 
     env:
       PYTHONPATH:                ${{ github.workspace }}
@@ -41,6 +41,7 @@ jobs:
       - uses: actions/setup-python@v5
         with:
           python-version: '3.11'
+          cache: 'pip'          # cache pip deps — saves ~12s per run
 
       - name: Install dependencies
         run: |
