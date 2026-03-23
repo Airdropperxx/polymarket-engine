@@ -8,7 +8,12 @@ EDGE DISCOVERED from live data:
   - Real Madrid: +55% in 56 min. KC vs Iowa State: +28% then -32% (game swings)
   - $49M volume on same-day sports markets
   - Markets with secondsDelay=1-3 intentionally lag behind real scores
-  - Buy at 0.65-0.92 when consistent momentum detected, collect at 0.95-0.99
+  - Buy at 0.55-0.95 when consistent momentum detected, collect at 0.95-0.99
+
+v2: reads observer_hints["momentum_up"/"momentum_down"/"sharp_move"] from config
+    when observer_boost=true. Hinted markets get a scoring bonus; also, the
+    observer's lower threshold (3%) now contributes — we used to miss 8-14% moves
+    because min_total_move was 20%. Lowered to 8% with the config change.
 
 ZERO EXTRA INFRASTRUCTURE: Just reads price_history.json already built by Observer.
 """
@@ -21,6 +26,9 @@ from pathlib import Path
 from strategies.base import BaseStrategy, Opportunity, Resolution
 
 log = structlog.get_logger(component="s11_inplay_momentum")
+
+# Bonus for observer pre-flagged markets
+OBSERVER_SCORE_BONUS = 0.12
 
 
 def _load_history():
@@ -41,13 +49,30 @@ class S11InplayMomentum(BaseStrategy):
         if not cfg.get("enabled", True):
             return []
 
-        min_move     = float(cfg.get("min_total_move",       0.20))
-        min_vol      = float(cfg.get("min_volume_24h",       50000.0))
-        min_price    = float(cfg.get("min_price_after_move", 0.60))
-        max_price    = float(cfg.get("max_price_after_move", 0.92))
-        max_days     = float(cfg.get("max_days_to_resolution", 2.0))
+        min_move     = float(cfg.get("min_total_move",       0.08))
+        min_vol      = float(cfg.get("min_volume_24h",       5000.0))
+        min_price    = float(cfg.get("min_price_after_move", 0.55))
+        max_price    = float(cfg.get("max_price_after_move", 0.95))
+        max_days     = float(cfg.get("max_days_to_resolution", 3.0))
         min_obs      = int(cfg.get("min_observations",       2))
-        min_edge     = float(cfg.get("min_edge_after_fees",  0.005))
+        min_edge     = float(cfg.get("min_edge_after_fees",  0.003))
+        use_hints    = cfg.get("observer_boost", True)
+
+        # Markets pre-flagged by observer as momentum/sharp signals
+        hinted_up:   set = set()
+        hinted_down: set = set()
+        hinted_sharp: set = set()
+        if use_hints:
+            raw_hints    = config.get("observer_hints", {})
+            hinted_up    = set(raw_hints.get("momentum_up",   []))
+            hinted_down  = set(raw_hints.get("momentum_down", []))
+            hinted_sharp = set(raw_hints.get("sharp_move",    []))
+            total_hinted = len(hinted_up | hinted_down | hinted_sharp)
+            if total_hinted:
+                log.info("s11_observer_hints",
+                         momentum_up=len(hinted_up),
+                         momentum_down=len(hinted_down),
+                         sharp_move=len(hinted_sharp))
 
         history = _load_history()
         if not history:
@@ -62,33 +87,60 @@ class S11InplayMomentum(BaseStrategy):
             if len(pts) < min_obs:
                 continue
             market = by_id.get(mid)
-            if not market: continue
-            if market.volume_24h < min_vol: continue
-            if market.seconds_to_resolution > max_days * 86400: continue
-            if market.fee_rate_bps >= 1000: continue
+            if not market:
+                continue
+            if market.volume_24h < min_vol:
+                continue
+            if market.seconds_to_resolution > max_days * 86400:
+                continue
+            if market.fee_rate_bps >= 1000:
+                continue
 
             recent     = pts[-4:]
             yes_prices = [p["yes"] for p in recent]
-            if len(yes_prices) < 2: continue
+            if len(yes_prices) < 2:
+                continue
 
             total_move = yes_prices[-1] - yes_prices[0]
-            deltas     = [yes_prices[i] - yes_prices[i-1] for i in range(1, len(yes_prices))]
+            deltas     = [yes_prices[i] - yes_prices[i-1]
+                          for i in range(1, len(yes_prices))]
             all_up     = all(d > -0.02 for d in deltas)
             all_down   = all(d <  0.02 for d in deltas)
-            if not (all_up or all_down): continue
+
+            # Allow observer-hinted markets through even without strict directional
+            # consistency — the observer already confirmed the trend
+            is_hinted  = mid in hinted_up or mid in hinted_down or mid in hinted_sharp
+            if not (all_up or all_down) and not is_hinted:
+                continue
 
             yes, no = market.yes_price, market.no_price
 
-            if total_move >= min_move and all_up and min_price <= yes <= max_price:
-                side, bp, prob, tok = "YES", market.yes_ask, yes, market.yes_token_id
-            elif total_move <= -min_move and all_down and min_price <= no <= max_price:
-                side, bp, prob, tok = "NO", market.no_ask, no, market.no_token_id
+            if total_move >= min_move and (all_up or mid in hinted_up) and min_price <= yes <= max_price:
+                side, bp, prob = "YES", market.yes_ask, yes
+                tok = getattr(market, "yes_token_id", "")
+            elif total_move <= -min_move and (all_down or mid in hinted_down) and min_price <= no <= max_price:
+                side, bp, prob = "NO", market.no_ask, no
+                tok = getattr(market, "no_token_id", "")
+            elif is_hinted and abs(total_move) >= min_move:
+                # Sharp move: pick the higher-probability side as the likely resolver
+                if yes >= no and min_price <= yes <= max_price:
+                    side, bp, prob = "YES", market.yes_ask, yes
+                    tok = getattr(market, "yes_token_id", "")
+                elif min_price <= no <= max_price:
+                    side, bp, prob = "NO", market.no_ask, no
+                    tok = getattr(market, "no_token_id", "")
+                else:
+                    continue
             else:
                 continue
 
-            fee  = self.calc_fee(bp) * bp
-            edge = prob - bp - fee
-            if edge < min_edge: continue
+            if bp <= 0:
+                continue
+
+            fee  = self.calc_fee(bp)
+            edge = (1.0 - bp) - fee
+            if edge < min_edge:
+                continue
 
             speed = abs(total_move) / max(len(recent) - 1, 1)
             opps.append(Opportunity(
@@ -101,32 +153,51 @@ class S11InplayMomentum(BaseStrategy):
                 max_payout=1.0,
                 time_to_resolution_sec=market.seconds_to_resolution,
                 metadata={
-                    "token_id": tok, "buy_price": round(bp, 4),
-                    "probability": round(prob, 4), "total_move": round(total_move, 4),
-                    "move_speed": round(speed, 4), "n_obs": len(recent),
-                    "price_trail": [round(p, 3) for p in yes_prices],
-                    "fee": round(fee, 6), "volume_24h": market.volume_24h,
-                    "days_left": round(market.seconds_to_resolution / 86400, 2),
-                    "category": market.category, "fee_rate_bps": market.fee_rate_bps,
+                    "token_id":       tok,
+                    "buy_price":      round(bp, 4),
+                    "total_move":     round(total_move, 4),
+                    "move_speed":     round(speed, 4),
+                    "n_observations": len(yes_prices),
+                    "fee":            round(fee, 6),
+                    "volume_24h":     market.volume_24h,
+                    "days_left":      round(market.seconds_to_resolution / 86400, 2),
+                    "category":       market.category,
+                    "fee_rate_bps":   market.fee_rate_bps,
+                    "observer_flagged": is_hinted,
+                    "hint_type": (
+                        "momentum_up"   if mid in hinted_up   else
+                        "momentum_down" if mid in hinted_down else
+                        "sharp_move"    if mid in hinted_sharp else
+                        "history_only"
+                    ),
                 },
             ))
 
-        log.info("s11_scan_complete", markets_in_history=len(history), opportunities_found=len(opps))
+        log.info("s11_scan_complete",
+                 markets_in_history=len(history),
+                 opportunities_found=len(opps),
+                 observer_hinted=sum(1 for o in opps
+                                     if o.metadata.get("observer_flagged")))
         return opps
 
     def score(self, opp: Opportunity, config: dict) -> float:
-        meta = opp.metadata
+        meta  = opp.metadata
         move  = abs(meta.get("total_move",  0))
         speed = abs(meta.get("move_speed",  0))
-        vol   = meta.get("volume_24h",       50000)
-        n_obs = meta.get("n_obs",            2)
-        days  = meta.get("days_left",        1.0)
+        vol   = meta.get("volume_24h", 5000)
+        n_obs = meta.get("n_observations", 2)
+        days  = meta.get("days_left", 1.0)
 
-        raw = (min(1.0, move  / 0.50) * 0.30 +
-               min(1.0, speed / 0.25) * 0.25 +
-               min(1.0, math.log10(max(vol, 50000)) / math.log10(5000000)) * 0.20 +
-               min(1.0, n_obs / 4) * 0.15 +
-               max(0.0, 1.0 - days / 2.0) * 0.10)
+        raw = (min(1.0, move  / 0.30) * 0.35 +
+               min(1.0, speed / 0.15) * 0.20 +
+               min(1.0, math.log10(max(vol, 5000)) / math.log10(5000000)) * 0.20 +
+               min(1.0, n_obs / 4)    * 0.15 +
+               max(0.0, 1.0 - days / 3.0) * 0.10)
+
+        # Observer bonus: momentum signal means time-series confirmed the trend
+        if meta.get("observer_flagged"):
+            raw += OBSERVER_SCORE_BONUS
+
         return round(min(1.0, max(0.0, raw)), 4)
 
     def size(self, opp: Opportunity, bankroll: float, config: dict) -> float:
@@ -140,20 +211,24 @@ class S11InplayMomentum(BaseStrategy):
         return round(max(1.0, min(max_p * bankroll, kelly * kf * bankroll)), 2)
 
     def on_resolve(self, trade: dict, outcome: str, config: dict) -> Resolution:
-        cost   = trade.get("cost_usdc", 0.0)
-        fee    = trade.get("fee_usdc",  0.0)
-        shares = trade.get("shares",    0.0)
-        meta   = trade.get("metadata",  {})
-        won    = outcome == "win"
+        cost  = trade.get("cost_usdc", 0.0)
+        fee   = trade.get("fee_usdc", 0.0)
+        shares = trade.get("shares", 0.0)
+        meta  = trade.get("metadata", {})
+        won   = outcome == "win"
         payout = shares if won else 0.0
-        pnl    = payout - cost - fee
-        roi    = pnl / cost if cost > 0 else 0.0
-        trail  = meta.get("price_trail", [])
-        move   = meta.get("total_move",  0)
+        pnl   = payout - cost - fee
+        roi   = pnl / cost if cost > 0 else 0.0
+        move  = meta.get("total_move", 0)
+        trail = meta.get("hint_type", "?")
         return Resolution(
-            trade_id=trade.get("trade_id",""), market_id=trade.get("market_id",""),
+            trade_id=trade.get("trade_id",""),
+            market_id=trade.get("market_id",""),
             won=won, cost_usdc=round(cost,4), payout_usdc=round(payout,4),
             pnl_usdc=round(pnl,4), roi=round(roi,4), strategy=self.name,
-            notes=("WIN" if won else "LOSS") + " move=" + str(round(move,3)) + " trail=" + str(trail),
-            lessons=["S11 " + ("WIN" if won else "LOSS") + " cat=" + meta.get("category","?") + " move=" + str(round(move,2)) + " ROI=" + str(round(roi*100,1)) + "%" + (" OK." if won else " Reversed — check min_move.")],
+            notes=("WIN" if won else "LOSS") + " move=" + str(round(move,3)) + " hint=" + trail,
+            lessons=["S11 " + ("WIN" if won else "LOSS") + " cat=" + meta.get("category","?")
+                     + " move=" + str(round(move,2)) + " hint=" + trail
+                     + " ROI=" + str(round(roi*100,1)) + "%"
+                     + (" OK." if won else " Reversed — check min_move or hint quality.")],
         )
