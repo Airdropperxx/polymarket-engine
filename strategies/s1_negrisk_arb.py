@@ -23,7 +23,7 @@ class S1NegRiskArb(BaseStrategy):
     def scan(self, markets: list, groups: dict, config: dict) -> list[Opportunity]:
         cfg           = config.get("s1_negrisk_arb", {})
         min_edge      = float(cfg.get("min_edge_after_fees",  0.005))
-        min_volume    = float(cfg.get("min_leg_volume_24h",   50.0))
+        min_volume    = float(cfg.get("min_leg_volume_24h",   1000.0))  # $1k minimum
         min_bid       = float(cfg.get("min_leg_bid",          0.01))
         max_legs      = int(cfg.get("max_group_legs",         20))
         min_leg_price = float(cfg.get("min_leg_price",        0.03))
