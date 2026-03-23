@@ -43,6 +43,7 @@ class ExecutionEngine:
         self.state    = state_engine
         self.data     = data_engine
         self.config   = config
+        self._config  = config  # alias for test access
         self.dry_run  = dry_run
         self._clob    = None
 
@@ -105,18 +106,18 @@ class ExecutionEngine:
                             opp:          Opportunity,
                             strategy:     BaseStrategy,
                             market_state: Optional[MarketState],
-                            bankroll:     float) -> Optional[str]:
+                            strategy_config: dict = None) -> Optional[str]:
         risk = self.config.get("engine", {}).get("risk", {})
 
         # Gate 1: daily P&L — use config value, no hardcoded fallback
         daily_pnl      = self.state.get_daily_pnl()
-        max_daily_loss = bankroll * float(risk.get("max_daily_loss_pct", 0.99))
+        max_daily_loss = self.state.get_current_balance() * float(risk.get("max_daily_loss_pct", 0.99))
         if daily_pnl < -max_daily_loss:
             self.log_opportunity(opp, False, "daily_loss_limit")
             return None
 
         # Gate 2: size
-        size_usdc = strategy.size(opp, bankroll, self.config)
+        size_usdc = strategy.size(opp, self.state.get_current_balance(), self.config)
         if size_usdc < 1.0:
             self.log_opportunity(opp, False, "size_too_small")
             return None
