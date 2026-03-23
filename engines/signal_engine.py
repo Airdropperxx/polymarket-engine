@@ -33,10 +33,10 @@ class SignalEngine:
         log.info("strategy_registered", name=strategy.name)
 
     def run_one_cycle(self,
-        markets = markets or []
-        groups  = groups  or {}
-                      markets:        list[MarketState],
-                      groups:         dict[str, list[MarketState]],
+        markets = markets if markets is not None else []
+        groups  = groups  if groups  is not None else {}
+                      markets:        list[MarketState] = None,
+                      groups:         dict[str, list[MarketState]] = None,
                       observer_hints: dict | None = None) -> dict:
         """
         Scan all strategies, score, filter, rank.
