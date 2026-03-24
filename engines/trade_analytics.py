@@ -92,43 +92,121 @@ def calc_kelly_fraction(win_probability: float, buy_price: float,
 def fetch_market_resolution(market_id: str, timeout: int = 8) -> Optional[dict]:
     """
     Fetch market resolution state from Gamma API.
-    Works for ALL trades (dry+live) — only needs market_id.
+    Works for ALL trades (dry+live) — decoupled from order engine.
+
+    Handles two market_id formats automatically:
+      - Numeric (e.g. "1670725") → GET /markets/{id}   [S10/S8 trades]
+      - Hex conditionId (e.g. "0x0b41...") → GET /markets?conditionId={id} [S1 NegRisk trades]
+
+    For NegRisk group trades (hex group_id), we check ALL constituent markets.
+    The group is "resolved" when any leg has yes_price >= 0.99 (that outcome won).
 
     Critical notes:
     - outcomePrices is a JSON STRING like '["0.97","0.03"]' — must json.loads it
-    - resolved field is None/undefined for in-progress markets, not False
+    - resolved field is None/undefined for in-progress markets (not False)
     - A market is considered resolved when: price >= 0.99 OR price <= 0.01
     """
     try:
-        resp = requests.get(f"{GAMMA_API}/markets/{market_id}", timeout=timeout)
-        if resp.status_code != 200:
-            log.warning("gamma_fetch_failed", market_id=market_id, status=resp.status_code)
-            return None
-        data = resp.json()
+        is_hex = str(market_id).startswith("0x") or len(str(market_id)) > 20
 
-        # Parse outcomePrices — it's a JSON string, not a list
-        op_raw = data.get("outcomePrices") or "[]"
-        try:
-            prices = _json.loads(op_raw) if isinstance(op_raw, str) else list(op_raw)
-        except Exception:
-            prices = []
+        if is_hex:
+            # NegRisk group ID or hex conditionId — use query parameter endpoint
+            # /markets?neg_risk_id={id} returns all legs of the group
+            resp = requests.get(
+                f"{GAMMA_API}/markets",
+                params={"neg_risk_id": market_id, "limit": 50},
+                timeout=timeout
+            )
+            if resp.status_code != 200:
+                # Fallback: try conditionId lookup
+                resp2 = requests.get(
+                    f"{GAMMA_API}/markets",
+                    params={"conditionId": market_id, "limit": 1},
+                    timeout=timeout
+                )
+                if resp2.status_code != 200:
+                    log.warning("gamma_fetch_failed", market_id=market_id,
+                                status=resp.status_code)
+                    return None
+                resp = resp2
 
-        yes_price = -1.0
-        if prices and len(prices) >= 1:
-            try: yes_price = float(prices[0])
-            except: yes_price = -1.0
+            markets = resp.json()
+            if not isinstance(markets, list) or not markets:
+                log.debug("gamma_hex_no_markets", market_id=market_id[:20])
+                return None
 
-        # resolved may be None (undefined) — treat None same as False
-        resolved = bool(data.get("resolved") or False)
-        closed   = bool(data.get("closed")   or False)
+            # For a NegRisk group: the group resolves when one leg reaches 0.99
+            # Check all constituent markets
+            best_yes = -1.0
+            worst_yes = 2.0
+            resolved_flag = False
+            end_date = ""
+            question = ""
 
-        return {
-            "resolved":  resolved,
-            "closed":    closed,
-            "yes_price": yes_price,
-            "question":  data.get("question", ""),
-            "end_date":  data.get("endDate", ""),
-        }
+            for mkt in markets:
+                op_raw = mkt.get("outcomePrices") or "[]"
+                try:
+                    prices = _json.loads(op_raw) if isinstance(op_raw, str) else list(op_raw)
+                except Exception:
+                    prices = []
+                if prices and len(prices) >= 1:
+                    try:
+                        yp = float(prices[0])
+                        best_yes  = max(best_yes, yp)
+                        worst_yes = min(worst_yes, yp)
+                    except Exception:
+                        pass
+                if mkt.get("resolved"):
+                    resolved_flag = True
+                if not end_date:
+                    end_date = mkt.get("endDate", "")
+                if not question:
+                    question = mkt.get("question", "")
+
+            # NegRisk: resolved when highest yes_price reaches 0.99 (winner found)
+            # or when all prices collapse to 0 (all lost except winner)
+            return {
+                "resolved":  resolved_flag or best_yes >= 0.99,
+                "closed":    worst_yes <= 0.01 or best_yes >= 0.99,
+                "yes_price": best_yes,   # highest leg price (winner's price)
+                "question":  question,
+                "end_date":  end_date,
+                "is_negrisk": True,
+                "leg_count": len(markets),
+            }
+
+        else:
+            # Numeric market ID — direct lookup
+            resp = requests.get(f"{GAMMA_API}/markets/{market_id}", timeout=timeout)
+            if resp.status_code != 200:
+                log.warning("gamma_fetch_failed", market_id=market_id,
+                            status=resp.status_code)
+                return None
+            data = resp.json()
+
+            op_raw = data.get("outcomePrices") or "[]"
+            try:
+                prices = _json.loads(op_raw) if isinstance(op_raw, str) else list(op_raw)
+            except Exception:
+                prices = []
+
+            yes_price = -1.0
+            if prices and len(prices) >= 1:
+                try: yes_price = float(prices[0])
+                except: yes_price = -1.0
+
+            resolved = bool(data.get("resolved") or False)
+            closed   = bool(data.get("closed")   or False)
+
+            return {
+                "resolved":  resolved,
+                "closed":    closed,
+                "yes_price": yes_price,
+                "question":  data.get("question", ""),
+                "end_date":  data.get("endDate", ""),
+                "is_negrisk": False,
+            }
+
     except Exception as e:
         log.warning("gamma_fetch_error", market_id=market_id, error=str(e))
         return None
