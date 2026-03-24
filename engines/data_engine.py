@@ -209,7 +209,14 @@ class DataEngine:
 
         except Exception as e:
             log.error("fetch_failed_returning_cache", error=str(e))
-            return self._cache  # stale but better than nothing
+            # If in-memory cache is empty, try reloading from disk snapshot
+            if not self._cache:
+                disk_fallback = load_snapshot()
+                if disk_fallback:
+                    log.warning("using_disk_snapshot_fallback", count=len(disk_fallback))
+                    self._cache = disk_fallback
+                    self._groups = self._build_negrisk_groups(self._cache)
+            return self._cache  # stale but always better than nothing
 
     def fetch_negrisk_groups(self) -> dict[str, list[MarketState]]:
         """Groups of 2+ NegRisk markets sharing a group_id."""
@@ -238,12 +245,26 @@ class DataEngine:
         """Load previous compressed snapshot as warm cache."""
         cached = load_snapshot()
         if cached:
-            # Keep only markets that haven't resolved (seconds_to_resolution > 0)
-            # and aren't too stale (fetched within 2h — still useful for context)
-            cutoff = time.time() - 7200
-            self._cache = [m for m in cached
-                           if m.seconds_to_resolution > 0
-                           and m.fetched_at > cutoff]
+            # Keep cache for 24h — stale data always beats zero data.
+            # seconds_to_resolution was computed at fetch time, recalculate
+            # relative to now so we don't discard markets that are still active.
+            now    = time.time()
+            cutoff = now - 86400   # 24h — survive long GH Actions outages
+            refreshed = []
+            for m in cached:
+                if m.fetched_at < cutoff:
+                    continue   # truly stale
+                # Recompute seconds_to_resolution from stored end_date_iso
+                end_ts = self._parse_iso_to_ts(m.end_date_iso) if m.end_date_iso else None
+                if end_ts:
+                    remaining = end_ts - int(now)
+                    if remaining < -3600:
+                        continue   # resolved more than 1h ago
+                    # Update the field in-place via dataclass replace
+                    from dataclasses import replace as dc_replace
+                    m = dc_replace(m, seconds_to_resolution=max(0, remaining))
+                refreshed.append(m)
+            self._cache  = refreshed
             self._groups = self._build_negrisk_groups(self._cache)
             log.info("warm_cache_loaded", count=len(self._cache))
 
@@ -313,8 +334,9 @@ class DataEngine:
     def _parse_gamma_market(self, raw: dict, end_max_ts: int) -> Optional[MarketState]:
         """Parse a single Gamma API market dict into MarketState. Returns None to skip."""
         try:
-            # Parse end date and compute seconds_to_resolution
-            end_date_str = raw.get("endDate") or raw.get("end_date_iso") or ""
+            # ── End date ──────────────────────────────────────────────────────
+            # Gamma returns both "endDate" (ISO datetime) and "endDateIso" (date only)
+            end_date_str = raw.get("endDate") or raw.get("endDateIso") or ""
             if not end_date_str:
                 return None
 
@@ -322,67 +344,95 @@ class DataEngine:
             if end_ts is None:
                 return None
 
-            now = int(time.time())
+            now          = int(time.time())
             seconds_left = end_ts - now
 
             if seconds_left <= 0:
-                return None  # already resolved or past end date
+                return None   # already resolved or past end date
             if end_ts > end_max_ts:
-                return None  # beyond our window
+                return None   # beyond our scanning window
 
-            # Token IDs
-            tokens     = raw.get("tokens", [])
-            yes_token  = next((t for t in tokens if t.get("outcome","").upper() == "YES"), None)
-            no_token   = next((t for t in tokens if t.get("outcome","").upper() == "NO"), None)
-            if not yes_token or not no_token:
+            # ── Token IDs ─────────────────────────────────────────────────────
+            # Gamma API returns clobTokenIds as a JSON string: '["tokenA","tokenB"]'
+            # NOT a "tokens" array — that was the old CLOB API format.
+            # Index 0 = YES token, index 1 = NO token (always this order on Polymarket)
+            ctids_raw = raw.get("clobTokenIds", "")
+            try:
+                token_ids = json.loads(ctids_raw) if isinstance(ctids_raw, str) else (ctids_raw or [])
+            except (json.JSONDecodeError, TypeError):
+                token_ids = []
+
+            if len(token_ids) < 2:
                 return None
 
-            yes_token_id = str(yes_token.get("token_id",""))
-            no_token_id  = str(no_token.get("token_id",""))
+            yes_token_id = str(token_ids[0])
+            no_token_id  = str(token_ids[1])
             if not yes_token_id or not no_token_id:
                 return None
 
-            # Prices (clamped)
-            yes_price = float(yes_token.get("price", 0.5))
-            no_price  = float(no_token.get("price",  0.5))
-            yes_price = max(0.001, min(0.999, yes_price))
-            no_price  = max(0.001, min(0.999, no_price))
+            # ── Prices ────────────────────────────────────────────────────────
+            # Gamma API returns outcomePrices as a JSON string: '["0.94","0.06"]'
+            # Index 0 = YES price, index 1 = NO price
+            op_raw = raw.get("outcomePrices", "")
+            try:
+                prices = json.loads(op_raw) if isinstance(op_raw, str) else (op_raw or [])
+            except (json.JSONDecodeError, TypeError):
+                prices = []
 
-            # Volume
+            if len(prices) < 2:
+                yes_price, no_price = 0.5, 0.5
+            else:
+                raw_yes = float(prices[0])
+                raw_no  = float(prices[1])
+                # Skip already-resolved markets (price at 0 or 1)
+                if raw_yes >= 0.999 or raw_no >= 0.999:
+                    return None
+                yes_price = max(0.001, min(0.999, raw_yes))
+                no_price  = max(0.001, min(0.999, raw_no))
+
+            # ── Volume ────────────────────────────────────────────────────────
+            # Gamma returns both "volume24hr" (float) and "volume" (total)
             volume_24h = float(raw.get("volume24hr") or raw.get("volume_24h") or 0.0)
 
-            # NegRisk
-            negrisk_group_id = raw.get("negRiskGroupId") or raw.get("neg_risk_group_id")
+            # ── NegRisk ───────────────────────────────────────────────────────
+            # Gamma returns "negRisk" bool and "negRiskRequestID" for the group
+            negrisk_group_id = None
+            if raw.get("negRisk"):
+                negrisk_group_id = str(raw.get("negRiskRequestID") or raw.get("conditionId") or "")
+                if not negrisk_group_id:
+                    negrisk_group_id = None
 
-            # Category
+            # ── Category ──────────────────────────────────────────────────────
             tags     = raw.get("tags", [])
-            question = raw.get("question", "")
+            question = str(raw.get("question") or "").strip()
+            if not question:
+                return None
             category = _categorise(tags, question)
 
-            # Fee rate (use formula default; CLOB enrichment will override)
+            # ── Fee rate (formula default — CLOB enrichment will override) ───
             fee_rate_bps = _calc_fee_bps(yes_price)
 
             return MarketState(
-                market_id           = str(raw.get("id", "")),
-                question            = question,
-                yes_token_id        = yes_token_id,
-                no_token_id         = no_token_id,
-                yes_price           = yes_price,
-                no_price            = no_price,
-                yes_bid             = yes_price - 0.01,   # placeholder until CLOB
-                yes_ask             = yes_price + 0.01,
-                no_bid              = no_price  - 0.01,
-                no_ask              = no_price  + 0.01,
-                volume_24h          = volume_24h,
-                end_date_iso        = end_date_str,
+                market_id             = str(raw.get("id") or raw.get("conditionId") or ""),
+                question              = question,
+                yes_token_id          = yes_token_id,
+                no_token_id           = no_token_id,
+                yes_price             = yes_price,
+                no_price              = no_price,
+                yes_bid               = yes_price - 0.01,   # placeholder until CLOB enrichment
+                yes_ask               = yes_price + 0.01,
+                no_bid                = no_price  - 0.01,
+                no_ask                = no_price  + 0.01,
+                volume_24h            = volume_24h,
+                end_date_iso          = end_date_str,
                 seconds_to_resolution = seconds_left,
-                negrisk_group_id    = str(negrisk_group_id) if negrisk_group_id else None,
-                category            = category,
-                fee_rate_bps        = fee_rate_bps,
-                fetched_at          = time.time(),
+                negrisk_group_id      = negrisk_group_id,
+                category              = category,
+                fee_rate_bps          = fee_rate_bps,
+                fetched_at            = time.time(),
             )
         except Exception as e:
-            log.debug("market_parse_skipped", error=str(e))
+            log.debug("market_parse_skipped", market_id=str(raw.get("id","")), error=str(e))
             return None
 
     # ── CLOB enrichment ───────────────────────────────────────────────────────
