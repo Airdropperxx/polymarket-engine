@@ -85,1619 +85,880 @@ background:var(--s2);color:var(--mu);margin-right:4px}
 
 <header>
   <div style="display:flex;align-items:center;gap:10px">
-    <span id="dot"></span>
+    <span id="dot" class=""></span>
     <h1>Polymarket Engine</h1>
     <span class="mode" id="mode-badge">DRY RUN</span>
   </div>
   <div style="display:flex;gap:10px;align-items:center">
     <span id="updated" style="font-size:11px;color:var(--mu)">—</span>
     <button onclick="loadAll()" style="background:var(--s2);border:1px solid var(--bd);
-      color:var(--tx);padding:5px 12px;border-radius:6px;font-size:12px;cursor:pointer">
-      Refresh
-    </button>
+      color:var(--tx);padding:5px 12px;border-radius:6px;font-size:12px;cursor:pointer">↻ Refresh</button>
   </div>
 </header>
 
 <div class="tabs">
-  <div class="tab active" onclick="switchTab('overview')">Overview</div>
-  <div class="tab" onclick="switchTab('trades')">Trades</div>
-  <div class="tab" onclick="switchTab('data')">Data Collected</div>
-  <div class="tab" onclick="switchTab('analysis')">Pattern Analysis</div>
-  <div class="tab" onclick="switchTab('signals')">Observer Signals</div>
-  <div class="tab" onclick="switchTab('strategy')">Strategy Refinement</div>
-  <div class="tab" onclick="switchTab('pnl')">📊 P&amp;L Analytics</div>
-  <div class="tab" onclick="switchTab('settled')">✅ Settled Trades</div>
-  <div class="tab" onclick="switchTab('scanhistory')">🔍 Scan History</div>
+  <div class="tab active"  onclick="switchTab('overview',this)">📊 Overview</div>
+  <div class="tab"         onclick="switchTab('trades',this)">📋 Trades</div>
+  <div class="tab"         onclick="switchTab('pnl',this)">💰 P&amp;L Analytics</div>
+  <div class="tab"         onclick="switchTab('lessons',this)">🧠 Lessons</div>
+  <div class="tab"         onclick="switchTab('scanlog',this)">🔍 Scan Log</div>
 </div>
 
-<!-- ══ TAB 1: OVERVIEW ══════════════════════════════════════════════════ -->
+<!-- ══════════════════════════════════════════════════════════════════════
+     TAB 1 — OVERVIEW
+     Shows: Balance, P&L, open/resolved counts, win rate, exposure,
+            strategy breakdown, equity curve, opportunity heatmap
+════════════════════════════════════════════════════════════════════════ -->
 <div class="tab-content active" id="tab-overview">
-  <div class="g4" id="kpis">
-    <div class="card"><h2>Balance</h2><div class="stat" id="k-bal">—</div><div class="sub" id="k-bal-s">—</div></div>
-    <div class="card"><h2>Opportunities Seen</h2><div class="stat purple" id="k-opps">—</div><div class="sub" id="k-opps-s">—</div></div>
-    <div class="card"><h2>Avg Edge</h2><div class="stat amber" id="k-edge">—</div><div class="sub" id="k-edge-s">—</div></div>
-    <div class="card"><h2>Avg Probability</h2><div class="stat" id="k-prob">—</div><div class="sub" id="k-prob-s">—</div></div>
-  </div>
-  <div class="g4">
-    <div class="card"><h2>Markets Tracked</h2><div class="stat blue" id="k-tracked">—</div><div class="sub">By observer</div></div>
-    <div class="card"><h2>Data Points</h2><div class="stat teal" id="k-pts">—</div><div class="sub">Price history records</div></div>
-    <div class="card"><h2>Active Signals</h2><div class="stat" id="k-sigs">—</div><div class="sub">From observer engine</div></div>
-    <div class="card"><h2>Win Rate</h2><div class="stat green" id="k-wr">—</div><div class="sub" id="k-wr-s">Resolved trades</div></div>
-  </div>
-  <div class="g2">
-    <div class="card"><div class="sec">Cumulative edge captured (dry-run)</div><div class="ch-lg"><canvas id="c-pnl"></canvas></div></div>
-    <div class="card"><div class="sec">Opportunities by hour (UTC)</div>
-      <div class="hm" id="heatmap" style="margin-top:8px"></div>
-      <div style="display:flex;justify-content:space-between;margin-top:4px">
-        <span style="font-size:9px;color:var(--mu)">00h</span>
-        <span style="font-size:9px;color:var(--mu)">23h</span>
-      </div>
-      <div style="margin-top:12px" class="sec" style="font-size:12px">Category breakdown</div>
-      <div class="ch" style="margin-top:8px"><canvas id="c-cat"></canvas></div>
-    </div>
-  </div>
-  <div class="g3">
-    <div class="card"><div class="sec">Edge distribution</div><div class="ch"><canvas id="c-edge"></canvas></div></div>
-    <div class="card"><div class="sec">Probability buckets</div><div class="ch"><canvas id="c-prob"></canvas></div></div>
-    <div class="card"><div class="sec">Days to resolution</div><div class="ch"><canvas id="c-days"></canvas></div></div>
-  </div>
-</div>
-
-<!-- ══ TAB 2: TRADES ════════════════════════════════════════════════════ -->
-<div class="tab-content" id="tab-trades">
-  <div class="g4" style="margin-bottom:20px">
-    <div class="card"><h2>Total Dry Trades</h2><div class="stat purple" id="t-total">—</div></div>
-    <div class="card"><h2>Open Positions</h2><div class="stat blue" id="t-open">—</div></div>
-    <div class="card"><h2>Resolved</h2><div class="stat teal" id="t-resolved">—</div></div>
-    <div class="card"><h2>Win Rate</h2><div class="stat green" id="t-wr">—</div></div>
-  </div>
-  <div class="card" style="margin-bottom:20px">
-    <div class="sec">All trades (newest first)</div>
-    <div id="trades-table" style="overflow-x:auto"><div class="loading">Loading...</div></div>
-  </div>
-</div>
-
-<!-- ══ TAB 3: DATA COLLECTED ════════════════════════════════════════════ -->
-<div class="tab-content" id="tab-data">
-  <div class="g4" style="margin-bottom:20px">
-    <div class="card"><h2>Scan Log Entries</h2><div class="stat purple" id="d-entries">—</div><div class="sub">All opportunities ever seen</div></div>
-    <div class="card"><h2>Price History Points</h2><div class="stat teal" id="d-pts">—</div><div class="sub">Time-series data points</div></div>
-    <div class="card"><h2>Markets in History</h2><div class="stat blue" id="d-mkts">—</div><div class="sub">Unique markets tracked</div></div>
-    <div class="card"><h2>Data Span</h2><div class="stat amber" id="d-span">—</div><div class="sub">Oldest to newest</div></div>
-  </div>
-  <div class="g2">
+  <!-- KPI row 1: financial -->
+  <div class="g4" style="margin-bottom:16px">
     <div class="card">
-      <div class="sec">Data by category</div>
-      <div id="d-cats"><div class="loading">Loading...</div></div>
+      <h2>Balance</h2>
+      <div class="stat" id="ov-balance">—</div>
+      <div class="sub" id="ov-balance-s">Starting $100 USDC</div>
     </div>
     <div class="card">
-      <div class="sec">Volume distribution of tracked markets</div>
-      <div class="ch-lg"><canvas id="c-vol"></canvas></div>
-    </div>
-  </div>
-  <div class="card" style="margin-bottom:20px">
-    <div class="sec">Recent scan log (last 40 entries, all fields visible)</div>
-    <div id="scanlog-full" style="overflow-x:auto"><div class="loading">Loading...</div></div>
-  </div>
-</div>
-
-<!-- ══ TAB 4: PATTERN ANALYSIS ══════════════════════════════════════════ -->
-<div class="tab-content" id="tab-analysis">
-  <div style="background:var(--s2);border-radius:10px;padding:16px;margin-bottom:20px;
-    border:1px solid var(--bd)">
-    <div style="font-size:13px;font-weight:600;margin-bottom:8px">What patterns can we detect from this data?</div>
-    <div style="font-size:12px;color:var(--mu);line-height:1.7">
-      <b style="color:var(--tx)">1. Time-of-day alpha</b> — Certain hours produce more high-edge opportunities. 
-      US market open (13-16 UTC) tends to move crypto/finance markets. Sports create spikes at game times.<br>
-      <b style="color:var(--tx)">2. Category edge curves</b> — Finance/crypto markets at p=0.90-0.95 have historically 
-      higher resolution accuracy than politics at same probability.<br>
-      <b style="color:var(--tx)">3. Volume-to-probability correlation</b> — High volume + high probability = 
-      confident market, lower reversal risk. Low volume + high probability = dangerous.<br>
-      <b style="color:var(--tx)">4. Days-to-resolution curve</b> — Edge is highest 2-5 days before resolution, 
-      not day-of (when spreads widen and liquidity drains).<br>
-      <b style="color:var(--tx)">5. Price momentum</b> — Markets moving consistently in one direction for 3+ 
-      scans tend to continue. Observer engine tracks this per-market.<br>
-      <b style="color:var(--tx)">6. NegRisk group drift</b> — Groups where YES prices sum to 0.92-0.98 
-      (not 1.00) present real arb. Rare but high confidence when found.
-    </div>
-  </div>
-
-  <div class="g2">
-    <div class="card">
-      <div class="sec">Edge by category (are some categories more profitable?)</div>
-      <div class="ch-lg"><canvas id="a-cat-edge"></canvas></div>
+      <h2>Total P&amp;L</h2>
+      <div class="stat" id="ov-pnl">—</div>
+      <div class="sub" id="ov-pnl-s">Resolved trades only</div>
     </div>
     <div class="card">
-      <div class="sec">Edge vs probability (optimal probability range)</div>
-      <div class="ch-lg"><canvas id="a-edge-prob"></canvas></div>
-    </div>
-  </div>
-  <div class="g2">
-    <div class="card">
-      <div class="sec">Opportunities by day of week</div>
-      <div class="ch"><canvas id="a-dow"></canvas></div>
+      <h2>Total ROI</h2>
+      <div class="stat" id="ov-roi">—</div>
+      <div class="sub" id="ov-roi-s">On invested capital</div>
     </div>
     <div class="card">
-      <div class="sec">Edge vs days to resolution</div>
-      <div class="ch"><canvas id="a-edge-days"></canvas></div>
+      <h2>Daily P&amp;L</h2>
+      <div class="stat" id="ov-daily">—</div>
+      <div class="sub">Today UTC</div>
     </div>
   </div>
-  <div class="card" style="margin-bottom:20px">
-    <div class="sec">Top questions by edge (best-looking opportunities collected so far)</div>
-    <div id="a-top-opps" style="overflow-x:auto"><div class="loading">Loading...</div></div>
-  </div>
-</div>
-
-<!-- ══ TAB 5: OBSERVER SIGNALS ══════════════════════════════════════════ -->
-<div class="tab-content" id="tab-signals">
-  <div style="background:var(--s2);border-radius:10px;padding:16px;margin-bottom:20px;border:1px solid var(--bd)">
-    <div style="font-size:13px;font-weight:600;margin-bottom:8px">About the Market Observer Engine</div>
-    <div style="font-size:12px;color:var(--mu);line-height:1.7">
-      The observer polls the top 200 markets by volume every scan cycle (every 30 min) and stores a price snapshot.
-      Over time this builds a time-series that reveals how Polymarket prices move, not just what they are right now.<br><br>
-      <b style="color:var(--tx)">Useful for trading:</b>
-      Momentum signals (prices moving consistently) often precede full-price convergence — buying at 0.88 while it's 
-      moving to 0.95 captures more edge than waiting for 0.95. Volume spikes indicate smart-money entry — 
-      following the direction is usually profitable. Sharp single-scan jumps (>8%) often revert within 1-3 scans 
-      and can be faded (bet opposite direction). NegRisk group sum divergence alerts S1 arb before it's fully priced in.
-    </div>
-  </div>
-  <div class="g4" style="margin-bottom:20px">
-    <div class="card"><h2>Momentum Up</h2><div class="stat green" id="s-mu">—</div><div class="sub">Consistent YES price increase</div></div>
-    <div class="card"><h2>Momentum Down</h2><div class="stat red" id="s-md">—</div><div class="sub">Consistent NO price increase</div></div>
-    <div class="card"><h2>Sharp Moves</h2><div class="stat amber" id="s-sm">—</div><div class="sub">Single-scan jumps >8%</div></div>
-    <div class="card"><h2>Resolution Drift</h2><div class="stat blue" id="s-rd">—</div><div class="sub">High-prob near-expiry</div></div>
-  </div>
-  <div id="signals-list"><div class="loading">Loading observer signals...</div></div>
-</div>
-
-<!-- ══ TAB 6: STRATEGY REFINEMENT ═══════════════════════════════════════ -->
-<div class="tab-content" id="tab-strategy">
-  <div style="background:var(--s2);border-radius:10px;padding:16px;margin-bottom:20px;border:1px solid var(--bd)">
-    <div style="font-size:13px;font-weight:600;margin-bottom:10px">
-      How to use collected data to improve strategies
-    </div>
-    <div style="font-size:12px;color:var(--mu);line-height:1.8" id="refinement-insights">
-      Loading analysis...
-    </div>
-  </div>
-  <div class="g2" style="margin-bottom:20px">
+  <!-- KPI row 2: trade counts -->
+  <div class="g4" style="margin-bottom:16px">
     <div class="card">
-      <div class="sec">S10 threshold recommendations</div>
-      <div id="s10-reco"><div class="loading">Analysing...</div></div>
+      <h2>Total Trades</h2>
+      <div class="stat purple" id="ov-total">—</div>
+      <div class="sub" id="ov-total-s">—</div>
     </div>
     <div class="card">
-      <div class="sec">S1 NegRisk group quality</div>
-      <div id="s1-reco"><div class="loading">Analysing...</div></div>
+      <h2>Open Positions</h2>
+      <div class="stat blue" id="ov-open">—</div>
+      <div class="sub" id="ov-open-s">Exposure: —</div>
+    </div>
+    <div class="card">
+      <h2>Win Rate</h2>
+      <div class="stat green" id="ov-wr">—</div>
+      <div class="sub" id="ov-wr-s">— wins / — losses</div>
+    </div>
+    <div class="card">
+      <h2>Opportunities Scanned</h2>
+      <div class="stat teal" id="ov-opps">—</div>
+      <div class="sub" id="ov-opps-s">Total in scan log</div>
     </div>
   </div>
+  <!-- Charts row -->
+  <div class="g2" style="margin-bottom:16px">
+    <div class="card">
+      <div class="sec">Equity curve (balance over resolved trades)</div>
+      <div class="ch-lg"><canvas id="c-equity"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="sec">Strategy performance</div>
+      <div id="strat-breakdown" style="margin-top:8px"></div>
+    </div>
+  </div>
+  <!-- System status -->
   <div class="card">
-    <div class="sec">Lessons from scan log patterns</div>
-    <div id="lessons-table"><div class="loading">Loading...</div></div>
+    <div class="sec">System status</div>
+    <div id="ov-status" style="font-size:12px;color:var(--mu);margin-top:8px;line-height:1.8">Loading...</div>
   </div>
 </div>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     TAB 2 — TRADES
+     Shows ALL trades from DB with full math: entry, size, shares, fee,
+     current status, P&L, ROI, edge, EV, Kelly fraction
+════════════════════════════════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-trades">
+  <!-- Filters -->
+  <div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+    <select id="tr-status" onchange="renderTrades()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:5px 10px;border-radius:4px;font-size:12px">
+      <option value="all">All Trades</option>
+      <option value="open">Open</option>
+      <option value="resolved">Resolved</option>
+    </select>
+    <select id="tr-outcome" onchange="renderTrades()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:5px 10px;border-radius:4px;font-size:12px">
+      <option value="all">All Outcomes</option>
+      <option value="win">Wins</option>
+      <option value="loss">Losses</option>
+    </select>
+    <select id="tr-strat" onchange="renderTrades()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:5px 10px;border-radius:4px;font-size:12px">
+      <option value="all">All Strategies</option>
+    </select>
+  </div>
+  <div style="font-size:11px;color:var(--mu);margin-bottom:8px" id="tr-count">—</div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <div style="overflow-x:auto">
+      <table id="trades-table">
+        <thead><tr>
+          <th>Time</th><th>Strategy</th><th>Market</th><th>Side</th>
+          <th>Buy Price</th><th>Size $</th><th>Shares</th><th>Fee $</th>
+          <th>Edge</th><th>EV</th><th>Kelly%</th>
+          <th>Status</th><th>P&amp;L $</th><th>ROI%</th>
+        </tr></thead>
+        <tbody id="trades-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     TAB 3 — P&L ANALYTICS
+     Math walkthrough for every resolved trade + aggregate stats
+     Win/loss analysis, edge accuracy, EV calibration
+════════════════════════════════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-pnl">
+  <!-- Top stats -->
+  <div class="g4" style="margin-bottom:16px">
+    <div class="card">
+      <h2>Resolved Trades</h2>
+      <div class="stat purple" id="pnl-resolved">—</div>
+      <div class="sub" id="pnl-resolved-s">— wins / — losses</div>
+    </div>
+    <div class="card">
+      <h2>Net P&amp;L</h2>
+      <div class="stat" id="pnl-net">—</div>
+      <div class="sub" id="pnl-net-s">After fees</div>
+    </div>
+    <div class="card">
+      <h2>ROI</h2>
+      <div class="stat" id="pnl-roi">—</div>
+      <div class="sub" id="pnl-roi-s">On invested capital</div>
+    </div>
+    <div class="card">
+      <h2>Best / Worst</h2>
+      <div class="stat teal" id="pnl-best">—</div>
+      <div class="sub" id="pnl-worst">Worst: —</div>
+    </div>
+  </div>
+  <!-- Math explanation -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="sec">How the math works on every trade</div>
+    <div style="font-size:12px;color:var(--mu);line-height:1.9;margin-top:8px">
+      <b style="color:var(--tx)">Entry:</b> shares = cost ÷ buy_price &nbsp;|&nbsp;
+      fee = 2.25 × (p×(1-p))² × cost &nbsp;|&nbsp;
+      edge = win_probability − buy_price<br>
+      <b style="color:var(--tx)">Win:</b> pnl = shares × $1.00 − cost − fee &nbsp;|&nbsp;
+      <b style="color:var(--tx)">Loss:</b> pnl = −(cost + fee)<br>
+      <b style="color:var(--tx)">ROI</b> = pnl ÷ cost × 100% &nbsp;|&nbsp;
+      <b style="color:var(--tx)">EV</b> = p×(1/price−1) − (1−p) − fee_rate &nbsp;|&nbsp;
+      <b style="color:var(--tx)">Kelly</b> = ((p×b−q)/b) × 0.25 where b = 1/price−1
+    </div>
+  </div>
+  <!-- Per-trade math table (resolved only) -->
+  <div class="card" style="padding:0;overflow:hidden;margin-bottom:16px">
+    <div class="sec" style="padding:12px 16px 0">Resolved trade math</div>
+    <div style="overflow-x:auto">
+      <table id="pnl-table">
+        <thead><tr>
+          <th>Market</th><th>Side</th><th>Buy Price</th><th>Win Prob</th>
+          <th>Shares</th><th>Cost</th><th>Fee</th>
+          <th>Edge</th><th>EV</th><th>Kelly</th>
+          <th>Outcome</th><th>P&amp;L</th><th>ROI</th><th>Analysis</th>
+        </tr></thead>
+        <tbody id="pnl-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+  <!-- Charts -->
+  <div class="g2" style="margin-bottom:16px">
+    <div class="card">
+      <div class="sec">P&amp;L per trade (resolved)</div>
+      <div class="ch-lg"><canvas id="c-pnl-bar"></canvas></div>
+    </div>
+    <div class="card">
+      <div class="sec">Win/Loss by strategy</div>
+      <div id="pnl-by-strat" style="margin-top:8px"></div>
+    </div>
+  </div>
+  <div class="g2">
+    <div class="card">
+      <div class="sec">Edge accuracy (positive edge → should win)</div>
+      <div id="edge-accuracy" style="margin-top:8px;font-size:12px"></div>
+    </div>
+    <div class="card">
+      <div class="sec">Open positions (waiting for resolution)</div>
+      <div id="open-positions-list" style="margin-top:8px"></div>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     TAB 4 — LESSONS
+     AI reviewer output: what the engine learned, strategy score changes,
+     lessons stored, win/loss analysis
+════════════════════════════════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-lessons">
+  <div class="g3" style="margin-bottom:16px">
+    <div class="card">
+      <h2>Lessons Stored</h2>
+      <div class="stat purple" id="les-count">—</div>
+      <div class="sub">Accumulated from resolved trades</div>
+    </div>
+    <div class="card">
+      <h2>Last Review</h2>
+      <div class="stat teal" id="les-updated">—</div>
+      <div class="sub">When AI last reviewed trades</div>
+    </div>
+    <div class="card">
+      <h2>Strategies Scored</h2>
+      <div class="stat blue" id="les-strats">—</div>
+      <div class="sub">Active strategy scores</div>
+    </div>
+  </div>
+  <!-- Strategy scores -->
+  <div class="card" style="margin-bottom:16px">
+    <div class="sec">Strategy scores (allocation multipliers)</div>
+    <div id="strat-scores" style="margin-top:8px"></div>
+    <div style="font-size:11px;color:var(--mu);margin-top:10px">
+      Score &gt; 1.0 = performing well → more capital allocated. Score &lt; 1.0 = underperforming → less capital.
+      Adjusted by AI reviewer after each resolution batch. Range: 0.1 – 2.0.
+    </div>
+  </div>
+  <!-- Lessons list -->
+  <div class="card">
+    <div class="sec">Stored lessons (most recent first)</div>
+    <div id="lessons-list" style="margin-top:8px"></div>
+    <div id="lessons-empty" style="color:var(--mu);font-size:12px;padding:16px;display:none">
+      No lessons stored yet. They will be generated after the first trades resolve and the AI reviewer runs.
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════════════════════════════════
+     TAB 5 — SCAN LOG
+     Every opportunity the engine evaluated: what it found, what it scored,
+     why it traded or skipped, strategy + edge + EV per row
+════════════════════════════════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-scanlog">
+  <!-- KPIs -->
+  <div class="g4" style="margin-bottom:12px">
+    <div class="card"><h2>Log Entries</h2><div class="stat purple" id="sl-total">—</div><div class="sub">All opportunities evaluated</div></div>
+    <div class="card"><h2>Executed</h2><div class="stat green" id="sl-exec">—</div><div class="sub">Dry-run trades opened</div></div>
+    <div class="card"><h2>Last Scan</h2><div class="stat amber" id="sl-last">—</div><div class="sub" id="sl-last-s">—</div></div>
+    <div class="card"><h2>Top Strategy</h2><div class="stat teal" id="sl-top-strat">—</div><div class="sub" id="sl-top-strat-s">By execution count</div></div>
+  </div>
+  <!-- Filters -->
+  <div style="display:flex;gap:8px;align-items:center;margin-bottom:10px;flex-wrap:wrap">
+    <select id="sl-fstrat" onchange="renderScanLog()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:5px 10px;border-radius:4px;font-size:12px">
+      <option value="all">All Strategies</option>
+    </select>
+    <select id="sl-fexec" onchange="renderScanLog()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:5px 10px;border-radius:4px;font-size:12px">
+      <option value="all">All</option>
+      <option value="exec">Executed only</option>
+      <option value="skip">Skipped only</option>
+    </select>
+    <select id="sl-fn" onchange="renderScanLog()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:5px 10px;border-radius:4px;font-size:12px">
+      <option value="100">Last 100</option>
+      <option value="250">Last 250</option>
+      <option value="500">Last 500</option>
+      <option value="0">All</option>
+    </select>
+    <input id="sl-search" oninput="renderScanLog()" placeholder="Search market question…"
+      style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:5px 10px;border-radius:4px;font-size:12px;flex:1;min-width:180px">
+  </div>
+  <div style="font-size:11px;color:var(--mu);margin-bottom:6px" id="sl-count">—</div>
+  <div class="card" style="padding:0;overflow:hidden">
+    <div style="overflow-x:auto">
+      <table id="sl-table">
+        <thead><tr>
+          <th style="width:130px">Time (UTC)</th>
+          <th style="width:100px">Strategy</th>
+          <th>Market Question</th>
+          <th style="width:55px">Side</th>
+          <th style="width:65px">Buy Price</th>
+          <th style="width:60px">Edge</th>
+          <th style="width:60px">EV</th>
+          <th style="width:55px">Score</th>
+          <th style="width:60px">Vol $</th>
+          <th style="width:45px">TTL</th>
+          <th style="width:90px">Status</th>
+        </tr></thead>
+        <tbody id="sl-tbody"></tbody>
+      </table>
+    </div>
+  </div>
+  <div id="sl-empty" style="text-align:center;padding:32px;color:var(--mu);font-size:13px;display:none">
+    No scan log entries yet.
+  </div>
+</div>
+
+<script id="engine-data" type="application/json">
+{}
+</script>
 
 <script>
-const OWNER='Airdropperxx',REPO='polymarket-engine',BR='main';
-const RAW=`https://raw.githubusercontent.com/${OWNER}/${REPO}/${BR}`;
-Chart.defaults.color='#64748b';Chart.defaults.borderColor='#2a2f3d';
-Chart.defaults.font.family='-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif';
-Chart.defaults.font.size=11;
+// ═══════════════════════════════════════════════════════════════════════
+// POLYMARKET ENGINE DASHBOARD
+// Single data source: <script id="engine-data"> JSON block
+// Written by update_dashboard.py after every scan cycle.
+// ═══════════════════════════════════════════════════════════════════════
 
-let SL=[],PH={},LS={};
-const charts={};
+let D = {};  // engine-data JSON
 
-function switchTab(id){
+function $_(id){ return document.getElementById(id); }
+function esc(s){ const d=document.createElement('div'); d.textContent=String(s??''); return d.innerHTML; }
+function fmt(n,d=2){ const v=parseFloat(n); return isNaN(v)?'—':v.toFixed(d); }
+function fmtUSD(n){ const v=parseFloat(n); if(isNaN(v))return'—'; return(v>=0?'+$':'−$')+Math.abs(v).toFixed(4); }
+function fmtPct(n){ const v=parseFloat(n); if(isNaN(v))return'—'; return(v>=0?'+':'')+v.toFixed(2)+'%'; }
+function pnlClass(v){ const n=parseFloat(v); if(isNaN(n))return''; return n>0?'green':n<0?'red':''; }
+function pill(label,cls){ return `<span class="pill ${cls}">${esc(label)}</span>`; }
+function stratPill(s){
+  if(!s)return pill('?','p-dry');
+  if(s.includes('s10'))return pill('S10','p-s10');
+  if(s.includes('s1_'))return pill('S1','p-s1');
+  if(s.includes('s8'))return pill('S8','p-s8');
+  if(s.includes('s11'))return pill('S11','p-dry');
+  if(s.includes('observer'))return pill('OBS','p-obs');
+  return pill(s.slice(0,6),'p-dry');
+}
+
+const charts = {};
+function dc(id){ if(charts[id]){ charts[id].destroy(); delete charts[id]; } }
+
+function switchTab(id, el){
   document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
-  document.getElementById('tab-'+id).classList.add('active');
-  event.target.classList.add('active');
+  const tab = $_('tab-'+id);
+  if(tab) tab.classList.add('active');
+  if(el)  el.classList.add('active');
 }
 
-async function gj(path){
-  const r=await fetch(`${RAW}/${path}?_=${Date.now()}`);
-  if(!r.ok)throw new Error(path+':'+r.status);
-  return r.json();
-}
-
-function dc(id){if(charts[id]){charts[id].destroy();delete charts[id];}}
-function $_(id){return document.getElementById(id);}
-function fmt(n,d=2){return isNaN(+n)?'—':(+n).toFixed(d);}
-function tAgo(iso){
-  if(!iso)return'—';
-  const d=(Date.now()-new Date(iso).getTime())/1000;
-  if(d<60)return Math.round(d)+'s ago';
-  if(d<3600)return Math.round(d/60)+'m ago';
-  if(d<86400)return Math.round(d/3600)+'h ago';
-  return Math.round(d/86400)+'d ago';
-}
-
-const CAT_COLORS={
-  crypto:'#f59e0b',sports:'#22c55e',politics:'#ef4444',finance:'#3b82f6',
-  tech:'#a855f7',geopolitics:'#14b8a6',other:'#64748b',entertainment:'#ec4899',
-  science:'#84cc16'
-};
-function catColor(c){return CAT_COLORS[c?.toLowerCase()]||'#64748b';}
-
-function catPill(c){
-  const col=catColor(c);
-  return `<span style="display:inline-block;border-radius:4px;padding:1px 7px;
-    font-size:11px;background:${col}22;color:${col}">${c||'—'}</span>`;
-}
-
-function stratPill(s){
-  if(!s)return'—';
-  if(s.includes('s10'))return`<span class="pill p-s10">S10</span>`;
-  if(s.includes('s1'))return`<span class="pill p-s1">S1</span>`;
-  if(s.includes('s8'))return`<span class="pill p-s8">S8</span>`;
-  if(s.includes('observer'))return`<span class="pill p-obs">OBS</span>`;
-  return`<span class="pill p-dry">${s}</span>`;
-}
-
-// ── Load data ──────────────────────────────────────────────────────────
-async function loadAll(){
-  $_('updated').textContent='Loading...';
-  try{
-    [SL,PH,LS]=await Promise.all([
-      gj('data/scan_log.json').catch(()=>[]),
-      gj('data/price_history.json').catch(()=>({})),
-      gj('data/lessons.json').catch(()=>({})),
-    ]);
-    if(!Array.isArray(SL))SL=[];
-    renderAll();
-    $_('updated').textContent='Updated '+new Date().toLocaleTimeString();
-    $_('dot').className=SL.length>0?'ok':'';
-  }catch(e){
-    $_('updated').textContent='Error: '+e.message;
+// ── Data loader ────────────────────────────────────────────────────────────
+function loadAll(){
+  $_('updated').textContent = 'Loading…';
+  try {
+    const raw = $_('engine-data');
+    if(!raw || !raw.textContent.trim() || raw.textContent.trim()==='{}'){
+      $_('updated').textContent = 'Waiting for first scan cycle…';
+      $_('dot').className = '';
+      showNoData();
+      return;
+    }
+    D = JSON.parse(raw.textContent);
+    renderOverview();
+    renderTrades();
+    renderPnL();
+    renderLessons();
+    renderScanLog();
+    const ts = D.timestamp ? new Date(D.timestamp).toLocaleTimeString() : 'unknown';
+    $_('updated').textContent = 'Data as of ' + ts;
+    $_('dot').className = 'ok';
+    const dry = D.dry_run !== false;
+    $_('mode-badge').textContent = dry ? 'DRY RUN' : 'LIVE';
+    $_('mode-badge').style.background = dry ? 'rgba(168,85,247,.15)' : 'rgba(34,197,94,.15)';
+    $_('mode-badge').style.color = dry ? 'var(--purple)' : 'var(--green)';
+  } catch(e){
+    $_('updated').textContent = 'Error: '+e.message;
+    console.error(e);
   }
 }
 
-function renderAll(){
-  renderKPIs();renderOverviewCharts();
-  renderTrades();renderData();renderAnalysis();
-  renderSignals();renderStrategy();
+function showNoData(){
+  const msg = '<div style="color:var(--mu);font-size:13px;padding:32px;text-align:center">Waiting for first scan cycle to complete…</div>';
+  ['ov-status','strat-breakdown','trades-tbody','pnl-tbody','lessons-list','sl-tbody'].forEach(id=>{
+    const el = $_(id); if(el) el.innerHTML = msg;
+  });
 }
 
-// ── KPIs ───────────────────────────────────────────────────────────────
-function renderKPIs(){
-  const executed=SL.filter(e=>e.executed&&!e.strategy?.includes('observer'));
-  const probs=SL.map(e=>e.probability).filter(p=>p>0&&p<0.99);
-  const edges=SL.map(e=>e.edge).filter(e=>e>0);
-  const pts=Object.values(PH).reduce((a,d)=>a+(d.points?.length||0),0);
-  const sigs=SL.filter(e=>e.strategy?.includes('observer'));
+// ── Overview ───────────────────────────────────────────────────────────────
+function renderOverview(){
+  const ts = D;
+  // Balance & P&L
+  const bal   = parseFloat(ts.balance??100);
+  const pnl   = parseFloat(ts.total_pnl??0);
+  const roi   = parseFloat(ts.roi_pct??0);
+  const daily = parseFloat(ts.daily_pnl??0);
 
-  $_('k-bal').textContent='$100.00';
-  $_('k-bal-s').textContent='Dry-run capital';
-  $_('k-opps').textContent=executed.length;
-  $_('k-opps-s').textContent=`${SL.length} total in scan log`;
-  $_('k-edge').textContent=edges.length?((edges.reduce((a,b)=>a+b,0)/edges.length)*100).toFixed(2)+'%':'—';
-  $_('k-edge-s').textContent='Across '+edges.length+' observations';
+  $_('ov-balance').textContent = '$'+bal.toFixed(2);
+  $_('ov-balance').className = 'stat';
 
-  const avgP=probs.length?(probs.reduce((a,b)=>a+b,0)/probs.length*100).toFixed(1)+'%':'—';
-  $_('k-prob').textContent=avgP;
-  const pEl=$_('k-prob');
-  if(probs.length&&parseFloat(avgP)>99)pEl.className='stat red';
-  else if(probs.length&&parseFloat(avgP)>90)pEl.className='stat green';
-  else pEl.className='stat';
-  $_('k-prob').nextElementSibling.textContent=probs.length<SL.length?'(100% filtered out)':'Of opportunities';
+  $_('ov-pnl').textContent = fmtUSD(pnl);
+  $_('ov-pnl').className = 'stat '+pnlClass(pnl);
+  $_('ov-pnl-s').textContent = ts.total_invested>0 ? 'on $'+parseFloat(ts.total_invested).toFixed(2)+' invested' : 'Resolved trades only';
 
-  $_('k-tracked').textContent=Object.keys(PH).length;
-  $_('k-pts').textContent=pts.toLocaleString();
-  $_('k-sigs').textContent=sigs.length;
-  $_('k-wr').textContent='—';
-  $_('k-wr-s').textContent='Awaiting resolutions';
-}
+  $_('ov-roi').textContent = fmtPct(roi);
+  $_('ov-roi').className = 'stat '+pnlClass(roi);
 
-// ── Overview charts ────────────────────────────────────────────────────
-function renderOverviewCharts(){
-  // P&L curve
-  dc('c-pnl');
-  const exo=SL.filter(e=>e.executed&&!e.strategy?.includes('observer'))
-              .sort((a,b)=>a.ts_unix-b.ts_unix);
-  if(exo.length>1){
-    let cum=0;const labels=[],data=[];
-    exo.forEach((e,i)=>{cum+=(e.edge||0)*(e.buy_price||0.9)*40;labels.push(i+1);data.push(+cum.toFixed(3));});
-    charts['c-pnl']=new Chart($_('c-pnl'),{type:'line',data:{labels,datasets:[{
-      data,borderColor:data[data.length-1]>=0?'#22c55e':'#ef4444',
-      backgroundColor:data[data.length-1]>=0?'rgba(34,197,94,.08)':'rgba(239,68,68,.08)',
-      borderWidth:2,fill:true,tension:.3,pointRadius:0}]},
+  $_('ov-daily').textContent = fmtUSD(daily);
+  $_('ov-daily').className = 'stat '+pnlClass(daily);
+
+  // Trade counts
+  $_('ov-total').textContent = ts.total_trades??0;
+  $_('ov-total-s').textContent = (ts.resolved_trades??0)+' resolved';
+  $_('ov-open').textContent   = ts.open_positions??0;
+  $_('ov-open-s').innerHTML   = 'Exposure: <b>$'+(parseFloat(ts.open_exposure??0).toFixed(2))+'</b>';
+
+  const wr = parseFloat(ts.win_rate_pct??0);
+  $_('ov-wr').textContent   = ts.resolved_trades>0 ? wr.toFixed(1)+'%' : '—';
+  $_('ov-wr').className     = 'stat '+(wr>=60?'green':wr>=45?'amber':'red');
+  $_('ov-wr-s').textContent = (ts.wins_all_time??0)+' wins / '+(ts.losses_all_time??0)+' losses';
+
+  $_('ov-opps').textContent  = ts.total_opportunities??0;
+  $_('ov-opps-s').textContent = (ts.total_opportunities??0)+' total evaluated';
+
+  // Equity curve
+  const trades = (ts.recent_trades??[]).filter(t=>t.status==='resolved').sort((a,b)=>a.time<b.time?-1:1);
+  if(trades.length >= 2){
+    let bal2=100, labels=[], data=[];
+    trades.forEach((t,i)=>{
+      bal2 += (parseFloat(t.pnl)||0);
+      labels.push('#'+(i+1));
+      data.push(+bal2.toFixed(4));
+    });
+    dc('c-equity');
+    charts['c-equity'] = new Chart($_('c-equity'),{
+      type:'line',
+      data:{labels,datasets:[{label:'Balance $',data,
+        borderColor:'#22c55e',backgroundColor:'rgba(34,197,94,.08)',
+        tension:0.3,pointRadius:3,fill:true}]},
       options:{responsive:true,maintainAspectRatio:false,
         plugins:{legend:{display:false}},
         scales:{x:{grid:{color:'#1e222d'},ticks:{maxTicksLimit:8}},
                 y:{grid:{color:'#1e222d'},ticks:{callback:v=>'$'+v.toFixed(2)}}}}
     });
+  } else {
+    if($_('c-equity')) $_('c-equity').parentElement.innerHTML = '<div style="color:var(--mu);font-size:12px;padding:32px;text-align:center">Equity curve will appear after trades resolve</div>';
   }
 
-  // Heatmap
-  const hourC=Array(24).fill(0);
-  SL.filter(e=>!e.strategy?.includes('observer')).forEach(e=>{
-    if(e.hour_utc>=0&&e.hour_utc<24)hourC[e.hour_utc]++;
-  });
-  const maxH=Math.max(...hourC,1);
-  const hm=$_('heatmap');hm.innerHTML='';
-  hourC.forEach((c,h)=>{
-    const a=0.08+c/maxH*0.92;
-    const el=document.createElement('div');
-    el.className='hm-c';
-    el.style.background=`rgba(168,85,247,${a.toFixed(2)})`;
-    el.title=`${String(h).padStart(2,'0')}:00 UTC — ${c} opps`;
-    el.textContent=c>0?c:'';
-    hm.appendChild(el);
-  });
-
-  // Category donut
-  dc('c-cat');
-  const cats={};
-  SL.filter(e=>!e.strategy?.includes('observer')).forEach(e=>{
-    const c=e.category||'other';cats[c]=(cats[c]||0)+1;
-  });
-  if(Object.keys(cats).length){
-    const labels=Object.keys(cats),data=labels.map(l=>cats[l]);
-    charts['c-cat']=new Chart($_('c-cat'),{type:'doughnut',data:{labels,datasets:[{
-      data,backgroundColor:labels.map(catColor),borderColor:'#161920',borderWidth:2}]},
-      options:{responsive:true,maintainAspectRatio:false,
-        plugins:{legend:{position:'right',labels:{boxWidth:10,padding:10,font:{size:11}}}}}
+  // Strategy breakdown
+  const byStrat = ts.by_strategy??{};
+  const stratKeys = Object.keys(byStrat);
+  if(stratKeys.length){
+    let html = '<table style="width:100%;font-size:12px"><thead><tr>'
+      +'<th>Strategy</th><th>Trades</th><th>W/L</th><th>Win%</th><th>P&amp;L</th><th>ROI</th>'
+      +'</tr></thead><tbody>';
+    stratKeys.forEach(s=>{
+      const v=byStrat[s];
+      const wr2=parseFloat(v.win_rate_pct??0);
+      html += `<tr>
+        <td>${stratPill(s)}</td>
+        <td style="color:var(--mu)">${v.trades??0}</td>
+        <td style="color:var(--mu)">${v.wins??0}/${v.losses??0}</td>
+        <td style="color:${wr2>=60?'var(--green)':wr2>=40?'var(--amber)':'var(--red)'}">${wr2.toFixed(1)}%</td>
+        <td class="${(v.pnl??0)>=0?'green':'red'}" style="font-weight:600">${fmtUSD(v.pnl)}</td>
+        <td class="${(v.roi_pct??0)>=0?'green':'red'}">${fmtPct(v.roi_pct)}</td>
+      </tr>`;
     });
+    html += '</tbody></table>';
+    $_('strat-breakdown').innerHTML = html;
+  } else {
+    $_('strat-breakdown').innerHTML = '<div style="color:var(--mu);font-size:12px;padding:16px">Strategy breakdown will appear after trades resolve</div>';
   }
 
-  // Edge distribution
-  dc('c-edge');
-  const eBuckets={};
-  SL.filter(e=>e.edge>0&&!e.strategy?.includes('observer')).forEach(e=>{
-    const b=(Math.floor(e.edge*100)).toString()+'%';eBuckets[b]=(eBuckets[b]||0)+1;
-  });
-  if(Object.keys(eBuckets).length){
-    const ks=Object.keys(eBuckets).sort((a,b)=>+a-+b);
-    dc('c-edge');
-    charts['c-edge']=new Chart($_('c-edge'),{type:'bar',data:{labels:ks,datasets:[{
-      data:ks.map(k=>eBuckets[k]),backgroundColor:'rgba(168,85,247,.65)',
-      borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,
-        plugins:{legend:{display:false}},
-        scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'}}}}
-    });
-  }
-
-  // Probability buckets
-  dc('c-prob');
-  const pb={'<85%':0,'85-90%':0,'90-95%':0,'95-99%':0,'99%+':0};
-  SL.filter(e=>!e.strategy?.includes('observer')).forEach(e=>{
-    const p=(e.probability||0)*100;
-    if(p>=99)pb['99%+']++;
-    else if(p>=95)pb['95-99%']++;
-    else if(p>=90)pb['90-95%']++;
-    else if(p>=85)pb['85-90%']++;
-    else pb['<85%']++;
-  });
-  charts['c-prob']=new Chart($_('c-prob'),{type:'bar',data:{
-    labels:Object.keys(pb),datasets:[{data:Object.values(pb),
-    backgroundColor:['#64748b','rgba(59,130,246,.7)','rgba(34,197,94,.7)','rgba(34,197,94,.9)','rgba(239,68,68,.7)'],
-    borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false}},
-      scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'}}}}
-  });
-
-  // Days to resolution
-  dc('c-days');
-  const db={'<1d':0,'1-3d':0,'3-7d':0,'7d+':0};
-  SL.filter(e=>!e.strategy?.includes('observer')).forEach(e=>{
-    const d=e.days_to_res||0;
-    if(d<1)db['<1d']++;else if(d<3)db['1-3d']++;else if(d<7)db['3-7d']++;else db['7d+']++;
-  });
-  charts['c-days']=new Chart($_('c-days'),{type:'bar',data:{
-    labels:Object.keys(db),datasets:[{data:Object.values(db),
-    backgroundColor:['#ef444499','#f59e0b99','#3b82f699','#64748b66'],borderRadius:4}]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false}},
-      scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'}}}}
-  });
+  // Status
+  const now = new Date();
+  $_('ov-status').innerHTML = [
+    `<b style="color:var(--tx)">Last data update:</b> ${D.timestamp ? new Date(D.timestamp).toLocaleString() : 'unknown'}`,
+    `<b style="color:var(--tx)">Mode:</b> ${D.dry_run===false?'<span style="color:var(--green)">LIVE</span>':'<span style="color:var(--purple)">DRY RUN</span>'}`,
+    `<b style="color:var(--tx)">Open exposure:</b> $${parseFloat(D.open_exposure??0).toFixed(2)} USDC across ${D.open_positions??0} positions`,
+    `<b style="color:var(--tx)">Scan log:</b> ${D.total_opportunities??0} opportunities evaluated, ${D.trades_executed??0} executed`,
+    `<b style="color:var(--tx)">Lessons stored:</b> ${D.lessons_count??0} (last review: ${D.lessons_updated?new Date(D.lessons_updated).toLocaleDateString():'never'})`,
+  ].join('<br>');
 }
 
-// ── Trades tab ─────────────────────────────────────────────────────────
+// ── Trades tab ─────────────────────────────────────────────────────────────
+let _allTrades = [];
 function renderTrades(){
-  const ex=SL.filter(e=>e.executed&&!e.strategy?.includes('observer'));
-  $_('t-total').textContent=ex.length;
-  $_('t-open').textContent=ex.filter(e=>!e.outcome).length;
-  const res=ex.filter(e=>e.outcome);
-  $_('t-resolved').textContent=res.length;
-  $_('t-wr').textContent=res.length?Math.round(res.filter(e=>e.outcome==='win').length/res.length*100)+'%':'—';
+  _allTrades = D.recent_trades??[];
 
-  const sorted=[...ex].sort((a,b)=>b.ts_unix-a.ts_unix);
-  if(!sorted.length){
-    $_('trades-table').innerHTML='<div class="loading">No trades yet</div>';return;
+  // Populate strategy filter
+  const strats = [...new Set(_allTrades.map(t=>t.strategy).filter(Boolean))].sort();
+  const sel = $_('tr-strat');
+  if(sel && sel.options.length<=1){
+    strats.forEach(s=>{ const o=document.createElement('option'); o.value=s; o.textContent=s; sel.appendChild(o); });
   }
-  $_('trades-table').innerHTML=`<table>
-    <thead><tr><th>Time</th><th>Strategy</th><th>Question</th><th>Category</th>
-    <th>Action</th><th>Prob</th><th>Edge</th><th>Score</th><th>Days</th><th>Vol</th><th>Status</th></tr></thead>
-    <tbody>${sorted.map(e=>`<tr>
-      <td style="white-space:nowrap;color:var(--mu)">${tAgo(e.ts)}</td>
-      <td>${stratPill(e.strategy)}</td>
-      <td title="${e.question}" style="max-width:300px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.question}</td>
-      <td>${catPill(e.category)}</td>
-      <td><span class="pill p-open">${e.action||'BUY'}</span></td>
-      <td>${((e.probability||0)*100).toFixed(1)}%</td>
-      <td class="green">${((e.edge||0)*100).toFixed(2)}%</td>
-      <td>${(e.score||0).toFixed(3)}</td>
-      <td>${(e.days_to_res||0).toFixed(1)}d</td>
-      <td>$${Number(e.volume_24h||0).toLocaleString(undefined,{maximumFractionDigits:0})}</td>
-      <td><span class="pill ${e.outcome==='win'?'p-win':e.outcome==='loss'?'p-loss':'p-open'}">${e.outcome||'open'}</span></td>
-    </tr>`).join('')}</tbody></table>`;
-}
 
-// ── Data Collected tab ─────────────────────────────────────────────────
-function renderData(){
-  const pts=Object.values(PH).reduce((a,d)=>a+(d.points?.length||0),0);
-  $_('d-entries').textContent=SL.length.toLocaleString();
-  $_('d-pts').textContent=pts.toLocaleString();
-  $_('d-mkts').textContent=Object.keys(PH).length.toLocaleString();
+  const status  = ($_('tr-status') ?.value)||'all';
+  const outcome = ($_('tr-outcome')?.value)||'all';
+  const strat   = ($_('tr-strat')  ?.value)||'all';
 
-  // Date span
-  const allTs=SL.map(e=>e.ts_unix).filter(Boolean).sort((a,b)=>a-b);
-  if(allTs.length>=2){
-    const days=Math.round((allTs[allTs.length-1]-allTs[0])/86400*10)/10;
-    $_('d-span').textContent=days+'d';
-  }else $_('d-span').textContent='—';
+  let rows = [..._allTrades];
+  if(status  !=='all') rows = rows.filter(t=>t.status===status);
+  if(outcome !=='all') rows = rows.filter(t=>t.outcome===outcome);
+  if(strat   !=='all') rows = rows.filter(t=>t.strategy===strat);
 
-  // By category
-  const catData={};
-  SL.forEach(e=>{
-    const c=e.category||'other';
-    if(!catData[c])catData[c]={total:0,executed:0,edges:[]};
-    catData[c].total++;
-    if(e.executed)catData[c].executed++;
-    if(e.edge>0)catData[c].edges.push(e.edge);
-  });
-  const sorted=Object.entries(catData).sort((a,b)=>b[1].total-a[1].total);
-  $_('d-cats').innerHTML=sorted.map(([cat,d])=>{
-    const pct=Math.round(d.total/SL.length*100);
-    const avgE=d.edges.length?(d.edges.reduce((a,b)=>a+b,0)/d.edges.length*100).toFixed(2):'0.00';
-    const col=catColor(cat);
-    return`<div style="margin-bottom:14px">
-      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:5px">
-        ${catPill(cat)}
-        <span style="font-size:11px;color:var(--mu)">${d.total} entries (${pct}%) · avg edge ${avgE}%</span>
-      </div>
-      <div class="prog"><div class="prog-f" style="width:${pct}%;background:${col}"></div></div>
-    </div>`;
-  }).join('');
+  if($_('tr-count')) $_('tr-count').textContent = `Showing ${rows.length} of ${_allTrades.length} trades`;
 
-  // Volume chart
-  dc('c-vol');
-  const vBuckets={'$0-100':0,'$100-1k':0,'$1k-10k':0,'$10k+':0};
-  SL.forEach(e=>{
-    const v=e.volume_24h||0;
-    if(v<100)vBuckets['$0-100']++;
-    else if(v<1000)vBuckets['$100-1k']++;
-    else if(v<10000)vBuckets['$1k-10k']++;
-    else vBuckets['$10k+']++;
-  });
-  charts['c-vol']=new Chart($_('c-vol'),{type:'bar',data:{
-    labels:Object.keys(vBuckets),datasets:[{data:Object.values(vBuckets),
-    backgroundColor:['#64748b66','#3b82f699','#22c55e99','#f59e0b99'],borderRadius:6}]},
-    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
-      plugins:{legend:{display:false}},
-      scales:{x:{grid:{color:'#1e222d'}},y:{grid:{display:false}}}}
-  });
-
-  // Full scan log table
-  const recent=[...SL].sort((a,b)=>b.ts_unix-a.ts_unix).slice(0,40);
-  $_('scanlog-full').innerHTML=`<table>
-    <thead><tr><th>Time</th><th>Strategy</th><th>Question</th><th>Category</th>
-    <th>Edge</th><th>Prob</th><th>Score</th><th>Days</th><th>Vol 24h</th>
-    <th>Spread</th><th>Executed</th></tr></thead>
-    <tbody>${recent.map(e=>`<tr>
-      <td style="white-space:nowrap;color:var(--mu);font-size:11px">${tAgo(e.ts)}</td>
-      <td>${stratPill(e.strategy)}</td>
-      <td title="${e.question}" style="max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.question}</td>
-      <td>${catPill(e.category)}</td>
-      <td class="green">${((e.edge||0)*100).toFixed(2)}%</td>
-      <td>${((e.probability||0)*100).toFixed(1)}%</td>
-      <td>${(e.score||0).toFixed(3)}</td>
-      <td>${(e.days_to_res||0).toFixed(1)}d</td>
-      <td>$${Number(e.volume_24h||0).toLocaleString(undefined,{maximumFractionDigits:0})}</td>
-      <td>${((e.spread||0)*100).toFixed(1)}%</td>
-      <td>${e.executed?'<span class="pill p-win">yes</span>':
-        `<span class="pill p-dry" title="${e.skipped_reason||''}" style="cursor:help">no</span>`}</td>
-    </tr>`).join('')}</tbody></table>`;
-}
-
-// ── Pattern Analysis tab ───────────────────────────────────────────────
-function renderAnalysis(){
-  const clean=SL.filter(e=>!e.strategy?.includes('observer'));
-
-  // Edge by category
-  dc('a-cat-edge');
-  const catE={};
-  clean.forEach(e=>{
-    const c=e.category||'other';
-    if(!catE[c])catE[c]=[];
-    if(e.edge>0)catE[c].push(e.edge*100);
-  });
-  const catKeys=Object.keys(catE).filter(k=>catE[k].length>0);
-  const catAvgs=catKeys.map(k=>+(catE[k].reduce((a,b)=>a+b,0)/catE[k].length).toFixed(3));
-  charts['a-cat-edge']=new Chart($_('a-cat-edge'),{type:'bar',data:{
-    labels:catKeys,datasets:[{data:catAvgs,
-    backgroundColor:catKeys.map(k=>catColor(k)+'99'),
-    borderColor:catKeys.map(catColor),borderWidth:1,borderRadius:6}]},
-    options:{responsive:true,maintainAspectRatio:false,indexAxis:'y',
-      plugins:{legend:{display:false},
-        tooltip:{callbacks:{label:c=>`Avg edge: ${c.raw.toFixed(2)}%`}}},
-      scales:{x:{grid:{color:'#1e222d'},ticks:{callback:v=>v+'%'}},
-              y:{grid:{display:false}}}}
-  });
-
-  // Edge vs probability scatter (bucketed)
-  dc('a-edge-prob');
-  const probBuckets={};
-  clean.forEach(e=>{
-    if(e.edge>0&&e.probability>0){
-      const b=(Math.floor(e.probability*20)/20).toFixed(2);
-      if(!probBuckets[b])probBuckets[b]=[];
-      probBuckets[b].push(e.edge*100);
-    }
-  });
-  const pbKeys=Object.keys(probBuckets).sort();
-  const pbAvgs=pbKeys.map(k=>+(probBuckets[k].reduce((a,b)=>a+b,0)/probBuckets[k].length).toFixed(3));
-  charts['a-edge-prob']=new Chart($_('a-edge-prob'),{type:'line',data:{
-    labels:pbKeys.map(k=>Math.round(+k*100)+'%'),datasets:[{
-      data:pbAvgs,borderColor:'#a855f7',backgroundColor:'rgba(168,85,247,.1)',
-      borderWidth:2,fill:true,tension:.3,pointRadius:4,
-      pointBackgroundColor:'#a855f7'}]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false}},
-      scales:{x:{grid:{color:'#1e222d'},title:{display:true,text:'Probability bucket',color:'#64748b'}},
-              y:{grid:{color:'#1e222d'},ticks:{callback:v=>v+'%'},
-                 title:{display:true,text:'Avg edge %',color:'#64748b'}}}}
-  });
-
-  // Day of week
-  dc('a-dow');
-  const days=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
-  const dowC=Array(7).fill(0);
-  clean.forEach(e=>{if(e.weekday>=0&&e.weekday<7)dowC[e.weekday]++;});
-  charts['a-dow']=new Chart($_('a-dow'),{type:'bar',data:{
-    labels:days,datasets:[{data:dowC,
-    backgroundColor:dowC.map((_,i)=>i<5?'rgba(59,130,246,.7)':'rgba(168,85,247,.7)'),
-    borderRadius:4}]},options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false}},
-      scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'}}}}
-  });
-
-  // Edge vs days
-  dc('a-edge-days');
-  const dayBuckets={'<1d':[],'1-3d':[],'3-7d':[],'7d+':[]};
-  clean.forEach(e=>{
-    if(e.edge>0){
-      const d=e.days_to_res||0;
-      if(d<1)dayBuckets['<1d'].push(e.edge*100);
-      else if(d<3)dayBuckets['1-3d'].push(e.edge*100);
-      else if(d<7)dayBuckets['3-7d'].push(e.edge*100);
-      else dayBuckets['7d+'].push(e.edge*100);
-    }
-  });
-  const dbKeys=Object.keys(dayBuckets);
-  const dbAvgs=dbKeys.map(k=>dayBuckets[k].length?
-    +(dayBuckets[k].reduce((a,b)=>a+b,0)/dayBuckets[k].length).toFixed(3):0);
-  charts['a-edge-days']=new Chart($_('a-edge-days'),{type:'bar',data:{
-    labels:dbKeys,datasets:[{data:dbAvgs,
-    backgroundColor:['#ef444499','#f59e0b99','#3b82f699','#64748b66'],borderRadius:4}]},
-    options:{responsive:true,maintainAspectRatio:false,
-      plugins:{legend:{display:false}},
-      scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'},
-              ticks:{callback:v=>v+'%'}}}}
-  });
-
-  // Top opportunities by edge
-  const topOpps=[...clean].sort((a,b)=>b.edge-a.edge).slice(0,20);
-  $_('a-top-opps').innerHTML=`<table>
-    <thead><tr><th>Question</th><th>Category</th><th>Edge</th><th>Prob</th>
-    <th>Score</th><th>Days</th><th>Volume</th><th>Strategy</th></tr></thead>
-    <tbody>${topOpps.map(e=>`<tr>
-      <td title="${e.question}" style="max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${e.question}</td>
-      <td>${catPill(e.category)}</td>
-      <td class="green"><b>${((e.edge||0)*100).toFixed(2)}%</b></td>
-      <td>${((e.probability||0)*100).toFixed(1)}%</td>
-      <td>${(e.score||0).toFixed(3)}</td>
-      <td>${(e.days_to_res||0).toFixed(1)}d</td>
-      <td>$${Number(e.volume_24h||0).toLocaleString(undefined,{maximumFractionDigits:0})}</td>
-      <td>${stratPill(e.strategy)}</td>
-    </tr>`).join('')}</tbody></table>`;
-}
-
-// ── Observer Signals tab ───────────────────────────────────────────────
-function renderSignals(){
-  const obs=SL.filter(e=>e.strategy?.includes('observer'));
-  const byType={};
-  obs.forEach(e=>{
-    const t=e.metadata?.signal_type||e.strategy?.split('_').slice(1).join('_')||'unknown';
-    byType[t]=(byType[t]||0)+1;
-  });
-  $_('s-mu').textContent=byType.momentum_up||0;
-  $_('s-md').textContent=byType.momentum_down||0;
-  $_('s-sm').textContent=byType.sharp_move||0;
-  $_('s-rd').textContent=byType.resolution_drift||0;
-
-  if(!obs.length){
-    $_('signals-list').innerHTML='<div class="loading">No observer signals yet — observer needs a few scan cycles to build history</div>';
+  const tbody = $_('trades-tbody');
+  if(!tbody) return;
+  if(!rows.length){
+    tbody.innerHTML = '<tr><td colspan="14" style="text-align:center;color:var(--mu);padding:32px">No trades match filter. Dry-run trades appear here once the engine executes.</td></tr>';
     return;
   }
 
-  const typeClass={momentum_up:'up',momentum_down:'down',sharp_move:'sharp',
-                   resolution_drift:'drift',volume_spike:'spike'};
-  const typeColor={momentum_up:'var(--green)',momentum_down:'var(--red)',
-                   sharp_move:'var(--purple)',resolution_drift:'var(--blue)',
-                   volume_spike:'var(--amber)'};
+  tbody.innerHTML = rows.map(t=>{
+    const cost  = parseFloat(t.size??0);
+    const pnl   = parseFloat(t.pnl??0);
+    const roi   = t.roi!=null ? parseFloat(t.roi) : null;
+    const edge  = t.edge!=null ? parseFloat(t.edge) : null;
+    const ev    = t.ev!=null ? parseFloat(t.ev) : null;
+    // Kelly from notes if available
+    let kelly = null;
+    const notes = t.notes??'';
+    const km = notes.match(/kelly=([d.]+)/);
+    if(km) kelly = parseFloat(km[1]);
+    const pm = notes.match(/p=([d.]+)/);
+    const winProb = pm ? parseFloat(pm[1]) : null;
 
-  const sorted=[...obs].sort((a,b)=>b.edge-a.edge).slice(0,30);
-  $_('signals-list').innerHTML=sorted.map(e=>{
-    const t=e.metadata?.signal_type||'signal';
-    const note=e.metadata?.signal_note||e.skipped_reason||'';
-    return`<div class="insight ${typeClass[t]||''}">
-      <div class="insight-type" style="color:${typeColor[t]||'var(--mu)'}">${t.replace(/_/g,' ')}</div>
-      <div class="insight-q">${e.question}</div>
-      <div style="display:flex;gap:8px;margin-bottom:6px">
-        ${catPill(e.category)}
-        <span class="tag">p=${((e.probability||0)*100).toFixed(1)}%</span>
-        <span class="tag">strength=${((e.edge||0)).toFixed(3)}</span>
-        <span class="tag">${tAgo(e.ts)}</span>
-      </div>
-      <div class="insight-note">${note}</div>
-    </div>`;
+    const statPill = t.status==='open'
+      ? pill('OPEN','p-open')
+      : t.outcome==='win' ? pill('WIN','p-win') : pill('LOSS','p-loss');
+
+    return `<tr>
+      <td style="font-size:11px;color:var(--mu);white-space:nowrap">${(t.time||'').slice(0,16).replace('T',' ')}</td>
+      <td>${stratPill(t.strategy)}</td>
+      <td style="max-width:280px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px" title="${esc(t.market)}">${esc(t.market)}</td>
+      <td style="font-size:12px;font-weight:600">${esc(t.side)}</td>
+      <td style="font-size:12px">${fmt(t.price,3)}</td>
+      <td style="font-size:12px">$${cost.toFixed(2)}</td>
+      <td style="font-size:12px">${fmt(t.shares,4)}</td>
+      <td style="font-size:11px;color:var(--mu)">$${parseFloat(t.fee??0).toFixed(4)}</td>
+      <td style="font-size:12px;color:${edge!=null?(edge>0?'var(--green)':edge<0?'var(--red)':'var(--mu)'):'var(--mu)'};font-weight:600">
+        ${edge!=null?(edge>=0?'+':'')+edge.toFixed(4):'—'}</td>
+      <td style="font-size:12px;color:${ev!=null?(ev>0?'var(--green)':'var(--red)'):'var(--mu)'}">${ev!=null?(ev>=0?'+':'')+ev.toFixed(4):'—'}</td>
+      <td style="font-size:11px;color:var(--mu)">${kelly!=null?(kelly*100).toFixed(1)+'%':'—'}</td>
+      <td>${statPill}</td>
+      <td style="font-weight:600;color:${pnl>0?'var(--green)':pnl<0?'var(--red)':'var(--mu)'}">${t.status==='resolved'?fmtUSD(pnl):'—'}</td>
+      <td style="color:${roi!=null?(roi>0?'var(--green)':roi<0?'var(--red)':'var(--mu)'):'var(--mu)'}">${roi!=null?fmtPct(roi):'—'}</td>
+    </tr>`;
   }).join('');
 }
 
-// ── Strategy Refinement tab ────────────────────────────────────────────
-function renderStrategy(){
-  const clean=SL.filter(e=>!e.strategy?.includes('observer'));
-  if(!clean.length){
-    $_('refinement-insights').innerHTML='No data collected yet. Run a few scan cycles first.';
-    $_('s10-reco').innerHTML='<div class="loading">Needs data</div>';
-    $_('s1-reco').innerHTML='<div class="loading">Needs data</div>';
-    $_('lessons-table').innerHTML='<div class="loading">Needs data</div>';
-    return;
+// ── P&L Analytics ─────────────────────────────────────────────────────────
+function renderPnL(){
+  const ts = D;
+  const res = parseFloat(ts.resolved_trades??0);
+  const wins = parseFloat(ts.wins_all_time??0);
+  const losses = parseFloat(ts.losses_all_time??0);
+  const pnl = parseFloat(ts.total_pnl??0);
+  const roi = parseFloat(ts.roi_pct??0);
+  const best = parseFloat(ts.best_trade_pnl??0);
+  const worst = parseFloat(ts.worst_trade_pnl??0);
+
+  $_('pnl-resolved').textContent = res;
+  $_('pnl-resolved-s').textContent = wins+' wins / '+losses+' losses';
+  $_('pnl-net').textContent = fmtUSD(pnl);
+  $_('pnl-net').className = 'stat '+pnlClass(pnl);
+  $_('pnl-net-s').textContent = 'invested: $'+(parseFloat(ts.total_invested??0).toFixed(2));
+  $_('pnl-roi').textContent = fmtPct(roi);
+  $_('pnl-roi').className = 'stat '+pnlClass(roi);
+  $_('pnl-roi-s').textContent = res>0 ? 'across '+res+' resolved trades' : 'Awaiting resolutions';
+  $_('pnl-best').textContent = res>0 ? fmtUSD(best) : '—';
+  $_('pnl-worst').textContent = 'Worst: '+(res>0?fmtUSD(worst):'—');
+
+  // Per-trade math table (resolved)
+  const resolved = (ts.recent_trades??[]).filter(t=>t.status==='resolved');
+  const tbody = $_('pnl-tbody');
+  if(tbody){
+    if(!resolved.length){
+      tbody.innerHTML = '<tr><td colspan="14" style="text-align:center;color:var(--mu);padding:24px">No resolved trades yet. Markets end dates: Mar 25–31. Resolution runs automatically.</td></tr>';
+    } else {
+      tbody.innerHTML = resolved.map(t=>{
+        const cost   = parseFloat(t.size??0);
+        const fee    = parseFloat(t.fee??0);
+        const shares = parseFloat(t.shares??0);
+        const price  = parseFloat(t.price??0);
+        const pnl2   = parseFloat(t.pnl??0);
+        const roi2   = t.roi!=null?parseFloat(t.roi):null;
+        const edge   = t.edge!=null?parseFloat(t.edge):null;
+        const ev     = t.ev!=null?parseFloat(t.ev):null;
+        // Extract p and kelly from notes
+        const notes  = t.notes??'';
+        const pm = notes.match(/p=([d.]+)/);
+        const km = notes.match(/kelly=([d.]+)/);
+        const winProb = pm ? parseFloat(pm[1]) : price;
+        const kelly   = km ? (parseFloat(km[1])*100).toFixed(1)+'%' : '—';
+        // Auto-analysis
+        let analysis = '';
+        if(t.outcome==='win' && edge>0) analysis = `Edge confirmed: bought at ${price.toFixed(3)}, p=${winProb.toFixed(3)}`;
+        else if(t.outcome==='loss' && edge>0) analysis = `Edge miss: had +${edge?.toFixed(4)} edge but lost — check vol/spread`;
+        else if(t.outcome==='loss' && edge<=0) analysis = `Negative edge (${edge?.toFixed(4)}) trade — expected loss`;
+        else if(t.outcome==='win' && edge<=0) analysis = `Lucky win on neg-edge trade — don't rely on this`;
+        const outPill = t.outcome==='win'?pill('WIN','p-win'):pill('LOSS','p-loss');
+        return `<tr>
+          <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px" title="${esc(t.market)}">${esc(t.market)}</td>
+          <td style="font-size:12px;font-weight:600">${esc(t.side)}</td>
+          <td style="font-size:12px">${fmt(price,3)}</td>
+          <td style="font-size:12px;color:var(--teal)">${winProb.toFixed(3)}</td>
+          <td style="font-size:12px">${shares.toFixed(4)}</td>
+          <td style="font-size:12px">$${cost.toFixed(2)}</td>
+          <td style="font-size:11px;color:var(--mu)">$${fee.toFixed(4)}</td>
+          <td style="color:${edge!=null?(edge>0?'var(--green)':'var(--red)'):'var(--mu)'};font-weight:600">${edge!=null?(edge>=0?'+':'')+edge.toFixed(4):'—'}</td>
+          <td style="color:${ev!=null?(ev>0?'var(--green)':'var(--red)'):'var(--mu)'}">${ev!=null?(ev>=0?'+':'')+ev.toFixed(4):'—'}</td>
+          <td style="color:var(--mu);font-size:11px">${kelly}</td>
+          <td>${outPill}</td>
+          <td style="font-weight:700;color:${pnl2>0?'var(--green)':'var(--red)'}">${fmtUSD(pnl2)}</td>
+          <td style="color:${roi2!=null?(roi2>0?'var(--green)':'var(--red)'):'var(--mu)'}">${roi2!=null?fmtPct(roi2):'—'}</td>
+          <td style="font-size:11px;color:var(--mu);max-width:160px">${esc(analysis)}</td>
+        </tr>`;
+      }).join('');
+    }
   }
 
-  // Insights
-  const insights=[];
-  const catE={};
-  clean.forEach(e=>{
-    const c=e.category||'other';
-    if(!catE[c])catE[c]=[];
-    if(e.edge>0)catE[c].push(e.edge);
-  });
-  const bestCat=Object.entries(catE).sort((a,b)=>
-    b[1].reduce((x,y)=>x+y,0)/b[1].length - a[1].reduce((x,y)=>x+y,0)/a[1].length
-  )[0];
-  if(bestCat)insights.push(
-    `<b style="color:var(--green)">${bestCat[0]}</b> markets have the highest average edge 
-    (${(bestCat[1].reduce((a,b)=>a+b,0)/bestCat[1].length*100).toFixed(2)}%) — 
-    increase S10 allocation to ${bestCat[0]} markets.`
-  );
-
-  const highProbOpps=clean.filter(e=>e.probability>=0.95&&e.probability<0.99);
-  if(highProbOpps.length>5)insights.push(
-    `${highProbOpps.length} opportunities found at p=0.95-0.99 range. 
-    This is the sweet spot: high certainty, fees still tiny, spread manageable. 
-    Consider lowering S10 <b>min_probability</b> threshold if currently above 0.90.`
-  );
-
-  const p99=clean.filter(e=>e.probability>=0.99);
-  if(p99.length>0)insights.push(
-    `<b style="color:var(--red)">${p99.length}</b> opportunities had probability ≥ 99% — 
-    these are already-resolved markets. The <b>max_probability: 0.989</b> filter should block these. 
-    If still appearing, check that the latest data_engine.py is deployed.`
-  );
-
-  const lowVol=clean.filter(e=>e.volume_24h<200&&e.executed);
-  if(lowVol.length>0)insights.push(
-    `${lowVol.length} executed trades had volume < $200. In live trading, low-volume 
-    markets have wide real spreads that eat edge. Consider raising <b>min_volume_24h to 200</b>.`
-  );
-
-  $_('refinement-insights').innerHTML='<ul style="list-style:none">'+
-    insights.map(i=>`<li style="padding:8px 0;border-bottom:1px solid var(--bd);
-      font-size:12px;color:var(--mu);line-height:1.6">${i}</li>`).join('')+
-    '</ul>';
-
-  // S10 recommendations
-  const s10=clean.filter(e=>e.strategy?.includes('s10'));
-  if(s10.length>0){
-    const avgProb=(s10.map(e=>e.probability).reduce((a,b)=>a+b,0)/s10.length*100).toFixed(1);
-    const avgEdge=(s10.map(e=>e.edge).filter(e=>e>0).reduce((a,b,_,arr)=>a+b/arr.length,0)*100).toFixed(3);
-    const avgDays=(s10.map(e=>e.days_to_res).reduce((a,b)=>a+b,0)/s10.length).toFixed(1);
-    $_('s10-reco').innerHTML=`
-      <div style="font-size:12px;color:var(--mu);line-height:1.8">
-        Based on <b style="color:var(--tx)">${s10.length} S10 opportunities</b> collected:<br>
-        Average probability: <b style="color:var(--tx)">${avgProb}%</b><br>
-        Average edge: <b style="color:var(--green)">${avgEdge}%</b><br>
-        Average days to resolution: <b style="color:var(--tx)">${avgDays}d</b><br><br>
-        ${parseFloat(avgProb)>99?
-          '<b style="color:var(--red)">Warning:</b> avg prob >99% means resolved markets leaking through. Deploy latest data_engine.py.':
-          parseFloat(avgProb)<88?
-          'Consider raising min_probability to 0.88+ to improve signal quality.':
-          '<b style="color:var(--green)">Probability range looks healthy.</b>'}
-      </div>`;
-  }else{
-    $_('s10-reco').innerHTML='<div class="loading">No S10 data yet</div>';
+  // P&L bar chart
+  if(resolved.length>=2){
+    const labels = resolved.map((_,i)=>'#'+(i+1));
+    const data   = resolved.map(t=>parseFloat(t.pnl??0));
+    const colors = data.map(v=>v>0?'rgba(34,197,94,.7)':'rgba(239,68,68,.7)');
+    dc('c-pnl-bar');
+    charts['c-pnl-bar'] = new Chart($_('c-pnl-bar'),{
+      type:'bar',
+      data:{labels,datasets:[{label:'P&L $',data,backgroundColor:colors,borderRadius:3}]},
+      options:{responsive:true,maintainAspectRatio:false,
+        plugins:{legend:{display:false}},
+        scales:{x:{grid:{display:false}},y:{grid:{color:'#1e222d'},ticks:{callback:v=>'$'+v.toFixed(4)}}}}
+    });
   }
-
-  // S1 recommendations
-  const s1=clean.filter(e=>e.strategy?.includes('s1'));
-  if(s1.length>0){
-    $_('s1-reco').innerHTML=`<div style="font-size:12px;color:var(--mu);line-height:1.8">
-      <b style="color:var(--tx)">${s1.length} S1 NegRisk</b> opportunities found.<br>
-      Average edge: <b style="color:var(--green)">${(s1.filter(e=>e.edge>0).reduce((a,b,_,arr)=>a+b.edge/arr.length,0)*100).toFixed(3)}%</b><br>
-      Avg legs per group: <b style="color:var(--tx)">${(s1.reduce((a,b)=>a+(b.num_legs||0),0)/s1.length).toFixed(1)}</b><br><br>
-      NegRisk arb is rare but mathematically guaranteed. Keep scanning.
-    </div>`;
-  }else{
-    $_('s1-reco').innerHTML='<div class="loading">No S1 data yet — NegRisk arb is rare</div>';
-  }
-
-  // Lessons from lessons.json
-  const lessons=LS.lessons||[];
-  if(lessons.length){
-    $_('lessons-table').innerHTML=`<table>
-      <thead><tr><th>#</th><th>Lesson (from ReviewEngine)</th></tr></thead>
-      <tbody>${lessons.map((l,i)=>`<tr>
-        <td style="color:var(--mu);font-size:11px">${i+1}</td>
-        <td style="font-size:12px;line-height:1.5">${l}</td>
-      </tr>`).join('')}</tbody></table>`;
-  }else{
-    $_('lessons-table').innerHTML='<div class="loading">No lessons yet — ReviewEngine runs after first resolved trade</div>';
-  }
-}
-
-
-// ══ P&L ANALYTICS TAB ════════════════════════════════════════════════════════
-function renderPnlTab(D) {
-  const trades = D.recent_trades || [];
-  const resolved = trades.filter(t=>t.status==='resolved');
-  const wins     = resolved.filter(t=>t.outcome==='win');
-  const losses   = resolved.filter(t=>t.outcome==='loss');
-  const totalPnl = resolved.reduce((s,t)=>s+(t.pnl||0),0);
-  const totalInv = resolved.reduce((s,t)=>s+(t.size||0),0);
-  const roi      = totalInv>0?totalPnl/totalInv*100:0;
-  const wr       = resolved.length>0?wins.length/resolved.length*100:0;
-
-  function pnlClass(v){return v>0?'green':v<0?'red':''}
-  function fmt(v,d=4){return v>=0?'+'+v.toFixed(d):v.toFixed(d)}
-
-  $_('pk-pnl').className='stat '+pnlClass(totalPnl);
-  $_('pk-pnl').textContent=(totalPnl>=0?'+':'')+totalPnl.toFixed(4)+' USDC';
-  $_('pk-pnl-s').textContent=resolved.length+' resolved trades';
-  $_('pk-wr').className='stat '+(wr>=50?'green':wr>0?'amber':'red');
-  $_('pk-wr').textContent=wr.toFixed(1)+'%';
-  $_('pk-wr-s').textContent=wins.length+'W / '+losses.length+'L';
-  $_('pk-roi').className='stat '+pnlClass(roi);
-  $_('pk-roi').textContent=(roi>=0?'+':'')+roi.toFixed(2)+'%';
-  $_('pk-roi-s').textContent='on 
-
-<!-- ══ TAB: P&L ANALYTICS ══════════════════════════════════════════════════ -->
-<div class="tab-content" id="tab-pnl">
-<div class="g4" id="pnl-kpis">
-  <div class="card"><h2>Total P&amp;L (All Resolved)</h2><div class="stat" id="pk-pnl">—</div><div class="sub" id="pk-pnl-s">—</div></div>
-  <div class="card"><h2>Win Rate</h2><div class="stat" id="pk-wr">—</div><div class="sub" id="pk-wr-s">—</div></div>
-  <div class="card"><h2>Total ROI</h2><div class="stat" id="pk-roi">—</div><div class="sub" id="pk-roi-s">—</div></div>
-  <div class="card"><h2>Open Exposure</h2><div class="stat amber" id="pk-exp">—</div><div class="sub" id="pk-exp-s">—</div></div>
-</div>
-<div class="g4">
-  <div class="card"><h2>Best Trade</h2><div class="stat green" id="pk-best">—</div><div class="sub">Net P&amp;L</div></div>
-  <div class="card"><h2>Worst Trade</h2><div class="stat red" id="pk-worst">—</div><div class="sub">Net P&amp;L</div></div>
-  <div class="card"><h2>Avg P&amp;L / Trade</h2><div class="stat" id="pk-avg">—</div><div class="sub">Resolved only</div></div>
-  <div class="card"><h2>Total Invested</h2><div class="stat blue" id="pk-inv">—</div><div class="sub">USDC staked (resolved)</div></div>
-</div>
-<div class="g2">
-  <div class="card">
-    <div class="sec">Cumulative P&amp;L Over Time</div>
-    <div class="ch-xl"><canvas id="c-cum-pnl"></canvas></div>
-  </div>
-  <div class="card">
-    <div class="sec">Win / Loss Distribution</div>
-    <div class="ch-lg"><canvas id="c-wl-dist"></canvas></div>
-  </div>
-</div>
-<div class="g2">
-  <div class="card">
-    <div class="sec">P&amp;L by Strategy</div>
-    <div id="pnl-by-strategy"></div>
-  </div>
-  <div class="card">
-    <div class="sec">Edge Accuracy Analysis</div>
-    <div id="edge-accuracy-breakdown"></div>
-    <div style="margin-top:16px" class="sec">EV Distribution</div>
-    <div class="ch"><canvas id="c-ev-dist"></canvas></div>
-  </div>
-</div>
-<div class="card" style="margin-bottom:20px">
-  <div class="sec">Loss Pattern Analysis — Why Trades Lost</div>
-  <div id="loss-analysis"></div>
-</div>
-<div class="card">
-  <div class="sec">Win Pattern Analysis — What Made Trades Win</div>
-  <div id="win-analysis"></div>
-</div>
-</div>
-
-<!-- ══ TAB: SETTLED TRADES ══════════════════════════════════════════════════ -->
-<div class="tab-content" id="tab-settled">
-<div class="g3" style="margin-bottom:16px">
-  <div style="display:flex;gap:8px;align-items:center">
-    <label style="font-size:12px;color:var(--mu)">Filter:</label>
-    <select id="filter-status" onchange="renderSettledTable()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 8px;border-radius:4px;font-size:12px">
-      <option value="all">All</option><option value="resolved">Resolved</option><option value="open">Open</option>
-    </select>
-    <select id="filter-strategy" onchange="renderSettledTable()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 8px;border-radius:4px;font-size:12px">
-      <option value="all">All Strategies</option>
-    </select>
-    <select id="filter-outcome" onchange="renderSettledTable()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 8px;border-radius:4px;font-size:12px">
-      <option value="all">All Outcomes</option><option value="win">Win</option><option value="loss">Loss</option>
-    </select>
-  </div>
-</div>
-<div class="card" style="padding:0;overflow:hidden">
-  <div id="settled-table-wrap" style="overflow-x:auto">
-    <table id="settled-table">
-      <thead>
-        <tr>
-          <th>Time</th><th>Strategy</th><th>Market</th>
-          <th>Side</th><th>Buy Price</th><th>Shares</th>
-          <th>Cost</th><th>Fee</th><th>Status</th>
-          <th>P&amp;L</th><th>ROI</th><th>Edge</th><th>EV</th><th>Notes</th>
-        </tr>
-      </thead>
-      <tbody id="settled-tbody"></tbody>
-    </table>
-  </div>
-</div>
-<div id="settled-empty" class="loading" style="display:none">No trades yet — dry run trades will appear here once the engine executes.</div>
-</div>
-
-
-<!-- ══ TAB: SCAN HISTORY ════════════════════════════════════════════════════ -->
-<div class="tab-content" id="tab-scanhistory">
-
-<!-- Header stats row -->
-<div class="g4" style="margin-bottom:16px" id="sh-kpis">
-  <div class="card"><h2>Total Scans (log entries)</h2><div class="stat purple" id="sh-total">—</div><div class="sub">All opportunities evaluated</div></div>
-  <div class="card"><h2>Executed This Session</h2><div class="stat green" id="sh-exec">—</div><div class="sub">Dry-run trades opened</div></div>
-  <div class="card"><h2>Top Strategy</h2><div class="stat teal" id="sh-topstrat">—</div><div class="sub" id="sh-topstrat-s">By opportunity count</div></div>
-  <div class="card"><h2>Last Scan</h2><div class="stat amber" id="sh-last">—</div><div class="sub" id="sh-last-s">—</div></div>
-</div>
-
-<!-- Filters row -->
-<div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
-  <span style="font-size:12px;color:var(--mu)">Filter:</span>
-  <select id="sh-filter-strat" onchange="renderScanHistory()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 10px;border-radius:4px;font-size:12px">
-    <option value="all">All Strategies</option>
-  </select>
-  <select id="sh-filter-exec" onchange="renderScanHistory()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 10px;border-radius:4px;font-size:12px">
-    <option value="all">All</option>
-    <option value="executed">Executed only</option>
-    <option value="skipped">Skipped only</option>
-  </select>
-  <select id="sh-filter-n" onchange="renderScanHistory()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 10px;border-radius:4px;font-size:12px">
-    <option value="100">Last 100</option>
-    <option value="250">Last 250</option>
-    <option value="500">Last 500</option>
-    <option value="0">All</option>
-  </select>
-  <input id="sh-search" oninput="renderScanHistory()" placeholder="Search market question..." style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 10px;border-radius:4px;font-size:12px;flex:1;min-width:180px">
-</div>
-
-<!-- Main scan log table -->
-<div class="card" style="padding:0;overflow:hidden">
-<div style="overflow-x:auto">
-<table id="sh-table">
-  <thead>
-    <tr>
-      <th style="width:130px">Time (UTC)</th>
-      <th style="width:90px">Strategy</th>
-      <th>Market Question</th>
-      <th style="width:55px">Side</th>
-      <th style="width:60px">Price</th>
-      <th style="width:55px">Edge</th>
-      <th style="width:55px">EV</th>
-      <th style="width:55px">Score</th>
-      <th style="width:65px">Vol $</th>
-      <th style="width:50px">TTL</th>
-      <th style="width:80px">Status</th>
-    </tr>
-  </thead>
-  <tbody id="sh-tbody"></tbody>
-</table>
-</div>
-</div>
-<div id="sh-empty" style="text-align:center;padding:32px;color:var(--mu);font-size:13px;display:none">
-  No scan log entries yet. The scan cycle will populate this on next run.
-</div>
-<div id="sh-count" style="font-size:11px;color:var(--mu);margin-top:8px;text-align:right"></div>
-
-</div>
-
-</body>
-</html>
-+totalInv.toFixed(2)+' invested';
-  $_('pk-exp').textContent='
-
-<!-- ══ TAB: P&L ANALYTICS ══════════════════════════════════════════════════ -->
-<div class="tab-content" id="tab-pnl">
-<div class="g4" id="pnl-kpis">
-  <div class="card"><h2>Total P&amp;L (All Resolved)</h2><div class="stat" id="pk-pnl">—</div><div class="sub" id="pk-pnl-s">—</div></div>
-  <div class="card"><h2>Win Rate</h2><div class="stat" id="pk-wr">—</div><div class="sub" id="pk-wr-s">—</div></div>
-  <div class="card"><h2>Total ROI</h2><div class="stat" id="pk-roi">—</div><div class="sub" id="pk-roi-s">—</div></div>
-  <div class="card"><h2>Open Exposure</h2><div class="stat amber" id="pk-exp">—</div><div class="sub" id="pk-exp-s">—</div></div>
-</div>
-<div class="g4">
-  <div class="card"><h2>Best Trade</h2><div class="stat green" id="pk-best">—</div><div class="sub">Net P&amp;L</div></div>
-  <div class="card"><h2>Worst Trade</h2><div class="stat red" id="pk-worst">—</div><div class="sub">Net P&amp;L</div></div>
-  <div class="card"><h2>Avg P&amp;L / Trade</h2><div class="stat" id="pk-avg">—</div><div class="sub">Resolved only</div></div>
-  <div class="card"><h2>Total Invested</h2><div class="stat blue" id="pk-inv">—</div><div class="sub">USDC staked (resolved)</div></div>
-</div>
-<div class="g2">
-  <div class="card">
-    <div class="sec">Cumulative P&amp;L Over Time</div>
-    <div class="ch-xl"><canvas id="c-cum-pnl"></canvas></div>
-  </div>
-  <div class="card">
-    <div class="sec">Win / Loss Distribution</div>
-    <div class="ch-lg"><canvas id="c-wl-dist"></canvas></div>
-  </div>
-</div>
-<div class="g2">
-  <div class="card">
-    <div class="sec">P&amp;L by Strategy</div>
-    <div id="pnl-by-strategy"></div>
-  </div>
-  <div class="card">
-    <div class="sec">Edge Accuracy Analysis</div>
-    <div id="edge-accuracy-breakdown"></div>
-    <div style="margin-top:16px" class="sec">EV Distribution</div>
-    <div class="ch"><canvas id="c-ev-dist"></canvas></div>
-  </div>
-</div>
-<div class="card" style="margin-bottom:20px">
-  <div class="sec">Loss Pattern Analysis — Why Trades Lost</div>
-  <div id="loss-analysis"></div>
-</div>
-<div class="card">
-  <div class="sec">Win Pattern Analysis — What Made Trades Win</div>
-  <div id="win-analysis"></div>
-</div>
-</div>
-
-<!-- ══ TAB: SETTLED TRADES ══════════════════════════════════════════════════ -->
-<div class="tab-content" id="tab-settled">
-<div class="g3" style="margin-bottom:16px">
-  <div style="display:flex;gap:8px;align-items:center">
-    <label style="font-size:12px;color:var(--mu)">Filter:</label>
-    <select id="filter-status" onchange="renderSettledTable()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 8px;border-radius:4px;font-size:12px">
-      <option value="all">All</option><option value="resolved">Resolved</option><option value="open">Open</option>
-    </select>
-    <select id="filter-strategy" onchange="renderSettledTable()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 8px;border-radius:4px;font-size:12px">
-      <option value="all">All Strategies</option>
-    </select>
-    <select id="filter-outcome" onchange="renderSettledTable()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 8px;border-radius:4px;font-size:12px">
-      <option value="all">All Outcomes</option><option value="win">Win</option><option value="loss">Loss</option>
-    </select>
-  </div>
-</div>
-<div class="card" style="padding:0;overflow:hidden">
-  <div id="settled-table-wrap" style="overflow-x:auto">
-    <table id="settled-table">
-      <thead>
-        <tr>
-          <th>Time</th><th>Strategy</th><th>Market</th>
-          <th>Side</th><th>Buy Price</th><th>Shares</th>
-          <th>Cost</th><th>Fee</th><th>Status</th>
-          <th>P&amp;L</th><th>ROI</th><th>Edge</th><th>EV</th><th>Notes</th>
-        </tr>
-      </thead>
-      <tbody id="settled-tbody"></tbody>
-    </table>
-  </div>
-</div>
-<div id="settled-empty" class="loading" style="display:none">No trades yet — dry run trades will appear here once the engine executes.</div>
-</div>
-
-</body>
-</html>
-+(D.open_exposure||0).toFixed(2);
-  $_('pk-exp-s').textContent=(D.open_positions||0)+' open positions';
-  $_('pk-best').textContent=fmt(D.best_trade_pnl||0)+' USDC';
-  $_('pk-worst').textContent=fmt(D.worst_trade_pnl||0)+' USDC';
-  const avgPnl=resolved.length>0?totalPnl/resolved.length:0;
-  $_('pk-avg').className='stat '+pnlClass(avgPnl);
-  $_('pk-avg').textContent=fmt(avgPnl)+' USDC';
-  $_('pk-inv').textContent='
-
-<!-- ══ TAB: P&L ANALYTICS ══════════════════════════════════════════════════ -->
-<div class="tab-content" id="tab-pnl">
-<div class="g4" id="pnl-kpis">
-  <div class="card"><h2>Total P&amp;L (All Resolved)</h2><div class="stat" id="pk-pnl">—</div><div class="sub" id="pk-pnl-s">—</div></div>
-  <div class="card"><h2>Win Rate</h2><div class="stat" id="pk-wr">—</div><div class="sub" id="pk-wr-s">—</div></div>
-  <div class="card"><h2>Total ROI</h2><div class="stat" id="pk-roi">—</div><div class="sub" id="pk-roi-s">—</div></div>
-  <div class="card"><h2>Open Exposure</h2><div class="stat amber" id="pk-exp">—</div><div class="sub" id="pk-exp-s">—</div></div>
-</div>
-<div class="g4">
-  <div class="card"><h2>Best Trade</h2><div class="stat green" id="pk-best">—</div><div class="sub">Net P&amp;L</div></div>
-  <div class="card"><h2>Worst Trade</h2><div class="stat red" id="pk-worst">—</div><div class="sub">Net P&amp;L</div></div>
-  <div class="card"><h2>Avg P&amp;L / Trade</h2><div class="stat" id="pk-avg">—</div><div class="sub">Resolved only</div></div>
-  <div class="card"><h2>Total Invested</h2><div class="stat blue" id="pk-inv">—</div><div class="sub">USDC staked (resolved)</div></div>
-</div>
-<div class="g2">
-  <div class="card">
-    <div class="sec">Cumulative P&amp;L Over Time</div>
-    <div class="ch-xl"><canvas id="c-cum-pnl"></canvas></div>
-  </div>
-  <div class="card">
-    <div class="sec">Win / Loss Distribution</div>
-    <div class="ch-lg"><canvas id="c-wl-dist"></canvas></div>
-  </div>
-</div>
-<div class="g2">
-  <div class="card">
-    <div class="sec">P&amp;L by Strategy</div>
-    <div id="pnl-by-strategy"></div>
-  </div>
-  <div class="card">
-    <div class="sec">Edge Accuracy Analysis</div>
-    <div id="edge-accuracy-breakdown"></div>
-    <div style="margin-top:16px" class="sec">EV Distribution</div>
-    <div class="ch"><canvas id="c-ev-dist"></canvas></div>
-  </div>
-</div>
-<div class="card" style="margin-bottom:20px">
-  <div class="sec">Loss Pattern Analysis — Why Trades Lost</div>
-  <div id="loss-analysis"></div>
-</div>
-<div class="card">
-  <div class="sec">Win Pattern Analysis — What Made Trades Win</div>
-  <div id="win-analysis"></div>
-</div>
-</div>
-
-<!-- ══ TAB: SETTLED TRADES ══════════════════════════════════════════════════ -->
-<div class="tab-content" id="tab-settled">
-<div class="g3" style="margin-bottom:16px">
-  <div style="display:flex;gap:8px;align-items:center">
-    <label style="font-size:12px;color:var(--mu)">Filter:</label>
-    <select id="filter-status" onchange="renderSettledTable()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 8px;border-radius:4px;font-size:12px">
-      <option value="all">All</option><option value="resolved">Resolved</option><option value="open">Open</option>
-    </select>
-    <select id="filter-strategy" onchange="renderSettledTable()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 8px;border-radius:4px;font-size:12px">
-      <option value="all">All Strategies</option>
-    </select>
-    <select id="filter-outcome" onchange="renderSettledTable()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 8px;border-radius:4px;font-size:12px">
-      <option value="all">All Outcomes</option><option value="win">Win</option><option value="loss">Loss</option>
-    </select>
-  </div>
-</div>
-<div class="card" style="padding:0;overflow:hidden">
-  <div id="settled-table-wrap" style="overflow-x:auto">
-    <table id="settled-table">
-      <thead>
-        <tr>
-          <th>Time</th><th>Strategy</th><th>Market</th>
-          <th>Side</th><th>Buy Price</th><th>Shares</th>
-          <th>Cost</th><th>Fee</th><th>Status</th>
-          <th>P&amp;L</th><th>ROI</th><th>Edge</th><th>EV</th><th>Notes</th>
-        </tr>
-      </thead>
-      <tbody id="settled-tbody"></tbody>
-    </table>
-  </div>
-</div>
-<div id="settled-empty" class="loading" style="display:none">No trades yet — dry run trades will appear here once the engine executes.</div>
-</div>
-
-</body>
-</html>
-+totalInv.toFixed(2);
-
-  // Cumulative PnL chart
-  const sorted = [...resolved].sort((a,b)=>new Date(a.time)-new Date(b.time));
-  let cum=0; const cumData=sorted.map(t=>{cum+=(t.pnl||0); return {x:t.time?.slice(0,16),y:+cum.toFixed(4)};});
-  renderLineChart('c-cum-pnl', cumData.map(d=>d.x), cumData.map(d=>d.y), 'Cumulative P&L (USDC)', cum>=0?'rgba(34,197,94,':'rgba(239,68,68,');
-
-  // Win/Loss distribution
-  const pnlBuckets={};
-  resolved.forEach(t=>{
-    const b=Math.round((t.pnl||0)*10)/10;
-    const k=b.toFixed(1);
-    pnlBuckets[k]=(pnlBuckets[k]||0)+1;
-  });
-  const bKeys=Object.keys(pnlBuckets).sort((a,b)=>parseFloat(a)-parseFloat(b));
-  renderBarChart('c-wl-dist', bKeys, bKeys.map(k=>pnlBuckets[k]),
-    bKeys.map(k=>parseFloat(k)>=0?'rgba(34,197,94,0.7)':'rgba(239,68,68,0.7)'), 'P&L Distribution');
 
   // P&L by strategy
-  const byS = D.by_strategy||{};
-  let html='';
-  if(Object.keys(byS).length===0){html='<div class="loading">No resolved trades yet</div>';}
-  else{
-    html='<table><thead><tr><th>Strategy</th><th>Trades</th><th>Win Rate</th><th>Total P&L</th><th>ROI</th><th>Avg P&L</th></tr></thead><tbody>';
-    for(const[s,v] of Object.entries(byS)){
-      const pnlColor=v.pnl>=0?'var(--green)':'var(--red)';
-      const roiColor=v.roi_pct>=0?'var(--green)':'var(--red)';
+  const byStrat = D.by_strategy??{};
+  if(Object.keys(byStrat).length){
+    let html='<table style="width:100%;font-size:12px"><thead><tr><th>Strategy</th><th>T</th><th>W</th><th>L</th><th>Win%</th><th>Total P&L</th><th>ROI</th></tr></thead><tbody>';
+    Object.entries(byStrat).forEach(([s,v])=>{
+      const wr2=parseFloat(v.win_rate_pct??0);
       html+=`<tr>
-        <td><span class="pill p-${s.split('_')[0]}">${s}</span></td>
-        <td>${v.trades}</td>
-        <td style="color:${v.win_rate_pct>=50?'var(--green)':'var(--red)'}">${v.win_rate_pct}%</td>
-        <td style="color:${pnlColor}">${v.pnl>=0?'+':''}${(v.pnl||0).toFixed(4)}</td>
-        <td style="color:${roiColor}">${v.roi_pct>=0?'+':''}${(v.roi_pct||0).toFixed(2)}%</td>
-        <td style="color:${pnlColor}">${(v.avg_pnl||0).toFixed(4)}</td>
+        <td>${stratPill(s)}</td>
+        <td>${v.trades??0}</td><td style="color:var(--green)">${v.wins??0}</td><td style="color:var(--red)">${v.losses??0}</td>
+        <td style="color:${wr2>=60?'var(--green)':wr2>=40?'var(--amber)':'var(--red)'}">${wr2.toFixed(1)}%</td>
+        <td style="font-weight:700;color:${(v.pnl??0)>=0?'var(--green)':'var(--red)'}">${fmtUSD(v.pnl)}</td>
+        <td style="color:${(v.roi_pct??0)>=0?'var(--green)':'var(--red)'}">${fmtPct(v.roi_pct)}</td>
       </tr>`;
-    }
+    });
     html+='</tbody></table>';
+    $_('pnl-by-strat').innerHTML=html;
+  } else {
+    $_('pnl-by-strat').innerHTML='<div style="color:var(--mu);font-size:12px;padding:16px">Appears after first trades resolve</div>';
   }
-  $_('pnl-by-strategy').innerHTML=html;
 
   // Edge accuracy
-  const withEdge=resolved.filter(t=>t.edge!=null);
-  const posEdge=withEdge.filter(t=>t.edge>0);
-  const posEdgeWins=posEdge.filter(t=>t.outcome==='win');
-  const negEdge=withEdge.filter(t=>t.edge<0);
-  const negEdgeWins=negEdge.filter(t=>t.outcome==='win');
-  const ea=posEdge.length>0?posEdgeWins.length/posEdge.length*100:null;
-  let eaHtml='<table><thead><tr><th>Edge Type</th><th>Count</th><th>Wins</th><th>Accuracy</th><th>Insight</th></tr></thead><tbody>';
-  if(ea!==null){
-    eaHtml+=`<tr><td style="color:var(--green)">Positive Edge (model_p > price)</td><td>${posEdge.length}</td>
-      <td>${posEdgeWins.length}</td><td style="color:${ea>=50?'var(--green)':'var(--red)'}">${ea.toFixed(1)}%</td>
-      <td style="color:var(--mu);font-size:11px">${ea>=60?'Model is well-calibrated':ea>=50?'Model marginally useful':
-      'Model may be overfitting — edges not converting'}</td></tr>`;
+  const allT = D.recent_trades??[];
+  const posEdge = allT.filter(t=>t.status==='resolved'&&(t.edge??0)>0);
+  const posEdgeWins = posEdge.filter(t=>t.outcome==='win');
+  const negEdge = allT.filter(t=>t.status==='resolved'&&(t.edge??0)<=0);
+  const negEdgeWins = negEdge.filter(t=>t.outcome==='win');
+  let eaHtml = '<table style="width:100%;font-size:12px"><thead><tr><th>Edge Type</th><th>Count</th><th>Wins</th><th>Accuracy</th><th>Verdict</th></tr></thead><tbody>';
+  if(posEdge.length){
+    const acc=(posEdgeWins.length/posEdge.length*100);
+    eaHtml+=`<tr>
+      <td style="color:var(--green)">Positive edge (model_p &gt; price)</td>
+      <td>${posEdge.length}</td><td>${posEdgeWins.length}</td>
+      <td style="font-weight:700;color:${acc>=60?'var(--green)':acc>=50?'var(--amber)':'var(--red)'}">${acc.toFixed(1)}%</td>
+      <td style="font-size:11px;color:var(--mu)">${acc>=65?'✅ Edge is real — model well-calibrated':acc>=50?'⚠️ Marginal — need more data':'❌ Edge not converting — check model'}</td>
+    </tr>`;
   }
-  if(negEdge.length>0){
-    const nea=negEdgeWins.length/negEdge.length*100;
-    eaHtml+=`<tr><td style="color:var(--red)">Negative Edge (model_p &lt; price)</td><td>${negEdge.length}</td>
-      <td>${negEdgeWins.length}</td><td>${nea.toFixed(1)}%</td>
-      <td style="color:var(--mu);font-size:11px">${nea>30?'Unexpectedly winning on negative edge — check model':
-      'Expected losses on neg-edge entries'}</td></tr>`;
+  if(negEdge.length){
+    const acc=(negEdgeWins.length/negEdge.length*100);
+    eaHtml+=`<tr>
+      <td style="color:var(--red)">Negative edge (model_p &lt; price)</td>
+      <td>${negEdge.length}</td><td>${negEdgeWins.length}</td>
+      <td>${acc.toFixed(1)}%</td>
+      <td style="font-size:11px;color:var(--mu)">Expected losses on neg-edge entries</td>
+    </tr>`;
   }
-  if(withEdge.length===0) eaHtml+='<tr><td colspan="5" style="color:var(--mu)">Edge data not yet stored — will populate after next scan</td></tr>';
+  if(!posEdge.length && !negEdge.length){
+    eaHtml+='<tr><td colspan="5" style="color:var(--mu);padding:12px">Edge accuracy will appear after trades resolve</td></tr>';
+  }
   eaHtml+='</tbody></table>';
-  $_('edge-accuracy-breakdown').innerHTML=eaHtml;
+  $_('edge-accuracy').innerHTML=eaHtml;
 
-  // EV distribution chart
-  const evVals=resolved.filter(t=>t.ev!=null).map(t=>parseFloat(t.ev)||0);
-  if(evVals.length>0){
-    const evBuckets={};
-    evVals.forEach(v=>{const k=Math.round(v*20)/20; evBuckets[k.toFixed(2)]=(evBuckets[k.toFixed(2)]||0)+1;});
-    const evKeys=Object.keys(evBuckets).sort((a,b)=>parseFloat(a)-parseFloat(b));
-    renderBarChart('c-ev-dist',evKeys,evKeys.map(k=>evBuckets[k]),
-      evKeys.map(k=>parseFloat(k)>0?'rgba(34,197,94,0.7)':'rgba(239,68,68,0.7)'),'EV Distribution');
+  // Open positions
+  const openPos = allT.filter(t=>t.status==='open');
+  if(openPos.length){
+    let html='';
+    openPos.forEach(t=>{
+      const cost=parseFloat(t.size??0);
+      const edge=(t.edge??0);
+      const endDate = (t.time||'').slice(0,10);
+      html+=`<div style="padding:8px 0;border-bottom:1px solid var(--bd);font-size:12px">
+        <div style="font-weight:600;color:var(--tx)">${esc(t.market?.slice(0,70))}</div>
+        <div style="color:var(--mu);margin-top:2px">${stratPill(t.strategy)} ${esc(t.side)} @ ${fmt(t.price,3)} | $${cost.toFixed(2)} | edge:${edge>0?'<span style="color:var(--green)">+':'<span style="color:var(--red)'}">${edge.toFixed(4)}</span> | entry:${(t.time||'').slice(0,10)}</div>
+      </div>`;
+    });
+    $_('open-positions-list').innerHTML=html;
+  } else {
+    $_('open-positions-list').innerHTML='<div style="color:var(--mu);font-size:12px;padding:12px">No open positions</div>';
+  }
+}
+
+// ── Lessons ────────────────────────────────────────────────────────────────
+function renderLessons(){
+  const count   = D.lessons_count??0;
+  const updated = D.lessons_updated;
+  const scores  = D.strategy_scores??{};
+
+  $_('les-count').textContent   = count;
+  $_('les-updated').textContent = updated ? new Date(updated).toLocaleDateString() : 'Never';
+  $_('les-strats').textContent  = Object.keys(scores).length;
+
+  // Strategy scores
+  const scoreKeys = Object.keys(scores);
+  if(scoreKeys.length){
+    let html='';
+    scoreKeys.forEach(s=>{
+      const v=scores[s];
+      const score=parseFloat(typeof v==='object'?v.score??1:v);
+      const delta=typeof v==='object'?parseFloat(v.last_delta??0):0;
+      const notes=typeof v==='object'?(v.notes||''):'';
+      const bar=Math.round(Math.min(score/2*100,100));
+      const color=score>=1.2?'var(--green)':score>=0.8?'var(--teal)':'var(--red)';
+      html+=`<div style="padding:10px 0;border-bottom:1px solid var(--bd)">
+        <div style="display:flex;justify-content:space-between;align-items:center">
+          <div>${stratPill(s)} <b style="color:var(--tx);margin-left:6px">${s}</b></div>
+          <div style="font-size:14px;font-weight:700;color:${color}">${score.toFixed(3)}
+            ${delta!==0?'<span style="font-size:11px;color:'+(delta>0?'var(--green)':'var(--red)')+'"> ('+(delta>0?'+':'')+delta.toFixed(3)+')</span>':''}
+          </div>
+        </div>
+        <div style="background:var(--s2);border-radius:4px;height:4px;margin-top:6px">
+          <div style="background:${color};height:4px;border-radius:4px;width:${bar}%"></div>
+        </div>
+        ${notes?'<div style="font-size:11px;color:var(--mu);margin-top:4px">'+esc(notes)+'</div>':''}
+      </div>`;
+    });
+    $_('strat-scores').innerHTML=html;
+  } else {
+    $_('strat-scores').innerHTML='<div style="color:var(--mu);font-size:12px;padding:12px">Strategy scores will appear after the AI reviewer runs (requires resolved trades + ANTHROPIC_API_KEY)</div>';
   }
 
-  // Loss pattern analysis
-  let lossHtml='';
-  if(losses.length===0){lossHtml='<div class="loading">No losses yet</div>';}
-  else{
-    const patterns={
-      highPrice:losses.filter(t=>t.price>0.9),
-      lowEdge:losses.filter(t=>t.edge!=null&&t.edge<0.02&&t.edge>0),
-      negEV:losses.filter(t=>t.ev!=null&&t.ev<0),
-      highFee:losses.filter(t=>t.fee!=null&&t.fee>0.05*t.size),
-    };
-    lossHtml='<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">';
-    const addPat=(title,items,desc,color)=>{
-      if(items.length===0)return;
-      lossHtml+=`<div style="background:var(--s2);border-radius:8px;padding:12px;border-left:3px solid ${color}">
-        <div style="font-weight:600;margin-bottom:4px;${color?'color:'+color:''}">${title}: ${items.length} trades</div>
-        <div style="font-size:11px;color:var(--mu);line-height:1.6">${desc}</div>
-        <div style="margin-top:8px;font-size:11px">
-          Avg cost: ${(items.reduce((s,t)=>s+(t.size||0),0)/items.length).toFixed(2)}
-          &nbsp;|&nbsp; Total loss: ${items.reduce((s,t)=>s+(t.pnl||0),0).toFixed(4)} USDC
-        </div></div>`;
-    };
-    addPat('High Price Entries (>0.90)',patterns.highPrice,
-      'Entered at high probability but still lost. Possible causes: market reversed, late entry, stale data.',
-      'var(--red)');
-    addPat('Low Edge Entries (<2% edge)',patterns.lowEdge,
-      'Traded with minimal edge over market price. Fee drag alone could explain these losses. Raise min_edge_after_fees.',
-      'var(--amber)');
-    addPat('Negative EV Trades',patterns.negEV,
-      'EV was negative at entry — fee exceeds expected profit. These should have been filtered. Check EV gate.',
-      'var(--red)');
-    addPat('High Fee Trades (>5% of cost)',patterns.highFee,
-      'Fee was disproportionately large relative to position. Happens at mid-probability (p~0.5). Consider avoiding p=0.4-0.6.',
-      'var(--amber)');
-    lossHtml+='</div>';
-  }
-  $_('loss-analysis').innerHTML=lossHtml;
-
-  // Win pattern analysis
-  let winHtml='';
-  if(wins.length===0){winHtml='<div class="loading">No wins yet</div>';}
-  else{
-    const avgWinEdge=wins.filter(t=>t.edge).reduce((s,t)=>s+(t.edge||0),0)/(wins.filter(t=>t.edge).length||1);
-    const avgWinPrice=wins.reduce((s,t)=>s+(t.price||0),0)/wins.length;
-    const avgWinEV=wins.filter(t=>t.ev).reduce((s,t)=>s+(t.ev||0),0)/(wins.filter(t=>t.ev).length||1);
-    const strategies=[...new Set(wins.map(t=>t.strategy))];
-    winHtml=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-      <div style="background:var(--s2);border-radius:8px;padding:12px;border-left:3px solid var(--green)">
-        <div style="font-weight:600;color:var(--green)">Common Win Characteristics</div>
-        <div style="font-size:12px;color:var(--mu);line-height:2;margin-top:8px">
-          Avg entry price: <b style="color:var(--tx)">${avgWinPrice.toFixed(3)}</b><br>
-          Avg edge at entry: <b style="color:var(--green)">${(avgWinEdge*100).toFixed(2)}%</b><br>
-          Avg EV at entry: <b style="color:var(--green)">${avgWinEV.toFixed(4)}</b><br>
-          Strategies: <b style="color:var(--tx)">${strategies.join(', ')}</b>
-        </div>
-      </div>
-      <div style="background:var(--s2);border-radius:8px;padding:12px;border-left:3px solid var(--teal)">
-        <div style="font-weight:600;color:var(--teal)">Win Magnitude Distribution</div>
-        <div style="font-size:12px;color:var(--mu);line-height:2;margin-top:8px">
-          Best win: <b style="color:var(--green)">${wins.reduce((b,t)=>Math.max(b,t.pnl||0),0).toFixed(4)} USDC</b><br>
-          Avg win P&L: <b style="color:var(--green)">${(wins.reduce((s,t)=>s+(t.pnl||0),0)/wins.length).toFixed(4)} USDC</b><br>
-          High confidence wins (p>0.9): <b style="color:var(--tx)">${wins.filter(t=>t.price>0.9).length}</b><br>
-          Positive EV wins: <b style="color:var(--tx)">${wins.filter(t=>t.ev>0).length}</b>
-        </div>
-      </div>
+  // Lessons list (from scan_log strategy analysis or from lessons.json via engine-data)
+  // We don't have the full lessons array in engine-data yet — show what we have
+  if(count===0){
+    $_('lessons-empty').style.display='block';
+    $_('lessons-list').innerHTML='';
+  } else {
+    $_('lessons-empty').style.display='none';
+    // The engine-data only stores count+scores, not the full text.
+    // Show what we know, direct user to check lessons.json for details.
+    $_('lessons-list').innerHTML=`<div style="font-size:12px;color:var(--mu);padding:12px;background:var(--s2);border-radius:6px">
+      ${count} lesson(s) stored in <code>data/lessons.json</code>.<br>
+      The AI reviewer (Claude Haiku) generates these after each resolution batch.<br>
+      Lessons are used to adjust strategy scores and guide future trades.<br>
+      <a href="https://raw.githubusercontent.com/Airdropperxx/polymarket-engine/main/data/lessons.json" target="_blank" style="color:var(--teal);margin-top:6px;display:inline-block">View lessons.json →</a>
     </div>`;
   }
-  $_('win-analysis').innerHTML=winHtml;
 }
 
-// ══ SETTLED TRADES TAB ═══════════════════════════════════════════════════════
-let _allTrades=[];
-function renderSettledTable(){
-  const status=($_('filter-status')||{value:'all'}).value;
-  const strategy=($_('filter-strategy')||{value:'all'}).value;
-  const outcome=($_('filter-outcome')||{value:'all'}).value;
-  let rows=_allTrades;
-  if(status!=='all')    rows=rows.filter(t=>t.status===status);
-  if(strategy!=='all')  rows=rows.filter(t=>t.strategy===strategy);
-  if(outcome!=='all')   rows=rows.filter(t=>t.outcome===outcome);
-  const tbody=_$('settled-tbody');
-  if(!tbody)return;
-  if(rows.length===0){tbody.innerHTML='<tr><td colspan="14" style="text-align:center;color:var(--mu);padding:24px">No trades match filter</td></tr>';return;}
-  tbody.innerHTML=rows.map(t=>{
-    const pnlColor=t.pnl>0?'var(--green)':t.pnl<0?'var(--red)':'var(--mu)';
-    const roiColor=t.roi>0?'var(--green)':t.roi<0?'var(--red)':'var(--mu)';
-    const edgeColor=t.edge>0?'var(--green)':t.edge<0?'var(--red)':'var(--mu)';
-    const evColor=t.ev>0?'var(--green)':t.ev<0?'var(--red)':'var(--mu)';
-    const ts=t.time?.slice(0,16)||'—';
-    const sClass=t.strategy?.split('_')[0]||'obs';
-    const statusPill=t.status==='resolved'?(t.outcome==='win'?'<span class="pill p-win">WIN</span>':'<span class="pill p-loss">LOSS</span>'):'<span class="pill p-open">OPEN</span>';
-    return `<tr>
-      <td style="white-space:nowrap;font-size:11px;color:var(--mu)">${ts}</td>
-      <td><span class="pill p-${sClass}">${t.strategy||'?'}</span></td>
-      <td class="q-cell" title="${t.market||''}">${t.market||'—'}</td>
-      <td>${t.side||'?'}</td>
-      <td>${(t.price||0).toFixed(3)}</td>
-      <td>${(t.shares||0).toFixed(4)}</td>
-      <td>${(t.size||0).toFixed(2)}</td>
-      <td style="color:var(--mu)">${(t.fee||0).toFixed(4)}</td>
-      <td>${statusPill}</td>
-      <td style="color:${pnlColor};font-weight:600">${t.pnl!=null?(t.pnl>=0?'+':'')+t.pnl.toFixed(4):'—'}</td>
-      <td style="color:${roiColor}">${t.roi!=null?(t.roi>=0?'+':'')+t.roi.toFixed(1)+'%':'—'}</td>
-      <td style="color:${edgeColor}">${t.edge!=null?t.edge.toFixed(4):'—'}</td>
-      <td style="color:${evColor}">${t.ev!=null?t.ev.toFixed(4):'—'}</td>
-      <td style="font-size:10px;color:var(--mu);max-width:160px;overflow:hidden;text-overflow:ellipsis" title="${t.notes||''}">${t.notes||''}</td>
-    </tr>`;
-  }).join('');
-}
-function loadSettledTab(D){
-  _allTrades=D.recent_trades||[];
-  // Populate strategy filter
-  const sel=_$('filter-strategy');
-  if(sel){
-    const strategies=[...new Set(_allTrades.map(t=>t.strategy).filter(Boolean))];
-    sel.innerHTML='<option value="all">All Strategies</option>'+
-      strategies.map(s=>`<option value="${s}">${s}</option>`).join('');
-  }
-  const empty=_$('settled-empty');
-  if(empty) empty.style.display=_allTrades.length===0?'block':'none';
-  renderSettledTable();
-}
-// helper: document.getElementById (non-throwing)
-function _$(id){return document.getElementById(id);}
-
-// ── Chart helpers ─────────────────────────────────────────────────────────────
-function renderLineChart(id,labels,data,label,colorBase){
-  const ctx=document.getElementById(id)?.getContext('2d'); if(!ctx)return;
-  const last=data[data.length-1]||0;
-  const clr=(colorBase||'rgba(59,130,246,')+'0.9)';
-  const fill=(colorBase||'rgba(59,130,246,')+'0.15)';
-  if(window['_ch_'+id]) window['_ch_'+id].destroy();
-  window['_ch_'+id]=new Chart(ctx,{type:'line',data:{labels,datasets:[{label,data,
-    borderColor:clr,backgroundColor:fill,borderWidth:2,pointRadius:3,fill:true,tension:0.3}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-    scales:{x:{ticks:{color:'#64748b',maxTicksLimit:8,font:{size:10}},grid:{color:'#2a2f3d'}},
-    y:{ticks:{color:'#64748b',font:{size:10}},grid:{color:'#2a2f3d'}}}}});
-}
-function renderBarChart(id,labels,data,colors,label){
-  const ctx=document.getElementById(id)?.getContext('2d'); if(!ctx)return;
-  if(window['_ch_'+id]) window['_ch_'+id].destroy();
-  window['_ch_'+id]=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label,data,
-    backgroundColor:Array.isArray(colors)?colors:colors}]},
-    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
-    scales:{x:{ticks:{color:'#64748b',font:{size:10}},grid:{color:'#2a2f3d'}},
-    y:{ticks:{color:'#64748b',font:{size:10}},grid:{color:'#2a2f3d'}}}}});
-}
-
-
-// ══ SCAN HISTORY TAB ══════════════════════════════════════════════════════════
+// ── Scan Log ───────────────────────────────────────────────────────────────
 let _scanLog = [];
-
-function loadScanHistory(D) {
-  // Load from engine-data embedded scan log
-  const entries = D.scan_log || [];
+function renderScanLog(){
+  const entries = D.scan_log??[];
   _scanLog = entries;
 
-  // Populate strategy filter
-  const strats = [...new Set(entries.map(e=>e.strategy).filter(s=>s&&!s.startsWith('observer_')))].sort();
-  const sel = _$('sh-filter-strat');
-  if(sel) {
-    sel.innerHTML = '<option value="all">All Strategies</option>' +
-      strats.map(s=>`<option value="${s}">${s}</option>`).join('');
-  }
-
   // KPIs
-  const total  = entries.length;
-  const exec   = entries.filter(e=>e.executed).length;
-  const lastTs = entries.length ? entries[entries.length-1].ts : null;
-  const stratCounts = {};
-  entries.forEach(e=>{ const s=e.strategy; if(s) stratCounts[s]=(stratCounts[s]||0)+1; });
-  const topStrat = Object.entries(stratCounts).sort((a,b)=>b[1]-a[1])[0];
+  const total = entries.length;
+  const exec  = entries.filter(e=>e.executed).length;
+  const last  = entries.length ? entries[entries.length-1] : null;
 
-  const el = id => document.getElementById(id);
-  if(el('sh-total')) el('sh-total').textContent = total.toLocaleString();
-  if(el('sh-exec'))  el('sh-exec').textContent  = exec;
-  if(el('sh-topstrat') && topStrat) {
-    el('sh-topstrat').textContent = topStrat[0].replace('_',' ').replace('s10','S10').replace('s1','S1').replace('s8','S8');
-    if(el('sh-topstrat-s')) el('sh-topstrat-s').textContent = topStrat[1]+' opportunities';
-  }
-  if(el('sh-last') && lastTs) {
-    const ago = Math.round((Date.now() - new Date(lastTs).getTime()) / 60000);
-    el('sh-last').textContent  = ago < 1 ? 'Just now' : ago+'m ago';
-    if(el('sh-last-s')) el('sh-last-s').textContent = lastTs.slice(0,16).replace('T',' ')+'Z';
+  $_('sl-total').textContent = total.toLocaleString();
+  $_('sl-exec').textContent  = exec;
+
+  if(last){
+    const ago = Math.round((Date.now()-new Date(last.ts).getTime())/60000);
+    $_('sl-last').textContent   = ago<1?'just now':ago+'m ago';
+    $_('sl-last-s').textContent = (last.ts||'').slice(0,16).replace('T',' ')+'Z';
   }
 
-  renderScanHistory();
+  // Strategy filter
+  const strats = [...new Set(entries.map(e=>e.strategy).filter(s=>s&&!s.startsWith('observer_')))].sort();
+  const selS = $_('sl-fstrat');
+  if(selS && selS.options.length<=1){
+    strats.forEach(s=>{ const o=document.createElement('option'); o.value=s; o.textContent=s; selS.appendChild(o); });
+  }
+
+  // Top strategy by execution count
+  const execByStrat={};
+  entries.filter(e=>e.executed).forEach(e=>{const s=e.strategy||'?';execByStrat[s]=(execByStrat[s]||0)+1;});
+  const topS = Object.entries(execByStrat).sort((a,b)=>b[1]-a[1])[0];
+  if(topS){
+    $_('sl-top-strat').textContent   = topS[0];
+    $_('sl-top-strat-s').textContent = topS[1]+' executions';
+  }
+
+  applyAndRenderScanLog();
 }
 
-function renderScanHistory() {
-  const stratFilter = (_$('sh-filter-strat')||{}).value || 'all';
-  const execFilter  = (_$('sh-filter-exec') ||{}).value || 'all';
-  const nFilter     = parseInt((_$('sh-filter-n')   ||{}).value || '100');
-  const searchQ     = ((_$('sh-search')     ||{}).value || '').toLowerCase();
+function applyAndRenderScanLog(){
+  const stratF  = ($_('sl-fstrat') ?.value)||'all';
+  const execF   = ($_('sl-fexec')  ?.value)||'all';
+  const nF      = parseInt(($_('sl-fn')    ?.value)||'100');
+  const searchQ = (($_('sl-search')?.value)||'').toLowerCase();
 
-  let rows = [..._scanLog].reverse(); // newest first
+  let rows = [..._scanLog].reverse();
+  if(stratF!=='all') rows=rows.filter(e=>e.strategy===stratF);
+  if(execF==='exec') rows=rows.filter(e=>e.executed);
+  if(execF==='skip') rows=rows.filter(e=>!e.executed);
+  if(searchQ)        rows=rows.filter(e=>(e.question||'').toLowerCase().includes(searchQ));
+  const total=rows.length;
+  if(nF>0) rows=rows.slice(0,nF);
 
-  // Apply filters
-  if(stratFilter !== 'all') rows = rows.filter(e=>e.strategy===stratFilter);
-  if(execFilter === 'executed') rows = rows.filter(e=>e.executed);
-  if(execFilter === 'skipped')  rows = rows.filter(e=>!e.executed);
-  if(searchQ) rows = rows.filter(e=>(e.question||'').toLowerCase().includes(searchQ));
+  if($_('sl-count')) $_('sl-count').textContent=`Showing ${rows.length} of ${total} entries`;
 
-  // Limit
-  const total = rows.length;
-  if(nFilter > 0) rows = rows.slice(0, nFilter);
+  const tbody=$_('sl-tbody');
+  const empty=$_('sl-empty');
+  if(!tbody)return;
 
-  const tbody = _$('sh-tbody');
-  const empty = _$('sh-empty');
-  const countEl = _$('sh-count');
+  if(!rows.length){ tbody.innerHTML=''; if(empty)empty.style.display='block'; return; }
+  if(empty)empty.style.display='none';
 
-  if(!tbody) return;
-  if(rows.length === 0) {
-    tbody.innerHTML = '';
-    if(empty) empty.style.display = 'block';
-    return;
-  }
-  if(empty) empty.style.display = 'none';
-  if(countEl) countEl.textContent = `Showing ${rows.length} of ${total} entries`;
-
-  const stratColor = s => {
-    if(!s) return 'var(--mu)';
-    if(s.includes('s10')) return 'var(--purple)';
-    if(s.includes('s1'))  return 'var(--teal)';
-    if(s.includes('s8'))  return 'var(--blue)';
-    if(s.includes('s11')) return 'var(--pink)';
-    if(s.includes('s12')) return 'var(--amber)';
-    return 'var(--mu)';
+  const stratColor=s=>{
+    if(!s)return'var(--mu)';
+    if(s.includes('s10'))return'var(--purple)';
+    if(s.includes('s1_'))return'var(--teal)';
+    if(s.includes('s8'))return'var(--blue)';
+    if(s.includes('s11'))return'var(--amber)';
+    return'var(--mu)';
   };
 
-  tbody.innerHTML = rows.map(e => {
-    const ts     = (e.ts||'').slice(0,16).replace('T',' ');
-    const strat  = e.strategy||'?';
-    const q      = (e.question||'').slice(0,65);
-    const price  = e.buy_price != null ? parseFloat(e.buy_price).toFixed(3) : '—';
-    const edge   = e.edge != null ? parseFloat(e.edge) : null;
-    const ev     = e.ev != null ? parseFloat(e.ev) : null;
-    const score  = e.score != null ? parseFloat(e.score).toFixed(3) : '—';
-    const vol    = e.volume_24h ? Math.round(e.volume_24h) : 0;
-    const ttlH   = e.ttl_sec ? Math.round(e.ttl_sec/3600) : (e.days_to_res ? Math.round(e.days_to_res*24) : null);
-    const exec   = e.executed;
-    const reason = e.reason_skipped || e.skipped_reason || '';
-
-    const edgeColor  = edge == null ? 'var(--mu)' : edge > 0.03 ? 'var(--green)' : edge > 0 ? 'var(--amber)' : 'var(--red)';
-    const evColor    = ev == null ? 'var(--mu)' : ev > 0 ? 'var(--green)' : 'var(--red)';
-    const statusPill = exec
-      ? `<span class="pill" style="background:rgba(34,197,94,.15);color:var(--green)">EXEC</span>`
-      : `<span class="pill" style="background:rgba(100,116,139,.15);color:var(--mu);font-size:10px" title="${reason}">${reason?reason.slice(0,12):'skip'}</span>`;
-
+  tbody.innerHTML=rows.map(e=>{
+    const ts    = (e.ts||'').slice(0,16).replace('T',' ');
+    const strat = e.strategy||'?';
+    const price = e.buy_price!=null?parseFloat(e.buy_price).toFixed(3):'—';
+    const edge  = e.edge!=null?parseFloat(e.edge):null;
+    const ev    = e.ev!=null?parseFloat(e.ev):null;
+    const score = e.score!=null?parseFloat(e.score).toFixed(3):'—';
+    const vol   = e.volume_24h?Math.round(e.volume_24h):0;
+    const ttlH  = e.ttl_sec?Math.round(e.ttl_sec/3600):(e.days_to_res?Math.round(e.days_to_res*24):null);
+    const reason= e.reason_skipped||e.skipped_reason||'';
+    const statPill2 = e.executed
+      ? `<span class="pill p-win" style="font-size:10px">EXEC</span>`
+      : `<span class="pill" style="background:rgba(100,116,139,.15);color:var(--mu);font-size:10px" title="${esc(reason)}">${esc(reason.slice(0,12)||'skip')}</span>`;
     return `<tr>
       <td style="font-size:11px;color:var(--mu);white-space:nowrap">${ts}</td>
-      <td><span style="font-size:11px;font-weight:600;color:${stratColor(strat)}">${strat}</span></td>
-      <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px" title="${q}">${q}</td>
-      <td style="font-size:11px">${e.action||e.side||'?'}</td>
+      <td><span style="font-size:11px;font-weight:600;color:${stratColor(strat)}">${esc(strat)}</span></td>
+      <td style="max-width:320px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px" title="${esc(e.question)}">${esc(e.question)}</td>
+      <td style="font-size:11px">${esc(e.action||e.side||'?')}</td>
       <td style="font-size:12px">${price}</td>
-      <td style="color:${edgeColor};font-size:12px;font-weight:600">${edge!=null?(edge>=0?'+':'')+edge.toFixed(4):'—'}</td>
-      <td style="color:${evColor};font-size:12px">${ev!=null?(ev>=0?'+':'')+ev.toFixed(4):'—'}</td>
+      <td style="color:${edge!=null?(edge>0.03?'var(--green)':edge>0?'var(--amber)':'var(--red)'):'var(--mu)'};font-size:12px;font-weight:600">${edge!=null?(edge>=0?'+':'')+edge.toFixed(4):'—'}</td>
+      <td style="color:${ev!=null?(ev>0?'var(--green)':'var(--red)'):'var(--mu)'};font-size:12px">${ev!=null?(ev>=0?'+':'')+ev.toFixed(4):'—'}</td>
       <td style="font-size:11px;color:var(--mu)">${score}</td>
-      <td style="font-size:11px;color:var(--mu)">${vol>0?'
-
-<!-- ══ TAB: P&L ANALYTICS ══════════════════════════════════════════════════ -->
-<div class="tab-content" id="tab-pnl">
-<div class="g4" id="pnl-kpis">
-  <div class="card"><h2>Total P&amp;L (All Resolved)</h2><div class="stat" id="pk-pnl">—</div><div class="sub" id="pk-pnl-s">—</div></div>
-  <div class="card"><h2>Win Rate</h2><div class="stat" id="pk-wr">—</div><div class="sub" id="pk-wr-s">—</div></div>
-  <div class="card"><h2>Total ROI</h2><div class="stat" id="pk-roi">—</div><div class="sub" id="pk-roi-s">—</div></div>
-  <div class="card"><h2>Open Exposure</h2><div class="stat amber" id="pk-exp">—</div><div class="sub" id="pk-exp-s">—</div></div>
-</div>
-<div class="g4">
-  <div class="card"><h2>Best Trade</h2><div class="stat green" id="pk-best">—</div><div class="sub">Net P&amp;L</div></div>
-  <div class="card"><h2>Worst Trade</h2><div class="stat red" id="pk-worst">—</div><div class="sub">Net P&amp;L</div></div>
-  <div class="card"><h2>Avg P&amp;L / Trade</h2><div class="stat" id="pk-avg">—</div><div class="sub">Resolved only</div></div>
-  <div class="card"><h2>Total Invested</h2><div class="stat blue" id="pk-inv">—</div><div class="sub">USDC staked (resolved)</div></div>
-</div>
-<div class="g2">
-  <div class="card">
-    <div class="sec">Cumulative P&amp;L Over Time</div>
-    <div class="ch-xl"><canvas id="c-cum-pnl"></canvas></div>
-  </div>
-  <div class="card">
-    <div class="sec">Win / Loss Distribution</div>
-    <div class="ch-lg"><canvas id="c-wl-dist"></canvas></div>
-  </div>
-</div>
-<div class="g2">
-  <div class="card">
-    <div class="sec">P&amp;L by Strategy</div>
-    <div id="pnl-by-strategy"></div>
-  </div>
-  <div class="card">
-    <div class="sec">Edge Accuracy Analysis</div>
-    <div id="edge-accuracy-breakdown"></div>
-    <div style="margin-top:16px" class="sec">EV Distribution</div>
-    <div class="ch"><canvas id="c-ev-dist"></canvas></div>
-  </div>
-</div>
-<div class="card" style="margin-bottom:20px">
-  <div class="sec">Loss Pattern Analysis — Why Trades Lost</div>
-  <div id="loss-analysis"></div>
-</div>
-<div class="card">
-  <div class="sec">Win Pattern Analysis — What Made Trades Win</div>
-  <div id="win-analysis"></div>
-</div>
-</div>
-
-<!-- ══ TAB: SETTLED TRADES ══════════════════════════════════════════════════ -->
-<div class="tab-content" id="tab-settled">
-<div class="g3" style="margin-bottom:16px">
-  <div style="display:flex;gap:8px;align-items:center">
-    <label style="font-size:12px;color:var(--mu)">Filter:</label>
-    <select id="filter-status" onchange="renderSettledTable()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 8px;border-radius:4px;font-size:12px">
-      <option value="all">All</option><option value="resolved">Resolved</option><option value="open">Open</option>
-    </select>
-    <select id="filter-strategy" onchange="renderSettledTable()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 8px;border-radius:4px;font-size:12px">
-      <option value="all">All Strategies</option>
-    </select>
-    <select id="filter-outcome" onchange="renderSettledTable()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 8px;border-radius:4px;font-size:12px">
-      <option value="all">All Outcomes</option><option value="win">Win</option><option value="loss">Loss</option>
-    </select>
-  </div>
-</div>
-<div class="card" style="padding:0;overflow:hidden">
-  <div id="settled-table-wrap" style="overflow-x:auto">
-    <table id="settled-table">
-      <thead>
-        <tr>
-          <th>Time</th><th>Strategy</th><th>Market</th>
-          <th>Side</th><th>Buy Price</th><th>Shares</th>
-          <th>Cost</th><th>Fee</th><th>Status</th>
-          <th>P&amp;L</th><th>ROI</th><th>Edge</th><th>EV</th><th>Notes</th>
-        </tr>
-      </thead>
-      <tbody id="settled-tbody"></tbody>
-    </table>
-  </div>
-</div>
-<div id="settled-empty" class="loading" style="display:none">No trades yet — dry run trades will appear here once the engine executes.</div>
-</div>
-
-</body>
-</html>
-+vol.toLocaleString():'—'}</td>
+      <td style="font-size:11px;color:var(--mu)">${vol>0?'$'+vol.toLocaleString():'—'}</td>
       <td style="font-size:11px;color:var(--mu)">${ttlH!=null?ttlH+'h':'—'}</td>
-      <td>${statusPill}</td>
+      <td>${statPill2}</td>
     </tr>`;
   }).join('');
 }
 
+// Wire filter handlers
+['sl-fstrat','sl-fexec','sl-fn'].forEach(id=>{
+  const el=$_(id); if(el) el.addEventListener('change', applyAndRenderScanLog);
+});
+const slSearch=$_('sl-search');
+if(slSearch) slSearch.addEventListener('input', applyAndRenderScanLog);
+
+// ── Boot ───────────────────────────────────────────────────────────────────
 loadAll();
-setInterval(loadAll,300000);
+setInterval(loadAll, 60000);  // refresh every 60s
 </script>
-
-<!-- ══ TAB: P&L ANALYTICS ══════════════════════════════════════════════════ -->
-<div class="tab-content" id="tab-pnl">
-<div class="g4" id="pnl-kpis">
-  <div class="card"><h2>Total P&amp;L (All Resolved)</h2><div class="stat" id="pk-pnl">—</div><div class="sub" id="pk-pnl-s">—</div></div>
-  <div class="card"><h2>Win Rate</h2><div class="stat" id="pk-wr">—</div><div class="sub" id="pk-wr-s">—</div></div>
-  <div class="card"><h2>Total ROI</h2><div class="stat" id="pk-roi">—</div><div class="sub" id="pk-roi-s">—</div></div>
-  <div class="card"><h2>Open Exposure</h2><div class="stat amber" id="pk-exp">—</div><div class="sub" id="pk-exp-s">—</div></div>
-</div>
-<div class="g4">
-  <div class="card"><h2>Best Trade</h2><div class="stat green" id="pk-best">—</div><div class="sub">Net P&amp;L</div></div>
-  <div class="card"><h2>Worst Trade</h2><div class="stat red" id="pk-worst">—</div><div class="sub">Net P&amp;L</div></div>
-  <div class="card"><h2>Avg P&amp;L / Trade</h2><div class="stat" id="pk-avg">—</div><div class="sub">Resolved only</div></div>
-  <div class="card"><h2>Total Invested</h2><div class="stat blue" id="pk-inv">—</div><div class="sub">USDC staked (resolved)</div></div>
-</div>
-<div class="g2">
-  <div class="card">
-    <div class="sec">Cumulative P&amp;L Over Time</div>
-    <div class="ch-xl"><canvas id="c-cum-pnl"></canvas></div>
-  </div>
-  <div class="card">
-    <div class="sec">Win / Loss Distribution</div>
-    <div class="ch-lg"><canvas id="c-wl-dist"></canvas></div>
-  </div>
-</div>
-<div class="g2">
-  <div class="card">
-    <div class="sec">P&amp;L by Strategy</div>
-    <div id="pnl-by-strategy"></div>
-  </div>
-  <div class="card">
-    <div class="sec">Edge Accuracy Analysis</div>
-    <div id="edge-accuracy-breakdown"></div>
-    <div style="margin-top:16px" class="sec">EV Distribution</div>
-    <div class="ch"><canvas id="c-ev-dist"></canvas></div>
-  </div>
-</div>
-<div class="card" style="margin-bottom:20px">
-  <div class="sec">Loss Pattern Analysis — Why Trades Lost</div>
-  <div id="loss-analysis"></div>
-</div>
-<div class="card">
-  <div class="sec">Win Pattern Analysis — What Made Trades Win</div>
-  <div id="win-analysis"></div>
-</div>
-</div>
-
-<!-- ══ TAB: SETTLED TRADES ══════════════════════════════════════════════════ -->
-<div class="tab-content" id="tab-settled">
-<div class="g3" style="margin-bottom:16px">
-  <div style="display:flex;gap:8px;align-items:center">
-    <label style="font-size:12px;color:var(--mu)">Filter:</label>
-    <select id="filter-status" onchange="renderSettledTable()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 8px;border-radius:4px;font-size:12px">
-      <option value="all">All</option><option value="resolved">Resolved</option><option value="open">Open</option>
-    </select>
-    <select id="filter-strategy" onchange="renderSettledTable()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 8px;border-radius:4px;font-size:12px">
-      <option value="all">All Strategies</option>
-    </select>
-    <select id="filter-outcome" onchange="renderSettledTable()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 8px;border-radius:4px;font-size:12px">
-      <option value="all">All Outcomes</option><option value="win">Win</option><option value="loss">Loss</option>
-    </select>
-  </div>
-</div>
-<div class="card" style="padding:0;overflow:hidden">
-  <div id="settled-table-wrap" style="overflow-x:auto">
-    <table id="settled-table">
-      <thead>
-        <tr>
-          <th>Time</th><th>Strategy</th><th>Market</th>
-          <th>Side</th><th>Buy Price</th><th>Shares</th>
-          <th>Cost</th><th>Fee</th><th>Status</th>
-          <th>P&amp;L</th><th>ROI</th><th>Edge</th><th>EV</th><th>Notes</th>
-        </tr>
-      </thead>
-      <tbody id="settled-tbody"></tbody>
-    </table>
-  </div>
-</div>
-<div id="settled-empty" class="loading" style="display:none">No trades yet — dry run trades will appear here once the engine executes.</div>
-</div>
 
 </body>
 </html>
