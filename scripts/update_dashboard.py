@@ -151,7 +151,13 @@ def update_dashboard_html(data):
             log.error("update_html_failed", file=dp, error=str(e))
     return updated > 0
 
-data,indent=2))
+def main():
+    data=get_engine_state()
+    if not data: print("No database, skipping."); return
+    update_dashboard_html(data)
+    try:
+        Path("data").mkdir(exist_ok=True)
+        Path("data/dashboard_state.json").write_text(json.dumps(data,indent=2,ensure_ascii=False))
     except: pass
     print("Dashboard updated.")
 
