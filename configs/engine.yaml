@@ -1,25 +1,26 @@
 engine:
-  version: "3.1"
+  version: "3.5"
   capital_usdc: 100.00
-  dry_run: false        # OVERRIDE with DRY_RUN=true env var for testing
+  dry_run: false        # OVERRIDE: DRY_RUN=true env var in GitHub Actions
 
-  # How many new trades to execute per scan cycle (prevents over-trading)
-  max_per_cycle: 3
+  # Dry-run: high limits so we collect lots of data for analysis
+  # Real trading: capped by DRY_RUN=false + risk gates below
+  max_per_cycle: 5       # max new trades per scan cycle
 
-  # Scan interval — must match GitHub Actions cron (30 min)
-  poll_interval_seconds: 1800
+  poll_interval_seconds: 300   # 5-min scan (matches cron */5)
 
   risk:
-    max_position_pct: 0.15        # 15% of bankroll per trade = $15
-    max_daily_loss_pct: 0.05      # halt trading if daily loss > 5% = $5
-    max_open_positions: 5         # never hold more than 5 simultaneous positions
-    min_edge_after_fees: 0.005    # 0.5% minimum net edge (overridden per strategy)
+    max_position_pct:    0.15   # 15% of bankroll per trade = $15
+    max_daily_loss_pct:  0.10   # halt if daily loss > 10% = $10
+    max_open_positions:  50     # allow many open dry-run positions
+    min_edge_after_fees: 0.005  # 0.5% minimum net edge
 
-  # Capital allocation across strategies (must sum to 1.0)
+  # Capital allocation across strategies (must sum ≤ 1.0)
   allocations:
-    s10_near_resolution: 0.40    # $40 — safest, fastest-cycling strategy
-    s1_negrisk_arb: 0.40         # $40 — true arb, ~100% win rate when it fires
-    s8_logical_arb: 0.20         # $20 — higher risk (LLM can err), lower allocation
+    s10_near_resolution: 0.40   # $40 — fastest-cycling, highest data yield
+    s1_negrisk_arb:      0.30   # $30 — true arb
+    s11_inplay_momentum: 0.20   # $20 — momentum
+    s8_logical_arb:      0.10   # $10 — disabled at MVP but allocated
 
   monitoring:
     telegram_alerts: true
