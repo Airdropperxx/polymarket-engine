@@ -169,40 +169,10 @@ def fetch_market_resolution(market_id: str, timeout: int = 8,
             if best_yes < 0:
                 return None  # couldn't fetch any legs
 
-            markets = []  # not used below
             log.debug("negrisk_legs_checked",
                       market_id=market_id[:20], legs=len(leg_ids),
                       best_yes=best_yes, resolved=any_resolved)
 
-            # For a NegRisk group: the group resolves when one leg reaches 0.99
-            # Check all constituent markets
-            best_yes = -1.0
-            worst_yes = 2.0
-            resolved_flag = False
-            end_date = ""
-            question = ""
-
-            for mkt in markets:
-                op_raw = mkt.get("outcomePrices") or "[]"
-                try:
-                    prices = _json.loads(op_raw) if isinstance(op_raw, str) else list(op_raw)
-                except Exception:
-                    prices = []
-                if prices and len(prices) >= 1:
-                    try:
-                        yp = float(prices[0])
-                        best_yes  = max(best_yes, yp)
-                        worst_yes = min(worst_yes, yp)
-                    except Exception:
-                        pass
-                if mkt.get("resolved"):
-                    resolved_flag = True
-                if not end_date:
-                    end_date = mkt.get("endDate", "")
-                if not question:
-                    question = mkt.get("question", "")
-
-            # NegRisk: resolved when a leg reaches 0.99 (winner found)
             return {
                 "resolved":  any_resolved or best_yes >= 0.99,
                 "closed":    best_yes >= 0.99,
