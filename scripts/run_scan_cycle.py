@@ -200,22 +200,16 @@ def main():
                      score=opp.score,
                      dry_run=dry_run)
 
-    # ── 5. Check resolutions ──────────────────────────────────────────────────
+    # ── 5. Check resolutions (Gamma API — works for ALL dry+live trades) ──────
     open_positions = state_engine.get_open_positions()
     resolved_count = 0
 
     for pos in open_positions:
-        token_id = pos.get("metadata", {}).get("token_id")
-        if not token_id:
-            continue
         try:
-            market = data_engine.get_single_market(token_id)
-            if market and market.seconds_to_resolution <= 0:
-                # Market has resolved — check actual outcome
-                # (ExecutionEngine.check_resolution handles the CLOB query)
-                resolved = execution_engine.check_and_settle(pos)
-                if resolved:
-                    resolved_count += 1
+            # check_and_settle now uses Gamma API by market_id — no token_id needed
+            settled = execution_engine.check_and_settle(pos)
+            if settled:
+                resolved_count += 1
         except Exception as e:
             log.warning("resolution_check_failed",
                         market_id=pos.get("market_id"), error=str(e))
@@ -243,11 +237,22 @@ def main():
             daily_pnl        = state_engine.get_daily_pnl(),
             elapsed_sec      = elapsed,
             dry_run          = dry_run,
+            trade_stats      = state_engine.get_trade_stats(),
         )
     except Exception as e:
         log.warning("monitor_engine_failed", error=str(e))
 
-    # ── 8. Commit data/ to git ─────────────────────────────────────────────────
+    # ── 8. Update dashboard ──────────────────────────────────────────────────
+    try:
+        import importlib.util
+        _spec = importlib.util.spec_from_file_location("ud", Path("scripts/update_dashboard.py"))
+        _mod  = importlib.util.module_from_spec(_spec)
+        _spec.loader.exec_module(_mod)
+        _mod.main()
+    except Exception as e:
+        log.warning("dashboard_update_failed", error=str(e))
+
+    # ── 9. Commit data/ to git ─────────────────────────────────────────────────
     commit_data()
 
     elapsed = round(time.time() - start_time, 1)
