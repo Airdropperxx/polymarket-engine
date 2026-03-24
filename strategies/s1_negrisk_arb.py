@@ -54,14 +54,15 @@ class S1NegRiskArb(BaseStrategy):
             if m.fee_rate_bps >= 1000: continue
             valid_legs.append(m)
 
-        print(f"DEBUG S1 group={group_id} valid={len(valid_legs)} of {len(markets)}")
+        import sys as _sys
+        _sys.stderr.write(f"DEBUG S1 group={group_id} valid={len(valid_legs)} of {len(markets)}\n")
         for m in markets:
-            print(f"  leg {m.market_id}: vol={m.volume_24h} bid={m.yes_bid} ask={m.yes_ask} price={m.yes_price} sec={m.seconds_to_resolution} fee={m.fee_rate_bps}")
+            _sys.stderr.write(f"  leg {m.market_id}: vol={m.volume_24h} bid={m.yes_bid} ask={getattr(m,'yes_ask',0)} price={m.yes_price} sec={m.seconds_to_resolution} fee={m.fee_rate_bps} YES_ASK_DEFAULT={getattr(m,'yes_ask',0)==0.0}\n")
         if len(valid_legs) < 2:
             return None
 
         total_ask  = sum(m.yes_ask for m in valid_legs)
-        print(f"DEBUG S1 total_ask={total_ask} edge={1.0-total_ask}")
+        _sys.stderr.write(f"DEBUG S1 total_ask={total_ask} edge={1.0-total_ask} min_edge={min_edge}\n")
         total_fees = sum(self.calc_fee(m.yes_ask) * m.yes_ask for m in valid_legs)
         edge       = 1.0 - total_ask - total_fees
 
