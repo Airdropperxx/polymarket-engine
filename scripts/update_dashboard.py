@@ -112,19 +112,8 @@ def get_engine_state():
     }
 
 def update_dashboard_html(data):
-    """
-    Write engine-data JSON into dashboard.html.
-
-    CRITICAL FIX: never use re.sub() for this replacement.
-    re.sub interprets \u in the replacement string as a Unicode escape,
-    which fails when json.dumps encodes non-ASCII chars as \uXXXX.
-    Example: market_question "Juárez" → json.dumps → "\u00e1rez" → re.sub → "bad escape \u"
-
-    Fix: use ensure_ascii=False (keeps UTF-8 as-is, no \uXXXX in output)
-    AND use str.split/join instead of re.sub (never interprets replacement).
-    Both fixes are required — ensure_ascii=False is the primary defence,
-    str.split is the belt-and-suspenders backup that works regardless.
-    """
+    # Writes engine-data JSON block into dashboard.html.
+    # Uses ensure_ascii=False + str.split to avoid re.sub unicode escape errors.
     for dp in ["dashboard.html", "index.html"]:
         if os.path.exists(dp):
             break
