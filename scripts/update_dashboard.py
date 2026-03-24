@@ -31,6 +31,22 @@ def parse_scan_log(path="data/scan_log.json"):
     except: pass
     return out
 
+def _load_scan_log(limit: int = 500) -> list:
+    """Load last N entries from scan_log.json."""
+    try:
+        p = Path("data/scan_log.json")
+        if not p.exists(): return []
+        entries = json.loads(p.read_text())
+        return entries[-limit:] if len(entries) > limit else entries
+    except Exception: return []
+
+def _load_json_file(path: str) -> dict:
+    """Load a JSON file, return {} on missing/error."""
+    try:
+        p = Path(path)
+        return json.loads(p.read_text()) if p.exists() else {}
+    except Exception: return {}
+
 def get_engine_state():
     from engines.state_engine import StateEngine
     db      = os.environ.get("DATABASE_PATH","data/trades.db")
@@ -89,6 +105,10 @@ def get_engine_state():
         "recent_trades":trades_display,
         "lessons_count":len(lessons.get("lessons",[])),"strategy_scores":lessons.get("strategy_scores",{}),
         "lessons_updated":lessons.get("last_updated",""),
+        # Scan History tab — last 500 scan_log entries
+        "scan_log":_load_scan_log(500),
+        # CLOB enriched opportunities
+        "enriched_opps":_load_json_file("data/enriched_opportunities.json"),
     }
 
 def update_dashboard_html(data):
