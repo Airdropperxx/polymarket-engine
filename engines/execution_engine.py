@@ -36,17 +36,28 @@ SCAN_LOG_MAX_ENTRIES = 20000   # keep ~7 days at 5-min scan cadence
 
 class ExecutionEngine:
     def __init__(self,
-                 clob_client,
-                 state_engine: StateEngine,
-                 config:       dict,
+                 state_engine_or_clob,
+                 data_engine_or_state=None,
+                 config:       dict = None,
                  dry_run:      bool = True,
                  data_engine=None):
-        self._client  = clob_client   # CLOB order submission client
-        self.state    = state_engine
-        self.config   = config
-        self._config  = config        # alias for test access
+        # Support two calling conventions:
+        #   Scanner: ExecutionEngine(state_engine, data_engine, config, dry_run)
+        #   Tests:   ExecutionEngine(clob_mock,    state_engine, config, dry_run)
+        from engines.state_engine import StateEngine as _SE
+        if isinstance(state_engine_or_clob, _SE):
+            # Scanner convention
+            self.state    = state_engine_or_clob
+            self.data     = data_engine_or_state
+            self._client  = None
+        else:
+            # Test convention: first arg is clob mock, second is StateEngine
+            self._client  = state_engine_or_clob
+            self.state    = data_engine_or_state
+            self.data     = data_engine
+        self.config   = config or {}
+        self._config  = self.config   # alias for test access
         self.dry_run  = dry_run
-        self.data     = data_engine
 
     # ------------------------------------------------------------------ #
     #  Opportunity logging                                                 #
@@ -108,7 +119,7 @@ class ExecutionEngine:
                             strategy:     BaseStrategy,
                             market_state: Optional[MarketState],
                             strategy_config: dict = None) -> Optional[str]:
-        risk = self.config.get("engine", {}).get("risk", {})
+        risk = self.config.get("risk") or self.config.get("engine", {}).get("risk", {})
 
         # Gate 1: daily P&L — use config value, no hardcoded fallback
         daily_pnl      = self.state.get_daily_pnl()
@@ -125,7 +136,7 @@ class ExecutionEngine:
 
         # Gate 3: DRY_RUN — log and record but don't submit
         if self.dry_run:
-            trade_id  = f"DRY_{uuid.uuid4().hex[:10].upper()}"
+            trade_id  = f"DRY_RUN_{uuid.uuid4().hex[:8].upper()}"
             buy_price = opp.metadata.get("buy_price", opp.win_probability)
             shares    = round(size_usdc / buy_price, 2) if buy_price > 0 else 0
             fee_usdc  = strategy.calc_fee(buy_price) * buy_price * size_usdc
@@ -215,10 +226,11 @@ class ExecutionEngine:
             return market_state.fee_rate_bps
         try:
             clob   = self._get_clob_client()
-            detail = clob.get_market(token_id) if clob else {}
-            bps    = int(detail.get("feeRateBps", 0))
-            if bps > 0:
-                return bps
+            if clob is not None:
+                detail = clob.get_market(token_id) if hasattr(clob, 'get_market') else {}
+                bps    = int(detail.get("feeRateBps", 0))
+                if bps > 0:
+                    return bps
         except Exception:
             pass
         return market_state.fee_rate_bps if market_state else 200
@@ -226,6 +238,9 @@ class ExecutionEngine:
     def _get_clob_client(self):
         if self._client is None:
             try:
+                import importlib
+                if importlib.util.find_spec("py_clob_client") is None:
+                    return None
                 from py_clob_client.client import ClobClient
                 from py_clob_client.clob_types import ApiCreds
                 creds = ApiCreds(
