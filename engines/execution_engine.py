@@ -285,8 +285,9 @@ class ExecutionEngine:
             buy_price = opp.metadata.get("buy_price", opp.win_probability)
             shares    = round(size_usdc / buy_price, 2) if buy_price > 0 else 0
 
-            if shares < 1.0 or not token_id:
+            if shares < 1.0:
                 return None
+            # token_id may be empty — clob client handles it
 
             if use_clob_types:
                 order_args = OrderArgs(
