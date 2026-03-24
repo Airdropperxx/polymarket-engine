@@ -839,12 +839,23 @@ function renderLessons(){
     $_('lessons-empty').style.display='none';
     // The engine-data only stores count+scores, not the full text.
     // Show what we know, direct user to check lessons.json for details.
-    $_('lessons-list').innerHTML=`<div style="font-size:12px;color:var(--mu);padding:12px;background:var(--s2);border-radius:6px">
-      ${count} lesson(s) stored in <code>data/lessons.json</code>.<br>
-      The AI reviewer (Claude Haiku) generates these after each resolution batch.<br>
-      Lessons are used to adjust strategy scores and guide future trades.<br>
-      <a href="https://raw.githubusercontent.com/Airdropperxx/polymarket-engine/main/data/lessons.json" target="_blank" style="color:var(--teal);margin-top:6px;display:inline-block">View lessons.json →</a>
-    </div>`;
+    const lessonsList = D.lessons_list??[];
+    if(lessonsList.length){
+      const items = [...lessonsList].reverse().slice(0,30);
+      $_('lessons-list').innerHTML = items.map((l,i)=>{
+        const text = typeof l==='object'?(l.text||JSON.stringify(l)):String(l);
+        const created = typeof l==='object'&&l.created_at ? ' <span style="font-size:10px;color:var(--mu)">'+new Date(l.created_at).toLocaleDateString()+'</span>' : '';
+        return `<div style="padding:10px 12px;border-left:3px solid var(--teal);margin-bottom:8px;background:var(--s2);border-radius:0 6px 6px 0;font-size:12px;line-height:1.6">
+          <span style="color:var(--mu);font-size:10px">#${items.length-i}</span>${created}<br>
+          <span style="color:var(--tx)">${esc(text)}</span>
+        </div>`;
+      }).join('');
+    } else {
+      $_('lessons-list').innerHTML=`<div style="font-size:12px;color:var(--mu);padding:12px;background:var(--s2);border-radius:6px">
+        ${count} lesson(s) counted in engine-data. Full text in <code>data/lessons.json</code>.
+        <a href="https://raw.githubusercontent.com/Airdropperxx/polymarket-engine/main/data/lessons.json" target="_blank" style="color:var(--teal);margin-left:8px">View →</a>
+      </div>`;
+    }
   }
 }
 
