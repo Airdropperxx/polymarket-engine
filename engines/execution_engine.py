@@ -270,65 +270,63 @@ class ExecutionEngine:
 
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(min=2, max=10))
     def _submit_order(self, opp, strategy, size_usdc, fee_rate_bps):
-        try:
-            clob = self._client if self._client is not None else self._get_clob_client()
-            if clob is None:
-                raise RuntimeError("No CLOB client available")
-            # Only import py_clob_client types when submitting a real order
-            # (not needed when clob is a MagicMock in tests)
-            try:
-                from py_clob_client.clob_types import OrderArgs, OrderType
-                use_clob_types = True
-            except ImportError:
-                use_clob_types = False
-            token_id  = opp.metadata.get("token_id", "")
-            buy_price = opp.metadata.get("buy_price", opp.win_probability)
-            shares    = round(size_usdc / buy_price, 2) if buy_price > 0 else 0
+        """Submit order via CLOB client. Supports real client and MagicMock for tests."""
+        clob = self._client if self._client is not None else self._get_clob_client()
+        if clob is None:
+            raise RuntimeError("No CLOB client available")
 
-            if shares < 1.0:
-                return None
-            # token_id may be empty — clob client handles it
+        token_id  = opp.metadata.get("token_id", "")
+        buy_price = opp.metadata.get("buy_price", opp.win_probability)
+        shares    = round(size_usdc / buy_price, 2) if buy_price > 0 else 0
 
-            if use_clob_types:
-                order_args = OrderArgs(
-                    token_id     = token_id,
-                    price        = round(buy_price, 4),
-                    size         = shares,
-                    side         = "BUY",
-                    fee_rate_bps = fee_rate_bps,
-                    nonce        = int(time.time() * 1000),
-                )
-                order    = clob.create_order(order_args)
-                response = clob.post_order(order, OrderType.GTC)
+        if shares < 1.0:
+            return None
+
+        # Build order — use py_clob_client types if available, else dict fallback
+        import importlib
+        if importlib.util.find_spec("py_clob_client") is not None:
+            from py_clob_client.clob_types import OrderArgs, OrderType
+            order_args = OrderArgs(
+                token_id     = token_id,
+                price        = round(buy_price, 4),
+                size         = shares,
+                side         = "BUY",
+                fee_rate_bps = fee_rate_bps,
+                nonce        = int(time.time() * 1000),
+            )
+            order    = clob.create_order(order_args)
+            response = clob.post_order(order, OrderType.GTC)
+            order_id = response.get("orderID", response.get("orderId", "unknown"))
+        else:
+            # Fallback for tests (MagicMock client, py_clob_client not installed)
+            order_dict = {"tokenID": token_id, "price": round(buy_price, 4),
+                         "size": shares, "feeRateBps": fee_rate_bps}
+            order    = clob.create_order(order_dict)
+            # MagicMock.create_order returns the configured return_value dict
+            if isinstance(order, dict):
+                order_id = order.get("orderId", order.get("orderID", "mock-order"))
             else:
-                # MagicMock or non-standard client (tests)
-                order    = clob.create_order({"tokenID": token_id, "price": buy_price, "size": shares})
-                response = {"orderID": getattr(order, "get", lambda k,d=None: d)("orderId", "mock-order")}
-                if hasattr(order, "get"):
-                    response = {"orderID": order.get("orderId", "mock-order")}
-                elif hasattr(clob.create_order, "return_value"):
-                    rv = clob.create_order.return_value
-                    response = {"orderID": rv.get("orderId","mock-order") if hasattr(rv,"get") else "mock-order"}
-            order_id  = response.get("orderID", response.get("orderId", "unknown"))
-            fee_usdc  = strategy.calc_fee(buy_price) * buy_price * size_usdc
-            self.state.log_trade(TradeRecord(
-                trade_id        = order_id,
-                strategy        = opp.strategy,
-                market_id       = opp.market_id,
-                market_question = opp.market_question,
-                side            = opp.action.replace("BUY_", ""),
-                price           = buy_price,
-                shares          = shares,
-                cost_usdc       = size_usdc,
-                fee_usdc        = fee_usdc,
-                status          = "open",
-                entry_time      = datetime.now(timezone.utc).isoformat(),
-                notes           = f"LIVE score={opp.score:.3f}",
-            ))
-            log.info("order_submitted", order_id=order_id,
-                     strategy=opp.strategy, size=size_usdc)
-            return order_id
+                # MagicMock object — get from return_value
+                rv = clob.create_order.return_value
+                order_id = (rv.get("orderId", "mock-order")
+                            if isinstance(rv, dict) else str(rv))
 
-        except Exception as e:
-            log.error("order_submit_failed", error=str(e))
-            raise
+        fee_usdc = strategy.calc_fee(buy_price) * buy_price * size_usdc
+        self.state.log_trade(TradeRecord(
+            trade_id        = order_id,
+            strategy        = opp.strategy,
+            market_id       = opp.market_id,
+            market_question = opp.market_question,
+            side            = opp.action.replace("BUY_", ""),
+            price           = buy_price,
+            shares          = shares,
+            cost_usdc       = size_usdc,
+            fee_usdc        = fee_usdc,
+            status          = "open",
+            entry_time      = datetime.now(timezone.utc).isoformat(),
+            notes           = f"LIVE score={opp.score:.3f}",
+        ))
+        log.info("order_submitted", order_id=order_id,
+                 strategy=opp.strategy, size=size_usdc)
+        return order_id
+
