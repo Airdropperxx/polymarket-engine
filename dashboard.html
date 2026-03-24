@@ -105,6 +105,8 @@ background:var(--s2);color:var(--mu);margin-right:4px}
   <div class="tab" onclick="switchTab('analysis')">Pattern Analysis</div>
   <div class="tab" onclick="switchTab('signals')">Observer Signals</div>
   <div class="tab" onclick="switchTab('strategy')">Strategy Refinement</div>
+  <div class="tab" onclick="switchTab('pnl')">📊 P&amp;L Analytics</div>
+  <div class="tab" onclick="switchTab('settled')">✅ Settled Trades</div>
 </div>
 
 <!-- ══ TAB 1: OVERVIEW ══════════════════════════════════════════════════ -->
@@ -844,8 +846,594 @@ function renderStrategy(){
   }
 }
 
+
+// ══ P&L ANALYTICS TAB ════════════════════════════════════════════════════════
+function renderPnlTab(D) {
+  const trades = D.recent_trades || [];
+  const resolved = trades.filter(t=>t.status==='resolved');
+  const wins     = resolved.filter(t=>t.outcome==='win');
+  const losses   = resolved.filter(t=>t.outcome==='loss');
+  const totalPnl = resolved.reduce((s,t)=>s+(t.pnl||0),0);
+  const totalInv = resolved.reduce((s,t)=>s+(t.size||0),0);
+  const roi      = totalInv>0?totalPnl/totalInv*100:0;
+  const wr       = resolved.length>0?wins.length/resolved.length*100:0;
+
+  function pnlClass(v){return v>0?'green':v<0?'red':''}
+  function fmt(v,d=4){return v>=0?'+'+v.toFixed(d):v.toFixed(d)}
+
+  $_('pk-pnl').className='stat '+pnlClass(totalPnl);
+  $_('pk-pnl').textContent=(totalPnl>=0?'+':'')+totalPnl.toFixed(4)+' USDC';
+  $_('pk-pnl-s').textContent=resolved.length+' resolved trades';
+  $_('pk-wr').className='stat '+(wr>=50?'green':wr>0?'amber':'red');
+  $_('pk-wr').textContent=wr.toFixed(1)+'%';
+  $_('pk-wr-s').textContent=wins.length+'W / '+losses.length+'L';
+  $_('pk-roi').className='stat '+pnlClass(roi);
+  $_('pk-roi').textContent=(roi>=0?'+':'')+roi.toFixed(2)+'%';
+  $_('pk-roi-s').textContent='on 
+
+<!-- ══ TAB: P&L ANALYTICS ══════════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-pnl">
+<div class="g4" id="pnl-kpis">
+  <div class="card"><h2>Total P&amp;L (All Resolved)</h2><div class="stat" id="pk-pnl">—</div><div class="sub" id="pk-pnl-s">—</div></div>
+  <div class="card"><h2>Win Rate</h2><div class="stat" id="pk-wr">—</div><div class="sub" id="pk-wr-s">—</div></div>
+  <div class="card"><h2>Total ROI</h2><div class="stat" id="pk-roi">—</div><div class="sub" id="pk-roi-s">—</div></div>
+  <div class="card"><h2>Open Exposure</h2><div class="stat amber" id="pk-exp">—</div><div class="sub" id="pk-exp-s">—</div></div>
+</div>
+<div class="g4">
+  <div class="card"><h2>Best Trade</h2><div class="stat green" id="pk-best">—</div><div class="sub">Net P&amp;L</div></div>
+  <div class="card"><h2>Worst Trade</h2><div class="stat red" id="pk-worst">—</div><div class="sub">Net P&amp;L</div></div>
+  <div class="card"><h2>Avg P&amp;L / Trade</h2><div class="stat" id="pk-avg">—</div><div class="sub">Resolved only</div></div>
+  <div class="card"><h2>Total Invested</h2><div class="stat blue" id="pk-inv">—</div><div class="sub">USDC staked (resolved)</div></div>
+</div>
+<div class="g2">
+  <div class="card">
+    <div class="sec">Cumulative P&amp;L Over Time</div>
+    <div class="ch-xl"><canvas id="c-cum-pnl"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="sec">Win / Loss Distribution</div>
+    <div class="ch-lg"><canvas id="c-wl-dist"></canvas></div>
+  </div>
+</div>
+<div class="g2">
+  <div class="card">
+    <div class="sec">P&amp;L by Strategy</div>
+    <div id="pnl-by-strategy"></div>
+  </div>
+  <div class="card">
+    <div class="sec">Edge Accuracy Analysis</div>
+    <div id="edge-accuracy-breakdown"></div>
+    <div style="margin-top:16px" class="sec">EV Distribution</div>
+    <div class="ch"><canvas id="c-ev-dist"></canvas></div>
+  </div>
+</div>
+<div class="card" style="margin-bottom:20px">
+  <div class="sec">Loss Pattern Analysis — Why Trades Lost</div>
+  <div id="loss-analysis"></div>
+</div>
+<div class="card">
+  <div class="sec">Win Pattern Analysis — What Made Trades Win</div>
+  <div id="win-analysis"></div>
+</div>
+</div>
+
+<!-- ══ TAB: SETTLED TRADES ══════════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-settled">
+<div class="g3" style="margin-bottom:16px">
+  <div style="display:flex;gap:8px;align-items:center">
+    <label style="font-size:12px;color:var(--mu)">Filter:</label>
+    <select id="filter-status" onchange="renderSettledTable()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 8px;border-radius:4px;font-size:12px">
+      <option value="all">All</option><option value="resolved">Resolved</option><option value="open">Open</option>
+    </select>
+    <select id="filter-strategy" onchange="renderSettledTable()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 8px;border-radius:4px;font-size:12px">
+      <option value="all">All Strategies</option>
+    </select>
+    <select id="filter-outcome" onchange="renderSettledTable()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 8px;border-radius:4px;font-size:12px">
+      <option value="all">All Outcomes</option><option value="win">Win</option><option value="loss">Loss</option>
+    </select>
+  </div>
+</div>
+<div class="card" style="padding:0;overflow:hidden">
+  <div id="settled-table-wrap" style="overflow-x:auto">
+    <table id="settled-table">
+      <thead>
+        <tr>
+          <th>Time</th><th>Strategy</th><th>Market</th>
+          <th>Side</th><th>Buy Price</th><th>Shares</th>
+          <th>Cost</th><th>Fee</th><th>Status</th>
+          <th>P&amp;L</th><th>ROI</th><th>Edge</th><th>EV</th><th>Notes</th>
+        </tr>
+      </thead>
+      <tbody id="settled-tbody"></tbody>
+    </table>
+  </div>
+</div>
+<div id="settled-empty" class="loading" style="display:none">No trades yet — dry run trades will appear here once the engine executes.</div>
+</div>
+
+</body>
+</html>
++totalInv.toFixed(2)+' invested';
+  $_('pk-exp').textContent='
+
+<!-- ══ TAB: P&L ANALYTICS ══════════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-pnl">
+<div class="g4" id="pnl-kpis">
+  <div class="card"><h2>Total P&amp;L (All Resolved)</h2><div class="stat" id="pk-pnl">—</div><div class="sub" id="pk-pnl-s">—</div></div>
+  <div class="card"><h2>Win Rate</h2><div class="stat" id="pk-wr">—</div><div class="sub" id="pk-wr-s">—</div></div>
+  <div class="card"><h2>Total ROI</h2><div class="stat" id="pk-roi">—</div><div class="sub" id="pk-roi-s">—</div></div>
+  <div class="card"><h2>Open Exposure</h2><div class="stat amber" id="pk-exp">—</div><div class="sub" id="pk-exp-s">—</div></div>
+</div>
+<div class="g4">
+  <div class="card"><h2>Best Trade</h2><div class="stat green" id="pk-best">—</div><div class="sub">Net P&amp;L</div></div>
+  <div class="card"><h2>Worst Trade</h2><div class="stat red" id="pk-worst">—</div><div class="sub">Net P&amp;L</div></div>
+  <div class="card"><h2>Avg P&amp;L / Trade</h2><div class="stat" id="pk-avg">—</div><div class="sub">Resolved only</div></div>
+  <div class="card"><h2>Total Invested</h2><div class="stat blue" id="pk-inv">—</div><div class="sub">USDC staked (resolved)</div></div>
+</div>
+<div class="g2">
+  <div class="card">
+    <div class="sec">Cumulative P&amp;L Over Time</div>
+    <div class="ch-xl"><canvas id="c-cum-pnl"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="sec">Win / Loss Distribution</div>
+    <div class="ch-lg"><canvas id="c-wl-dist"></canvas></div>
+  </div>
+</div>
+<div class="g2">
+  <div class="card">
+    <div class="sec">P&amp;L by Strategy</div>
+    <div id="pnl-by-strategy"></div>
+  </div>
+  <div class="card">
+    <div class="sec">Edge Accuracy Analysis</div>
+    <div id="edge-accuracy-breakdown"></div>
+    <div style="margin-top:16px" class="sec">EV Distribution</div>
+    <div class="ch"><canvas id="c-ev-dist"></canvas></div>
+  </div>
+</div>
+<div class="card" style="margin-bottom:20px">
+  <div class="sec">Loss Pattern Analysis — Why Trades Lost</div>
+  <div id="loss-analysis"></div>
+</div>
+<div class="card">
+  <div class="sec">Win Pattern Analysis — What Made Trades Win</div>
+  <div id="win-analysis"></div>
+</div>
+</div>
+
+<!-- ══ TAB: SETTLED TRADES ══════════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-settled">
+<div class="g3" style="margin-bottom:16px">
+  <div style="display:flex;gap:8px;align-items:center">
+    <label style="font-size:12px;color:var(--mu)">Filter:</label>
+    <select id="filter-status" onchange="renderSettledTable()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 8px;border-radius:4px;font-size:12px">
+      <option value="all">All</option><option value="resolved">Resolved</option><option value="open">Open</option>
+    </select>
+    <select id="filter-strategy" onchange="renderSettledTable()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 8px;border-radius:4px;font-size:12px">
+      <option value="all">All Strategies</option>
+    </select>
+    <select id="filter-outcome" onchange="renderSettledTable()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 8px;border-radius:4px;font-size:12px">
+      <option value="all">All Outcomes</option><option value="win">Win</option><option value="loss">Loss</option>
+    </select>
+  </div>
+</div>
+<div class="card" style="padding:0;overflow:hidden">
+  <div id="settled-table-wrap" style="overflow-x:auto">
+    <table id="settled-table">
+      <thead>
+        <tr>
+          <th>Time</th><th>Strategy</th><th>Market</th>
+          <th>Side</th><th>Buy Price</th><th>Shares</th>
+          <th>Cost</th><th>Fee</th><th>Status</th>
+          <th>P&amp;L</th><th>ROI</th><th>Edge</th><th>EV</th><th>Notes</th>
+        </tr>
+      </thead>
+      <tbody id="settled-tbody"></tbody>
+    </table>
+  </div>
+</div>
+<div id="settled-empty" class="loading" style="display:none">No trades yet — dry run trades will appear here once the engine executes.</div>
+</div>
+
+</body>
+</html>
++(D.open_exposure||0).toFixed(2);
+  $_('pk-exp-s').textContent=(D.open_positions||0)+' open positions';
+  $_('pk-best').textContent=fmt(D.best_trade_pnl||0)+' USDC';
+  $_('pk-worst').textContent=fmt(D.worst_trade_pnl||0)+' USDC';
+  const avgPnl=resolved.length>0?totalPnl/resolved.length:0;
+  $_('pk-avg').className='stat '+pnlClass(avgPnl);
+  $_('pk-avg').textContent=fmt(avgPnl)+' USDC';
+  $_('pk-inv').textContent='
+
+<!-- ══ TAB: P&L ANALYTICS ══════════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-pnl">
+<div class="g4" id="pnl-kpis">
+  <div class="card"><h2>Total P&amp;L (All Resolved)</h2><div class="stat" id="pk-pnl">—</div><div class="sub" id="pk-pnl-s">—</div></div>
+  <div class="card"><h2>Win Rate</h2><div class="stat" id="pk-wr">—</div><div class="sub" id="pk-wr-s">—</div></div>
+  <div class="card"><h2>Total ROI</h2><div class="stat" id="pk-roi">—</div><div class="sub" id="pk-roi-s">—</div></div>
+  <div class="card"><h2>Open Exposure</h2><div class="stat amber" id="pk-exp">—</div><div class="sub" id="pk-exp-s">—</div></div>
+</div>
+<div class="g4">
+  <div class="card"><h2>Best Trade</h2><div class="stat green" id="pk-best">—</div><div class="sub">Net P&amp;L</div></div>
+  <div class="card"><h2>Worst Trade</h2><div class="stat red" id="pk-worst">—</div><div class="sub">Net P&amp;L</div></div>
+  <div class="card"><h2>Avg P&amp;L / Trade</h2><div class="stat" id="pk-avg">—</div><div class="sub">Resolved only</div></div>
+  <div class="card"><h2>Total Invested</h2><div class="stat blue" id="pk-inv">—</div><div class="sub">USDC staked (resolved)</div></div>
+</div>
+<div class="g2">
+  <div class="card">
+    <div class="sec">Cumulative P&amp;L Over Time</div>
+    <div class="ch-xl"><canvas id="c-cum-pnl"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="sec">Win / Loss Distribution</div>
+    <div class="ch-lg"><canvas id="c-wl-dist"></canvas></div>
+  </div>
+</div>
+<div class="g2">
+  <div class="card">
+    <div class="sec">P&amp;L by Strategy</div>
+    <div id="pnl-by-strategy"></div>
+  </div>
+  <div class="card">
+    <div class="sec">Edge Accuracy Analysis</div>
+    <div id="edge-accuracy-breakdown"></div>
+    <div style="margin-top:16px" class="sec">EV Distribution</div>
+    <div class="ch"><canvas id="c-ev-dist"></canvas></div>
+  </div>
+</div>
+<div class="card" style="margin-bottom:20px">
+  <div class="sec">Loss Pattern Analysis — Why Trades Lost</div>
+  <div id="loss-analysis"></div>
+</div>
+<div class="card">
+  <div class="sec">Win Pattern Analysis — What Made Trades Win</div>
+  <div id="win-analysis"></div>
+</div>
+</div>
+
+<!-- ══ TAB: SETTLED TRADES ══════════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-settled">
+<div class="g3" style="margin-bottom:16px">
+  <div style="display:flex;gap:8px;align-items:center">
+    <label style="font-size:12px;color:var(--mu)">Filter:</label>
+    <select id="filter-status" onchange="renderSettledTable()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 8px;border-radius:4px;font-size:12px">
+      <option value="all">All</option><option value="resolved">Resolved</option><option value="open">Open</option>
+    </select>
+    <select id="filter-strategy" onchange="renderSettledTable()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 8px;border-radius:4px;font-size:12px">
+      <option value="all">All Strategies</option>
+    </select>
+    <select id="filter-outcome" onchange="renderSettledTable()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 8px;border-radius:4px;font-size:12px">
+      <option value="all">All Outcomes</option><option value="win">Win</option><option value="loss">Loss</option>
+    </select>
+  </div>
+</div>
+<div class="card" style="padding:0;overflow:hidden">
+  <div id="settled-table-wrap" style="overflow-x:auto">
+    <table id="settled-table">
+      <thead>
+        <tr>
+          <th>Time</th><th>Strategy</th><th>Market</th>
+          <th>Side</th><th>Buy Price</th><th>Shares</th>
+          <th>Cost</th><th>Fee</th><th>Status</th>
+          <th>P&amp;L</th><th>ROI</th><th>Edge</th><th>EV</th><th>Notes</th>
+        </tr>
+      </thead>
+      <tbody id="settled-tbody"></tbody>
+    </table>
+  </div>
+</div>
+<div id="settled-empty" class="loading" style="display:none">No trades yet — dry run trades will appear here once the engine executes.</div>
+</div>
+
+</body>
+</html>
++totalInv.toFixed(2);
+
+  // Cumulative PnL chart
+  const sorted = [...resolved].sort((a,b)=>new Date(a.time)-new Date(b.time));
+  let cum=0; const cumData=sorted.map(t=>{cum+=(t.pnl||0); return {x:t.time?.slice(0,16),y:+cum.toFixed(4)};});
+  renderLineChart('c-cum-pnl', cumData.map(d=>d.x), cumData.map(d=>d.y), 'Cumulative P&L (USDC)', cum>=0?'rgba(34,197,94,':'rgba(239,68,68,');
+
+  // Win/Loss distribution
+  const pnlBuckets={};
+  resolved.forEach(t=>{
+    const b=Math.round((t.pnl||0)*10)/10;
+    const k=b.toFixed(1);
+    pnlBuckets[k]=(pnlBuckets[k]||0)+1;
+  });
+  const bKeys=Object.keys(pnlBuckets).sort((a,b)=>parseFloat(a)-parseFloat(b));
+  renderBarChart('c-wl-dist', bKeys, bKeys.map(k=>pnlBuckets[k]),
+    bKeys.map(k=>parseFloat(k)>=0?'rgba(34,197,94,0.7)':'rgba(239,68,68,0.7)'), 'P&L Distribution');
+
+  // P&L by strategy
+  const byS = D.by_strategy||{};
+  let html='';
+  if(Object.keys(byS).length===0){html='<div class="loading">No resolved trades yet</div>';}
+  else{
+    html='<table><thead><tr><th>Strategy</th><th>Trades</th><th>Win Rate</th><th>Total P&L</th><th>ROI</th><th>Avg P&L</th></tr></thead><tbody>';
+    for(const[s,v] of Object.entries(byS)){
+      const pnlColor=v.pnl>=0?'var(--green)':'var(--red)';
+      const roiColor=v.roi_pct>=0?'var(--green)':'var(--red)';
+      html+=`<tr>
+        <td><span class="pill p-${s.split('_')[0]}">${s}</span></td>
+        <td>${v.trades}</td>
+        <td style="color:${v.win_rate_pct>=50?'var(--green)':'var(--red)'}">${v.win_rate_pct}%</td>
+        <td style="color:${pnlColor}">${v.pnl>=0?'+':''}${(v.pnl||0).toFixed(4)}</td>
+        <td style="color:${roiColor}">${v.roi_pct>=0?'+':''}${(v.roi_pct||0).toFixed(2)}%</td>
+        <td style="color:${pnlColor}">${(v.avg_pnl||0).toFixed(4)}</td>
+      </tr>`;
+    }
+    html+='</tbody></table>';
+  }
+  $_('pnl-by-strategy').innerHTML=html;
+
+  // Edge accuracy
+  const withEdge=resolved.filter(t=>t.edge!=null);
+  const posEdge=withEdge.filter(t=>t.edge>0);
+  const posEdgeWins=posEdge.filter(t=>t.outcome==='win');
+  const negEdge=withEdge.filter(t=>t.edge<0);
+  const negEdgeWins=negEdge.filter(t=>t.outcome==='win');
+  const ea=posEdge.length>0?posEdgeWins.length/posEdge.length*100:null;
+  let eaHtml='<table><thead><tr><th>Edge Type</th><th>Count</th><th>Wins</th><th>Accuracy</th><th>Insight</th></tr></thead><tbody>';
+  if(ea!==null){
+    eaHtml+=`<tr><td style="color:var(--green)">Positive Edge (model_p > price)</td><td>${posEdge.length}</td>
+      <td>${posEdgeWins.length}</td><td style="color:${ea>=50?'var(--green)':'var(--red)'}">${ea.toFixed(1)}%</td>
+      <td style="color:var(--mu);font-size:11px">${ea>=60?'Model is well-calibrated':ea>=50?'Model marginally useful':
+      'Model may be overfitting — edges not converting'}</td></tr>`;
+  }
+  if(negEdge.length>0){
+    const nea=negEdgeWins.length/negEdge.length*100;
+    eaHtml+=`<tr><td style="color:var(--red)">Negative Edge (model_p &lt; price)</td><td>${negEdge.length}</td>
+      <td>${negEdgeWins.length}</td><td>${nea.toFixed(1)}%</td>
+      <td style="color:var(--mu);font-size:11px">${nea>30?'Unexpectedly winning on negative edge — check model':
+      'Expected losses on neg-edge entries'}</td></tr>`;
+  }
+  if(withEdge.length===0) eaHtml+='<tr><td colspan="5" style="color:var(--mu)">Edge data not yet stored — will populate after next scan</td></tr>';
+  eaHtml+='</tbody></table>';
+  $_('edge-accuracy-breakdown').innerHTML=eaHtml;
+
+  // EV distribution chart
+  const evVals=resolved.filter(t=>t.ev!=null).map(t=>parseFloat(t.ev)||0);
+  if(evVals.length>0){
+    const evBuckets={};
+    evVals.forEach(v=>{const k=Math.round(v*20)/20; evBuckets[k.toFixed(2)]=(evBuckets[k.toFixed(2)]||0)+1;});
+    const evKeys=Object.keys(evBuckets).sort((a,b)=>parseFloat(a)-parseFloat(b));
+    renderBarChart('c-ev-dist',evKeys,evKeys.map(k=>evBuckets[k]),
+      evKeys.map(k=>parseFloat(k)>0?'rgba(34,197,94,0.7)':'rgba(239,68,68,0.7)'),'EV Distribution');
+  }
+
+  // Loss pattern analysis
+  let lossHtml='';
+  if(losses.length===0){lossHtml='<div class="loading">No losses yet</div>';}
+  else{
+    const patterns={
+      highPrice:losses.filter(t=>t.price>0.9),
+      lowEdge:losses.filter(t=>t.edge!=null&&t.edge<0.02&&t.edge>0),
+      negEV:losses.filter(t=>t.ev!=null&&t.ev<0),
+      highFee:losses.filter(t=>t.fee!=null&&t.fee>0.05*t.size),
+    };
+    lossHtml='<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">';
+    const addPat=(title,items,desc,color)=>{
+      if(items.length===0)return;
+      lossHtml+=`<div style="background:var(--s2);border-radius:8px;padding:12px;border-left:3px solid ${color}">
+        <div style="font-weight:600;margin-bottom:4px;${color?'color:'+color:''}">${title}: ${items.length} trades</div>
+        <div style="font-size:11px;color:var(--mu);line-height:1.6">${desc}</div>
+        <div style="margin-top:8px;font-size:11px">
+          Avg cost: ${(items.reduce((s,t)=>s+(t.size||0),0)/items.length).toFixed(2)}
+          &nbsp;|&nbsp; Total loss: ${items.reduce((s,t)=>s+(t.pnl||0),0).toFixed(4)} USDC
+        </div></div>`;
+    };
+    addPat('High Price Entries (>0.90)',patterns.highPrice,
+      'Entered at high probability but still lost. Possible causes: market reversed, late entry, stale data.',
+      'var(--red)');
+    addPat('Low Edge Entries (<2% edge)',patterns.lowEdge,
+      'Traded with minimal edge over market price. Fee drag alone could explain these losses. Raise min_edge_after_fees.',
+      'var(--amber)');
+    addPat('Negative EV Trades',patterns.negEV,
+      'EV was negative at entry — fee exceeds expected profit. These should have been filtered. Check EV gate.',
+      'var(--red)');
+    addPat('High Fee Trades (>5% of cost)',patterns.highFee,
+      'Fee was disproportionately large relative to position. Happens at mid-probability (p~0.5). Consider avoiding p=0.4-0.6.',
+      'var(--amber)');
+    lossHtml+='</div>';
+  }
+  $_('loss-analysis').innerHTML=lossHtml;
+
+  // Win pattern analysis
+  let winHtml='';
+  if(wins.length===0){winHtml='<div class="loading">No wins yet</div>';}
+  else{
+    const avgWinEdge=wins.filter(t=>t.edge).reduce((s,t)=>s+(t.edge||0),0)/(wins.filter(t=>t.edge).length||1);
+    const avgWinPrice=wins.reduce((s,t)=>s+(t.price||0),0)/wins.length;
+    const avgWinEV=wins.filter(t=>t.ev).reduce((s,t)=>s+(t.ev||0),0)/(wins.filter(t=>t.ev).length||1);
+    const strategies=[...new Set(wins.map(t=>t.strategy))];
+    winHtml=`<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div style="background:var(--s2);border-radius:8px;padding:12px;border-left:3px solid var(--green)">
+        <div style="font-weight:600;color:var(--green)">Common Win Characteristics</div>
+        <div style="font-size:12px;color:var(--mu);line-height:2;margin-top:8px">
+          Avg entry price: <b style="color:var(--tx)">${avgWinPrice.toFixed(3)}</b><br>
+          Avg edge at entry: <b style="color:var(--green)">${(avgWinEdge*100).toFixed(2)}%</b><br>
+          Avg EV at entry: <b style="color:var(--green)">${avgWinEV.toFixed(4)}</b><br>
+          Strategies: <b style="color:var(--tx)">${strategies.join(', ')}</b>
+        </div>
+      </div>
+      <div style="background:var(--s2);border-radius:8px;padding:12px;border-left:3px solid var(--teal)">
+        <div style="font-weight:600;color:var(--teal)">Win Magnitude Distribution</div>
+        <div style="font-size:12px;color:var(--mu);line-height:2;margin-top:8px">
+          Best win: <b style="color:var(--green)">${wins.reduce((b,t)=>Math.max(b,t.pnl||0),0).toFixed(4)} USDC</b><br>
+          Avg win P&L: <b style="color:var(--green)">${(wins.reduce((s,t)=>s+(t.pnl||0),0)/wins.length).toFixed(4)} USDC</b><br>
+          High confidence wins (p>0.9): <b style="color:var(--tx)">${wins.filter(t=>t.price>0.9).length}</b><br>
+          Positive EV wins: <b style="color:var(--tx)">${wins.filter(t=>t.ev>0).length}</b>
+        </div>
+      </div>
+    </div>`;
+  }
+  $_('win-analysis').innerHTML=winHtml;
+}
+
+// ══ SETTLED TRADES TAB ═══════════════════════════════════════════════════════
+let _allTrades=[];
+function renderSettledTable(){
+  const status=($_('filter-status')||{value:'all'}).value;
+  const strategy=($_('filter-strategy')||{value:'all'}).value;
+  const outcome=($_('filter-outcome')||{value:'all'}).value;
+  let rows=_allTrades;
+  if(status!=='all')    rows=rows.filter(t=>t.status===status);
+  if(strategy!=='all')  rows=rows.filter(t=>t.strategy===strategy);
+  if(outcome!=='all')   rows=rows.filter(t=>t.outcome===outcome);
+  const tbody=_$('settled-tbody');
+  if(!tbody)return;
+  if(rows.length===0){tbody.innerHTML='<tr><td colspan="14" style="text-align:center;color:var(--mu);padding:24px">No trades match filter</td></tr>';return;}
+  tbody.innerHTML=rows.map(t=>{
+    const pnlColor=t.pnl>0?'var(--green)':t.pnl<0?'var(--red)':'var(--mu)';
+    const roiColor=t.roi>0?'var(--green)':t.roi<0?'var(--red)':'var(--mu)';
+    const edgeColor=t.edge>0?'var(--green)':t.edge<0?'var(--red)':'var(--mu)';
+    const evColor=t.ev>0?'var(--green)':t.ev<0?'var(--red)':'var(--mu)';
+    const ts=t.time?.slice(0,16)||'—';
+    const sClass=t.strategy?.split('_')[0]||'obs';
+    const statusPill=t.status==='resolved'?(t.outcome==='win'?'<span class="pill p-win">WIN</span>':'<span class="pill p-loss">LOSS</span>'):'<span class="pill p-open">OPEN</span>';
+    return `<tr>
+      <td style="white-space:nowrap;font-size:11px;color:var(--mu)">${ts}</td>
+      <td><span class="pill p-${sClass}">${t.strategy||'?'}</span></td>
+      <td class="q-cell" title="${t.market||''}">${t.market||'—'}</td>
+      <td>${t.side||'?'}</td>
+      <td>${(t.price||0).toFixed(3)}</td>
+      <td>${(t.shares||0).toFixed(4)}</td>
+      <td>${(t.size||0).toFixed(2)}</td>
+      <td style="color:var(--mu)">${(t.fee||0).toFixed(4)}</td>
+      <td>${statusPill}</td>
+      <td style="color:${pnlColor};font-weight:600">${t.pnl!=null?(t.pnl>=0?'+':'')+t.pnl.toFixed(4):'—'}</td>
+      <td style="color:${roiColor}">${t.roi!=null?(t.roi>=0?'+':'')+t.roi.toFixed(1)+'%':'—'}</td>
+      <td style="color:${edgeColor}">${t.edge!=null?t.edge.toFixed(4):'—'}</td>
+      <td style="color:${evColor}">${t.ev!=null?t.ev.toFixed(4):'—'}</td>
+      <td style="font-size:10px;color:var(--mu);max-width:160px;overflow:hidden;text-overflow:ellipsis" title="${t.notes||''}">${t.notes||''}</td>
+    </tr>`;
+  }).join('');
+}
+function loadSettledTab(D){
+  _allTrades=D.recent_trades||[];
+  // Populate strategy filter
+  const sel=_$('filter-strategy');
+  if(sel){
+    const strategies=[...new Set(_allTrades.map(t=>t.strategy).filter(Boolean))];
+    sel.innerHTML='<option value="all">All Strategies</option>'+
+      strategies.map(s=>`<option value="${s}">${s}</option>`).join('');
+  }
+  const empty=_$('settled-empty');
+  if(empty) empty.style.display=_allTrades.length===0?'block':'none';
+  renderSettledTable();
+}
+// helper: document.getElementById (non-throwing)
+function _$(id){return document.getElementById(id);}
+
+// ── Chart helpers ─────────────────────────────────────────────────────────────
+function renderLineChart(id,labels,data,label,colorBase){
+  const ctx=document.getElementById(id)?.getContext('2d'); if(!ctx)return;
+  const last=data[data.length-1]||0;
+  const clr=(colorBase||'rgba(59,130,246,')+'0.9)';
+  const fill=(colorBase||'rgba(59,130,246,')+'0.15)';
+  if(window['_ch_'+id]) window['_ch_'+id].destroy();
+  window['_ch_'+id]=new Chart(ctx,{type:'line',data:{labels,datasets:[{label,data,
+    borderColor:clr,backgroundColor:fill,borderWidth:2,pointRadius:3,fill:true,tension:0.3}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+    scales:{x:{ticks:{color:'#64748b',maxTicksLimit:8,font:{size:10}},grid:{color:'#2a2f3d'}},
+    y:{ticks:{color:'#64748b',font:{size:10}},grid:{color:'#2a2f3d'}}}}});
+}
+function renderBarChart(id,labels,data,colors,label){
+  const ctx=document.getElementById(id)?.getContext('2d'); if(!ctx)return;
+  if(window['_ch_'+id]) window['_ch_'+id].destroy();
+  window['_ch_'+id]=new Chart(ctx,{type:'bar',data:{labels,datasets:[{label,data,
+    backgroundColor:Array.isArray(colors)?colors:colors}]},
+    options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
+    scales:{x:{ticks:{color:'#64748b',font:{size:10}},grid:{color:'#2a2f3d'}},
+    y:{ticks:{color:'#64748b',font:{size:10}},grid:{color:'#2a2f3d'}}}}});
+}
+
 loadAll();
 setInterval(loadAll,300000);
 </script>
+
+<!-- ══ TAB: P&L ANALYTICS ══════════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-pnl">
+<div class="g4" id="pnl-kpis">
+  <div class="card"><h2>Total P&amp;L (All Resolved)</h2><div class="stat" id="pk-pnl">—</div><div class="sub" id="pk-pnl-s">—</div></div>
+  <div class="card"><h2>Win Rate</h2><div class="stat" id="pk-wr">—</div><div class="sub" id="pk-wr-s">—</div></div>
+  <div class="card"><h2>Total ROI</h2><div class="stat" id="pk-roi">—</div><div class="sub" id="pk-roi-s">—</div></div>
+  <div class="card"><h2>Open Exposure</h2><div class="stat amber" id="pk-exp">—</div><div class="sub" id="pk-exp-s">—</div></div>
+</div>
+<div class="g4">
+  <div class="card"><h2>Best Trade</h2><div class="stat green" id="pk-best">—</div><div class="sub">Net P&amp;L</div></div>
+  <div class="card"><h2>Worst Trade</h2><div class="stat red" id="pk-worst">—</div><div class="sub">Net P&amp;L</div></div>
+  <div class="card"><h2>Avg P&amp;L / Trade</h2><div class="stat" id="pk-avg">—</div><div class="sub">Resolved only</div></div>
+  <div class="card"><h2>Total Invested</h2><div class="stat blue" id="pk-inv">—</div><div class="sub">USDC staked (resolved)</div></div>
+</div>
+<div class="g2">
+  <div class="card">
+    <div class="sec">Cumulative P&amp;L Over Time</div>
+    <div class="ch-xl"><canvas id="c-cum-pnl"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="sec">Win / Loss Distribution</div>
+    <div class="ch-lg"><canvas id="c-wl-dist"></canvas></div>
+  </div>
+</div>
+<div class="g2">
+  <div class="card">
+    <div class="sec">P&amp;L by Strategy</div>
+    <div id="pnl-by-strategy"></div>
+  </div>
+  <div class="card">
+    <div class="sec">Edge Accuracy Analysis</div>
+    <div id="edge-accuracy-breakdown"></div>
+    <div style="margin-top:16px" class="sec">EV Distribution</div>
+    <div class="ch"><canvas id="c-ev-dist"></canvas></div>
+  </div>
+</div>
+<div class="card" style="margin-bottom:20px">
+  <div class="sec">Loss Pattern Analysis — Why Trades Lost</div>
+  <div id="loss-analysis"></div>
+</div>
+<div class="card">
+  <div class="sec">Win Pattern Analysis — What Made Trades Win</div>
+  <div id="win-analysis"></div>
+</div>
+</div>
+
+<!-- ══ TAB: SETTLED TRADES ══════════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-settled">
+<div class="g3" style="margin-bottom:16px">
+  <div style="display:flex;gap:8px;align-items:center">
+    <label style="font-size:12px;color:var(--mu)">Filter:</label>
+    <select id="filter-status" onchange="renderSettledTable()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 8px;border-radius:4px;font-size:12px">
+      <option value="all">All</option><option value="resolved">Resolved</option><option value="open">Open</option>
+    </select>
+    <select id="filter-strategy" onchange="renderSettledTable()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 8px;border-radius:4px;font-size:12px">
+      <option value="all">All Strategies</option>
+    </select>
+    <select id="filter-outcome" onchange="renderSettledTable()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 8px;border-radius:4px;font-size:12px">
+      <option value="all">All Outcomes</option><option value="win">Win</option><option value="loss">Loss</option>
+    </select>
+  </div>
+</div>
+<div class="card" style="padding:0;overflow:hidden">
+  <div id="settled-table-wrap" style="overflow-x:auto">
+    <table id="settled-table">
+      <thead>
+        <tr>
+          <th>Time</th><th>Strategy</th><th>Market</th>
+          <th>Side</th><th>Buy Price</th><th>Shares</th>
+          <th>Cost</th><th>Fee</th><th>Status</th>
+          <th>P&amp;L</th><th>ROI</th><th>Edge</th><th>EV</th><th>Notes</th>
+        </tr>
+      </thead>
+      <tbody id="settled-tbody"></tbody>
+    </table>
+  </div>
+</div>
+<div id="settled-empty" class="loading" style="display:none">No trades yet — dry run trades will appear here once the engine executes.</div>
+</div>
+
 </body>
 </html>
