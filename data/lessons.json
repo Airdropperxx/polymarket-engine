@@ -1,43 +1,36 @@
 {
-  "version": 2,
-  "last_updated": "2026-03-23T15:27:03.163Z",
+  "version": 1,
+  "last_updated": null,
   "strategy_scores": {
     "s1_negrisk_arb": {
       "win_rate": null,
       "avg_roi": null,
       "trades": 0,
-      "allocation": 0.45
+      "allocation": 0.40
+    },
+    "s8_logical_arb": {
+      "win_rate": null,
+      "avg_roi": null,
+      "trades": 0,
+      "allocation": 0.20
     },
     "s10_near_resolution": {
       "win_rate": null,
       "avg_roi": null,
       "trades": 0,
-      "allocation": 0.4
-    },
-    "s11_inplay_momentum": {
-      "win_rate": null,
-      "avg_roi": null,
-      "trades": 0,
-      "allocation": 0.15
+      "allocation": 0.40
     }
   },
   "lessons": [
     "Fee formula: 2.25 * 0.25 * (p*(1-p))^2. At p=0.50 fee is 1.41%. At p=0.95 fee is ~0.013%.",
     "ALWAYS fetch feeRateBps live before every order. Stale rates cause silent rejections.",
-    "S10 max_minutes_remaining is in MINUTES — code converts to seconds internally.",
+    "S10 max_minutes_remaining is in MINUTES — code converts to seconds internally. Do not compare raw.",
     "S10 sports requires min_probability=0.93 not 0.90. Late-reversal risk is real in final minutes.",
     "S1 NegRisk: reject legs with yes_bid < 0.02. Zero bids = stale market = phantom arb signal.",
+    "S8: US politics markets have the most logical violations. Scan politics/* first.",
     "Market cache is gzip-compressed to data/market_snapshot.json.gz and committed after each run.",
-    "S1 NegRisk arb: use YES ask (taker price) not YES mid for total_ask computation.",
-    "S1 always gets priority execution slots — it is zero-risk guaranteed arb.",
-    "Observer now tracks top 200 by volume + top 100 by soonest TTL. Same-day markets included.",
-    "scan_log capped at 20000 entries (~7 days at 5-min cadence). Oldest pruned first.",
-    "max_open_positions=500 (effectively unlimited) — gating is by profitability not position count.",
-    "select_top_trades() sorts by edge DESC within tiers — highest pure profit executed first."
+    "S1 NegRisk arb: use YES ask (taker price) not YES mid for total_ask computation."
   ],
-  "deprecated_lessons": [
-    "S8 disabled — sentence-transformers too heavy for GHA. Enable locally when capital > $500.",
-    "s8_logical_arb allocation removed from engine.yaml."
-  ],
+  "deprecated_lessons": [],
   "capital_history": []
 }

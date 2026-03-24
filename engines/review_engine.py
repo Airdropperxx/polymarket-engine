@@ -45,7 +45,7 @@ class ReviewEngine:
         self.state  = state_engine
         self.config = config
 
-    def run_after_resolution(self, market_id: str = None) -> dict:
+    def run_after_resolution(self) -> dict:
         return self._run(window_hours=48)
 
     def run_daily_review(self) -> dict:
@@ -55,7 +55,7 @@ class ReviewEngine:
         recent = self.state.get_recent_resolved_trades(hours=window_hours)
         if not recent:
             log.info("review_skipped_no_trades")
-            return {"status": "skipped", "reason": "no_trades"}
+            return {"status": "skipped"}
 
         lessons_data = self.state.get_lessons()
         api_key      = os.environ.get("ANTHROPIC_API_KEY", "")
@@ -108,41 +108,13 @@ class ReviewEngine:
             log.error("review_engine_failed", error=str(e))
             return {"status": "error"}
 
-    def _parse_response(self, raw: str):
-        """Parse AI response JSON. Returns dict or None."""
-        import json, re as _re
-        if not raw:
-            return None
-        # Try direct JSON parse first
-        try:
-            return json.loads(raw)
-        except Exception:
-            pass
-        # Try to extract JSON from prose
-        m = _re.search(r'\{[^{}]*"new_lessons"[^{}]*\}', raw, _re.DOTALL)
-        if m:
-            try:
-                return json.loads(m.group())
-            except Exception:
-                pass
-        # Broader JSON extraction
-        m = _re.search(r'\{.*\}', raw, _re.DOTALL)
-        if m:
-            try:
-                return json.loads(m.group())
-            except Exception:
-                pass
-        return None
-    def _apply_updates(self, updates: dict, lessons_data: dict) -> None:
+    def _apply_updates(self, lessons_data: dict, updates: dict) -> None:
         """Apply allocation deltas and new lessons. Never crashes."""
         try:
             # Add new lessons
             for lesson in updates.get("new_lessons", []):
                 if lesson and len(lesson) > 10:
                     lessons_data.setdefault("lessons", []).append(lesson)
-            # Cap at 20 lessons (keep most recent)
-            if len(lessons_data.get("lessons", [])) > 20:
-                lessons_data["lessons"] = lessons_data["lessons"][-20:]
 
             # Deprecate old lessons
             deprecated_idx = sorted(

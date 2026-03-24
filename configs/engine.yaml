@@ -1,23 +1,31 @@
 engine:
-  version: "3.4"
+  version: "3.1"
   capital_usdc: 100.00
-  dry_run: false
+  dry_run: false        # OVERRIDE with DRY_RUN=true env var for testing
 
-  max_per_cycle: 25              # top 25 trades by edge per cycle
-  s1_reserved_slots: 8           # S1 zero-risk arb always gets 8 of 25 slots
-  poll_interval_seconds: 300     # 5 min
+  # How many new trades to execute per scan cycle (prevents over-trading)
+  max_per_cycle: 3
+
+  # Scan interval — must match GitHub Actions cron (30 min)
+  poll_interval_seconds: 1800
 
   risk:
-    max_position_pct: 0.40
-    max_daily_loss_pct: 0.99
-    max_open_positions: 500      # effectively unlimited — cap is profitability not count
-    min_edge_after_fees: 0.001
+    max_position_pct: 0.15        # 15% of bankroll per trade = $15
+    max_daily_loss_pct: 0.05      # halt trading if daily loss > 5% = $5
+    max_open_positions: 5         # never hold more than 5 simultaneous positions
+    min_edge_after_fees: 0.005    # 0.5% minimum net edge (overridden per strategy)
 
+  # Capital allocation across strategies (must sum to 1.0)
   allocations:
-    s1_negrisk_arb: 0.45
-    s10_near_resolution: 0.40
-    s11_inplay_momentum: 0.15
+    s10_near_resolution: 0.40    # $40 — safest, fastest-cycling strategy
+    s1_negrisk_arb: 0.40         # $40 — true arb, ~100% win rate when it fires
+    s8_logical_arb: 0.20         # $20 — higher risk (LLM can err), lower allocation
 
   monitoring:
     telegram_alerts: true
-    alert_on: [trade_executed, daily_summary, risk_limit_hit, error, lesson_update]
+    alert_on:
+      - trade_executed
+      - daily_summary
+      - risk_limit_hit
+      - error
+      - lesson_update

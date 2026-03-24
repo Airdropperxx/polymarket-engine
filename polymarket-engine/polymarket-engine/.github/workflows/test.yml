@@ -1,0 +1,50 @@
+name: Test Suite
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: 'requirements-scan.txt'
+
+      - name: Install dependencies
+        run: |
+          pip install -r requirements-scan.txt
+          pip install pytest pytest-cov
+
+      - name: Run tests
+        run: pytest tests/test_all.py -v --tb=short
+
+      - name: Verify fee formula
+        run: |
+          python -c "
+          import sys; sys.path.insert(0, '.')
+          from strategies.base import BaseStrategy
+          fee = BaseStrategy.calc_fee(0.5)
+          assert abs(fee - 0.140625) < 0.0001, f'Fee formula wrong: {fee}'
+          print(f'calc_fee(0.5) = {fee} OK')
+          "
+
+      - name: Verify allocations sum to 1.0
+        run: |
+          python -c "
+          import yaml
+          cfg = yaml.safe_load(open('configs/engine.yaml'))
+          t = sum(cfg['engine']['allocations'].values())
+          assert abs(t - 1.0) < 0.001, f'Allocations sum to {t}'
+          print(f'Allocations sum = {t} OK')
+          "

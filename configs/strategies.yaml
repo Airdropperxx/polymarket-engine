@@ -1,65 +1,123 @@
-# configs/strategies.yaml
-# Consolidated strategy configuration — loaded by test_all.py and signal_engine.
-# Each strategy is a separate YAML document (separated by ---).
+# configs/s10_near_resolution.yaml
+# S10: Near-resolution harvest strategy
+# Capital: $40 (40% of $100 bankroll)
+# Target: markets resolving within 60 min with high-probability outcome
 
----
 s10_near_resolution:
   enabled: true
-  max_minutes_remaining: 1440    # 24 hours — must be minutes not seconds (15–1440 range)
-  min_probability: 0.85
-  max_probability: 0.989
-  min_volume_24h: 100.0
-  max_spread: 0.05
-  min_edge_after_fees: 0.001
-  max_position_pct: 0.40
-  kelly_fraction: 0.25
-  threshold: 0.25
-  observer_boost: true
+
+  # ── Time filter ──────────────────────────────────────────────────────────
+  # Markets must resolve within this many MINUTES from now
+  # FIX: This is MINUTES — the code converts to seconds internally.
+  # Original bug: was being compared as minutes against seconds_to_resolution
+  max_minutes_remaining: 60       # 1 hour window (safe with 30-min scan interval)
+
+  # ── Probability filter ────────────────────────────────────────────────────
+  min_probability: 0.90           # YES or NO must be ≥ 90% to enter
+  # Sports: consider raising to 0.93 (late reversals common)
+  # Crypto: 0.90 is fine (price bets resolve cleanly)
+
+  # ── Liquidity filters ─────────────────────────────────────────────────────
+  min_volume_24h: 500.0           # USDC — rejects dead markets
+  max_spread: 0.03                # max bid-ask spread (0.03 = 3 cents on $1)
+
+  # ── Edge requirement ──────────────────────────────────────────────────────
+  min_edge_after_fees: 0.005      # 0.5% minimum net edge after fee formula
+  # At p=0.95, fee ≈ 0.013% — so 0.5% edge means buying at 0.937 or better
+
+  # ── Position sizing ────────────────────────────────────────────────────────
+  max_position_pct: 0.15          # 15% of bankroll max per trade = $15
+  kelly_fraction: 0.25            # quarter-Kelly (conservative)
+
+  # ── Scoring weights (internal to s10.score()) ─────────────────────────────
+  # time_weight:  0.35  — urgency is primary signal
+  # prob_weight:  0.30  — higher certainty → higher score
+  # edge_weight:  0.20  — wider edge → higher score
+  # vol_weight:   0.15  — liquidity confidence
+
+  # ── Execution gate ────────────────────────────────────────────────────────
+  threshold: 0.55                 # minimum score() result to execute trade
+
+  # ── ReviewEngine tracking ─────────────────────────────────────────────────
   review:
-    track_metrics: [win_rate, avg_roi, avg_days_left, category_breakdown]
+    track_metrics: [win_rate, avg_roi, avg_minutes_left_at_entry, category_breakdown]
     rebalance_trigger: weekly
 
 ---
+# configs/s1_negrisk.yaml
+# S1: NegRisk multi-outcome arbitrage
+# Capital: $40 (40% of $100 bankroll)
+# True risk-free arb: sum(YES ask) < 1.00 in a NegRisk group
+
 s1_negrisk_arb:
   enabled: true
-  min_edge_after_fees: 0.005
-  min_leg_volume_24h: 1000.0
-  min_leg_bid: 0.01
-  min_leg_price: 0.03
-  max_leg_price: 0.97
-  max_group_legs: 20
-  max_position_pct: 0.40
-  threshold: 0.30
+
+  # ── Arb threshold ─────────────────────────────────────────────────────────
+  min_edge_after_fees: 0.020      # 2% minimum net edge (after buying all YES legs)
+  # Lower bound exists because execution slippage can eat thin edges
+
+  # ── Leg quality filters (FIX: these were missing) ────────────────────────
+  min_leg_volume_24h: 200.0       # each leg must have ≥ $200 24h volume
+  min_leg_bid: 0.02               # each leg YES bid must be ≥ $0.02 (not stale)
+  # If bid = 0.00 → no buyers → stale market → phantom arb
+
+  # ── Group constraints ──────────────────────────────────────────────────────
+  max_group_legs: 10              # refuse groups with >10 markets (exec risk)
+  # 10 legs × $4 each = $40 per share set — fits within bankroll
+
+  # ── Position sizing ────────────────────────────────────────────────────────
+  max_position_pct: 0.15          # 15% of bankroll = $15 max total outlay
+  # Note: for S1 we target buying 1 share set across all legs
+  # share set cost = total_ask USDC; max_sets = max_position / total_ask
+
+  # ── Execution gate ────────────────────────────────────────────────────────
+  threshold: 0.60                 # high threshold — only clean arbs
+
+  # ── ReviewEngine tracking ─────────────────────────────────────────────────
   review:
-    track_metrics: [win_rate, avg_edge, avg_num_legs]
+    track_metrics: [win_rate, avg_edge, avg_num_legs, fill_rate]
     rebalance_trigger: weekly
 
 ---
-s11_inplay_momentum:
-  enabled: true
-  min_total_move: 0.08
-  min_volume_24h: 5000.0
-  min_price_after_move: 0.55
-  max_price_after_move: 0.95
-  max_days_to_resolution: 3.0
-  min_observations: 2
-  min_edge_after_fees: 0.003
-  max_position_pct: 0.15
-  kelly_fraction: 0.25
-  threshold: 0.30
-  observer_boost: true
-  review:
-    track_metrics: [win_rate, avg_roi, avg_move, category_breakdown]
-    rebalance_trigger: weekly
+# configs/s8_logical.yaml
+# S8: Logical impossibility arbitrage
+# Capital: $20 (20% of $100 bankroll)
+# Uses embeddings + LLM to find mutually exclusive markets priced as if independent
 
----
 s8_logical_arb:
+  # DISABLED at MVP — sentence-transformers requires torch (~1.5GB)
+  # Enable when: capital > $500 AND running locally or on a VPS
   enabled: false
-  min_edge_after_fees: 0.030
-  similarity_threshold: 0.75
-  min_volume_24h: 300.0
-  max_llm_calls_per_scan: 5
-  priority_categories: [politics, other, crypto, sports]
-  max_position_pct: 0.15
-  kelly_fraction: 0.25
-  threshold: 0.65
+
+  # ── Embedding similarity gate ─────────────────────────────────────────────
+  similarity_threshold: 0.75      # cosine similarity to consider pair for LLM review
+  # Lower = more pairs reviewed (more LLM cost), Higher = fewer pairs but surer
+
+  # ── Price arb threshold ───────────────────────────────────────────────────
+  min_edge_after_fees: 0.030      # 3% — higher than S10 because LLM can be wrong
+
+  # ── Liquidity ─────────────────────────────────────────────────────────────
+  min_volume_24h: 300.0           # USDC
+
+  # ── LLM usage control ─────────────────────────────────────────────────────
+  max_llm_calls_per_scan: 5       # Haiku ≈ $0.001/call → $0.005/scan = $7/month
+  # New pairs only — cached pairs never re-classified (cache in data/s8_direction_cache.json)
+
+  # ── Category priority ─────────────────────────────────────────────────────
+  priority_categories:            # scan order — politics has most logical violations
+    - politics
+    - other
+    - crypto
+    - sports
+
+  # ── Position sizing ────────────────────────────────────────────────────────
+  max_position_pct: 0.15          # 15% of bankroll = $15
+  kelly_fraction: 0.25            # quarter-Kelly
+
+  # ── Execution gate ────────────────────────────────────────────────────────
+  threshold: 0.65                 # highest threshold — LLM can err, need strong signal
+
+  # ── ReviewEngine tracking ─────────────────────────────────────────────────
+  review:
+    track_metrics: [win_rate, avg_yes_sum, avg_similarity, category_breakdown]
+    rebalance_trigger: weekly
