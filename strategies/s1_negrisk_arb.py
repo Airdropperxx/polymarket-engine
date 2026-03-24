@@ -41,7 +41,7 @@ class S1NegRiskArb(BaseStrategy):
         return opps
 
     def _evaluate_group(self, group_id, markets, min_edge, min_volume,
-                        min_bid, max_legs, min_leg_price, max_leg_price) -> Optional[Opportunity]:
+                        min_bid, max_legs, min_leg_price, max_leg_price):
         if len(markets) > max_legs:
             return None
 
@@ -54,15 +54,10 @@ class S1NegRiskArb(BaseStrategy):
             if m.fee_rate_bps >= 1000: continue
             valid_legs.append(m)
 
-        import sys as _sys
-        _sys.stderr.write(f"DEBUG S1 group={group_id} valid={len(valid_legs)} of {len(markets)}\n")
-        for m in markets:
-            _sys.stderr.write(f"  leg {m.market_id}: vol={m.volume_24h} bid={m.yes_bid} ask={getattr(m,'yes_ask',0)} price={m.yes_price} sec={m.seconds_to_resolution} fee={m.fee_rate_bps} YES_ASK_DEFAULT={getattr(m,'yes_ask',0)==0.0}\n")
         if len(valid_legs) < 2:
             return None
 
         total_ask  = sum(m.yes_ask for m in valid_legs)
-        _sys.stderr.write(f"DEBUG S1 total_ask={total_ask} edge={1.0-total_ask} min_edge={min_edge}\n")
         total_fees = sum(self.calc_fee(m.yes_ask) * m.yes_ask for m in valid_legs)
         edge       = 1.0 - total_ask - total_fees
 
@@ -71,44 +66,44 @@ class S1NegRiskArb(BaseStrategy):
         if total_ask <= 0.50 or total_ask >= 1.0:
             return None
 
-        min_ttl = min(m.seconds_to_resolution for m in valid_legs)
-        cat_counts = {}
+        min_ttl      = min(m.seconds_to_resolution for m in valid_legs)
+        cat_counts   = {}
         for m in valid_legs:
             c = m.category or "other"
             cat_counts[c] = cat_counts.get(c, 0) + 1
         dominant_cat = max(cat_counts, key=cat_counts.get) if cat_counts else "other"
-        avg_vol = round(sum(m.volume_24h for m in valid_legs) / len(valid_legs), 2)
+        avg_vol      = round(sum(m.volume_24h for m in valid_legs) / len(valid_legs), 2)
 
-        import sys as _sys2
-        _sys2.stderr.write(f"DEBUG S1 BUILDING OPP edge={round(edge,5)} min_ttl={min_ttl}\n")
-        try:
-            result_opp = Opportunity(
-            strategy="s1_negrisk_arb",
-            market_id=group_id,
-            market_question="NegRisk: " + valid_legs[0].question[:70],
-            action="BUY_ALL_YES",
-            edge=round(edge, 5),
-            win_probability=1.0,
-            max_payout=1.0,
-            time_to_resolution_sec=min_ttl,
-            metadata={
-                "group_id": group_id, "num_legs": len(valid_legs),
-                "total_ask": round(total_ask, 4), "total_fees": round(total_fees, 6),
-                "category": dominant_cat, "volume_24h": avg_vol,
-                "buy_price": round(total_ask / len(valid_legs), 4),
-                "fee": round(total_fees, 6), "spread": 0.01,
-                "fee_rate_bps": valid_legs[0].fee_rate_bps, "avg_leg_volume": avg_vol,
-                "legs": [{"market_id": m.market_id, "question": m.question[:80],
-                          "yes_price": round(m.yes_price, 4), "yes_ask": round(m.yes_ask, 4),
-                          "yes_token_id": m.yes_token_id, "volume_24h": m.volume_24h,
-                          "category": m.category} for m in valid_legs],
+        return Opportunity(
+            strategy             = "s1_negrisk_arb",
+            market_id            = group_id,
+            market_question      = "NegRisk: " + valid_legs[0].question[:70],
+            action               = "BUY_ALL_YES",
+            edge                 = round(edge, 5),
+            win_probability      = 1.0,
+            max_payout           = 1.0,
+            time_to_resolution_sec = min_ttl,
+            metadata = {
+                "group_id":     group_id,
+                "num_legs":     len(valid_legs),
+                "total_ask":    round(total_ask, 4),
+                "total_fees":   round(total_fees, 6),
+                "category":     dominant_cat,
+                "volume_24h":   avg_vol,
+                "buy_price":    round(total_ask / len(valid_legs), 4),
+                "fee":          round(total_fees, 6),
+                "spread":       0.01,
+                "fee_rate_bps": valid_legs[0].fee_rate_bps,
+                "avg_leg_volume": avg_vol,
+                "legs": [
+                    {"market_id": m.market_id, "question": m.question[:80],
+                     "yes_price": round(m.yes_price, 4), "yes_ask": round(m.yes_ask, 4),
+                     "yes_token_id": m.yes_token_id, "volume_24h": m.volume_24h,
+                     "category": m.category}
+                    for m in valid_legs
+                ],
             },
-            )
-            _sys2.stderr.write(f"DEBUG S1 OPP BUILT OK: {result_opp.edge}\n")
-            return result_opp
-        except Exception as _e2:
-            _sys2.stderr.write(f"DEBUG S1 OPP BUILD FAILED: {_e2}\n")
-            return None
+        )
 
     def score(self, opp: Opportunity, config: dict) -> float:
         meta      = opp.metadata
