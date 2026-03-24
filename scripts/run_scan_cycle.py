@@ -36,14 +36,28 @@ def load_config() -> dict:
 
 
 def load_strategy_configs() -> dict:
-    """Load all per-strategy YAML configs and merge into one dict."""
+    """
+    Load all per-strategy YAML configs and merge into one dict.
+
+    Permanent fix: uses yaml.safe_load_all() so multi-document YAML files
+    (those containing --- separators) never raise ComposerError.
+    Skips 'strategies.yaml' which is a legacy concatenated file.
+    """
     merged = {}
     configs_dir = Path("configs")
-    for yml_path in configs_dir.glob("s*.yaml"):
-        with open(yml_path) as f:
-            data = yaml.safe_load(f)
-        if isinstance(data, dict):
-            merged.update(data)
+    for yml_path in sorted(configs_dir.glob("s*.yaml")):
+        # Skip the legacy multi-doc concatenation file if it still exists
+        if yml_path.name == "strategies.yaml":
+            log.warning("skipping_legacy_multi_doc_yaml", file=yml_path.name)
+            continue
+        try:
+            with open(yml_path) as f:
+                # safe_load_all handles both single-doc and multi-doc YAML files
+                for doc in yaml.safe_load_all(f):
+                    if isinstance(doc, dict):
+                        merged.update(doc)
+        except Exception as e:
+            log.warning("strategy_config_load_failed", file=yml_path.name, error=str(e))
     return merged
 
 
