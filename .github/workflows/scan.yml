@@ -17,7 +17,7 @@ permissions:
 jobs:
   scan:
     runs-on: ubuntu-latest
-    timeout-minutes: 4        # tight: scan takes ~5s, give 4min for startup
+    timeout-minutes: 8        # startup ~2min + scan ~10s + buffer
 
     env:
       PYTHONPATH:                ${{ github.workspace }}
