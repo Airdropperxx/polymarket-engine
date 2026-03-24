@@ -182,11 +182,11 @@ def main():
 
     open_count = state_engine.get_open_position_count()
     max_open   = int(risk_cfg.get("max_open_positions", 5))
-    if open_count >= max_open:
-        log.info("max_open_positions_reached",
+    at_position_cap = (open_count >= max_open)
+    if at_position_cap:
+        log.info("at_position_cap_will_still_check_resolutions",
                  open=open_count, max=max_open)
-        commit_data()
-        sys.exit(0)
+        # DO NOT exit — resolution check must always run so positions can clear
 
     # Execute top opportunities
     trades_executed = 0
@@ -198,7 +198,7 @@ def main():
     for opp in all_opps[:max_per_cycle]:
         if trades_executed >= max_per_cycle:
             break
-        if open_count + trades_executed >= max_open:
+        if at_position_cap or (open_count + trades_executed >= max_open):
             break
 
         strategy = strategy_map.get(opp.strategy)
