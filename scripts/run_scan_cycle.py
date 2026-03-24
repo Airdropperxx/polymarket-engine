@@ -121,31 +121,39 @@ def main():
              negrisk_groups=len(groups))
 
     if not markets:
-        log.warning("no_markets_fetched_using_cache")
+        log.warning("no_markets_fetched_trying_cache")
         markets = data_engine.get_cached_markets()
 
     if not markets:
-        log.error("no_markets_available")
-        commit_data()
-        sys.exit(0)  # Exit 0 — transient API failure, not a code bug
+        # No data from API or cache — log but DO NOT exit.
+        # Resolution checks, dashboard updates, and commits still need to run.
+        # The data engine is fully decoupled: its failure must not stop settlements.
+        log.warning("no_markets_available_continuing_for_settlements",
+                    reason="Gamma API unreachable and cache empty — skipping signal scan only")
+    else:
+        log.info("markets_ready", count=len(markets))
 
-    # ── 3. SignalEngine: scan and rank ────────────────────────────────────────
-    from engines.signal_engine import SignalEngine
-    from strategies.s10_near_resolution import S10NearResolution
-    from strategies.s1_negrisk_arb import S1NegRiskArb
-    from strategies.s8_logical_arb import S8LogicalArb
+    # ── 3. SignalEngine: scan and rank (only if markets available) ─────────────
+    all_opps = []
+    if markets:
+        from engines.signal_engine import SignalEngine
+        from strategies.s10_near_resolution import S10NearResolution
+        from strategies.s1_negrisk_arb import S1NegRiskArb
+        from strategies.s8_logical_arb import S8LogicalArb
 
-    signal_engine = SignalEngine(full_cfg)
-    signal_engine.register(S10NearResolution())
-    signal_engine.register(S1NegRiskArb())
-    signal_engine.register(S8LogicalArb())
+        signal_engine = SignalEngine(full_cfg)
+        signal_engine.register(S10NearResolution())
+        signal_engine.register(S1NegRiskArb())
+        signal_engine.register(S8LogicalArb())
 
-    cycle_result = signal_engine.run_one_cycle(markets, groups)
-
-    all_opps     = cycle_result.get("opportunities", [])
-    log.info("signal_scan_complete",
-             opportunities_found=len(all_opps),
-             markets_scanned=cycle_result.get("markets_scanned", 0))
+        cycle_result = signal_engine.run_one_cycle(markets, groups)
+        all_opps     = cycle_result.get("opportunities", [])
+        log.info("signal_scan_complete",
+                 opportunities_found=len(all_opps),
+                 markets_scanned=cycle_result.get("markets_scanned", 0))
+    else:
+        log.info("signal_scan_skipped", reason="no_markets")
+        signal_engine = None
 
     # ── 4. ExecutionEngine ────────────────────────────────────────────────────
     from engines.state_engine import StateEngine
@@ -185,7 +193,7 @@ def main():
     current_balance = state_engine.get_current_balance()
 
     # Get strategy instances (needed for size() calls)
-    strategy_map = {s.name: s for s in signal_engine.strategies}
+    strategy_map = {s.name: s for s in signal_engine.strategies} if signal_engine else {}
 
     for opp in all_opps[:max_per_cycle]:
         if trades_executed >= max_per_cycle:
