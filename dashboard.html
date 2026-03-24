@@ -809,7 +809,7 @@ function apTrades(){
     var eg=t.edge!=null?parseFloat(t.edge):nv(t.notes,'edge'),ev2=t.ev!=null?parseFloat(t.ev):nv(t.notes,'ev');
     var pr2=nv(t.notes,'p'),ky=nv(t.notes,'kelly'),ex=xP(t);
     var sp='<span class="b '+(t.status==='open'?'open':t.outcome==='win'?'win':'loss')+'">'+(t.status==='open'?'OPEN':t.outcome?t.outcome.toUpperCase():'?')+'</span>';
-    var ec=t.status==='open'?('<span style="color:var(--green);font-size:10px">W:'+fmt$(ex.w,true)+'</span> <span style="color:var(--red);font-size:10px">L:'+fmt$(ex.l,true)+'</span>'):(p2?'<b style="color:var(--('+( p2>0?'green':'red')+'))">'+fmt$4(p2,true)+'</b>':'—');
+    var ec=t.status==='open'?('<span style="color:var(--green);font-size:10px">W:'+fmt$(ex.w,true)+'</span> <span style="color:var(--red);font-size:10px">L:'+fmt$(ex.l,true)+'</span>'):(p2?'<b style="color:'+(p2>0?'var(--green)':'var(--red)')+'">'+fmt$4(p2,true)+'</b>':'—');
     return'<tr>'+
       '<td class="mono mu" style="white-space:nowrap">'+(t.time||'').slice(0,16).replace('T',' ')+'</td>'+
       '<td>'+sB(t.strategy)+'</td>'+
@@ -954,7 +954,7 @@ function rLessons(){
       var bar=Math.round(Math.min(score/2*100,100)),col=score>=1.2?'var(--green)':score>=0.8?'var(--cyan)':'var(--red)';
       return'<div class="alloc">'+
         '<div class="alloc-hd"><span class="alloc-n">'+sB(s)+' <span style="font-size:11px">'+s+'</span>'+
-        (delta?'<span style="font-family:var(--mono);font-size:9px;color:'+(delta>0?'var(--green)':'var(--red)')+'" > ('+(delta>0?'+':'')+delta.toFixed(3)+')</span>':'')+'</span>'+
+        (delta?'<span style="font-family:var(--mono);font-size:9px;color:'+(delta>0?'var(--green)':'var(--red)')+'">('+(delta>0?'+':'')+delta.toFixed(3)+')</span>':'')+'</span>'+
         '<span style="font-family:var(--mono);font-size:13px;font-weight:700;color:'+col+'">'+score.toFixed(3)+'</span></div>'+
         '<div class="alloc-t"><div class="alloc-f" style="width:'+bar+'%;background:'+col+'"></div></div>'+
         (nt?'<div style="font-size:10px;color:var(--mu);margin-top:3px">'+esc(nt)+'</div>':'')+'</div>';
