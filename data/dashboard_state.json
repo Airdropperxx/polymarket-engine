@@ -1,28 +1,28 @@
 {
-  "timestamp": "2026-03-24T20:03:25.801554+00:00Z",
-  "balance": 10624.434238999998,
-  "daily_pnl": 13020.864135,
-  "open_positions": 53,
-  "open_exposure": 53.0,
+  "timestamp": "2026-03-24T21:39:51.126840+00:00Z",
+  "balance": 10623.406188999998,
+  "daily_pnl": 13019.836085,
+  "open_positions": 52,
+  "open_exposure": 52.0,
   "dry_run": true,
   "total_trades": 200,
-  "resolved_trades": 147,
+  "resolved_trades": 148,
   "wins_all_time": 147,
-  "losses_all_time": 0,
-  "win_rate_pct": 100.0,
-  "total_pnl": 13020.864135,
-  "total_invested": 1972.56,
-  "roi_pct": 660.1,
+  "losses_all_time": 1,
+  "win_rate_pct": 99.3,
+  "total_pnl": 13019.836085,
+  "total_invested": 1973.56,
+  "roi_pct": 659.71,
   "best_trade_pnl": 1250.320082,
-  "worst_trade_pnl": 0.0,
+  "worst_trade_pnl": -1.02805,
   "by_strategy": {
     "s10_near_resolution": {
-      "trades": 53,
+      "trades": 54,
       "wins": 53,
-      "losses": 0,
-      "win_rate_pct": 100.0,
-      "pnl": 4.699153,
-      "roi_pct": 8.87
+      "losses": 1,
+      "win_rate_pct": 98.1,
+      "pnl": 3.671103,
+      "roi_pct": 6.8
     },
     "s11_inplay_momentum": {
       "trades": 3,
@@ -41,9 +41,9 @@
       "roi_pct": 679.12
     }
   },
-  "resolved_24h": 97,
+  "resolved_24h": 98,
   "wins_24h": 97,
-  "losses_24h": 0,
+  "losses_24h": 1,
   "trades_executed": 195,
   "trades_rejected": 0,
   "total_opportunities": 1881,
@@ -95,7 +95,7 @@
       "res_time": null,
       "trade_id": "DRY_RUN_979D67E3",
       "strategy": "s10_near_resolution",
-      "market": "Will the highest temperature in Seoul be 13\u00b0C on March 25?",
+      "market": "Will the highest temperature in Seoul be 13°C on March 25?",
       "market_id": "1670725",
       "side": "NO",
       "price": 0.87,
@@ -108,6 +108,9 @@
       "roi": null,
       "edge": 0.1012,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.86,
+      "payout": 0.0,
       "notes": "DRY score=0.637 edge=0.1012 p=0.860"
     },
     {
@@ -128,6 +131,9 @@
       "roi": null,
       "edge": 0.1012,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.86,
+      "payout": 0.0,
       "notes": "DRY score=0.664 edge=0.1012 p=0.860"
     },
     {
@@ -148,6 +154,9 @@
       "roi": null,
       "edge": 0.1022,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.859,
+      "payout": 0.0,
       "notes": "DRY score=0.340 edge=0.1022 p=0.859"
     },
     {
@@ -168,6 +177,9 @@
       "roi": null,
       "edge": 0.1043,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.855,
+      "payout": 0.0,
       "notes": "DRY score=0.286 edge=0.1043 p=0.855"
     },
     {
@@ -188,6 +200,9 @@
       "roi": null,
       "edge": 0.1043,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.855,
+      "payout": 0.0,
       "notes": "DRY score=0.328 edge=0.1043 p=0.855"
     },
     {
@@ -208,6 +223,9 @@
       "roi": 13.35,
       "edge": 0.1043,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.855,
+      "payout": 1.16,
       "notes": "DRY score=0.337 edge=0.1043 p=0.855"
     },
     {
@@ -228,6 +246,9 @@
       "roi": null,
       "edge": 0.1043,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.855,
+      "payout": 0.0,
       "notes": "DRY score=0.340 edge=0.1043 p=0.855"
     },
     {
@@ -248,6 +269,9 @@
       "roi": null,
       "edge": 0.1043,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.855,
+      "payout": 0.0,
       "notes": "DRY score=0.475 edge=0.1043 p=0.855"
     },
     {
@@ -255,7 +279,7 @@
       "res_time": null,
       "trade_id": "DRY_RUN_585F1094",
       "strategy": "s10_near_resolution",
-      "market": "Vissel K\u014dbe vs. Sanfrecce Hiroshima: O/U 4.5",
+      "market": "Vissel Kōbe vs. Sanfrecce Hiroshima: O/U 4.5",
       "market_id": "1476678",
       "side": "NO",
       "price": 0.865,
@@ -268,6 +292,9 @@
       "roi": null,
       "edge": 0.1043,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.855,
+      "payout": 0.0,
       "notes": "DRY score=0.527 edge=0.1043 p=0.855"
     },
     {
@@ -288,6 +315,9 @@
       "roi": null,
       "edge": 0.1043,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.855,
+      "payout": 0.0,
       "notes": "DRY score=0.531 edge=0.1043 p=0.855"
     },
     {
@@ -308,6 +338,9 @@
       "roi": null,
       "edge": 0.1043,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.855,
+      "payout": 0.0,
       "notes": "DRY score=0.581 edge=0.1043 p=0.855"
     },
     {
@@ -328,6 +361,9 @@
       "roi": null,
       "edge": 0.1074,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.85,
+      "payout": 0.0,
       "notes": "DRY score=0.275 edge=0.1074 p=0.850"
     },
     {
@@ -348,6 +384,9 @@
       "roi": null,
       "edge": 0.1074,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.85,
+      "payout": 0.0,
       "notes": "DRY score=0.470 edge=0.1074 p=0.850"
     },
     {
@@ -368,6 +407,9 @@
       "roi": null,
       "edge": 0.1074,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.85,
+      "payout": 0.0,
       "notes": "DRY score=0.551 edge=0.1074 p=0.850"
     },
     {
@@ -388,6 +430,9 @@
       "roi": null,
       "edge": 0.1074,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.85,
+      "payout": 0.0,
       "notes": "DRY score=0.553 edge=0.1074 p=0.850"
     },
     {
@@ -395,7 +440,7 @@
       "res_time": null,
       "trade_id": "DRY_RUN_108655B3",
       "strategy": "s10_near_resolution",
-      "market": "Will the highest temperature in London be 8\u00b0C on March 25?",
+      "market": "Will the highest temperature in London be 8°C on March 25?",
       "market_id": "1670669",
       "side": "NO",
       "price": 0.86,
@@ -408,6 +453,9 @@
       "roi": null,
       "edge": 0.1074,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.85,
+      "payout": 0.0,
       "notes": "DRY score=0.616 edge=0.1074 p=0.850"
     },
     {
@@ -428,6 +476,9 @@
       "roi": 16.36,
       "edge": 0.1237,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.823,
+      "payout": 1.2,
       "notes": "DRY score=0.816 edge=0.1237 p=0.823"
     },
     {
@@ -448,6 +499,9 @@
       "roi": 135.01,
       "edge": 0.1194,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 17.27,
       "notes": "DRY score=0.773 edge=0.1194 p=1.000"
     },
     {
@@ -468,6 +522,9 @@
       "roi": 146.32,
       "edge": 0.1367,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 21.6,
       "notes": "DRY score=0.696 edge=0.1367 p=1.000"
     },
     {
@@ -488,6 +545,9 @@
       "roi": 695.24,
       "edge": 0.2182,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 115.12,
       "notes": "DRY score=0.558 edge=0.2182 p=1.000"
     },
     {
@@ -508,6 +568,9 @@
       "roi": 508.7,
       "edge": 0.2962,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 137.48,
       "notes": "DRY score=0.688 edge=0.2962 p=1.000"
     },
     {
@@ -528,6 +591,9 @@
       "roi": 1304.43,
       "edge": 0.3501,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 383.57,
       "notes": "DRY score=0.521 edge=0.3501 p=1.000"
     },
     {
@@ -548,6 +614,9 @@
       "roi": 601.78,
       "edge": 0.3939,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 242.84,
       "notes": "DRY score=0.625 edge=0.3939 p=1.000"
     },
     {
@@ -568,6 +637,9 @@
       "roi": 261.19,
       "edge": 0.4006,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 132.44,
       "notes": "DRY score=0.687 edge=0.4006 p=1.000"
     },
     {
@@ -588,6 +660,9 @@
       "roi": 794.21,
       "edge": 0.4237,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 339.0,
       "notes": "DRY score=0.567 edge=0.4237 p=1.000"
     },
     {
@@ -608,6 +683,9 @@
       "roi": null,
       "edge": 0.1018,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.859,
+      "payout": 0.0,
       "notes": "DRY score=0.335 edge=0.1018 p=0.859"
     },
     {
@@ -628,6 +706,9 @@
       "roi": null,
       "edge": 0.1043,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.855,
+      "payout": 0.0,
       "notes": "DRY score=0.299 edge=0.1043 p=0.855"
     },
     {
@@ -648,6 +729,9 @@
       "roi": null,
       "edge": 0.1043,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.855,
+      "payout": 0.0,
       "notes": "DRY score=0.301 edge=0.1043 p=0.855"
     },
     {
@@ -668,6 +752,9 @@
       "roi": null,
       "edge": 0.1043,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.855,
+      "payout": 0.0,
       "notes": "DRY score=0.471 edge=0.1043 p=0.855"
     },
     {
@@ -688,6 +775,9 @@
       "roi": null,
       "edge": 0.1043,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.855,
+      "payout": 0.0,
       "notes": "DRY score=0.476 edge=0.1043 p=0.855"
     },
     {
@@ -695,7 +785,7 @@
       "res_time": null,
       "trade_id": "DRY_RUN_BC196A1F",
       "strategy": "s10_near_resolution",
-      "market": "Vissel K\u014dbe vs. Sanfrecce Hiroshima: O/U 4.5",
+      "market": "Vissel Kōbe vs. Sanfrecce Hiroshima: O/U 4.5",
       "market_id": "1476678",
       "side": "NO",
       "price": 0.865,
@@ -708,6 +798,9 @@
       "roi": null,
       "edge": 0.1043,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.855,
+      "payout": 0.0,
       "notes": "DRY score=0.523 edge=0.1043 p=0.855"
     },
     {
@@ -728,6 +821,9 @@
       "roi": null,
       "edge": 0.1043,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.855,
+      "payout": 0.0,
       "notes": "DRY score=0.527 edge=0.1043 p=0.855"
     },
     {
@@ -748,6 +844,9 @@
       "roi": null,
       "edge": 0.1043,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.855,
+      "payout": 0.0,
       "notes": "DRY score=0.578 edge=0.1043 p=0.855"
     },
     {
@@ -768,6 +867,9 @@
       "roi": null,
       "edge": 0.1074,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.85,
+      "payout": 0.0,
       "notes": "DRY score=0.271 edge=0.1074 p=0.850"
     },
     {
@@ -788,6 +890,9 @@
       "roi": null,
       "edge": 0.1074,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.85,
+      "payout": 0.0,
       "notes": "DRY score=0.317 edge=0.1074 p=0.850"
     },
     {
@@ -808,6 +913,9 @@
       "roi": null,
       "edge": 0.1074,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.85,
+      "payout": 0.0,
       "notes": "DRY score=0.362 edge=0.1074 p=0.850"
     },
     {
@@ -828,6 +936,9 @@
       "roi": null,
       "edge": 0.1074,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.85,
+      "payout": 0.0,
       "notes": "DRY score=0.489 edge=0.1074 p=0.850"
     },
     {
@@ -848,6 +959,9 @@
       "roi": null,
       "edge": 0.1074,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.85,
+      "payout": 0.0,
       "notes": "DRY score=0.514 edge=0.1074 p=0.850"
     },
     {
@@ -868,6 +982,9 @@
       "roi": null,
       "edge": 0.1074,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.85,
+      "payout": 0.0,
       "notes": "DRY score=0.531 edge=0.1074 p=0.850"
     },
     {
@@ -888,6 +1005,9 @@
       "roi": null,
       "edge": 0.1074,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.85,
+      "payout": 0.0,
       "notes": "DRY score=0.582 edge=0.1074 p=0.850"
     },
     {
@@ -908,6 +1028,9 @@
       "roi": null,
       "edge": 0.1074,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.85,
+      "payout": 0.0,
       "notes": "DRY score=0.632 edge=0.1074 p=0.850"
     },
     {
@@ -928,6 +1051,9 @@
       "roi": 16.36,
       "edge": 0.1883,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.711,
+      "payout": 1.39,
       "notes": "DRY score=0.713 edge=0.1883 p=0.711"
     },
     {
@@ -948,6 +1074,9 @@
       "roi": 136.86,
       "edge": 0.1171,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 17.18,
       "notes": "DRY score=0.773 edge=0.1171 p=1.000"
     },
     {
@@ -968,6 +1097,9 @@
       "roi": 675.63,
       "edge": 0.2232,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 119.22,
       "notes": "DRY score=0.555 edge=0.2232 p=1.000"
     },
     {
@@ -988,6 +1120,9 @@
       "roi": 501.31,
       "edge": 0.2953,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 133.77,
       "notes": "DRY score=0.600 edge=0.2953 p=1.000"
     },
     {
@@ -1008,6 +1143,9 @@
       "roi": 1280.52,
       "edge": 0.3544,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 392.94,
       "notes": "DRY score=0.521 edge=0.3544 p=1.000"
     },
     {
@@ -1028,6 +1166,9 @@
       "roi": 368.42,
       "edge": 0.3676,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 158.36,
       "notes": "DRY score=0.701 edge=0.3676 p=1.000"
     },
     {
@@ -1048,6 +1189,9 @@
       "roi": 249.08,
       "edge": 0.4124,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 141.44,
       "notes": "DRY score=0.686 edge=0.4124 p=1.000"
     },
     {
@@ -1068,6 +1212,9 @@
       "roi": 790.46,
       "edge": 0.425,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 341.22,
       "notes": "DRY score=0.567 edge=0.4250 p=1.000"
     },
     {
@@ -1088,6 +1235,9 @@
       "roi": 1793.92,
       "edge": 0.4689,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 757.58,
       "notes": "DRY score=0.484 edge=0.4689 p=1.000"
     },
     {
@@ -1108,6 +1258,9 @@
       "roi": 11.64,
       "edge": 0.0981,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.865,
+      "payout": 1.14,
       "notes": "DRY score=0.680 edge=0.0981 p=0.865"
     },
     {
@@ -1128,6 +1281,9 @@
       "roi": 12.53,
       "edge": 0.1006,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.861,
+      "payout": 1.15,
       "notes": "DRY score=0.714 edge=0.1006 p=0.861"
     },
     {
@@ -1148,6 +1304,9 @@
       "roi": 12.5,
       "edge": 0.1012,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.86,
+      "payout": 1.15,
       "notes": "DRY score=0.365 edge=0.1012 p=0.860"
     },
     {
@@ -1168,6 +1327,9 @@
       "roi": null,
       "edge": 0.1012,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.86,
+      "payout": 0.0,
       "notes": "DRY score=0.639 edge=0.1012 p=0.860"
     },
     {
@@ -1188,6 +1350,9 @@
       "roi": 12.47,
       "edge": 0.1018,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.859,
+      "payout": 1.15,
       "notes": "DRY score=0.573 edge=0.1018 p=0.859"
     },
     {
@@ -1208,6 +1373,9 @@
       "roi": 13.35,
       "edge": 0.1043,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.855,
+      "payout": 1.16,
       "notes": "DRY score=0.402 edge=0.1043 p=0.855"
     },
     {
@@ -1228,6 +1396,9 @@
       "roi": 13.35,
       "edge": 0.1043,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.855,
+      "payout": 1.16,
       "notes": "DRY score=0.402 edge=0.1043 p=0.855"
     },
     {
@@ -1248,6 +1419,9 @@
       "roi": 13.35,
       "edge": 0.1043,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.855,
+      "payout": 1.16,
       "notes": "DRY score=0.402 edge=0.1043 p=0.855"
     },
     {
@@ -1268,6 +1442,9 @@
       "roi": null,
       "edge": 0.1043,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.855,
+      "payout": 0.0,
       "notes": "DRY score=0.506 edge=0.1043 p=0.855"
     },
     {
@@ -1288,6 +1465,9 @@
       "roi": 13.35,
       "edge": 0.1043,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.855,
+      "payout": 1.16,
       "notes": "DRY score=0.702 edge=0.1043 p=0.855"
     },
     {
@@ -1308,6 +1488,9 @@
       "roi": 13.35,
       "edge": 0.1043,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.855,
+      "payout": 1.16,
       "notes": "DRY score=0.714 edge=0.1043 p=0.855"
     },
     {
@@ -1328,6 +1511,9 @@
       "roi": 13.2,
       "edge": 0.1074,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.85,
+      "payout": 1.16,
       "notes": "DRY score=0.348 edge=0.1074 p=0.850"
     },
     {
@@ -1348,6 +1534,9 @@
       "roi": null,
       "edge": 0.1074,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.85,
+      "payout": 0.0,
       "notes": "DRY score=0.497 edge=0.1074 p=0.850"
     },
     {
@@ -1368,6 +1557,9 @@
       "roi": null,
       "edge": 0.1074,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.85,
+      "payout": 0.0,
       "notes": "DRY score=0.546 edge=0.1074 p=0.850"
     },
     {
@@ -1375,7 +1567,7 @@
       "res_time": "2026-03-24T14:45:56.874061+00:00",
       "trade_id": "DRY_F30A0BAD29",
       "strategy": "s10_near_resolution",
-      "market": "Will the highest temperature in Ankara be 10\u00b0C on March 24?",
+      "market": "Will the highest temperature in Ankara be 10°C on March 24?",
       "market_id": "1660824",
       "side": "NO",
       "price": 0.86,
@@ -1388,6 +1580,9 @@
       "roi": 13.2,
       "edge": 0.1074,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.85,
+      "payout": 1.16,
       "notes": "DRY score=0.642 edge=0.1074 p=0.850"
     },
     {
@@ -1408,6 +1603,9 @@
       "roi": 13.2,
       "edge": 0.1074,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.85,
+      "payout": 1.16,
       "notes": "DRY score=0.689 edge=0.1074 p=0.850"
     },
     {
@@ -1428,6 +1626,9 @@
       "roi": 18.83,
       "edge": 0.1338,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.805,
+      "payout": 1.23,
       "notes": "DRY score=0.788 edge=0.1338 p=0.805"
     },
     {
@@ -1435,7 +1636,7 @@
       "res_time": "2026-03-24T11:35:25.832670+00:00",
       "trade_id": "DRY_F203BB7B61",
       "strategy": "s1_negrisk_arb",
-      "market": "NegRisk: Will the highest temperature in Tokyo be 18\u00b0C on March 24?",
+      "market": "NegRisk: Will the highest temperature in Tokyo be 18°C on March 24?",
       "market_id": "0xee62461b769a5bc935464c28141dbcb6da8933cdb7229f09c5669550cd16cb00",
       "side": "ALL_YES",
       "price": 0.19,
@@ -1448,6 +1649,9 @@
       "roi": 425.31,
       "edge": 0.3906,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 180.37,
       "notes": "DRY score=0.689 edge=0.3906 p=1.000"
     },
     {
@@ -1468,6 +1672,9 @@
       "roi": 433.78,
       "edge": 0.4011,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 191.12,
       "notes": "DRY score=0.725 edge=0.4011 p=1.000"
     },
     {
@@ -1475,7 +1682,7 @@
       "res_time": "2026-03-24T11:35:26.223689+00:00",
       "trade_id": "DRY_EE61DB1056",
       "strategy": "s1_negrisk_arb",
-      "market": "NegRisk: Will the highest temperature in Ankara be 12\u00b0C on March 24?",
+      "market": "NegRisk: Will the highest temperature in Ankara be 12°C on March 24?",
       "market_id": "0x706b1ee097c78a5f5fc19868fafd2ee31e6226769be3b3b8b2605bdba57a6100",
       "side": "ALL_YES",
       "price": 0.1868,
@@ -1488,6 +1695,9 @@
       "roi": 434.37,
       "edge": 0.4029,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 192.4,
       "notes": "DRY score=0.696 edge=0.4029 p=1.000"
     },
     {
@@ -1508,6 +1718,9 @@
       "roi": 827.39,
       "edge": 0.4133,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 320.25,
       "notes": "DRY score=0.566 edge=0.4133 p=1.000"
     },
     {
@@ -1515,7 +1728,7 @@
       "res_time": "2026-03-24T11:35:26.471885+00:00",
       "trade_id": "DRY_B3D5A0C2EC",
       "strategy": "s1_negrisk_arb",
-      "market": "NegRisk: Will the highest temperature in Seoul be 12\u00b0C on March 24?",
+      "market": "NegRisk: Will the highest temperature in Seoul be 12°C on March 24?",
       "market_id": "0xaa47ff6ec38b294c669daff74e85b7d65584538da025398754816a419ecdce00",
       "side": "ALL_YES",
       "price": 0.1713,
@@ -1528,6 +1741,9 @@
       "roi": 483.0,
       "edge": 0.4525,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 233.51,
       "notes": "DRY score=0.699 edge=0.4525 p=1.000"
     },
     {
@@ -1548,6 +1764,9 @@
       "roi": 481.62,
       "edge": 0.4613,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 232.96,
       "notes": "DRY score=0.714 edge=0.4613 p=1.000"
     },
     {
@@ -1568,6 +1787,9 @@
       "roi": 1793.92,
       "edge": 0.4653,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 753.3,
       "notes": "DRY score=0.487 edge=0.4653 p=1.000"
     },
     {
@@ -1588,6 +1810,9 @@
       "roi": 890.6,
       "edge": 0.4839,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 625.98,
       "notes": "DRY score=0.537 edge=0.4839 p=1.000"
     },
     {
@@ -1608,6 +1833,9 @@
       "roi": 11.79,
       "edge": 0.0949,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.87,
+      "payout": 1.14,
       "notes": "DRY score=0.713 edge=0.0949 p=0.870"
     },
     {
@@ -1628,6 +1856,9 @@
       "roi": 11.79,
       "edge": 0.0949,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.87,
+      "payout": 1.14,
       "notes": "DRY score=0.730 edge=0.0949 p=0.870"
     },
     {
@@ -1648,6 +1879,9 @@
       "roi": 11.64,
       "edge": 0.0981,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.865,
+      "payout": 1.14,
       "notes": "DRY score=0.399 edge=0.0981 p=0.865"
     },
     {
@@ -1668,6 +1902,9 @@
       "roi": null,
       "edge": 0.0981,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.865,
+      "payout": 0.0,
       "notes": "DRY score=0.484 edge=0.0981 p=0.865"
     },
     {
@@ -1688,6 +1925,9 @@
       "roi": 11.64,
       "edge": 0.0981,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.865,
+      "payout": 1.14,
       "notes": "DRY score=0.647 edge=0.0981 p=0.865"
     },
     {
@@ -1708,6 +1948,9 @@
       "roi": null,
       "edge": 0.1012,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.86,
+      "payout": 0.0,
       "notes": "DRY score=0.590 edge=0.1012 p=0.860"
     },
     {
@@ -1728,6 +1971,9 @@
       "roi": 13.35,
       "edge": 0.1043,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.855,
+      "payout": 1.16,
       "notes": "DRY score=0.398 edge=0.1043 p=0.855"
     },
     {
@@ -1748,6 +1994,9 @@
       "roi": null,
       "edge": 0.1043,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.855,
+      "payout": 0.0,
       "notes": "DRY score=0.500 edge=0.1043 p=0.855"
     },
     {
@@ -1768,6 +2017,9 @@
       "roi": null,
       "edge": 0.1043,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.855,
+      "payout": 0.0,
       "notes": "DRY score=0.503 edge=0.1043 p=0.855"
     },
     {
@@ -1788,6 +2040,9 @@
       "roi": null,
       "edge": 0.1043,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.855,
+      "payout": 0.0,
       "notes": "DRY score=0.525 edge=0.1043 p=0.855"
     },
     {
@@ -1808,6 +2063,9 @@
       "roi": 11.64,
       "edge": 0.1043,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.855,
+      "payout": 1.16,
       "notes": "DRY score=0.653 edge=0.1043 p=0.855"
     },
     {
@@ -1828,6 +2086,9 @@
       "roi": null,
       "edge": 0.1043,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.855,
+      "payout": 0.0,
       "notes": "DRY score=0.693 edge=0.1043 p=0.855"
     },
     {
@@ -1848,6 +2109,9 @@
       "roi": 13.35,
       "edge": 0.1043,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.855,
+      "payout": 1.16,
       "notes": "DRY score=0.698 edge=0.1043 p=0.855"
     },
     {
@@ -1868,6 +2132,9 @@
       "roi": null,
       "edge": 0.1056,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.853,
+      "payout": 0.0,
       "notes": "DRY score=0.547 edge=0.1056 p=0.853"
     },
     {
@@ -1888,6 +2155,9 @@
       "roi": 13.35,
       "edge": 0.1074,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.85,
+      "payout": 1.16,
       "notes": "DRY score=0.388 edge=0.1074 p=0.850"
     },
     {
@@ -1908,6 +2178,9 @@
       "roi": null,
       "edge": 0.1074,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.85,
+      "payout": 0.0,
       "notes": "DRY score=0.615 edge=0.1074 p=0.850"
     },
     {
@@ -1928,6 +2201,9 @@
       "roi": 13.2,
       "edge": 0.1074,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.85,
+      "payout": 1.16,
       "notes": "DRY score=0.682 edge=0.1074 p=0.850"
     },
     {
@@ -1948,6 +2224,9 @@
       "roi": 144.17,
       "edge": 0.141,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 21.92,
       "notes": "DRY score=0.697 edge=0.1410 p=1.000"
     },
     {
@@ -1968,6 +2247,9 @@
       "roi": 139.5,
       "edge": 0.1424,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 22.81,
       "notes": "DRY score=0.702 edge=0.1424 p=1.000"
     },
     {
@@ -1988,6 +2270,9 @@
       "roi": 4771.06,
       "edge": 0.2298,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 255.78,
       "notes": "DRY score=0.447 edge=0.2298 p=1.000"
     },
     {
@@ -2008,6 +2293,9 @@
       "roi": 695.53,
       "edge": 0.2374,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 114.66,
       "notes": "DRY score=0.668 edge=0.2374 p=1.000"
     },
     {
@@ -2028,6 +2316,9 @@
       "roi": 454.84,
       "edge": 0.317,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 151.36,
       "notes": "DRY score=0.598 edge=0.3170 p=1.000"
     },
     {
@@ -2035,7 +2326,7 @@
       "res_time": "2026-03-24T11:35:28.393429+00:00",
       "trade_id": "DRY_841BE7B03E",
       "strategy": "s1_negrisk_arb",
-      "market": "NegRisk: Will the highest temperature in New York City be between 42-43\u00b0F o",
+      "market": "NegRisk: Will the highest temperature in New York City be between 42-43°F o",
       "market_id": "0xe1ede8916ebc61696f46025bb2411b937c9c65bedb62ee875390d3fae220b400",
       "side": "ALL_YES",
       "price": 0.1451,
@@ -2048,6 +2339,9 @@
       "roi": 588.69,
       "edge": 0.3824,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 227.02,
       "notes": "DRY score=0.678 edge=0.3824 p=1.000"
     },
     {
@@ -2068,6 +2362,9 @@
       "roi": 764.17,
       "edge": 0.4325,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 358.74,
       "notes": "DRY score=0.567 edge=0.4325 p=1.000"
     },
     {
@@ -2075,7 +2372,7 @@
       "res_time": "2026-03-24T11:35:28.626314+00:00",
       "trade_id": "DRY_7F0B9F1D28",
       "strategy": "s1_negrisk_arb",
-      "market": "NegRisk: Will the highest temperature in Singapore be 35\u00b0C or higher on Mar",
+      "market": "NegRisk: Will the highest temperature in Singapore be 35°C or higher on Mar",
       "market_id": "0x6059a27b133cb0a6e81cff49fdbfd24c1951c113ff0512be164133fee8e92700",
       "side": "ALL_YES",
       "price": 0.1254,
@@ -2088,6 +2385,9 @@
       "roi": 697.11,
       "edge": 0.4662,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 318.98,
       "notes": "DRY score=0.675 edge=0.4662 p=1.000"
     },
     {
@@ -2095,7 +2395,7 @@
       "res_time": "2026-03-24T14:45:56.874061+00:00",
       "trade_id": "DRY_E996349CE4",
       "strategy": "s10_near_resolution",
-      "market": "Will the highest temperature in Ankara be 10\u00b0C on March 24?",
+      "market": "Will the highest temperature in Ankara be 10°C on March 24?",
       "market_id": "1660824",
       "side": "NO",
       "price": 0.88,
@@ -2108,6 +2408,9 @@
       "roi": 13.2,
       "edge": 0.0949,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.87,
+      "payout": 1.14,
       "notes": "DRY score=0.674 edge=0.0949 p=0.870"
     },
     {
@@ -2115,7 +2418,7 @@
       "res_time": "2026-03-24T14:45:58.134456+00:00",
       "trade_id": "DRY_5EAC81C8F1",
       "strategy": "s10_near_resolution",
-      "market": "Counter-Strike: Johnny Speeds vs FC Famalic\u00e3o Esports (BO3) - Journey Group",
+      "market": "Counter-Strike: Johnny Speeds vs FC Famalicão Esports (BO3) - Journey Group",
       "market_id": "1599891",
       "side": "YES",
       "price": 0.88,
@@ -2128,6 +2431,9 @@
       "roi": 11.79,
       "edge": 0.0949,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.87,
+      "payout": 1.14,
       "notes": "DRY score=0.679 edge=0.0949 p=0.870"
     },
     {
@@ -2148,6 +2454,9 @@
       "roi": 11.79,
       "edge": 0.0949,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.87,
+      "payout": 1.14,
       "notes": "DRY score=0.715 edge=0.0949 p=0.870"
     },
     {
@@ -2168,6 +2477,9 @@
       "roi": null,
       "edge": 0.0981,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.865,
+      "payout": 0.0,
       "notes": "DRY score=0.538 edge=0.0981 p=0.865"
     },
     {
@@ -2188,6 +2500,9 @@
       "roi": null,
       "edge": 0.0981,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.865,
+      "payout": 0.0,
       "notes": "DRY score=0.688 edge=0.0981 p=0.865"
     },
     {
@@ -2208,6 +2523,9 @@
       "roi": 13.35,
       "edge": 0.0981,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.865,
+      "payout": 1.14,
       "notes": "DRY score=0.712 edge=0.0981 p=0.865"
     },
     {
@@ -2228,6 +2546,9 @@
       "roi": 11.64,
       "edge": 0.1012,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.86,
+      "payout": 1.15,
       "notes": "DRY score=0.382 edge=0.1012 p=0.860"
     },
     {
@@ -2248,6 +2569,9 @@
       "roi": 13.35,
       "edge": 0.1012,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.86,
+      "payout": 1.15,
       "notes": "DRY score=0.403 edge=0.1012 p=0.860"
     },
     {
@@ -2268,6 +2592,9 @@
       "roi": null,
       "edge": 0.1012,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.86,
+      "payout": 0.0,
       "notes": "DRY score=0.504 edge=0.1012 p=0.860"
     },
     {
@@ -2288,6 +2615,9 @@
       "roi": 12.5,
       "edge": 0.1012,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.86,
+      "payout": 1.15,
       "notes": "DRY score=0.652 edge=0.1012 p=0.860"
     },
     {
@@ -2308,6 +2638,9 @@
       "roi": null,
       "edge": 0.1043,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.855,
+      "payout": 0.0,
       "notes": "DRY score=0.459 edge=0.1043 p=0.855"
     },
     {
@@ -2328,6 +2661,9 @@
       "roi": null,
       "edge": 0.1043,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.855,
+      "payout": 0.0,
       "notes": "DRY score=0.524 edge=0.1043 p=0.855"
     },
     {
@@ -2335,7 +2671,7 @@
       "res_time": "2026-03-24T15:47:51.393612+00:00",
       "trade_id": "DRY_8200BE2BDA",
       "strategy": "s10_near_resolution",
-      "market": "Will the highest temperature in Buenos Aires be 23\u00b0C or below on March 24?",
+      "market": "Will the highest temperature in Buenos Aires be 23°C or below on March 24?",
       "market_id": "1660718",
       "side": "NO",
       "price": 0.865,
@@ -2348,6 +2684,9 @@
       "roi": 13.35,
       "edge": 0.1043,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.855,
+      "payout": 1.16,
       "notes": "DRY score=0.641 edge=0.1043 p=0.855"
     },
     {
@@ -2368,6 +2707,9 @@
       "roi": 13.35,
       "edge": 0.1043,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.855,
+      "payout": 1.16,
       "notes": "DRY score=0.692 edge=0.1043 p=0.855"
     },
     {
@@ -2388,6 +2730,9 @@
       "roi": null,
       "edge": 0.1074,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.85,
+      "payout": 0.0,
       "notes": "DRY score=0.432 edge=0.1074 p=0.850"
     },
     {
@@ -2408,11 +2753,14 @@
       "roi": null,
       "edge": 0.1074,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.85,
+      "payout": 0.0,
       "notes": "DRY score=0.509 edge=0.1074 p=0.850"
     },
     {
       "time": "2026-03-23T15:28:39.056864+00:00",
-      "res_time": null,
+      "res_time": "2026-03-24T21:36:31.409217+00:00",
       "trade_id": "DRY_8E81746ADF",
       "strategy": "s10_near_resolution",
       "market": "Will &quot;Peaky Blinders: The Immortal Man&quot; be the top US Netflix mov",
@@ -2422,12 +2770,15 @@
       "shares": 1.16,
       "size": 1.0,
       "fee": 0.0280500696,
-      "status": "open",
-      "outcome": "",
-      "pnl": 0.0,
-      "roi": null,
+      "status": "resolved",
+      "outcome": "loss",
+      "pnl": -1.02805,
+      "roi": -102.8,
       "edge": 0.1074,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.85,
+      "payout": 0.0,
       "notes": "DRY score=0.647 edge=0.1074 p=0.850"
     },
     {
@@ -2448,6 +2799,9 @@
       "roi": 570.96,
       "edge": 0.2742,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 117.89,
       "notes": "DRY score=0.682 edge=0.2742 p=1.000"
     },
     {
@@ -2455,7 +2809,7 @@
       "res_time": "2026-03-24T11:35:29.585707+00:00",
       "trade_id": "DRY_54D4E761D5",
       "strategy": "s1_negrisk_arb",
-      "market": "NegRisk: Will the highest temperature in Shanghai be 15\u00b0C on March 25?",
+      "market": "NegRisk: Will the highest temperature in Shanghai be 15°C on March 25?",
       "market_id": "0xd17a73f3a4bfadef89979b1c3de29e48420d4fe6a6458035da15df8b83146f00",
       "side": "ALL_YES",
       "price": 0.1648,
@@ -2468,6 +2822,9 @@
       "roi": 506.09,
       "edge": 0.3009,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 138.53,
       "notes": "DRY score=0.657 edge=0.3009 p=1.000"
     },
     {
@@ -2488,6 +2845,9 @@
       "roi": 407.28,
       "edge": 0.3411,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 175.43,
       "notes": "DRY score=0.598 edge=0.3411 p=1.000"
     },
     {
@@ -2508,6 +2868,9 @@
       "roi": 554.68,
       "edge": 0.3458,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 180.79,
       "notes": "DRY score=0.706 edge=0.3458 p=1.000"
     },
     {
@@ -2528,6 +2891,9 @@
       "roi": 1040.1,
       "edge": 0.3594,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 279.61,
       "notes": "DRY score=0.553 edge=0.3594 p=1.000"
     },
     {
@@ -2548,6 +2914,9 @@
       "roi": 2428.32,
       "edge": 0.3697,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 519.33,
       "notes": "DRY score=0.471 edge=0.3697 p=1.000"
     },
     {
@@ -2555,7 +2924,7 @@
       "res_time": "2026-03-24T11:35:30.048899+00:00",
       "trade_id": "DRY_4142913302",
       "strategy": "s1_negrisk_arb",
-      "market": "NegRisk: Will the highest temperature in Wellington be 18\u00b0C on March 24?",
+      "market": "NegRisk: Will the highest temperature in Wellington be 18°C on March 24?",
       "market_id": "0x51163259d0a196bd0eab2a34f0357022721a83c661ee0bd97daee71a62ecae00",
       "side": "ALL_YES",
       "price": 0.1873,
@@ -2568,6 +2937,9 @@
       "roi": 432.93,
       "edge": 0.3949,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 187.56,
       "notes": "DRY score=0.690 edge=0.3949 p=1.000"
     },
     {
@@ -2575,7 +2947,7 @@
       "res_time": "2026-03-24T11:35:30.246669+00:00",
       "trade_id": "DRY_735BBF7465",
       "strategy": "s1_negrisk_arb",
-      "market": "NegRisk: Will the highest temperature in London be 13\u00b0C on March 24?",
+      "market": "NegRisk: Will the highest temperature in London be 13°C on March 24?",
       "market_id": "0xffa990e2f6ecc519aa550e1ce0317478f3451a523bfc2fa3b77a6ac1d8dee100",
       "side": "ALL_YES",
       "price": 0.1767,
@@ -2588,6 +2960,9 @@
       "roi": 465.08,
       "edge": 0.4345,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 226.37,
       "notes": "DRY score=0.694 edge=0.4345 p=1.000"
     },
     {
@@ -2608,6 +2983,9 @@
       "roi": 7.71,
       "edge": 0.0689,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.908,
+      "payout": 1.0887,
       "notes": "DRY score=0.799 edge=0.0689 p=0.908"
     },
     {
@@ -2628,6 +3006,9 @@
       "roi": 0.2,
       "edge": 0.002,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.988,
+      "payout": 1.002,
       "notes": "DRY score=0.801 edge=0.0020 p=0.988"
     },
     {
@@ -2635,7 +3016,7 @@
       "res_time": "2026-03-24T11:12:35.987840+00:00",
       "trade_id": "DRY_71D679B2A0",
       "strategy": "s10_near_resolution",
-      "market": "Will the highest temperature in Shanghai be 12\u00b0C on March 24?",
+      "market": "Will the highest temperature in Shanghai be 12°C on March 24?",
       "market_id": "1660902",
       "side": "NO",
       "price": 0.955,
@@ -2648,6 +3029,9 @@
       "roi": 4.31,
       "edge": 0.0408,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.945,
+      "payout": 1.0471,
       "notes": "DRY score=0.801 edge=0.0408 p=0.945"
     },
     {
@@ -2668,6 +3052,9 @@
       "roi": 0.89,
       "edge": 0.0088,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.981,
+      "payout": 1.0091,
       "notes": "DRY score=0.804 edge=0.0088 p=0.981"
     },
     {
@@ -2688,6 +3075,9 @@
       "roi": 1.76,
       "edge": 0.0173,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.972,
+      "payout": 1.0183,
       "notes": "DRY score=0.804 edge=0.0173 p=0.972"
     },
     {
@@ -2695,7 +3085,7 @@
       "res_time": "2026-03-24T11:12:36.247525+00:00",
       "trade_id": "DRY_D7AE5B06CE",
       "strategy": "s10_near_resolution",
-      "market": "Will the highest temperature in Seoul be 12\u00b0C on March 24?",
+      "market": "Will the highest temperature in Seoul be 12°C on March 24?",
       "market_id": "1660738",
       "side": "NO",
       "price": 0.945,
@@ -2708,6 +3098,9 @@
       "roi": 5.25,
       "edge": 0.0489,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.935,
+      "payout": 1.0582,
       "notes": "DRY score=0.808 edge=0.0489 p=0.935"
     },
     {
@@ -2728,6 +3121,9 @@
       "roi": 1.33,
       "edge": 0.0131,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.977,
+      "payout": 1.0137,
       "notes": "DRY score=0.810 edge=0.0131 p=0.977"
     },
     {
@@ -2748,6 +3144,9 @@
       "roi": 8.19,
       "edge": 0.0725,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.903,
+      "payout": 1.0947,
       "notes": "DRY score=0.810 edge=0.0725 p=0.903"
     },
     {
@@ -2768,6 +3167,9 @@
       "roi": null,
       "edge": 0.0367,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.95,
+      "payout": 0.0,
       "notes": "DRY score=0.811 edge=0.0367 p=0.950"
     },
     {
@@ -2788,6 +3190,9 @@
       "roi": 0.69,
       "edge": 0.0069,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.983,
+      "payout": 1.007,
       "notes": "DRY score=0.811 edge=0.0069 p=0.983"
     },
     {
@@ -2808,6 +3213,9 @@
       "roi": 129.58,
       "edge": 0.0903,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 12.4941,
       "notes": "DRY score=0.814 edge=0.0903 p=1.000"
     },
     {
@@ -2828,6 +3236,9 @@
       "roi": 3.05,
       "edge": 0.0294,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.959,
+      "payout": 1.0325,
       "notes": "DRY score=0.816 edge=0.0294 p=0.959"
     },
     {
@@ -2848,6 +3259,9 @@
       "roi": 8.04,
       "edge": 0.0714,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.905,
+      "payout": 1.0929,
       "notes": "DRY score=0.821 edge=0.0714 p=0.905"
     },
     {
@@ -2868,6 +3282,9 @@
       "roi": null,
       "edge": 0.0449,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.94,
+      "payout": 0.0,
       "notes": "DRY score=0.823 edge=0.0449 p=0.940"
     },
     {
@@ -2888,6 +3305,9 @@
       "roi": 5.62,
       "edge": 0.0521,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.931,
+      "payout": 1.0627,
       "notes": "DRY score=0.825 edge=0.0521 p=0.931"
     },
     {
@@ -2908,6 +3328,9 @@
       "roi": 0.8,
       "edge": 0.0079,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.982,
+      "payout": 1.0081,
       "notes": "DRY score=0.825 edge=0.0079 p=0.982"
     },
     {
@@ -2928,6 +3351,9 @@
       "roi": 2.96,
       "edge": 0.0285,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.96,
+      "payout": 1.0315,
       "notes": "DRY score=0.830 edge=0.0285 p=0.960"
     },
     {
@@ -2948,6 +3374,9 @@
       "roi": 1.28,
       "edge": 0.0126,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.977,
+      "payout": 1.0132,
       "notes": "DRY score=0.831 edge=0.0126 p=0.977"
     },
     {
@@ -2968,6 +3397,9 @@
       "roi": 2.91,
       "edge": 0.0281,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.96,
+      "payout": 1.0309,
       "notes": "DRY score=0.834 edge=0.0281 p=0.960"
     },
     {
@@ -2988,6 +3420,9 @@
       "roi": 1.52,
       "edge": 0.015,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.975,
+      "payout": 1.0157,
       "notes": "DRY score=0.836 edge=0.0150 p=0.975"
     },
     {
@@ -3008,6 +3443,9 @@
       "roi": 2.06,
       "edge": 0.02,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.969,
+      "payout": 1.0215,
       "notes": "DRY score=0.849 edge=0.0200 p=0.969"
     },
     {
@@ -3028,6 +3466,9 @@
       "roi": 4.41,
       "edge": 0.0417,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.944,
+      "payout": 1.0482,
       "notes": "DRY score=0.864 edge=0.0417 p=0.944"
     },
     {
@@ -3048,6 +3489,9 @@
       "roi": 2.82,
       "edge": 0.0272,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.961,
+      "payout": 1.0299,
       "notes": "DRY score=0.872 edge=0.0272 p=0.961"
     },
     {
@@ -3068,6 +3512,9 @@
       "roi": 4.31,
       "edge": 0.0408,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.945,
+      "payout": 1.0471,
       "notes": "DRY score=0.883 edge=0.0408 p=0.945"
     },
     {
@@ -3088,6 +3535,9 @@
       "roi": 4.97,
       "edge": 0.0465,
       "ev": null,
+      "kelly": null,
+      "win_prob": 0.938,
+      "payout": 1.0549,
       "notes": "DRY score=0.886 edge=0.0465 p=0.938"
     },
     {
@@ -3095,7 +3545,7 @@
       "res_time": "2026-03-24T11:35:30.875170+00:00",
       "trade_id": "DRY_A0EAB19968",
       "strategy": "s1_negrisk_arb",
-      "market": "NegRisk group: Will the highest temperature in Toronto be 5\u00b0C or higher on ",
+      "market": "NegRisk group: Will the highest temperature in Toronto be 5°C or higher on ",
       "market_id": "0x06e52529d645b1cc73b688386d51aa16891348871e3932f58a3d00b3e1a2f400",
       "side": "ALL_YES",
       "price": 0.106,
@@ -3108,6 +3558,9 @@
       "roi": 843.18,
       "edge": 0.7834,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 377.3585,
       "notes": "DRY score=0.969 edge=0.7834 p=1.000"
     },
     {
@@ -3115,7 +3568,7 @@
       "res_time": "2026-03-24T11:35:31.075678+00:00",
       "trade_id": "DRY_49DEEFC42D",
       "strategy": "s1_negrisk_arb",
-      "market": "NegRisk group: Will the highest temperature in Atlanta be between 72-73\u00b0F o",
+      "market": "NegRisk group: Will the highest temperature in Atlanta be between 72-73°F o",
       "market_id": "0xd0c63150bb0008e278c4057206e6cd0e3f51f2599b8f47e9e45f1ca8145f4600",
       "side": "ALL_YES",
       "price": 0.031,
@@ -3128,6 +3581,9 @@
       "roi": 3125.8,
       "edge": 0.9379,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 1290.3226,
       "notes": "DRY score=0.970 edge=0.9379 p=1.000"
     },
     {
@@ -3135,7 +3591,7 @@
       "res_time": "2026-03-24T11:35:31.237925+00:00",
       "trade_id": "DRY_6550E60DA3",
       "strategy": "s1_negrisk_arb",
-      "market": "NegRisk group: Will the highest temperature in Chicago be between 36-37\u00b0F o",
+      "market": "NegRisk group: Will the highest temperature in Chicago be between 36-37°F o",
       "market_id": "0x2ca6761864b9f78dd7d2454bcae410494f0770601513a776730c3da2015e3700",
       "side": "ALL_YES",
       "price": 0.069,
@@ -3148,6 +3604,9 @@
       "roi": 1349.21,
       "edge": 0.8601,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 579.7101,
       "notes": "DRY score=0.972 edge=0.8601 p=1.000"
     },
     {
@@ -3168,6 +3627,9 @@
       "roi": 177.5,
       "edge": 0.2069,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 41.0423,
       "notes": "DRY score=0.977 edge=0.2069 p=1.000"
     },
     {
@@ -3175,7 +3637,7 @@
       "res_time": "2026-03-24T11:35:31.606026+00:00",
       "trade_id": "DRY_1BF154044C",
       "strategy": "s1_negrisk_arb",
-      "market": "NegRisk group: Will FC Ju\u00e1rez win on 2026-03-22?...",
+      "market": "NegRisk group: Will FC Juárez win on 2026-03-22?...",
       "market_id": "0x81b0a3c5ce1a6449549a9a3d4b7eb1d2e2f9d6b51368b50f6e50a04cda260f00",
       "side": "ALL_YES",
       "price": 0.37,
@@ -3188,6 +3650,9 @@
       "roi": 165.75,
       "edge": 0.1704,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 31.1081,
       "notes": "DRY score=0.999 edge=0.1704 p=1.000"
     },
     {
@@ -3195,7 +3660,7 @@
       "res_time": "2026-03-24T11:35:31.778400+00:00",
       "trade_id": "DRY_FB25356B8B",
       "strategy": "s1_negrisk_arb",
-      "market": "NegRisk group: Will the highest temperature in Dallas be 84\u00b0F or higher on ",
+      "market": "NegRisk group: Will the highest temperature in Dallas be 84°F or higher on ",
       "market_id": "0xd4bb1fd724df7eec3717f376a7dce14b9a22c2cde0b01e7f5e9efefac7835300",
       "side": "ALL_YES",
       "price": 1.0,
@@ -3208,6 +3673,9 @@
       "roi": 0.0,
       "edge": 0.6776,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 15.0,
       "notes": "DRY score=0.948 edge=0.6776 p=1.000"
     },
     {
@@ -3228,6 +3696,9 @@
       "roi": 0.0,
       "edge": 0.9192,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 15.0,
       "notes": "DRY score=0.950 edge=0.9192 p=1.000"
     },
     {
@@ -3248,6 +3719,9 @@
       "roi": 0.0,
       "edge": 0.5732,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 15.0,
       "notes": "DRY score=0.953 edge=0.5732 p=1.000"
     },
     {
@@ -3268,6 +3742,9 @@
       "roi": 0.0,
       "edge": 0.4021,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 15.0,
       "notes": "DRY score=0.954 edge=0.4021 p=1.000"
     },
     {
@@ -3288,6 +3765,9 @@
       "roi": 0.0,
       "edge": 0.2925,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 15.0,
       "notes": "DRY score=0.963 edge=0.2925 p=1.000"
     },
     {
@@ -3295,7 +3775,7 @@
       "res_time": "2026-03-24T11:35:26.471885+00:00",
       "trade_id": "DRY_691FE22ED5",
       "strategy": "s1_negrisk_arb",
-      "market": "NegRisk group: Will the highest temperature in Seoul be 11\u00b0C on March 24?..",
+      "market": "NegRisk group: Will the highest temperature in Seoul be 11°C on March 24?..",
       "market_id": "0xaa47ff6ec38b294c669daff74e85b7d65584538da025398754816a419ecdce00",
       "side": "ALL_YES",
       "price": 1.0,
@@ -3308,6 +3788,9 @@
       "roi": 1288.0,
       "edge": 0.5992,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 15.0,
       "notes": "DRY score=0.965 edge=0.5992 p=1.000"
     },
     {
@@ -3328,6 +3811,9 @@
       "roi": 0.0,
       "edge": 0.4544,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 15.0,
       "notes": "DRY score=0.967 edge=0.4544 p=1.000"
     },
     {
@@ -3335,7 +3821,7 @@
       "res_time": "2026-03-24T11:35:31.237925+00:00",
       "trade_id": "DRY_FD56DD3901",
       "strategy": "s1_negrisk_arb",
-      "market": "NegRisk group: Will the highest temperature in Chicago be between 36-37\u00b0F o",
+      "market": "NegRisk group: Will the highest temperature in Chicago be between 36-37°F o",
       "market_id": "0x2ca6761864b9f78dd7d2454bcae410494f0770601513a776730c3da2015e3700",
       "side": "ALL_YES",
       "price": 1.0,
@@ -3348,6 +3834,9 @@
       "roi": 3597.9,
       "edge": 0.8707,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 15.0,
       "notes": "DRY score=0.971 edge=0.8707 p=1.000"
     },
     {
@@ -3368,6 +3857,9 @@
       "roi": 190.3,
       "edge": 0.1957,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 13.59,
       "notes": "DRY score=0.977 edge=0.1957 p=1.000"
     },
     {
@@ -3375,7 +3867,7 @@
       "res_time": "2026-03-24T11:35:31.606026+00:00",
       "trade_id": "DRY_0CF5D26AA6",
       "strategy": "s1_negrisk_arb",
-      "market": "NegRisk group: Will FC Ju\u00e1rez win on 2026-03-22?...",
+      "market": "NegRisk group: Will FC Juárez win on 2026-03-22?...",
       "market_id": "0x81b0a3c5ce1a6449549a9a3d4b7eb1d2e2f9d6b51368b50f6e50a04cda260f00",
       "side": "ALL_YES",
       "price": 1.0,
@@ -3388,6 +3880,9 @@
       "roi": 180.49,
       "edge": 0.1586,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 10.57,
       "notes": "DRY score=0.999 edge=0.1586 p=1.000"
     },
     {
@@ -3395,7 +3890,7 @@
       "res_time": "2026-03-24T11:35:31.778400+00:00",
       "trade_id": "DRY_81EF8CDBBE",
       "strategy": "s1_negrisk_arb",
-      "market": "NegRisk group: Will the highest temperature in Dallas be 84\u00b0F or higher on ",
+      "market": "NegRisk group: Will the highest temperature in Dallas be 84°F or higher on ",
       "market_id": "0xd4bb1fd724df7eec3717f376a7dce14b9a22c2cde0b01e7f5e9efefac7835300",
       "side": "ALL_YES",
       "price": 1.0,
@@ -3408,6 +3903,9 @@
       "roi": 0.0,
       "edge": 0.7092,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 15.0,
       "notes": "DRY score=0.948 edge=0.7092 p=1.000"
     },
     {
@@ -3428,6 +3926,9 @@
       "roi": 0.0,
       "edge": 0.9025,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 15.0,
       "notes": "DRY score=0.949 edge=0.9025 p=1.000"
     },
     {
@@ -3448,6 +3949,9 @@
       "roi": 0.0,
       "edge": 0.5732,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 15.0,
       "notes": "DRY score=0.953 edge=0.5732 p=1.000"
     },
     {
@@ -3468,6 +3972,9 @@
       "roi": 0.0,
       "edge": 0.4041,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 15.0,
       "notes": "DRY score=0.954 edge=0.4041 p=1.000"
     },
     {
@@ -3488,6 +3995,9 @@
       "roi": 0.0,
       "edge": 0.2925,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 15.0,
       "notes": "DRY score=0.963 edge=0.2925 p=1.000"
     },
     {
@@ -3495,7 +4005,7 @@
       "res_time": "2026-03-24T11:35:26.471885+00:00",
       "trade_id": "DRY_CAECA2D870",
       "strategy": "s1_negrisk_arb",
-      "market": "NegRisk group: Will the highest temperature in Seoul be 11\u00b0C on March 24?..",
+      "market": "NegRisk group: Will the highest temperature in Seoul be 11°C on March 24?..",
       "market_id": "0xaa47ff6ec38b294c669daff74e85b7d65584538da025398754816a419ecdce00",
       "side": "ALL_YES",
       "price": 1.0,
@@ -3508,6 +4018,9 @@
       "roi": 1288.0,
       "edge": 0.5808,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 15.0,
       "notes": "DRY score=0.965 edge=0.5808 p=1.000"
     },
     {
@@ -3528,6 +4041,9 @@
       "roi": 0.0,
       "edge": 0.4766,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 15.0,
       "notes": "DRY score=0.967 edge=0.4766 p=1.000"
     },
     {
@@ -3535,7 +4051,7 @@
       "res_time": "2026-03-24T11:35:31.237925+00:00",
       "trade_id": "DRY_98B2C29D80",
       "strategy": "s1_negrisk_arb",
-      "market": "NegRisk group: Will the highest temperature in Chicago be between 36-37\u00b0F o",
+      "market": "NegRisk group: Will the highest temperature in Chicago be between 36-37°F o",
       "market_id": "0x2ca6761864b9f78dd7d2454bcae410494f0770601513a776730c3da2015e3700",
       "side": "ALL_YES",
       "price": 1.0,
@@ -3548,6 +4064,9 @@
       "roi": 3597.9,
       "edge": 0.8728,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 15.0,
       "notes": "DRY score=0.971 edge=0.8728 p=1.000"
     },
     {
@@ -3568,6 +4087,9 @@
       "roi": 172.41,
       "edge": 0.5884,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 15.0,
       "notes": "DRY score=0.972 edge=0.5884 p=1.000"
     },
     {
@@ -3575,7 +4097,7 @@
       "res_time": "2026-03-24T11:35:31.606026+00:00",
       "trade_id": "DRY_DFCA88846C",
       "strategy": "s1_negrisk_arb",
-      "market": "NegRisk group: Will FC Ju\u00e1rez win on 2026-03-22?...",
+      "market": "NegRisk group: Will FC Juárez win on 2026-03-22?...",
       "market_id": "0x81b0a3c5ce1a6449549a9a3d4b7eb1d2e2f9d6b51368b50f6e50a04cda260f00",
       "side": "ALL_YES",
       "price": 1.0,
@@ -3588,6 +4110,9 @@
       "roi": 180.49,
       "edge": 0.1586,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 10.57,
       "notes": "DRY score=0.999 edge=0.1586 p=1.000"
     },
     {
@@ -3595,7 +4120,7 @@
       "res_time": "2026-03-24T11:35:33.925541+00:00",
       "trade_id": "DRY_A62DCC1955",
       "strategy": "s1_negrisk_arb",
-      "market": "NegRisk group: Will the highest temperature in Wellington be 23\u00b0C or higher",
+      "market": "NegRisk group: Will the highest temperature in Wellington be 23°C or higher",
       "market_id": "0xbae5d920e7ae8dea04a0b9f7231d1474eb2417c4df9847b0ca0c46851037b400",
       "side": "ALL_YES",
       "price": 1.0,
@@ -3608,6 +4133,9 @@
       "roi": 0.0,
       "edge": 0.238,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 15.0,
       "notes": "DRY score=0.946 edge=0.2380 p=1.000"
     },
     {
@@ -3615,7 +4143,7 @@
       "res_time": "2026-03-24T11:35:31.778400+00:00",
       "trade_id": "DRY_2C12B679F0",
       "strategy": "s1_negrisk_arb",
-      "market": "NegRisk group: Will the highest temperature in Dallas be 84\u00b0F or higher on ",
+      "market": "NegRisk group: Will the highest temperature in Dallas be 84°F or higher on ",
       "market_id": "0xd4bb1fd724df7eec3717f376a7dce14b9a22c2cde0b01e7f5e9efefac7835300",
       "side": "ALL_YES",
       "price": 1.0,
@@ -3628,6 +4156,9 @@
       "roi": 0.0,
       "edge": 0.7008,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 15.0,
       "notes": "DRY score=0.947 edge=0.7008 p=1.000"
     },
     {
@@ -3648,6 +4179,9 @@
       "roi": 0.0,
       "edge": 0.5732,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 15.0,
       "notes": "DRY score=0.952 edge=0.5732 p=1.000"
     },
     {
@@ -3668,6 +4202,9 @@
       "roi": 0.0,
       "edge": 0.4026,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 15.0,
       "notes": "DRY score=0.954 edge=0.4026 p=1.000"
     },
     {
@@ -3688,6 +4225,9 @@
       "roi": 0.0,
       "edge": 0.2931,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 15.0,
       "notes": "DRY score=0.963 edge=0.2931 p=1.000"
     },
     {
@@ -3695,7 +4235,7 @@
       "res_time": "2026-03-24T11:35:26.471885+00:00",
       "trade_id": "DRY_3802038379",
       "strategy": "s1_negrisk_arb",
-      "market": "NegRisk group: Will the highest temperature in Seoul be 11\u00b0C on March 24?..",
+      "market": "NegRisk group: Will the highest temperature in Seoul be 11°C on March 24?..",
       "market_id": "0xaa47ff6ec38b294c669daff74e85b7d65584538da025398754816a419ecdce00",
       "side": "ALL_YES",
       "price": 1.0,
@@ -3708,6 +4248,9 @@
       "roi": 1288.0,
       "edge": 0.5706,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 15.0,
       "notes": "DRY score=0.965 edge=0.5706 p=1.000"
     },
     {
@@ -3728,6 +4271,9 @@
       "roi": 0.0,
       "edge": 0.4609,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 15.0,
       "notes": "DRY score=0.966 edge=0.4609 p=1.000"
     },
     {
@@ -3748,6 +4294,9 @@
       "roi": 0.0,
       "edge": 0.4884,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 15.0,
       "notes": "DRY score=0.966 edge=0.4884 p=1.000"
     },
     {
@@ -3768,6 +4317,9 @@
       "roi": 0.0,
       "edge": 0.1428,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 8.91,
       "notes": "DRY score=0.971 edge=0.1428 p=1.000"
     },
     {
@@ -3775,7 +4327,7 @@
       "res_time": "2026-03-24T11:35:31.606026+00:00",
       "trade_id": "DRY_553428F962",
       "strategy": "s1_negrisk_arb",
-      "market": "NegRisk group: Will FC Ju\u00e1rez win on 2026-03-22?...",
+      "market": "NegRisk group: Will FC Juárez win on 2026-03-22?...",
       "market_id": "0x81b0a3c5ce1a6449549a9a3d4b7eb1d2e2f9d6b51368b50f6e50a04cda260f00",
       "side": "ALL_YES",
       "price": 1.0,
@@ -3788,6 +4340,9 @@
       "roi": 165.75,
       "edge": 0.1704,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 11.51,
       "notes": "DRY score=0.998 edge=0.1704 p=1.000"
     },
     {
@@ -3795,7 +4350,7 @@
       "res_time": "2026-03-24T11:35:34.949055+00:00",
       "trade_id": "DRY_A84F2C6BDC",
       "strategy": "s1_negrisk_arb",
-      "market": "NegRisk group: Will the highest temperature in Warsaw be 13\u00b0C on March 23?.",
+      "market": "NegRisk group: Will the highest temperature in Warsaw be 13°C on March 23?.",
       "market_id": "0xbec0b41337949fd9a4f5e1ca2ac31406e087e5103a4521fc0cb60b8232757500",
       "side": "ALL_YES",
       "price": 1.0,
@@ -3808,6 +4363,9 @@
       "roi": 0.0,
       "edge": 0.4155,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 15.0,
       "notes": "DRY score=0.945 edge=0.4155 p=1.000"
     },
     {
@@ -3815,7 +4373,7 @@
       "res_time": "2026-03-24T11:35:35.120978+00:00",
       "trade_id": "DRY_CF5C0CA1FA",
       "strategy": "s1_negrisk_arb",
-      "market": "NegRisk group: Will the highest temperature in Ankara be 14\u00b0C or higher on ",
+      "market": "NegRisk group: Will the highest temperature in Ankara be 14°C or higher on ",
       "market_id": "0x024a10e48709cb90927b8a5a176325d741371413857ee296dfc03f3ff447a700",
       "side": "ALL_YES",
       "price": 1.0,
@@ -3828,6 +4386,9 @@
       "roi": 0.0,
       "edge": 0.4293,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 15.0,
       "notes": "DRY score=0.946 edge=0.4293 p=1.000"
     },
     {
@@ -3848,6 +4409,9 @@
       "roi": 0.0,
       "edge": 0.5732,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 15.0,
       "notes": "DRY score=0.952 edge=0.5732 p=1.000"
     },
     {
@@ -3868,6 +4432,9 @@
       "roi": 0.0,
       "edge": 0.3274,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 15.0,
       "notes": "DRY score=0.962 edge=0.3274 p=1.000"
     },
     {
@@ -3875,7 +4442,7 @@
       "res_time": "2026-03-24T11:35:26.471885+00:00",
       "trade_id": "DRY_111E17F8FD",
       "strategy": "s1_negrisk_arb",
-      "market": "NegRisk group: Will the highest temperature in Seoul be 11\u00b0C on March 24?..",
+      "market": "NegRisk group: Will the highest temperature in Seoul be 11°C on March 24?..",
       "market_id": "0xaa47ff6ec38b294c669daff74e85b7d65584538da025398754816a419ecdce00",
       "side": "ALL_YES",
       "price": 1.0,
@@ -3888,6 +4455,9 @@
       "roi": 1288.0,
       "edge": 0.5844,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 15.0,
       "notes": "DRY score=0.964 edge=0.5844 p=1.000"
     },
     {
@@ -3908,6 +4478,9 @@
       "roi": 0.0,
       "edge": 0.8052,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 15.0,
       "notes": "DRY score=0.966 edge=0.8052 p=1.000"
     },
     {
@@ -3928,6 +4501,9 @@
       "roi": 0.0,
       "edge": 0.4698,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 15.0,
       "notes": "DRY score=0.966 edge=0.4698 p=1.000"
     },
     {
@@ -3935,7 +4511,7 @@
       "res_time": "2026-03-24T11:35:31.778400+00:00",
       "trade_id": "DRY_EFBE5E18D7",
       "strategy": "s1_negrisk_arb",
-      "market": "NegRisk group: Will the highest temperature in Dallas be 84\u00b0F or higher on ",
+      "market": "NegRisk group: Will the highest temperature in Dallas be 84°F or higher on ",
       "market_id": "0xd4bb1fd724df7eec3717f376a7dce14b9a22c2cde0b01e7f5e9efefac7835300",
       "side": "ALL_YES",
       "price": 1.0,
@@ -3948,6 +4524,9 @@
       "roi": 0.0,
       "edge": 0.6702,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 15.0,
       "notes": "DRY score=0.971 edge=0.6702 p=1.000"
     },
     {
@@ -3968,6 +4547,9 @@
       "roi": 0.0,
       "edge": 0.344,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 15.0,
       "notes": "DRY score=0.971 edge=0.3440 p=1.000"
     },
     {
@@ -3975,7 +4557,7 @@
       "res_time": "2026-03-24T11:35:31.606026+00:00",
       "trade_id": "DRY_8F275DD612",
       "strategy": "s1_negrisk_arb",
-      "market": "NegRisk group: Will FC Ju\u00e1rez win on 2026-03-22?...",
+      "market": "NegRisk group: Will FC Juárez win on 2026-03-22?...",
       "market_id": "0x81b0a3c5ce1a6449549a9a3d4b7eb1d2e2f9d6b51368b50f6e50a04cda260f00",
       "side": "ALL_YES",
       "price": 1.0,
@@ -3988,6 +4570,9 @@
       "roi": 165.75,
       "edge": 0.1704,
       "ev": null,
+      "kelly": null,
+      "win_prob": 1.0,
+      "payout": 11.51,
       "notes": "DRY score=0.998 edge=0.1704 p=1.000"
     },
     {
@@ -4008,6 +4593,9 @@
       "roi": 0.0,
       "edge": 0.1551,
       "ev": null,
+      "kelly": null,
+      "win_prob": null,
+      "payout": 9.87,
       "notes": "DRY_RUN score=0.971 edge=0.1551"
     },
     {
@@ -4015,7 +4603,7 @@
       "res_time": "2026-03-24T11:35:31.606026+00:00",
       "trade_id": "DRY_RUN_52B1E63C6E64",
       "strategy": "s1_negrisk_arb",
-      "market": "NegRisk group: Will FC Ju\u00e1rez win on 2026-03-22?...",
+      "market": "NegRisk group: Will FC Juárez win on 2026-03-22?...",
       "market_id": "0x81b0a3c5ce1a6449549a9a3d4b7eb1d2e2f9d6b51368b50f6e50a04cda260f00",
       "side": "ALL_YES",
       "price": 1.0,
@@ -4028,6 +4616,9 @@
       "roi": 152.74,
       "edge": 0.1823,
       "ev": null,
+      "kelly": null,
+      "win_prob": null,
+      "payout": 12.49,
       "notes": "DRY_RUN score=0.998 edge=0.1823"
     },
     {
@@ -4035,7 +4626,7 @@
       "res_time": "2026-03-24T11:35:31.778400+00:00",
       "trade_id": "DRY_RUN_249776F2893E",
       "strategy": "s1_negrisk_arb",
-      "market": "NegRisk group: Will the highest temperature in Dallas be 84\u00b0F or higher on ",
+      "market": "NegRisk group: Will the highest temperature in Dallas be 84°F or higher on ",
       "market_id": "0xd4bb1fd724df7eec3717f376a7dce14b9a22c2cde0b01e7f5e9efefac7835300",
       "side": "ALL_YES",
       "price": 1.0,
@@ -4048,6 +4639,9 @@
       "roi": 0.0,
       "edge": 0.6251,
       "ev": null,
+      "kelly": null,
+      "win_prob": null,
+      "payout": 15.0,
       "notes": "DRY_RUN score=0.970 edge=0.6251"
     },
     {
@@ -4068,6 +4662,9 @@
       "roi": 0.0,
       "edge": 0.1551,
       "ev": null,
+      "kelly": null,
+      "win_prob": null,
+      "payout": 9.87,
       "notes": "DRY_RUN score=0.971 edge=0.1551"
     },
     {
@@ -4075,7 +4672,7 @@
       "res_time": "2026-03-24T11:35:31.606026+00:00",
       "trade_id": "DRY_RUN_13582E05E15B",
       "strategy": "s1_negrisk_arb",
-      "market": "NegRisk group: Will FC Ju\u00e1rez win on 2026-03-22?...",
+      "market": "NegRisk group: Will FC Juárez win on 2026-03-22?...",
       "market_id": "0x81b0a3c5ce1a6449549a9a3d4b7eb1d2e2f9d6b51368b50f6e50a04cda260f00",
       "side": "ALL_YES",
       "price": 1.0,
@@ -4088,6 +4685,9 @@
       "roi": 152.74,
       "edge": 0.1823,
       "ev": null,
+      "kelly": null,
+      "win_prob": null,
+      "payout": 12.49,
       "notes": "DRY_RUN score=0.998 edge=0.1823"
     }
   ],
@@ -4115,7 +4715,7 @@
   "lessons_list": [
     "Fee formula: 2.25 * 0.25 * (p*(1-p))^2. At p=0.50 fee is 1.41%. At p=0.95 fee is ~0.013%.",
     "ALWAYS fetch feeRateBps live before every order. Stale rates cause silent rejections.",
-    "S10 max_minutes_remaining is in MINUTES \u2014 code converts to seconds internally. Do not compare raw.",
+    "S10 max_minutes_remaining is in MINUTES — code converts to seconds internally. Do not compare raw.",
     "S10 sports requires min_probability=0.93 not 0.90. Late-reversal risk is real in final minutes.",
     "S1 NegRisk: reject legs with yes_bid < 0.02. Zero bids = stale market = phantom arb signal.",
     "S8: US politics markets have the most logical violations. Scan politics/* first.",
@@ -5113,7 +5713,7 @@
       "ts_unix": 1774332130,
       "strategy": "s10_near_resolution",
       "market_id": "1117833",
-      "question": "Will Trump meet with Delcy Rodr\u00edguez by March 31?",
+      "question": "Will Trump meet with Delcy Rodríguez by March 31?",
       "action": "BUY_NO",
       "edge": 0.0205,
       "probability": 0.9685,
@@ -7465,7 +8065,7 @@
       "ts_unix": 1774339425,
       "strategy": "s10_near_resolution",
       "market_id": "1670669",
-      "question": "Will the highest temperature in London be 8\u00b0C on March 25?",
+      "question": "Will the highest temperature in London be 8°C on March 25?",
       "action": "BUY_NO",
       "edge": 0.10738,
       "probability": 0.85,
@@ -7633,7 +8233,7 @@
       "ts_unix": 1774339425,
       "strategy": "s10_near_resolution",
       "market_id": "1476678",
-      "question": "Vissel K\u014dbe vs. Sanfrecce Hiroshima: O/U 4.5",
+      "question": "Vissel Kōbe vs. Sanfrecce Hiroshima: O/U 4.5",
       "action": "BUY_NO",
       "edge": 0.10432,
       "probability": 0.855,
@@ -7825,7 +8425,7 @@
       "ts_unix": 1774339425,
       "strategy": "s10_near_resolution",
       "market_id": "1670725",
-      "question": "Will the highest temperature in Seoul be 13\u00b0C on March 25?",
+      "question": "Will the highest temperature in Seoul be 13°C on March 25?",
       "action": "BUY_NO",
       "edge": 0.10122,
       "probability": 0.86,
@@ -8065,7 +8665,7 @@
       "ts_unix": 1774339425,
       "strategy": "s11_inplay_momentum",
       "market_id": "1656455",
-      "question": "Will the highest temperature in Chongqing be 18\u00b0C on March 24?",
+      "question": "Will the highest temperature in Chongqing be 18°C on March 24?",
       "action": "BUY_YES",
       "edge": 0.09331,
       "probability": 0.8725,
@@ -8161,7 +8761,7 @@
       "ts_unix": 1774339426,
       "strategy": "s11_inplay_momentum",
       "market_id": "1656456",
-      "question": "Will the highest temperature in Chongqing be 19\u00b0C on March 24?",
+      "question": "Will the highest temperature in Chongqing be 19°C on March 24?",
       "action": "BUY_NO",
       "edge": 0.06417,
       "probability": 0.915,
@@ -8377,7 +8977,7 @@
       "ts_unix": 1774339426,
       "strategy": "s10_near_resolution",
       "market_id": "1656555",
-      "question": "Will the highest temperature in Shenzhen be 27\u00b0C on March 24?",
+      "question": "Will the highest temperature in Shenzhen be 27°C on March 24?",
       "action": "BUY_YES",
       "edge": 0.03668,
       "probability": 0.95,
@@ -8473,7 +9073,7 @@
       "ts_unix": 1774339426,
       "strategy": "s10_near_resolution",
       "market_id": "1656556",
-      "question": "Will the highest temperature in Shenzhen be 28\u00b0C on March 24?",
+      "question": "Will the highest temperature in Shenzhen be 28°C on March 24?",
       "action": "BUY_NO",
       "edge": 0.03243,
       "probability": 0.955,
@@ -8569,7 +9169,7 @@
       "ts_unix": 1774339426,
       "strategy": "s10_near_resolution",
       "market_id": "1670724",
-      "question": "Will the highest temperature in Seoul be 12\u00b0C on March 25?",
+      "question": "Will the highest temperature in Seoul be 12°C on March 25?",
       "action": "BUY_NO",
       "edge": 0.03626,
       "probability": 0.9505,
@@ -8617,7 +9217,7 @@
       "ts_unix": 1774339426,
       "strategy": "s10_near_resolution",
       "market_id": "1670803",
-      "question": "Will the highest temperature in Chicago be between 62-63\u00b0F on March 25?",
+      "question": "Will the highest temperature in Chicago be between 62-63°F on March 25?",
       "action": "BUY_NO",
       "edge": 0.03243,
       "probability": 0.955,
@@ -8665,7 +9265,7 @@
       "ts_unix": 1774339426,
       "strategy": "s10_near_resolution",
       "market_id": "1656456",
-      "question": "Will the highest temperature in Chongqing be 19\u00b0C on March 24?",
+      "question": "Will the highest temperature in Chongqing be 19°C on March 24?",
       "action": "BUY_NO",
       "edge": 0.06417,
       "probability": 0.915,
@@ -8689,7 +9289,7 @@
       "ts_unix": 1774339426,
       "strategy": "s10_near_resolution",
       "market_id": "1670760",
-      "question": "Will the highest temperature in New York City be between 56-57\u00b0F on March 25?",
+      "question": "Will the highest temperature in New York City be between 56-57°F on March 25?",
       "action": "BUY_NO",
       "edge": 0.03329,
       "probability": 0.954,
@@ -8713,7 +9313,7 @@
       "ts_unix": 1774339426,
       "strategy": "s10_near_resolution",
       "market_id": "1670787",
-      "question": "Will the highest temperature in Miami be between 76-77\u00b0F on March 25?",
+      "question": "Will the highest temperature in Miami be between 76-77°F on March 25?",
       "action": "BUY_NO",
       "edge": 0.02897,
       "probability": 0.959,
@@ -8809,7 +9409,7 @@
       "ts_unix": 1774339426,
       "strategy": "s10_near_resolution",
       "market_id": "1670802",
-      "question": "Will the highest temperature in Chicago be between 60-61\u00b0F on March 25?",
+      "question": "Will the highest temperature in Chicago be between 60-61°F on March 25?",
       "action": "BUY_NO",
       "edge": 0.02141,
       "probability": 0.9675,
@@ -8881,7 +9481,7 @@
       "ts_unix": 1774339426,
       "strategy": "s10_near_resolution",
       "market_id": "1670784",
-      "question": "Will the highest temperature in Atlanta be 58\u00b0F or higher on March 25?",
+      "question": "Will the highest temperature in Atlanta be 58°F or higher on March 25?",
       "action": "BUY_YES",
       "edge": 0.01073,
       "probability": 0.979,
@@ -8977,7 +9577,7 @@
       "ts_unix": 1774339426,
       "strategy": "s10_near_resolution",
       "market_id": "1656457",
-      "question": "Will the highest temperature in Chongqing be 20\u00b0C or higher on March 24?",
+      "question": "Will the highest temperature in Chongqing be 20°C or higher on March 24?",
       "action": "BUY_NO",
       "edge": 0.01026,
       "probability": 0.9795,
@@ -9001,7 +9601,7 @@
       "ts_unix": 1774339426,
       "strategy": "s10_near_resolution",
       "market_id": "1670826",
-      "question": "Will the highest temperature in Wellington be 21\u00b0C on March 25?",
+      "question": "Will the highest temperature in Wellington be 21°C on March 25?",
       "action": "BUY_NO",
       "edge": 0.01822,
       "probability": 0.971,
@@ -9049,7 +9649,7 @@
       "ts_unix": 1774339426,
       "strategy": "s10_near_resolution",
       "market_id": "1670761",
-      "question": "Will the highest temperature in New York City be between 58-59\u00b0F on March 25?",
+      "question": "Will the highest temperature in New York City be between 58-59°F on March 25?",
       "action": "BUY_NO",
       "edge": 0.01451,
       "probability": 0.975,
@@ -9073,7 +9673,7 @@
       "ts_unix": 1774339426,
       "strategy": "s10_near_resolution",
       "market_id": "1670682",
-      "question": "Will the highest temperature in Paris be 8\u00b0C on March 25?",
+      "question": "Will the highest temperature in Paris be 8°C on March 25?",
       "action": "BUY_NO",
       "edge": 0.01591,
       "probability": 0.9735,
@@ -9097,7 +9697,7 @@
       "ts_unix": 1774339426,
       "strategy": "s10_near_resolution",
       "market_id": "1670950",
-      "question": "Will the highest temperature in Chongqing be 15\u00b0C or below on March 25?",
+      "question": "Will the highest temperature in Chongqing be 15°C or below on March 25?",
       "action": "BUY_NO",
       "edge": 0.01026,
       "probability": 0.9795,
@@ -9121,7 +9721,7 @@
       "ts_unix": 1774339426,
       "strategy": "s10_near_resolution",
       "market_id": "1680842",
-      "question": "Will the highest temperature in Shanghai be 15\u00b0C on March 26?",
+      "question": "Will the highest temperature in Shanghai be 15°C on March 26?",
       "action": "BUY_NO",
       "edge": 0.04492,
       "probability": 0.94,
@@ -9169,7 +9769,7 @@
       "ts_unix": 1774339426,
       "strategy": "s10_near_resolution",
       "market_id": "1680759",
-      "question": "Will the highest temperature in Chicago be between 74-75\u00b0F on March 26?",
+      "question": "Will the highest temperature in Chicago be between 74-75°F on March 26?",
       "action": "BUY_NO",
       "edge": 0.05896,
       "probability": 0.922,
@@ -9217,7 +9817,7 @@
       "ts_unix": 1774339426,
       "strategy": "s10_near_resolution",
       "market_id": "1656466",
-      "question": "Will the highest temperature in Beijing be 21\u00b0C on March 24?",
+      "question": "Will the highest temperature in Beijing be 21°C on March 24?",
       "action": "BUY_NO",
       "edge": 0.07768,
       "probability": 0.896,
@@ -9265,7 +9865,7 @@
       "ts_unix": 1774339426,
       "strategy": "s10_near_resolution",
       "market_id": "1670801",
-      "question": "Will the highest temperature in Chicago be between 58-59\u00b0F on March 25?",
+      "question": "Will the highest temperature in Chicago be between 58-59°F on March 25?",
       "action": "BUY_NO",
       "edge": 0.00641,
       "probability": 0.9835,
@@ -9289,7 +9889,7 @@
       "ts_unix": 1774339426,
       "strategy": "s10_near_resolution",
       "market_id": "1670888",
-      "question": "Will the highest temperature in Shanghai be 15\u00b0C on March 25?",
+      "question": "Will the highest temperature in Shanghai be 15°C on March 25?",
       "action": "BUY_NO",
       "edge": 0.00592,
       "probability": 0.984,
@@ -9337,7 +9937,7 @@
       "ts_unix": 1774339426,
       "strategy": "s10_near_resolution",
       "market_id": "1671006",
-      "question": "Will the highest temperature in Shenzhen be 25\u00b0C on March 25?",
+      "question": "Will the highest temperature in Shenzhen be 25°C on March 25?",
       "action": "BUY_NO",
       "edge": 0.01026,
       "probability": 0.9795,
@@ -9361,7 +9961,7 @@
       "ts_unix": 1774339426,
       "strategy": "s10_near_resolution",
       "market_id": "1670892",
-      "question": "Will the highest temperature in Shanghai be 19\u00b0C on March 25?",
+      "question": "Will the highest temperature in Shanghai be 19°C on March 25?",
       "action": "BUY_NO",
       "edge": 0.08008,
       "probability": 0.8925,
@@ -9409,7 +10009,7 @@
       "ts_unix": 1774339426,
       "strategy": "s10_near_resolution",
       "market_id": "1670723",
-      "question": "Will the highest temperature in Seoul be 11\u00b0C on March 25?",
+      "question": "Will the highest temperature in Seoul be 11°C on March 25?",
       "action": "BUY_NO",
       "edge": 0.00543,
       "probability": 0.9845,
@@ -9505,7 +10105,7 @@
       "ts_unix": 1774339426,
       "strategy": "s10_near_resolution",
       "market_id": "1670810",
-      "question": "Will the highest temperature in Ankara be 9\u00b0C on March 25?",
+      "question": "Will the highest temperature in Ankara be 9°C on March 25?",
       "action": "BUY_NO",
       "edge": 0.00834,
       "probability": 0.9815,
@@ -9553,7 +10153,7 @@
       "ts_unix": 1774339426,
       "strategy": "s10_near_resolution",
       "market_id": "1670893",
-      "question": "Will the highest temperature in Shanghai be 20\u00b0C on March 25?",
+      "question": "Will the highest temperature in Shanghai be 20°C on March 25?",
       "action": "BUY_NO",
       "edge": 0.00199,
       "probability": 0.988,
@@ -9577,7 +10177,7 @@
       "ts_unix": 1774339426,
       "strategy": "s10_near_resolution",
       "market_id": "1670762",
-      "question": "Will the highest temperature in New York City be 60\u00b0F or higher on March 25?",
+      "question": "Will the highest temperature in New York City be 60°F or higher on March 25?",
       "action": "BUY_NO",
       "edge": 0.00298,
       "probability": 0.987,
@@ -9697,7 +10297,7 @@
       "ts_unix": 1774339427,
       "strategy": "s10_near_resolution",
       "market_id": "1670821",
-      "question": "Will the highest temperature in Wellington be 16\u00b0C on March 25?",
+      "question": "Will the highest temperature in Wellington be 16°C on March 25?",
       "action": "BUY_NO",
       "edge": 0.00347,
       "probability": 0.9865,
@@ -9865,7 +10465,7 @@
       "ts_unix": 1774339427,
       "strategy": "s10_near_resolution",
       "market_id": "1680760",
-      "question": "Will the highest temperature in Chicago be between 76-77\u00b0F on March 26?",
+      "question": "Will the highest temperature in Chicago be between 76-77°F on March 26?",
       "action": "BUY_NO",
       "edge": 0.01591,
       "probability": 0.9735,
@@ -9889,7 +10489,7 @@
       "ts_unix": 1774339427,
       "strategy": "s10_near_resolution",
       "market_id": "1655002",
-      "question": "Will Beinir Johannesen be the next L\u00f8gma\u00f0ur of the Faroe Islands following the 2026 Faroese general election?",
+      "question": "Will Beinir Johannesen be the next Løgmaður of the Faroe Islands following the 2026 Faroese general election?",
       "action": "BUY_YES",
       "edge": 0.03243,
       "probability": 0.955,
@@ -9913,7 +10513,7 @@
       "ts_unix": 1774339427,
       "strategy": "s10_near_resolution",
       "market_id": "1671007",
-      "question": "Will the highest temperature in Shenzhen be 26\u00b0C on March 25?",
+      "question": "Will the highest temperature in Shenzhen be 26°C on March 25?",
       "action": "BUY_NO",
       "edge": 0.08513,
       "probability": 0.885,
@@ -9937,7 +10537,7 @@
       "ts_unix": 1774339427,
       "strategy": "s10_near_resolution",
       "market_id": "1656455",
-      "question": "Will the highest temperature in Chongqing be 18\u00b0C on March 24?",
+      "question": "Will the highest temperature in Chongqing be 18°C on March 24?",
       "action": "BUY_YES",
       "edge": 0.09331,
       "probability": 0.8725,
@@ -10057,7 +10657,7 @@
       "ts_unix": 1774339427,
       "strategy": "s10_near_resolution",
       "market_id": "1670804",
-      "question": "Will the highest temperature in Chicago be between 64-65\u00b0F on March 25?",
+      "question": "Will the highest temperature in Chicago be between 64-65°F on March 25?",
       "action": "BUY_NO",
       "edge": 0.09169,
       "probability": 0.875,
@@ -10153,7 +10753,7 @@
       "ts_unix": 1774339427,
       "strategy": "s10_near_resolution",
       "market_id": "1670822",
-      "question": "Will the highest temperature in Wellington be 17\u00b0C on March 25?",
+      "question": "Will the highest temperature in Wellington be 17°C on March 25?",
       "action": "BUY_NO",
       "edge": 0.09299,
       "probability": 0.873,
@@ -10225,7 +10825,7 @@
       "ts_unix": 1774339427,
       "strategy": "s10_near_resolution",
       "market_id": "1680967",
-      "question": "Will the highest temperature in Austin be 81\u00b0F or below on March 26?",
+      "question": "Will the highest temperature in Austin be 81°F or below on March 26?",
       "action": "BUY_NO",
       "edge": 0.00396,
       "probability": 0.986,
@@ -10249,7 +10849,7 @@
       "ts_unix": 1774339427,
       "strategy": "s10_near_resolution",
       "market_id": "1680660",
-      "question": "Will the highest temperature in Buenos Aires be 22\u00b0C or below on March 26?",
+      "question": "Will the highest temperature in Buenos Aires be 22°C or below on March 26?",
       "action": "BUY_NO",
       "edge": 0.00249,
       "probability": 0.9875,
@@ -10369,7 +10969,7 @@
       "ts_unix": 1774339427,
       "strategy": "s10_near_resolution",
       "market_id": "1680761",
-      "question": "Will the highest temperature in Chicago be 78\u00b0F or higher on March 26?",
+      "question": "Will the highest temperature in Chicago be 78°F or higher on March 26?",
       "action": "BUY_NO",
       "edge": 0.08844,
       "probability": 0.88,
@@ -10729,7 +11329,7 @@
       "ts_unix": 1774339427,
       "strategy": "s10_near_resolution",
       "market_id": "1690341",
-      "question": "Will the highest temperature in Chengdu be 17\u00b0C on March 27?",
+      "question": "Will the highest temperature in Chengdu be 17°C on March 27?",
       "action": "BUY_NO",
       "edge": 0.00882,
       "probability": 0.981,
@@ -10753,7 +11353,7 @@
       "ts_unix": 1774339427,
       "strategy": "s10_near_resolution",
       "market_id": "1690261",
-      "question": "Will the highest temperature in Milan be 8\u00b0C or below on March 27?",
+      "question": "Will the highest temperature in Milan be 8°C or below on March 27?",
       "action": "BUY_NO",
       "edge": 0.00738,
       "probability": 0.9825,
@@ -10921,7 +11521,7 @@
       "ts_unix": 1774339427,
       "strategy": "s10_near_resolution",
       "market_id": "1680682",
-      "question": "Will the highest temperature in Seoul be 16\u00b0C or higher on March 26?",
+      "question": "Will the highest temperature in Seoul be 16°C or higher on March 26?",
       "action": "BUY_NO",
       "edge": 0.09808,
       "probability": 0.865,
@@ -12337,7 +12937,7 @@
       "ts_unix": 1774339428,
       "strategy": "s10_near_resolution",
       "market_id": "1437750",
-      "question": "Will Elon Musk\u2019s net worth be at least $710b on March 31?",
+      "question": "Will Elon Musk’s net worth be at least $710b on March 31?",
       "action": "BUY_NO",
       "edge": 0.04452,
       "probability": 0.9405,
@@ -12361,7 +12961,7 @@
       "ts_unix": 1774339428,
       "strategy": "s10_near_resolution",
       "market_id": "1447508",
-      "question": "Miguel D\u00edaz-Canel out as leader of Cuba by March 31?",
+      "question": "Miguel Díaz-Canel out as leader of Cuba by March 31?",
       "action": "BUY_NO",
       "edge": 0.03028,
       "probability": 0.9575,
@@ -12505,7 +13105,7 @@
       "ts_unix": 1774339428,
       "strategy": "s11_inplay_momentum",
       "market_id": "1656555",
-      "question": "Will the highest temperature in Shenzhen be 27\u00b0C on March 24?",
+      "question": "Will the highest temperature in Shenzhen be 27°C on March 24?",
       "action": "BUY_YES",
       "edge": 0.03668,
       "probability": 0.95,
@@ -14041,7 +14641,7 @@
       "ts_unix": 1774339429,
       "strategy": "s10_near_resolution",
       "market_id": "1117833",
-      "question": "Will Trump meet with Delcy Rodr\u00edguez by March 31?",
+      "question": "Will Trump meet with Delcy Rodríguez by March 31?",
       "action": "BUY_NO",
       "edge": 0.02186,
       "probability": 0.967,
@@ -15841,7 +16441,7 @@
       "ts_unix": 1774339431,
       "strategy": "observer_momentum_down",
       "market_id": "1365859",
-      "question": "Will Carlos Roberto Massa J\u00fanior finish in second place in the first round of the 2026 Brazilian presidential election?",
+      "question": "Will Carlos Roberto Massa Júnior finish in second place in the first round of the 2026 Brazilian presidential election?",
       "action": "SIGNAL",
       "edge": 1.0,
       "probability": 0.011,
