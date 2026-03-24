@@ -1,170 +1,120 @@
 #!/usr/bin/env python3
 """
 scripts/update_dashboard.py
-===========================
-Updates dashboard.html with embedded engine state.
-
-Run after each scan cycle to keep dashboard fresh.
+FIXES(v_fix1): real stats from get_trade_stats(), no hardcoded zeros.
+Full trade list for analytics tab. Per-trade edge/ev from notes.
 """
-
-import json
-import os
-import re
-import sys
-import html
-from pathlib import Path
+import html as _html, json, os, re, sys
 from datetime import datetime, timezone
-
+from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent.parent))
-
+from dotenv import load_dotenv; load_dotenv()
 import structlog
-from dotenv import load_dotenv
+log = structlog.get_logger(component="update_dashboard")
 
-load_dotenv()
+def esc(t): return "" if t is None else _html.escape(str(t))
 
-log = structlog.get_logger()
-
-
-def escape_html(text):
-    """Escape HTML to prevent XSS."""
-    if text is None:
-        return ""
-    return html.escape(str(text))
-
+def parse_scan_log(path="data/scan_log.json"):
+    out={"total_opportunities":0,"trades_executed":0,"trades_rejected":0,"by_strategy":{}}
+    try:
+        entries=json.loads(Path(path).read_text()) if Path(path).exists() else []
+        out["total_opportunities"]=len(entries)
+        for e in entries:
+            s=e.get("strategy","unknown")
+            if s not in out["by_strategy"]:
+                out["by_strategy"][s]={"total":0,"executed":0,"rejected":0}
+            out["by_strategy"][s]["total"]+=1
+            if e.get("executed"):
+                out["trades_executed"]+=1; out["by_strategy"][s]["executed"]+=1
+            elif e.get("reason_skipped"):
+                out["trades_rejected"]+=1; out["by_strategy"][s]["rejected"]+=1
+    except: pass
+    return out
 
 def get_engine_state():
-    """Get current engine state from database."""
     from engines.state_engine import StateEngine
-
-    db_path = os.environ.get("DATABASE_PATH", "data/trades.db")
-    lessons_path = os.environ.get("LESSONS_PATH", "data/lessons.json")
-
-    if not os.path.exists(db_path):
-        return None
-
-    state = StateEngine(db_path, lessons_path)
-
-    open_positions = state.get_open_positions()
-    recent = state.get_recent_resolved_trades(24)
-
-    wins_24h = sum(1 for t in recent if t.get("outcome") == "win")
-
+    db      = os.environ.get("DATABASE_PATH","data/trades.db")
+    lpath   = os.environ.get("LESSONS_PATH","data/lessons.json")
+    if not os.path.exists(db): return None
+    state   = StateEngine(db,lpath)
+    open_p  = state.get_open_positions()
+    ts      = state.get_trade_stats()
+    recent  = state.get_recent_resolved_trades(hours=48)
+    all_t   = state.get_recent_trades(limit=100)
+    scan    = parse_scan_log()
+    lessons = state.get_lessons()
+    wins24  = sum(1 for t in recent if t.get("outcome")=="win")
+    losses24= sum(1 for t in recent if t.get("outcome")=="loss")
+    trades_display=[]
+    for t in all_t:
+        cost=float(t.get("cost_usdc",0) or 0)
+        pnl=float(t.get("pnl_usdc",0) or 0)
+        roi=round(pnl/cost*100,2) if (cost>0 and t.get("status")=="resolved") else None
+        notes=t.get("notes","") or ""
+        edge=ev=None
+        for part in notes.split():
+            if part.startswith("edge="):
+                try: edge=float(part.split("=")[1])
+                except: pass
+            if part.startswith("ev="):
+                try: ev=float(part.split("=")[1])
+                except: pass
+        trades_display.append({
+            "time":t.get("entry_time",""),"res_time":t.get("resolution_time",""),
+            "trade_id":t.get("trade_id",""),"strategy":esc(t.get("strategy","")),
+            "market":esc(t.get("market_question",""))[:75],"market_id":t.get("market_id",""),
+            "side":esc(t.get("side","")),"price":float(t.get("price",0) or 0),
+            "shares":float(t.get("shares",0) or 0),"size":cost,
+            "fee":float(t.get("fee_usdc",0) or 0),"status":t.get("status","open"),
+            "outcome":esc(t.get("outcome","") or ""),"pnl":pnl,"roi":roi,
+            "edge":edge,"ev":ev,"notes":esc(notes[:100])
+        })
+    dry=os.environ.get("DRY_RUN","false").lower()=="true"
     return {
-        "timestamp": datetime.now(timezone.utc).isoformat() + "Z",
-        "balance": float(state.get_current_balance()),
-        "capital": 100.0,
-        "daily_pnl": float(state.get_daily_pnl()),
-        "open_positions": len(open_positions),
-        "max_positions": 5,
-        "resolved_24h": len(recent),
-        "wins_24h": wins_24h,
-        "dry_run": os.environ.get("DRY_RUN", "false").lower() == "true",
-        "trades_executed": 0,
-        "trades_rejected": 0,
-        "ingestion": {
-            "markets_scanned": 0,
-            "markets_valid": 0,
-            "negrisk_groups": 0,
-            "categories": {"sports": 0, "politics": 0, "crypto": 0, "other": 0}
-        },
-        "strategies": {
-            "s10_opportunities": 0,
-            "s1_opportunities": 0,
-            "s8_opportunities": 0
-        },
-        "recent_trades": [
-            {
-                "time": t.get("entry_time", ""),
-                "strategy": escape_html(t.get("strategy", "")),
-                "market": escape_html(t.get("market_question", ""))[:60],
-                "side": escape_html(t.get("side", "")),
-                "price": float(t.get("price", 0)),
-                "size": float(t.get("cost_usdc", 0)),
-                "outcome": escape_html(t.get("outcome", "")) if t.get("outcome") else "",
-                "pnl": float(t.get("pnl_usdc", 0)) if t.get("pnl_usdc") else 0,
-            }
-            for t in recent[:15]
-        ],
+        "timestamp":datetime.now(timezone.utc).isoformat()+"Z",
+        "balance":float(state.get_current_balance()),
+        "daily_pnl":float(state.get_daily_pnl()),
+        "open_positions":len(open_p),
+        "open_exposure":round(sum(float(p.get("cost_usdc",0) or 0) for p in open_p),2),
+        "dry_run":dry,
+        "total_trades":ts["total"],"resolved_trades":ts["resolved"],
+        "wins_all_time":ts["wins"],"losses_all_time":ts["losses"],
+        "win_rate_pct":ts["win_rate_pct"],"total_pnl":ts["total_pnl"],
+        "total_invested":ts["invested"],"roi_pct":ts["roi_pct"],
+        "best_trade_pnl":ts["best_pnl"],"worst_trade_pnl":ts["worst_pnl"],
+        "by_strategy":ts["by_strategy"],
+        "resolved_24h":len(recent),"wins_24h":wins24,"losses_24h":losses24,
+        "trades_executed":scan["trades_executed"],"trades_rejected":scan["trades_rejected"],
+        "total_opportunities":scan["total_opportunities"],"scan_by_strategy":scan["by_strategy"],
+        "recent_trades":trades_display,
+        "lessons_count":len(lessons.get("lessons",[])),"strategy_scores":lessons.get("strategy_scores",{}),
+        "lessons_updated":lessons.get("last_updated",""),
     }
 
-
-def parse_scan_log():
-    """Parse last scan results from log file if available."""
-    data = get_engine_state()
-    if data is None:
-        return None
-    
-    data["opportunities"] = []
-    
-    log_path = Path("data/last_scan.json")
-    if log_path.exists():
-        try:
-            with open(log_path) as f:
-                scan_data = json.load(f)
-            
-            if scan_data:
-                data["ingestion"] = scan_data.get("ingestion", data["ingestion"])
-                data["strategies"] = scan_data.get("strategies", data["strategies"])
-                data["trades_executed"] = scan_data.get("trades_executed", 0)
-                data["trades_rejected"] = scan_data.get("trades_rejected", 0)
-                data["opportunities"] = scan_data.get("opportunities", [])
-        except Exception:
-            pass
-    
-    return data
-
-
-def update_dashboard_html(data: dict) -> bool:
-    """Update dashboard.html with embedded data."""
-    dashboard_path = "dashboard.html"
-
-    if not os.path.exists(dashboard_path):
-        log.warning("dashboard.file_not_found")
-        return False
-
-    with open(dashboard_path, "r", encoding="utf-8") as f:
-        html_content = f.read()
-
-    json_str = json.dumps(data)
-
-    # Replace STATE_DATA with new data
-    if 'var STATE_DATA = ' in html_content:
-        start = html_content.find('var STATE_DATA = ')
-        start_line_end = html_content.find(';', start)
-        if start != -1 and start_line_end != -1:
-            html_content = html_content[:start] + f'var STATE_DATA = {json_str};' + html_content[start_line_end+1:]
-    else:
-        html_content = html_content.replace("var STATE_DATA = null;", f"var STATE_DATA = {json_str};")
-
-    with open(dashboard_path, "w", encoding="utf-8") as f:
-        f.write(html_content)
-
-    log.info("dashboard.updated", path=dashboard_path)
-    return True
-
+def update_dashboard_html(data):
+    for dp in ["dashboard.html","index.html"]:
+        if os.path.exists(dp): break
+    else: return False
+    try:
+        c=Path(dp).read_text(encoding="utf-8")
+        jstr=json.dumps(data,indent=2)
+        blk='<script id="engine-data" type="application/json">\n'+jstr+'\n</script>'
+        if re.search(r'<script[^>]*id=["\']engine-data["\']',c):
+            c=re.sub(r'<script[^>]*id=["\']engine-data["\'"][^>]*>.*?</script>',blk,c,flags=re.DOTALL)
+        else:
+            c=c.replace("</body>",blk+"\n</body>")
+        Path(dp).write_text(c,encoding="utf-8"); return True
+    except Exception as e:
+        log.error("update_html_failed",error=str(e)); return False
 
 def main():
-    log.info("dashboard.update_start")
+    data=get_engine_state()
+    if not data: print("No database, skipping."); return
+    update_dashboard_html(data)
+    try:
+        Path("data").mkdir(exist_ok=True)
+        Path("data/dashboard_state.json").write_text(json.dumps(data,indent=2))
+    except: pass
+    print("Dashboard updated.")
 
-    data = parse_scan_log()
-    if not data:
-        print("No database found - skipping dashboard update")
-        return
-
-    print(f"Balance: ${data['balance']:.2f}")
-    print(f"Daily P&L: ${data['daily_pnl']:+.2f}")
-    print(f"Open Positions: {data['open_positions']}")
-    print(f"Resolved (24h): {data['resolved_24h']}")
-    print(f"Dry Run: {data['dry_run']}")
-    print(f"Markets Scanned: {data['ingestion']['markets_scanned']}")
-    print(f"S10 Opps: {data['strategies']['s10_opportunities']}")
-    print(f"S1 Opps: {data['strategies']['s1_opportunities']}")
-    print(f"S8 Opps: {data['strategies']['s8_opportunities']}")
-
-    success = update_dashboard_html(data)
-    if success:
-        print("Dashboard updated: dashboard.html")
-
-
-if __name__ == "__main__":
-    main()
+if __name__=="__main__": main()
