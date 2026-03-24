@@ -56,7 +56,7 @@ def get_engine_state():
     open_p  = state.get_open_positions()
     ts      = state.get_trade_stats()
     recent  = state.get_recent_resolved_trades(hours=48)
-    all_t   = state.get_recent_trades(limit=100)
+    all_t   = state.get_all_trades()  # all trades for complete P&L analytics
     scan    = parse_scan_log()
     lessons = state.get_lessons()
     wins24  = sum(1 for t in recent if t.get("outcome")=="win")
@@ -103,7 +103,7 @@ def get_engine_state():
         "trades_executed":scan["trades_executed"],"trades_rejected":scan["trades_rejected"],
         "total_opportunities":scan["total_opportunities"],"scan_by_strategy":scan["by_strategy"],
         "recent_trades":trades_display,
-        "lessons_count":len(lessons.get("lessons",[])),"strategy_scores":lessons.get("strategy_scores",{}),
+        "lessons_count":len(lessons.get("lessons",[])),"strategy_scores":lessons.get("strategy_scores",{}),"lessons_list":lessons.get("lessons",[]),
         "lessons_updated":lessons.get("last_updated",""),
         # Scan History tab — last 500 scan_log entries
         "scan_log":_load_scan_log(500),
