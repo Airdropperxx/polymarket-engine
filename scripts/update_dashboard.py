@@ -112,21 +112,57 @@ def get_engine_state():
     }
 
 def update_dashboard_html(data):
-    for dp in ["dashboard.html","index.html"]:
-        if os.path.exists(dp): break
-    else: return False
-    try:
-        c=Path(dp).read_text(encoding="utf-8")
-        jstr=json.dumps(data,indent=2)
-        blk='<script id="engine-data" type="application/json">\n'+jstr+'\n</script>'
-        if re.search(r'<script[^>]*id=["\']engine-data["\']',c):
-            c=re.sub(r'<script[^>]*id=["\']engine-data["\'"][^>]*>.*?</script>',blk,c,flags=re.DOTALL)
-        else:
-            c=c.replace("</body>",blk+"\n</body>")
-        Path(dp).write_text(c,encoding="utf-8"); return True
-    except Exception as e:
-        log.error("update_html_failed",error=str(e)); return False
+    """
+    Write engine-data JSON into dashboard.html.
 
+    CRITICAL FIX: never use re.sub() for this replacement.
+    re.sub interprets \u in the replacement string as a Unicode escape,
+    which fails when json.dumps encodes non-ASCII chars as \uXXXX.
+    Example: market_question "Juárez" → json.dumps → "\u00e1rez" → re.sub → "bad escape \u"
+
+    Fix: use ensure_ascii=False (keeps UTF-8 as-is, no \uXXXX in output)
+    AND use str.split/join instead of re.sub (never interprets replacement).
+    Both fixes are required — ensure_ascii=False is the primary defence,
+    str.split is the belt-and-suspenders backup that works regardless.
+    """
+    for dp in ["dashboard.html", "index.html"]:
+        if os.path.exists(dp):
+            break
+    else:
+        return False
+    try:
+        c = Path(dp).read_text(encoding="utf-8")
+        # ensure_ascii=False: keeps UTF-8 chars as-is (é stays é, not \u00e9)
+        # This eliminates \uXXXX sequences from the JSON output entirely.
+        jstr = json.dumps(data, indent=2, ensure_ascii=False)
+        new_block = '<script id="engine-data" type="application/json">\n' + jstr + '\n</script>'
+
+        # Use string split — immune to regex escape issues in replacement content.
+        # Find the opening tag by splitting on it, never by regex substitution.
+        OPEN_TAG  = '<script id="engine-data"'
+        CLOSE_TAG = '</script>'
+
+        if OPEN_TAG in c:
+            # Find the block and replace it entirely
+            before = c[:c.index(OPEN_TAG)]
+            after_start = c.index(OPEN_TAG) + len(OPEN_TAG)
+            # Find the closing </script> after the opening tag
+            close_pos = c.find(CLOSE_TAG, after_start)
+            if close_pos == -1:
+                # Malformed — append instead
+                c = c.replace("</body>", new_block + "\n</body>")
+            else:
+                after = c[close_pos + len(CLOSE_TAG):]
+                c = before + new_block + after
+        else:
+            # First time — inject before </body>
+            c = c.replace("</body>", new_block + "\n</body>")
+
+        Path(dp).write_text(c, encoding="utf-8")
+        return True
+    except Exception as e:
+        log.error("update_html_failed", error=str(e))
+        return False
 def main():
     data=get_engine_state()
     if not data: print("No database, skipping."); return
