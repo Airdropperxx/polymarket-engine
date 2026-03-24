@@ -157,6 +157,13 @@ class MarketState:
     no_ask:                float = 0.0
     fetched_at:            float = field(default_factory=time.time)
 
+    def __post_init__(self):
+        # Compute synthetic ask if not explicitly set (default 0.0 means not set)
+        if self.yes_ask == 0.0:
+            self.yes_ask = min(0.999, self.yes_price + 0.01)
+        if self.no_ask == 0.0:
+            self.no_ask  = min(0.999, self.no_price  + 0.01)
+
     def is_stale(self, max_age_seconds: int = 300) -> bool:
         return (time.time() - self.fetched_at) > max_age_seconds
 
