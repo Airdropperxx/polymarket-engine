@@ -120,53 +120,38 @@ def get_engine_state():
     }
 
 def update_dashboard_html(data):
-    # Writes engine-data JSON block into dashboard.html.
+    # Writes engine-data JSON block into dashboard.html AND index.html.
+    # Both files updated — GitHub Pages serves index.html, not dashboard.html.
     # Uses ensure_ascii=False + str.split to avoid re.sub unicode escape errors.
+    jstr = json.dumps(data, indent=2, ensure_ascii=False)
+    new_block = '<script id="engine-data" type="application/json">\n' + jstr + '\n</script>'
+    OPEN_TAG  = '<script id="engine-data"'
+    CLOSE_TAG = '</script>'
+    updated = 0
     for dp in ["dashboard.html", "index.html"]:
-        if os.path.exists(dp):
-            break
-    else:
-        return False
-    try:
-        c = Path(dp).read_text(encoding="utf-8")
-        # ensure_ascii=False: keeps UTF-8 chars as-is (é stays é, not \u00e9)
-        # This eliminates \uXXXX sequences from the JSON output entirely.
-        jstr = json.dumps(data, indent=2, ensure_ascii=False)
-        new_block = '<script id="engine-data" type="application/json">\n' + jstr + '\n</script>'
-
-        # Use string split — immune to regex escape issues in replacement content.
-        # Find the opening tag by splitting on it, never by regex substitution.
-        OPEN_TAG  = '<script id="engine-data"'
-        CLOSE_TAG = '</script>'
-
-        if OPEN_TAG in c:
-            # Find the block and replace it entirely
-            before = c[:c.index(OPEN_TAG)]
-            after_start = c.index(OPEN_TAG) + len(OPEN_TAG)
-            # Find the closing </script> after the opening tag
-            close_pos = c.find(CLOSE_TAG, after_start)
-            if close_pos == -1:
-                # Malformed — append instead
-                c = c.replace("</body>", new_block + "\n</body>")
+        if not os.path.exists(dp):
+            continue
+        try:
+            c = Path(dp).read_text(encoding="utf-8")
+            if OPEN_TAG in c:
+                before = c[:c.index(OPEN_TAG)]
+                after_start = c.index(OPEN_TAG) + len(OPEN_TAG)
+                close_pos = c.find(CLOSE_TAG, after_start)
+                if close_pos == -1:
+                    c = c.replace("</body>", new_block + "\n</body>")
+                else:
+                    after = c[close_pos + len(CLOSE_TAG):]
+                    c = before + new_block + after
             else:
-                after = c[close_pos + len(CLOSE_TAG):]
-                c = before + new_block + after
-        else:
-            # First time — inject before </body>
-            c = c.replace("</body>", new_block + "\n</body>")
+                c = c.replace("</body>", new_block + "\n</body>")
+            Path(dp).write_text(c, encoding="utf-8")
+            updated += 1
+            log.info("dashboard_updated", file=dp)
+        except Exception as e:
+            log.error("update_html_failed", file=dp, error=str(e))
+    return updated > 0
 
-        Path(dp).write_text(c, encoding="utf-8")
-        return True
-    except Exception as e:
-        log.error("update_html_failed", error=str(e))
-        return False
-def main():
-    data=get_engine_state()
-    if not data: print("No database, skipping."); return
-    update_dashboard_html(data)
-    try:
-        Path("data").mkdir(exist_ok=True)
-        Path("data/dashboard_state.json").write_text(json.dumps(data,indent=2))
+data,indent=2))
     except: pass
     print("Dashboard updated.")
 
