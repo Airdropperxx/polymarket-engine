@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-03-24T19:37:57.975893+00:00Z",
+  "timestamp": "2026-03-24T20:03:25.801554+00:00Z",
   "balance": 10624.434238999998,
   "daily_pnl": 13020.864135,
   "open_positions": 53,
@@ -41,8 +41,8 @@
       "roi_pct": 679.12
     }
   },
-  "resolved_24h": 102,
-  "wins_24h": 102,
+  "resolved_24h": 97,
+  "wins_24h": 97,
   "losses_24h": 0,
   "trades_executed": 195,
   "trades_rejected": 0,
@@ -16126,7 +16126,7 @@
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-03-24T17:44:33.416723+00:00",
+    "enriched_at": "2026-03-24T19:58:17.613608+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
