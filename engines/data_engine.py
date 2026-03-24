@@ -153,15 +153,15 @@ class MarketState:
     negrisk_group_id:      Optional[str]
     category:              str
     fee_rate_bps:          int
-    yes_ask:               float = 0.0
-    no_ask:                float = 0.0
+    yes_ask:               float = field(default=None)
+    no_ask:                float = field(default=None)
     fetched_at:            float = field(default_factory=time.time)
 
     def __post_init__(self):
-        # Compute synthetic ask if not explicitly set (default 0.0 means not set)
-        if self.yes_ask == 0.0:
+        # Compute synthetic ask from price when not explicitly provided
+        if self.yes_ask is None:
             self.yes_ask = min(0.999, self.yes_price + 0.01)
-        if self.no_ask == 0.0:
+        if self.no_ask is None:
             self.no_ask  = min(0.999, self.no_price  + 0.01)
 
     def is_stale(self, max_age_seconds: int = 300) -> bool:
