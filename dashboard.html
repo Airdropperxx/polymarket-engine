@@ -107,6 +107,7 @@ background:var(--s2);color:var(--mu);margin-right:4px}
   <div class="tab" onclick="switchTab('strategy')">Strategy Refinement</div>
   <div class="tab" onclick="switchTab('pnl')">📊 P&amp;L Analytics</div>
   <div class="tab" onclick="switchTab('settled')">✅ Settled Trades</div>
+  <div class="tab" onclick="switchTab('scanhistory')">🔍 Scan History</div>
 </div>
 
 <!-- ══ TAB 1: OVERVIEW ══════════════════════════════════════════════════ -->
@@ -951,6 +952,68 @@ function renderPnlTab(D) {
 <div id="settled-empty" class="loading" style="display:none">No trades yet — dry run trades will appear here once the engine executes.</div>
 </div>
 
+
+<!-- ══ TAB: SCAN HISTORY ════════════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-scanhistory">
+
+<!-- Header stats row -->
+<div class="g4" style="margin-bottom:16px" id="sh-kpis">
+  <div class="card"><h2>Total Scans (log entries)</h2><div class="stat purple" id="sh-total">—</div><div class="sub">All opportunities evaluated</div></div>
+  <div class="card"><h2>Executed This Session</h2><div class="stat green" id="sh-exec">—</div><div class="sub">Dry-run trades opened</div></div>
+  <div class="card"><h2>Top Strategy</h2><div class="stat teal" id="sh-topstrat">—</div><div class="sub" id="sh-topstrat-s">By opportunity count</div></div>
+  <div class="card"><h2>Last Scan</h2><div class="stat amber" id="sh-last">—</div><div class="sub" id="sh-last-s">—</div></div>
+</div>
+
+<!-- Filters row -->
+<div style="display:flex;gap:8px;align-items:center;margin-bottom:12px;flex-wrap:wrap">
+  <span style="font-size:12px;color:var(--mu)">Filter:</span>
+  <select id="sh-filter-strat" onchange="renderScanHistory()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 10px;border-radius:4px;font-size:12px">
+    <option value="all">All Strategies</option>
+  </select>
+  <select id="sh-filter-exec" onchange="renderScanHistory()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 10px;border-radius:4px;font-size:12px">
+    <option value="all">All</option>
+    <option value="executed">Executed only</option>
+    <option value="skipped">Skipped only</option>
+  </select>
+  <select id="sh-filter-n" onchange="renderScanHistory()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 10px;border-radius:4px;font-size:12px">
+    <option value="100">Last 100</option>
+    <option value="250">Last 250</option>
+    <option value="500">Last 500</option>
+    <option value="0">All</option>
+  </select>
+  <input id="sh-search" oninput="renderScanHistory()" placeholder="Search market question..." style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 10px;border-radius:4px;font-size:12px;flex:1;min-width:180px">
+</div>
+
+<!-- Main scan log table -->
+<div class="card" style="padding:0;overflow:hidden">
+<div style="overflow-x:auto">
+<table id="sh-table">
+  <thead>
+    <tr>
+      <th style="width:130px">Time (UTC)</th>
+      <th style="width:90px">Strategy</th>
+      <th>Market Question</th>
+      <th style="width:55px">Side</th>
+      <th style="width:60px">Price</th>
+      <th style="width:55px">Edge</th>
+      <th style="width:55px">EV</th>
+      <th style="width:55px">Score</th>
+      <th style="width:65px">Vol $</th>
+      <th style="width:50px">TTL</th>
+      <th style="width:80px">Status</th>
+    </tr>
+  </thead>
+  <tbody id="sh-tbody"></tbody>
+</table>
+</div>
+</div>
+<div id="sh-empty" style="text-align:center;padding:32px;color:var(--mu);font-size:13px;display:none">
+  No scan log entries yet. The scan cycle will populate this on next run.
+</div>
+<div id="sh-count" style="font-size:11px;color:var(--mu);margin-top:8px;text-align:right"></div>
+
+</div>
+
 </body>
 </html>
 +totalInv.toFixed(2)+' invested';
@@ -1349,6 +1412,207 @@ function renderBarChart(id,labels,data,colors,label){
     options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},
     scales:{x:{ticks:{color:'#64748b',font:{size:10}},grid:{color:'#2a2f3d'}},
     y:{ticks:{color:'#64748b',font:{size:10}},grid:{color:'#2a2f3d'}}}}});
+}
+
+
+// ══ SCAN HISTORY TAB ══════════════════════════════════════════════════════════
+let _scanLog = [];
+
+function loadScanHistory(D) {
+  // Load from engine-data embedded scan log
+  const entries = D.scan_log || [];
+  _scanLog = entries;
+
+  // Populate strategy filter
+  const strats = [...new Set(entries.map(e=>e.strategy).filter(s=>s&&!s.startsWith('observer_')))].sort();
+  const sel = _$('sh-filter-strat');
+  if(sel) {
+    sel.innerHTML = '<option value="all">All Strategies</option>' +
+      strats.map(s=>`<option value="${s}">${s}</option>`).join('');
+  }
+
+  // KPIs
+  const total  = entries.length;
+  const exec   = entries.filter(e=>e.executed).length;
+  const lastTs = entries.length ? entries[entries.length-1].ts : null;
+  const stratCounts = {};
+  entries.forEach(e=>{ const s=e.strategy; if(s) stratCounts[s]=(stratCounts[s]||0)+1; });
+  const topStrat = Object.entries(stratCounts).sort((a,b)=>b[1]-a[1])[0];
+
+  const el = id => document.getElementById(id);
+  if(el('sh-total')) el('sh-total').textContent = total.toLocaleString();
+  if(el('sh-exec'))  el('sh-exec').textContent  = exec;
+  if(el('sh-topstrat') && topStrat) {
+    el('sh-topstrat').textContent = topStrat[0].replace('_',' ').replace('s10','S10').replace('s1','S1').replace('s8','S8');
+    if(el('sh-topstrat-s')) el('sh-topstrat-s').textContent = topStrat[1]+' opportunities';
+  }
+  if(el('sh-last') && lastTs) {
+    const ago = Math.round((Date.now() - new Date(lastTs).getTime()) / 60000);
+    el('sh-last').textContent  = ago < 1 ? 'Just now' : ago+'m ago';
+    if(el('sh-last-s')) el('sh-last-s').textContent = lastTs.slice(0,16).replace('T',' ')+'Z';
+  }
+
+  renderScanHistory();
+}
+
+function renderScanHistory() {
+  const stratFilter = (_$('sh-filter-strat')||{}).value || 'all';
+  const execFilter  = (_$('sh-filter-exec') ||{}).value || 'all';
+  const nFilter     = parseInt((_$('sh-filter-n')   ||{}).value || '100');
+  const searchQ     = ((_$('sh-search')     ||{}).value || '').toLowerCase();
+
+  let rows = [..._scanLog].reverse(); // newest first
+
+  // Apply filters
+  if(stratFilter !== 'all') rows = rows.filter(e=>e.strategy===stratFilter);
+  if(execFilter === 'executed') rows = rows.filter(e=>e.executed);
+  if(execFilter === 'skipped')  rows = rows.filter(e=>!e.executed);
+  if(searchQ) rows = rows.filter(e=>(e.question||'').toLowerCase().includes(searchQ));
+
+  // Limit
+  const total = rows.length;
+  if(nFilter > 0) rows = rows.slice(0, nFilter);
+
+  const tbody = _$('sh-tbody');
+  const empty = _$('sh-empty');
+  const countEl = _$('sh-count');
+
+  if(!tbody) return;
+  if(rows.length === 0) {
+    tbody.innerHTML = '';
+    if(empty) empty.style.display = 'block';
+    return;
+  }
+  if(empty) empty.style.display = 'none';
+  if(countEl) countEl.textContent = `Showing ${rows.length} of ${total} entries`;
+
+  const stratColor = s => {
+    if(!s) return 'var(--mu)';
+    if(s.includes('s10')) return 'var(--purple)';
+    if(s.includes('s1'))  return 'var(--teal)';
+    if(s.includes('s8'))  return 'var(--blue)';
+    if(s.includes('s11')) return 'var(--pink)';
+    if(s.includes('s12')) return 'var(--amber)';
+    return 'var(--mu)';
+  };
+
+  tbody.innerHTML = rows.map(e => {
+    const ts     = (e.ts||'').slice(0,16).replace('T',' ');
+    const strat  = e.strategy||'?';
+    const q      = (e.question||'').slice(0,65);
+    const price  = e.buy_price != null ? parseFloat(e.buy_price).toFixed(3) : '—';
+    const edge   = e.edge != null ? parseFloat(e.edge) : null;
+    const ev     = e.ev != null ? parseFloat(e.ev) : null;
+    const score  = e.score != null ? parseFloat(e.score).toFixed(3) : '—';
+    const vol    = e.volume_24h ? Math.round(e.volume_24h) : 0;
+    const ttlH   = e.ttl_sec ? Math.round(e.ttl_sec/3600) : (e.days_to_res ? Math.round(e.days_to_res*24) : null);
+    const exec   = e.executed;
+    const reason = e.reason_skipped || e.skipped_reason || '';
+
+    const edgeColor  = edge == null ? 'var(--mu)' : edge > 0.03 ? 'var(--green)' : edge > 0 ? 'var(--amber)' : 'var(--red)';
+    const evColor    = ev == null ? 'var(--mu)' : ev > 0 ? 'var(--green)' : 'var(--red)';
+    const statusPill = exec
+      ? `<span class="pill" style="background:rgba(34,197,94,.15);color:var(--green)">EXEC</span>`
+      : `<span class="pill" style="background:rgba(100,116,139,.15);color:var(--mu);font-size:10px" title="${reason}">${reason?reason.slice(0,12):'skip'}</span>`;
+
+    return `<tr>
+      <td style="font-size:11px;color:var(--mu);white-space:nowrap">${ts}</td>
+      <td><span style="font-size:11px;font-weight:600;color:${stratColor(strat)}">${strat}</span></td>
+      <td style="max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px" title="${q}">${q}</td>
+      <td style="font-size:11px">${e.action||e.side||'?'}</td>
+      <td style="font-size:12px">${price}</td>
+      <td style="color:${edgeColor};font-size:12px;font-weight:600">${edge!=null?(edge>=0?'+':'')+edge.toFixed(4):'—'}</td>
+      <td style="color:${evColor};font-size:12px">${ev!=null?(ev>=0?'+':'')+ev.toFixed(4):'—'}</td>
+      <td style="font-size:11px;color:var(--mu)">${score}</td>
+      <td style="font-size:11px;color:var(--mu)">${vol>0?'
+
+<!-- ══ TAB: P&L ANALYTICS ══════════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-pnl">
+<div class="g4" id="pnl-kpis">
+  <div class="card"><h2>Total P&amp;L (All Resolved)</h2><div class="stat" id="pk-pnl">—</div><div class="sub" id="pk-pnl-s">—</div></div>
+  <div class="card"><h2>Win Rate</h2><div class="stat" id="pk-wr">—</div><div class="sub" id="pk-wr-s">—</div></div>
+  <div class="card"><h2>Total ROI</h2><div class="stat" id="pk-roi">—</div><div class="sub" id="pk-roi-s">—</div></div>
+  <div class="card"><h2>Open Exposure</h2><div class="stat amber" id="pk-exp">—</div><div class="sub" id="pk-exp-s">—</div></div>
+</div>
+<div class="g4">
+  <div class="card"><h2>Best Trade</h2><div class="stat green" id="pk-best">—</div><div class="sub">Net P&amp;L</div></div>
+  <div class="card"><h2>Worst Trade</h2><div class="stat red" id="pk-worst">—</div><div class="sub">Net P&amp;L</div></div>
+  <div class="card"><h2>Avg P&amp;L / Trade</h2><div class="stat" id="pk-avg">—</div><div class="sub">Resolved only</div></div>
+  <div class="card"><h2>Total Invested</h2><div class="stat blue" id="pk-inv">—</div><div class="sub">USDC staked (resolved)</div></div>
+</div>
+<div class="g2">
+  <div class="card">
+    <div class="sec">Cumulative P&amp;L Over Time</div>
+    <div class="ch-xl"><canvas id="c-cum-pnl"></canvas></div>
+  </div>
+  <div class="card">
+    <div class="sec">Win / Loss Distribution</div>
+    <div class="ch-lg"><canvas id="c-wl-dist"></canvas></div>
+  </div>
+</div>
+<div class="g2">
+  <div class="card">
+    <div class="sec">P&amp;L by Strategy</div>
+    <div id="pnl-by-strategy"></div>
+  </div>
+  <div class="card">
+    <div class="sec">Edge Accuracy Analysis</div>
+    <div id="edge-accuracy-breakdown"></div>
+    <div style="margin-top:16px" class="sec">EV Distribution</div>
+    <div class="ch"><canvas id="c-ev-dist"></canvas></div>
+  </div>
+</div>
+<div class="card" style="margin-bottom:20px">
+  <div class="sec">Loss Pattern Analysis — Why Trades Lost</div>
+  <div id="loss-analysis"></div>
+</div>
+<div class="card">
+  <div class="sec">Win Pattern Analysis — What Made Trades Win</div>
+  <div id="win-analysis"></div>
+</div>
+</div>
+
+<!-- ══ TAB: SETTLED TRADES ══════════════════════════════════════════════════ -->
+<div class="tab-content" id="tab-settled">
+<div class="g3" style="margin-bottom:16px">
+  <div style="display:flex;gap:8px;align-items:center">
+    <label style="font-size:12px;color:var(--mu)">Filter:</label>
+    <select id="filter-status" onchange="renderSettledTable()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 8px;border-radius:4px;font-size:12px">
+      <option value="all">All</option><option value="resolved">Resolved</option><option value="open">Open</option>
+    </select>
+    <select id="filter-strategy" onchange="renderSettledTable()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 8px;border-radius:4px;font-size:12px">
+      <option value="all">All Strategies</option>
+    </select>
+    <select id="filter-outcome" onchange="renderSettledTable()" style="background:var(--s2);border:1px solid var(--bd);color:var(--tx);padding:4px 8px;border-radius:4px;font-size:12px">
+      <option value="all">All Outcomes</option><option value="win">Win</option><option value="loss">Loss</option>
+    </select>
+  </div>
+</div>
+<div class="card" style="padding:0;overflow:hidden">
+  <div id="settled-table-wrap" style="overflow-x:auto">
+    <table id="settled-table">
+      <thead>
+        <tr>
+          <th>Time</th><th>Strategy</th><th>Market</th>
+          <th>Side</th><th>Buy Price</th><th>Shares</th>
+          <th>Cost</th><th>Fee</th><th>Status</th>
+          <th>P&amp;L</th><th>ROI</th><th>Edge</th><th>EV</th><th>Notes</th>
+        </tr>
+      </thead>
+      <tbody id="settled-tbody"></tbody>
+    </table>
+  </div>
+</div>
+<div id="settled-empty" class="loading" style="display:none">No trades yet — dry run trades will appear here once the engine executes.</div>
+</div>
+
+</body>
+</html>
++vol.toLocaleString():'—'}</td>
+      <td style="font-size:11px;color:var(--mu)">${ttlH!=null?ttlH+'h':'—'}</td>
+      <td>${statusPill}</td>
+    </tr>`;
+  }).join('');
 }
 
 loadAll();
