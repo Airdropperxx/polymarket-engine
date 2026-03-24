@@ -185,7 +185,9 @@ class ExecutionEngine:
                 return False
 
             # Try Gamma API first (works for all trades)
-            ms = fetch_market_resolution(market_id)
+            # Pass trade notes so hex NegRisk group IDs can extract leg market IDs
+            trade_notes = position.get("notes", "") or ""
+            ms = fetch_market_resolution(market_id, trade_notes=trade_notes)
 
             if ms is None and not is_dry:
                 # Gamma unavailable — fallback to CLOB for live trades only
