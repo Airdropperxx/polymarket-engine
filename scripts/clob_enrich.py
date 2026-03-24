@@ -31,8 +31,8 @@ CLOB_API   = "https://clob.polymarket.com"
 GAMMA_API  = "https://gamma-api.polymarket.com"
 SCAN_LOG   = Path("data/scan_log.json")
 OUTPUT     = Path("data/enriched_opportunities.json")
-TOP_N      = 15   # enrich top N candidates per run
-MAX_AGE_S  = 600  # only enrich opportunities seen in last 10 minutes
+TOP_N      = 50   # enrich top N candidates — all trades that might execute
+MAX_AGE_S  = 1800 # enrich opportunities from last 30 min (covers multiple scans)
 
 
 def fetch_clob_book(token_id: str, session: requests.Session, timeout: int = 5) -> dict:
