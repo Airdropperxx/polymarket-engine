@@ -15,7 +15,7 @@ permissions:
 jobs:
   enrich:
     runs-on: ubuntu-latest
-    timeout-minutes: 3
+    timeout-minutes: 6
 
     env:
       PYTHONPATH: ${{ github.workspace }}
