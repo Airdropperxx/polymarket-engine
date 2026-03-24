@@ -79,7 +79,10 @@ class S1NegRiskArb(BaseStrategy):
         dominant_cat = max(cat_counts, key=cat_counts.get) if cat_counts else "other"
         avg_vol = round(sum(m.volume_24h for m in valid_legs) / len(valid_legs), 2)
 
-        return Opportunity(
+        import sys as _sys2
+        _sys2.stderr.write(f"DEBUG S1 BUILDING OPP edge={round(edge,5)} min_ttl={min_ttl}\n")
+        try:
+            result_opp = Opportunity(
             strategy="s1_negrisk_arb",
             market_id=group_id,
             market_question="NegRisk: " + valid_legs[0].question[:70],
@@ -100,7 +103,12 @@ class S1NegRiskArb(BaseStrategy):
                           "yes_token_id": m.yes_token_id, "volume_24h": m.volume_24h,
                           "category": m.category} for m in valid_legs],
             },
-        )
+            )
+            _sys2.stderr.write(f"DEBUG S1 OPP BUILT OK: {result_opp.edge}\n")
+            return result_opp
+        except Exception as _e2:
+            _sys2.stderr.write(f"DEBUG S1 OPP BUILD FAILED: {_e2}\n")
+            return None
 
     def score(self, opp: Opportunity, config: dict) -> float:
         meta      = opp.metadata
