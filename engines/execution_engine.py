@@ -34,6 +34,20 @@ MARKET_STALENESS_SEC = 300
 SCAN_LOG_MAX_ENTRIES = 20000
 
 
+
+def _build_trade_notes(opp, edge: float, ev: float, kelly: float) -> str:
+    """Build trade notes string. For S1 NegRisk, includes leg market IDs for resolution."""
+    base = (f"DRY score={opp.score:.4f} edge={edge:.4f} "
+            f"p={opp.win_probability:.4f} ev={ev:.4f} kelly={kelly:.4f}")
+    # For NegRisk arb: store individual leg market IDs so resolution can find them
+    # (the group_id stored as market_id is not queryable via Gamma API)
+    legs = opp.metadata.get("legs", [])
+    if legs:
+        leg_ids = ",".join(str(leg.get("market_id","")) for leg in legs if leg.get("market_id"))
+        if leg_ids:
+            base += f" leg_ids={leg_ids}"
+    return base
+
 class ExecutionEngine:
     def __init__(self,
                  state_engine: StateEngine,
@@ -131,8 +145,7 @@ class ExecutionEngine:
                 fee_usdc        = fee_usdc,
                 status          = "open",
                 entry_time      = datetime.now(timezone.utc).isoformat(),
-                notes           = (f"DRY score={opp.score:.4f} edge={edge:.4f} "
-                                   f"p={opp.win_probability:.4f} ev={ev:.4f} kelly={kelly:.4f}"),
+                notes           = _build_trade_notes(opp, edge, ev, kelly),
             )
             self.state.log_trade(record)
             self.log_opportunity(opp, True, "")
