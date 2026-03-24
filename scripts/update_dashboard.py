@@ -67,13 +67,19 @@ def get_engine_state():
         pnl=float(t.get("pnl_usdc",0) or 0)
         roi=round(pnl/cost*100,2) if (cost>0 and t.get("status")=="resolved") else None
         notes=t.get("notes","") or ""
-        edge=ev=None
+        edge=ev=kelly=win_prob=None
         for part in notes.split():
             if part.startswith("edge="):
                 try: edge=float(part.split("=")[1])
                 except: pass
             if part.startswith("ev="):
                 try: ev=float(part.split("=")[1])
+                except: pass
+            if part.startswith("kelly="):
+                try: kelly=float(part.split("=")[1])
+                except: pass
+            if part.startswith("p="):
+                try: win_prob=float(part.split("=")[1])
                 except: pass
         trades_display.append({
             "time":t.get("entry_time",""),"res_time":t.get("resolution_time",""),
@@ -83,7 +89,9 @@ def get_engine_state():
             "shares":float(t.get("shares",0) or 0),"size":cost,
             "fee":float(t.get("fee_usdc",0) or 0),"status":t.get("status","open"),
             "outcome":esc(t.get("outcome","") or ""),"pnl":pnl,"roi":roi,
-            "edge":edge,"ev":ev,"notes":esc(notes[:100])
+            "edge":edge,"ev":ev,"kelly":kelly,"win_prob":win_prob,
+            "payout":round(float(t.get("shares",0) or 0)*1.0,4) if t.get("outcome")=="win" else 0.0,
+            "notes":esc(notes[:100])
         })
     dry=os.environ.get("DRY_RUN","false").lower()=="true"
     return {
