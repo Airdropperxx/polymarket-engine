@@ -73,7 +73,7 @@ def s1_config():
     return {
         "s1_negrisk_arb": {
             "enabled":              True,
-            "min_edge_after_fees":  0.020,
+            "min_edge_after_fees":  0.005,
             "min_leg_volume_24h":   200.0,
             "min_leg_bid":          0.02,
             "max_group_legs":       10,
