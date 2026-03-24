@@ -34,7 +34,7 @@ class S1NegRiskArb(BaseStrategy):
             opp = self._evaluate_group(
                 group_id, group_markets, min_edge, min_volume,
                 min_bid, max_legs, min_leg_price, max_leg_price)
-            if opp:
+            if opp is not None:
                 opps.append(opp)
 
         log.info("s1_scan_complete", groups_evaluated=len(groups), opportunities_found=len(opps))
