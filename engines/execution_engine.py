@@ -128,7 +128,14 @@ class ExecutionEngine:
             self.log_opportunity(opp, False, "daily_loss_limit")
             return None
 
-        # Gate 2: size
+        # Gate 2: open positions cap
+        open_count = self.state.get_open_position_count()
+        max_open   = int(risk.get("max_open_positions", 500))
+        if open_count >= max_open:
+            self.log_opportunity(opp, False, "max_positions")
+            return None
+
+        # Gate 3: size
         size_usdc = strategy.size(opp, self.state.get_current_balance(), self.config)
         if size_usdc < 1.0:
             self.log_opportunity(opp, False, "size_too_small")
@@ -264,6 +271,9 @@ class ExecutionEngine:
     @retry(stop=stop_after_attempt(3), wait=wait_exponential(min=2, max=10))
     def _submit_order(self, opp, strategy, size_usdc, fee_rate_bps):
         try:
+            import importlib
+            if importlib.util.find_spec("py_clob_client") is None:
+                raise ImportError("py_clob_client not installed — cannot submit live orders")
             from py_clob_client.clob_types import OrderArgs, OrderType
             clob      = self._get_clob_client()
             token_id  = opp.metadata.get("token_id", "")
