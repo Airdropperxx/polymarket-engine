@@ -89,7 +89,8 @@ def calc_kelly_fraction(win_probability: float, buy_price: float,
 
 # ─── Gamma API resolution ─────────────────────────────────────────────────────
 
-def fetch_market_resolution(market_id: str, timeout: int = 8) -> Optional[dict]:
+def fetch_market_resolution(market_id: str, timeout: int = 8,
+                              trade_notes: str = "") -> Optional[dict]:
     """
     Fetch market resolution state from Gamma API.
     Works for ALL trades (dry+live) — decoupled from order engine.
@@ -110,30 +111,68 @@ def fetch_market_resolution(market_id: str, timeout: int = 8) -> Optional[dict]:
         is_hex = str(market_id).startswith("0x") or len(str(market_id)) > 20
 
         if is_hex:
-            # NegRisk group ID or hex conditionId — use query parameter endpoint
-            # /markets?neg_risk_id={id} returns all legs of the group
-            resp = requests.get(
-                f"{GAMMA_API}/markets",
-                params={"neg_risk_id": market_id, "limit": 50},
-                timeout=timeout
-            )
-            if resp.status_code != 200:
-                # Fallback: try conditionId lookup
-                resp2 = requests.get(
-                    f"{GAMMA_API}/markets",
-                    params={"conditionId": market_id, "limit": 1},
-                    timeout=timeout
-                )
-                if resp2.status_code != 200:
-                    log.warning("gamma_fetch_failed", market_id=market_id,
-                                status=resp.status_code)
-                    return None
-                resp = resp2
+            # NegRisk group ID — the hex group_id is not directly queryable on Gamma.
+            # Strategy: extract individual leg market IDs from trade notes (stored at
+            # execution time), then check each leg's resolution status.
+            # Leg IDs are stored as "leg_ids=1234,5678,9012" in the notes field.
 
-            markets = resp.json()
-            if not isinstance(markets, list) or not markets:
-                log.debug("gamma_hex_no_markets", market_id=market_id[:20])
+            # Step 1: try to get leg IDs from notes
+            leg_ids = []
+            if trade_notes and "leg_ids=" in trade_notes:
+                try:
+                    leg_part = trade_notes.split("leg_ids=")[1].split(" ")[0]
+                    leg_ids = [lid.strip() for lid in leg_part.split(",") if lid.strip()]
+                except Exception:
+                    pass
+
+            if not leg_ids:
+                # No leg IDs in notes — this is an old S1 trade from before the fix.
+                # We can't resolve it via the group ID. Log at debug level (not warning)
+                # to avoid spamming logs. These trades will remain open until manually cleared.
+                log.debug("hex_market_id_no_leg_ids",
+                          market_id=market_id[:20],
+                          hint="old S1 trade without leg_ids in notes — cannot resolve via Gamma")
                 return None
+
+            # Step 2: check each leg using its numeric market ID
+            best_yes  = -1.0
+            any_resolved = False
+            end_date  = ""
+            question  = ""
+
+            for leg_id in leg_ids[:20]:  # cap at 20 to avoid excessive API calls
+                try:
+                    leg_resp = requests.get(f"{GAMMA_API}/markets/{leg_id}", timeout=timeout)
+                    if leg_resp.status_code != 200:
+                        continue
+                    leg_data = leg_resp.json()
+                    op_raw = leg_data.get("outcomePrices") or "[]"
+                    try:
+                        prices = _json.loads(op_raw) if isinstance(op_raw, str) else list(op_raw)
+                    except Exception:
+                        prices = []
+                    if prices and len(prices) >= 1:
+                        try:
+                            yp = float(prices[0])
+                            best_yes = max(best_yes, yp)
+                        except Exception:
+                            pass
+                    if leg_data.get("resolved"):
+                        any_resolved = True
+                    if not end_date:
+                        end_date = leg_data.get("endDate", "")
+                    if not question:
+                        question = leg_data.get("question", "")
+                except Exception:
+                    continue
+
+            if best_yes < 0:
+                return None  # couldn't fetch any legs
+
+            markets = []  # not used below
+            log.debug("negrisk_legs_checked",
+                      market_id=market_id[:20], legs=len(leg_ids),
+                      best_yes=best_yes, resolved=any_resolved)
 
             # For a NegRisk group: the group resolves when one leg reaches 0.99
             # Check all constituent markets
@@ -163,16 +202,15 @@ def fetch_market_resolution(market_id: str, timeout: int = 8) -> Optional[dict]:
                 if not question:
                     question = mkt.get("question", "")
 
-            # NegRisk: resolved when highest yes_price reaches 0.99 (winner found)
-            # or when all prices collapse to 0 (all lost except winner)
+            # NegRisk: resolved when a leg reaches 0.99 (winner found)
             return {
-                "resolved":  resolved_flag or best_yes >= 0.99,
-                "closed":    worst_yes <= 0.01 or best_yes >= 0.99,
-                "yes_price": best_yes,   # highest leg price (winner's price)
+                "resolved":  any_resolved or best_yes >= 0.99,
+                "closed":    best_yes >= 0.99,
+                "yes_price": best_yes,
                 "question":  question,
                 "end_date":  end_date,
                 "is_negrisk": True,
-                "leg_count": len(markets),
+                "leg_count": len(leg_ids),
             }
 
         else:
