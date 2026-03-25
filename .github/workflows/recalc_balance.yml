@@ -1,0 +1,43 @@
+name: Recalculate Balance
+
+on:
+  workflow_dispatch:
+    inputs:
+      confirm:
+        description: "Type YES to confirm balance recalculation"
+        required: true
+        default: "NO"
+
+jobs:
+  recalc:
+    runs-on: ubuntu-latest
+    if: github.event.inputs.confirm == 'YES'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run balance recalculation
+        env:
+          DATABASE_PATH: data/trades.db
+          LESSONS_PATH: data/lessons.json
+        run: python scripts/recalc_balance.py
+
+      - name: Update dashboard
+        run: python scripts/update_dashboard.py
+
+      - name: Commit corrected balance
+        run: |
+          git config user.email "action@github.com"
+          git config user.name "GitHub Action"
+          git add data/
+          git add index.html dashboard.html || true
+          git diff --cached --quiet || git commit -m "fix: recalculate balance for pre-BUG1-fix trades [automated]"
+          git push
