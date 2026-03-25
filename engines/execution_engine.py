@@ -73,9 +73,16 @@ class ExecutionEngine:
             buy_price = opp.metadata.get("buy_price", opp.win_probability)
             ev    = calc_expected_value(opp.win_probability, buy_price)
             kelly = calc_kelly_fraction(opp.win_probability, buy_price)
-            buy_price_log = opp.metadata.get("buy_price", opp.win_probability)
-            shares_log    = int(1.0 / buy_price_log) if buy_price_log > 0 else 0
-            actual_cost   = round(shares_log * buy_price_log, 4)
+            is_negrisk_log = opp.action == "BUY_ALL_YES"
+            buy_price_log = (float(opp.metadata.get("total_ask", opp.win_probability))
+                             if is_negrisk_log
+                             else opp.metadata.get("buy_price", opp.win_probability))
+            if is_negrisk_log:
+                shares_log  = 1   # 1 share-set per NegRisk arb
+                actual_cost = round(buy_price_log, 4)
+            else:
+                shares_log  = int(1.0 / buy_price_log) if buy_price_log > 0 else 0
+                actual_cost = round(shares_log * buy_price_log, 4)
             entries.append({
                 "ts":             datetime.now(timezone.utc).isoformat(),
                 "strategy":       opp.strategy,
@@ -145,11 +152,23 @@ class ExecutionEngine:
         # Gate 4: DRY_RUN
         if self.dry_run:
             trade_id  = f"DRY_{uuid.uuid4().hex[:10].upper()}"
-            buy_price = opp.metadata.get("buy_price", opp.win_probability)
-            # Integer shares: floor($1 / price), actual cost = shares * price
-            shares      = calc_shares(size_usdc, buy_price)
-            actual_cost = calc_actual_cost(shares, buy_price)
-            fee_usdc    = calc_fee_usdc(actual_cost, buy_price)
+            # For S1 NegRisk (BUY_ALL_YES): effective price = total_ask across all legs
+            # For S10/S11 (BUY_YES/BUY_NO): price is the single-leg ask
+            is_negrisk  = opp.action == "BUY_ALL_YES"
+            if is_negrisk:
+                buy_price   = float(opp.metadata.get("total_ask", opp.win_probability))
+                num_legs    = int(opp.metadata.get("num_legs", 1))
+                # For NegRisk: 1 "share set" = buy 1 share of each leg
+                # cost = total_ask (sum of all leg ask prices), shares = 1 set
+                shares      = 1
+                actual_cost = round(buy_price, 6)   # cost of 1 share set
+                fee_usdc    = calc_fee_usdc(actual_cost, buy_price / max(num_legs, 1))
+            else:
+                buy_price   = opp.metadata.get("buy_price", opp.win_probability)
+                # Integer shares: floor($1 / price), actual cost = shares * price
+                shares      = calc_shares(size_usdc, buy_price)
+                actual_cost = calc_actual_cost(shares, buy_price)
+                fee_usdc    = calc_fee_usdc(actual_cost, buy_price)
             edge        = calc_edge(opp.win_probability, buy_price)
             ev          = calc_expected_value(opp.win_probability, buy_price)
             kelly       = calc_kelly_fraction(opp.win_probability, buy_price)
@@ -174,7 +193,7 @@ class ExecutionEngine:
             log.info("dry_run_trade",
                      trade_id=trade_id, strategy=opp.strategy,
                      question=opp.market_question[:60], side=record.side,
-                     price=buy_price, shares=shares, cost=size_usdc,
+                     price=buy_price, shares=shares, cost=actual_cost,
                      fee=fee_usdc, edge=edge, ev=ev, kelly=kelly,
                      days_left=round(opp.time_to_resolution_sec / 86400, 1))
             return trade_id
