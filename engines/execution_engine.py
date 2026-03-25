@@ -23,7 +23,7 @@ from strategies.base import BaseStrategy, Opportunity
 from engines.data_engine import DataEngine, MarketState
 from engines.state_engine import StateEngine, TradeRecord
 from engines.trade_analytics import (
-    calc_shares, calc_fee_usdc, calc_pnl,
+    calc_shares, calc_actual_cost, calc_fee_usdc, calc_pnl,
     calc_expected_value, calc_kelly_fraction, calc_edge,
     fetch_market_resolution, is_market_resolved,
 )
@@ -311,8 +311,9 @@ class ExecutionEngine:
             clob      = self._get_clob_client()
             token_id  = opp.metadata.get("token_id", "")
             buy_price = opp.metadata.get("buy_price", opp.win_probability)
-            shares    = calc_shares(size_usdc, buy_price)
-            fee_usdc  = calc_fee_usdc(size_usdc, buy_price)
+            shares      = calc_shares(size_usdc, buy_price)
+            actual_cost_live = calc_actual_cost(shares, buy_price)
+            fee_usdc  = calc_fee_usdc(actual_cost_live, buy_price)
             if not clob or not token_id:
                 log.error("submit_no_clob_or_token"); return None
             order  = clob.create_order(OrderArgs(price=buy_price, size=shares, side="BUY", token_id=token_id))
