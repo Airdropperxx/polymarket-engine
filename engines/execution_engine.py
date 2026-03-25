@@ -73,6 +73,9 @@ class ExecutionEngine:
             buy_price = opp.metadata.get("buy_price", opp.win_probability)
             ev    = calc_expected_value(opp.win_probability, buy_price)
             kelly = calc_kelly_fraction(opp.win_probability, buy_price)
+            buy_price_log = opp.metadata.get("buy_price", opp.win_probability)
+            shares_log    = int(1.0 / buy_price_log) if buy_price_log > 0 else 0
+            actual_cost   = round(shares_log * buy_price_log, 4)
             entries.append({
                 "ts":             datetime.now(timezone.utc).isoformat(),
                 "strategy":       opp.strategy,
@@ -88,6 +91,21 @@ class ExecutionEngine:
                 "ttl_sec":        opp.time_to_resolution_sec,
                 "executed":       executed,
                 "reason_skipped": reason_skipped,
+                # Trade sizing detail
+                "budget_usdc":    1.0,
+                "shares":         shares_log,
+                "actual_cost":    actual_cost,
+                "unused_cash":    round(1.0 - actual_cost, 4),
+                # Strategy metadata for pattern analysis
+                "category":       opp.metadata.get("category", ""),
+                "volume_24h":     opp.metadata.get("volume_24h", 0),
+                "spread":         opp.metadata.get("spread", 0),
+                "fee":            opp.metadata.get("fee", 0),
+                "minutes_left":   opp.metadata.get("minutes_left", round(opp.time_to_resolution_sec/60,1)),
+                "days_left":      round(opp.time_to_resolution_sec/86400, 2),
+                "num_legs":       opp.metadata.get("num_legs", 1),
+                "total_ask":      opp.metadata.get("total_ask", 0),
+                "observer_flagged": opp.metadata.get("observer_flagged", False),
             })
             if len(entries) > SCAN_LOG_MAX_ENTRIES:
                 entries = entries[-SCAN_LOG_MAX_ENTRIES:]
