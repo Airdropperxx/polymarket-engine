@@ -222,6 +222,22 @@ def main():
                      score=opp.score,
                      dry_run=dry_run)
 
+    # ── 4b. Snapshot current prices for all open positions (price history) ────────
+    try:
+        open_positions_for_snapshot = state_engine.get_open_positions()
+        market_by_id = {m.market_id: m for m in markets}
+        snap_ts = time.strftime("%Y-%m-%dT%H:%M:%SZ", time.gmtime())
+        for pos in open_positions_for_snapshot:
+            mid = pos.get("market_id", "")
+            side = pos.get("side", "YES").upper().replace("BUY_", "")
+            m = market_by_id.get(mid)
+            if m:
+                cur_price = m.yes_price if side != "NO" else m.no_price
+                state_engine.snapshot_price(pos["trade_id"], cur_price, snap_ts)
+        log.info("price_snapshots_taken", count=len(open_positions_for_snapshot))
+    except Exception as e:
+        log.warning("price_snapshot_failed", error=str(e))
+
     # ── 5. Check resolutions (Gamma API — works for ALL dry+live trades) ──────
     open_positions = state_engine.get_open_positions()
     resolved_count = 0

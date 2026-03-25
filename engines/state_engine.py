@@ -55,9 +55,16 @@ class StateEngine:
                     cost_usdc REAL, fee_usdc REAL,
                     status TEXT DEFAULT 'open', outcome TEXT,
                     pnl_usdc REAL, entry_time TEXT,
-                    resolution_time TEXT, notes TEXT DEFAULT ''
+                    resolution_time TEXT, notes TEXT DEFAULT '',
+                    price_history TEXT DEFAULT '[]'
                 )
             """))
+            # Migration: add price_history column if not present (idempotent)
+            try:
+                conn.execute(text("ALTER TABLE trades ADD COLUMN price_history TEXT DEFAULT '[]'"))
+            except Exception:
+                pass  # column already exists
+
             conn.execute(text("""
                 CREATE TABLE IF NOT EXISTS balance (
                     id INTEGER PRIMARY KEY CHECK(id=1),
@@ -201,6 +208,22 @@ class StateEngine:
                     "best_pnl":0.0,"worst_pnl":0.0,"by_strategy":{}}
 
     # ── Resolution ─────────────────────────────────────────────────────────────
+
+    def snapshot_price(self, trade_id: str, current_price: float, current_ts: str) -> None:
+        """Append a price snapshot to the price_history JSON array for an open position."""
+        try:
+            with self._engine.begin() as conn:
+                row = conn.execute(text(
+                    "SELECT price_history FROM trades WHERE trade_id=:tid AND status='open'"
+                ), {"tid": trade_id}).fetchone()
+                if not row: return
+                history = json.loads(row[0] or "[]")
+                history.append({"ts": current_ts, "price": round(current_price, 4)})
+                conn.execute(text(
+                    "UPDATE trades SET price_history=:ph WHERE trade_id=:tid"
+                ), {"ph": json.dumps(history), "tid": trade_id})
+        except Exception as e:
+            log.warning("snapshot_price_failed", trade_id=trade_id, error=str(e))
 
     def mark_resolved(self, market_id: str, outcome: str, pnl_usdc: float) -> None:
         try:

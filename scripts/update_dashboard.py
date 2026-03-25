@@ -81,6 +81,16 @@ def get_engine_state():
             if part.startswith("p="):
                 try: win_prob=float(part.split("=")[1])
                 except: pass
+        # Parse price_history JSON
+        try:
+            ph = json.loads(t.get("price_history","[]") or "[]")
+        except:
+            ph = []
+        # Parse open_price_ts from notes
+        open_price_ts = ""
+        for part in notes.split():
+            if part.startswith("open_price_ts="):
+                open_price_ts = part.split("=",1)[1]; break
         trades_display.append({
             "time":t.get("entry_time",""),"res_time":t.get("resolution_time",""),
             "trade_id":t.get("trade_id",""),"strategy":(t.get("strategy","") or ""),
@@ -91,7 +101,9 @@ def get_engine_state():
             "outcome":(t.get("outcome","") or ""),"pnl":pnl,"roi":roi,
             "edge":edge,"ev":ev,"kelly":kelly,"win_prob":win_prob,
             "payout":round(float(t.get("shares",0) or 0)*1.0,4) if t.get("outcome")=="win" else 0.0,
-            "notes":notes[:100]
+            "notes":notes[:100],
+            "open_price_ts":open_price_ts,
+            "price_history":ph,
         })
     dry=os.environ.get("DRY_RUN","false").lower()=="true"
     return {

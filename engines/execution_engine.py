@@ -128,11 +128,14 @@ class ExecutionEngine:
         if self.dry_run:
             trade_id  = f"DRY_{uuid.uuid4().hex[:10].upper()}"
             buy_price = opp.metadata.get("buy_price", opp.win_probability)
-            shares    = calc_shares(size_usdc, buy_price)
-            fee_usdc  = calc_fee_usdc(size_usdc, buy_price)
-            edge      = calc_edge(opp.win_probability, buy_price)
-            ev        = calc_expected_value(opp.win_probability, buy_price)
-            kelly     = calc_kelly_fraction(opp.win_probability, buy_price)
+            # Integer shares: floor($1 / price), actual cost = shares * price
+            shares      = calc_shares(size_usdc, buy_price)
+            actual_cost = calc_actual_cost(shares, buy_price)
+            fee_usdc    = calc_fee_usdc(actual_cost, buy_price)
+            edge        = calc_edge(opp.win_probability, buy_price)
+            ev          = calc_expected_value(opp.win_probability, buy_price)
+            kelly       = calc_kelly_fraction(opp.win_probability, buy_price)
+            open_ts     = datetime.now(timezone.utc).isoformat()
             record = TradeRecord(
                 trade_id        = trade_id,
                 strategy        = opp.strategy,
@@ -141,11 +144,12 @@ class ExecutionEngine:
                 side            = opp.action.replace("BUY_", ""),
                 price           = buy_price,
                 shares          = shares,
-                cost_usdc       = size_usdc,
+                cost_usdc       = actual_cost,
                 fee_usdc        = fee_usdc,
                 status          = "open",
-                entry_time      = datetime.now(timezone.utc).isoformat(),
-                notes           = _build_trade_notes(opp, edge, ev, kelly),
+                entry_time      = open_ts,
+                notes           = _build_trade_notes(opp, edge, ev, kelly)
+                                  + f" open_price_ts={open_ts} open_price={buy_price}",
             )
             self.state.log_trade(record)
             self.log_opportunity(opp, True, "")

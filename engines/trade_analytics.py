@@ -32,13 +32,23 @@ def calc_fee(p: float) -> float:
     return 2.25 * (p * (1.0 - p)) ** 2
 
 
-def calc_shares(cost_usdc: float, buy_price: float) -> float:
-    if buy_price <= 0: return 0.0
-    return round(cost_usdc / buy_price, 4)
+def calc_shares(budget_usdc: float, buy_price: float) -> int:
+    """
+    Integer shares: how many whole shares can we buy with budget_usdc?
+    e.g. budget=$1.00, price=$0.30 -> 3 shares costing $0.90 (remainder unused)
+    """
+    if buy_price <= 0 or buy_price >= 1.0: return 0
+    return int(budget_usdc / buy_price)
 
 
-def calc_fee_usdc(cost_usdc: float, buy_price: float) -> float:
-    return round(calc_fee(buy_price) * cost_usdc, 6)
+def calc_actual_cost(shares: int, buy_price: float) -> float:
+    """Actual USDC spent = shares * buy_price (not the full budget)."""
+    return round(shares * buy_price, 6)
+
+
+def calc_fee_usdc(actual_cost_usdc: float, buy_price: float) -> float:
+    """Fee on the actual amount spent."""
+    return round(calc_fee(buy_price) * actual_cost_usdc, 6)
 
 
 def calc_pnl(side: str, shares: float, cost_usdc: float, fee_usdc: float,
