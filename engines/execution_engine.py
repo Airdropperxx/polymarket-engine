@@ -63,7 +63,8 @@ class ExecutionEngine:
     # ── Opportunity logging ────────────────────────────────────────────────────
 
     def log_opportunity(self, opp: Opportunity, executed: bool,
-                        reason_skipped: str = "") -> None:
+                        reason_skipped: str = "",
+                        trade_id: str = "") -> None:
         try:
             SCAN_LOG.parent.mkdir(parents=True, exist_ok=True)
             entries = []
@@ -102,6 +103,7 @@ class ExecutionEngine:
                 "ttl_sec":        opp.time_to_resolution_sec,
                 "executed":       executed,
                 "reason_skipped": reason_skipped,
+                "trade_id":       trade_id,   # links scan_log entry to DB trade record
                 # Trade sizing detail
                 "budget_usdc":    1.0,
                 "shares":         shares_log,
@@ -203,9 +205,9 @@ class ExecutionEngine:
             # Previously log_opportunity(True) fired unconditionally, causing scan_log
             # executed=true entries for trades that never landed in the DB.
             if row_id:
-                self.log_opportunity(opp, True, "")
+                self.log_opportunity(opp, True, "", trade_id=trade_id)
             else:
-                self.log_opportunity(opp, False, "db_insert_failed")
+                self.log_opportunity(opp, False, "db_insert_failed", trade_id="")
                 log.warning("dry_run_trade_db_failed", trade_id=trade_id,
                             strategy=opp.strategy, market_id=opp.market_id)
                 return None
