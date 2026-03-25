@@ -198,8 +198,17 @@ class ExecutionEngine:
                 notes           = _build_trade_notes(opp, edge, ev, kelly)
                                   + f" open_price_ts={open_ts} open_price={buy_price}",
             )
-            self.state.log_trade(record)
-            self.log_opportunity(opp, True, "")
+            row_id = self.state.log_trade(record)
+            # BUG-6 FIX: only log executed=True if the DB insert succeeded (row_id > 0).
+            # Previously log_opportunity(True) fired unconditionally, causing scan_log
+            # executed=true entries for trades that never landed in the DB.
+            if row_id:
+                self.log_opportunity(opp, True, "")
+            else:
+                self.log_opportunity(opp, False, "db_insert_failed")
+                log.warning("dry_run_trade_db_failed", trade_id=trade_id,
+                            strategy=opp.strategy, market_id=opp.market_id)
+                return None
             log.info("dry_run_trade",
                      trade_id=trade_id, strategy=opp.strategy,
                      question=opp.market_question[:60], side=record.side,
