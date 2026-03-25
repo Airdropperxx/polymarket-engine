@@ -1,0 +1,44 @@
+name: Reset Dry-Run Data
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  reset:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    env:
+      DATABASE_PATH: data/trades.db
+      LESSONS_PATH:  data/lessons.json
+      PYTHONPATH:    ${{ github.workspace }}
+
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 1
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          cache: 'pip'
+          cache-dependency-path: 'requirements-scan.txt'
+
+      - run: pip install -r requirements-scan.txt
+
+      - name: Reset trade database and data files
+        run: python scripts/reset_dry_run_data.py
+
+      - name: Configure git
+        run: |
+          git config user.email "engine@polymarket-bot"
+          git config user.name "Polymarket Engine"
+
+      - name: Commit reset data
+        run: |
+          git add data/
+          git diff --cached --quiet || git commit -m "reset: clear dry-run trades, start fresh with $1 position sizes"
+          git push

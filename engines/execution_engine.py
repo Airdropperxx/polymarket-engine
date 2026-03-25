@@ -118,9 +118,9 @@ class ExecutionEngine:
             self.log_opportunity(opp, False, "max_positions")
             return None
 
-        # Gate 3: position size
-        size_usdc = strategy.size(opp, bankroll, self.config)
-        if size_usdc < 1.0:
+        # Gate 3: position size — always $1 in dry-run for uniform comparison
+        size_usdc = 1.0 if self.dry_run else strategy.size(opp, bankroll, self.config)
+        if not self.dry_run and size_usdc < 1.0:
             self.log_opportunity(opp, False, "size_too_small")
             return None
 

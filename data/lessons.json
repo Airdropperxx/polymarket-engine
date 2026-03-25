@@ -1,24 +1,24 @@
 {
   "version": 1,
-  "last_updated": null,
+  "last_updated": "2026-03-25T09:53:04.241Z",
   "strategy_scores": {
     "s1_negrisk_arb": {
-      "win_rate": null,
-      "avg_roi": null,
-      "trades": 0,
-      "allocation": 0.40
+      "score": 1,
+      "last_delta": 0,
+      "notes": "",
+      "updated_at": "2026-03-25T09:53:04.241Z"
     },
     "s8_logical_arb": {
-      "win_rate": null,
-      "avg_roi": null,
-      "trades": 0,
-      "allocation": 0.20
+      "score": 1,
+      "last_delta": 0,
+      "notes": "",
+      "updated_at": "2026-03-25T09:53:04.241Z"
     },
     "s10_near_resolution": {
-      "win_rate": null,
-      "avg_roi": null,
-      "trades": 0,
-      "allocation": 0.40
+      "score": 1,
+      "last_delta": 0,
+      "notes": "",
+      "updated_at": "2026-03-25T09:53:04.241Z"
     }
   },
   "lessons": [
