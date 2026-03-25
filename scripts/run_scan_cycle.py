@@ -188,14 +188,44 @@ def main():
                  open=open_count, max=max_open)
         # DO NOT exit — resolution check must always run so positions can clear
 
-    # Execute top opportunities
+    # Execute top opportunities — fair per-strategy slot allocation
+    # BUG-5 FIX: naive all_opps[:max_per_cycle] always fills with S1 (highest score).
+    # Solution: divide slots evenly across active strategies, then fill remainder
+    # with highest-score remaining opportunities from any strategy.
     trades_executed = 0
     current_balance = state_engine.get_current_balance()
 
     # Get strategy instances (needed for size() calls)
     strategy_map = {s.name: s for s in signal_engine.strategies} if signal_engine else {}
 
-    for opp in all_opps[:max_per_cycle]:
+    # Build fair execution queue: 1 guaranteed slot per strategy, then top by score
+    active_strategies = list(strategy_map.keys())
+    opps_by_strategy  = {s: [] for s in active_strategies}
+    for opp in all_opps:
+        if opp.strategy in opps_by_strategy:
+            opps_by_strategy[opp.strategy].append(opp)
+
+    # Guaranteed slots: 1 best opp per strategy (if available)
+    guaranteed = []
+    for strat in active_strategies:
+        if opps_by_strategy[strat]:
+            guaranteed.append(opps_by_strategy[strat][0])
+
+    # Remainder slots: fill from remaining opps sorted by score
+    already_queued = set(id(o) for o in guaranteed)
+    remainder = sorted(
+        [o for o in all_opps if id(o) not in already_queued],
+        key=lambda o: o.score, reverse=True
+    )
+
+    # Final execution queue: guaranteed first, then remainder, capped at max_per_cycle
+    exec_queue = (guaranteed + remainder)[:max_per_cycle]
+
+    log.info("execution_queue_built",
+             total_opps=len(all_opps), guaranteed=len(guaranteed),
+             queued=len(exec_queue), max_per_cycle=max_per_cycle)
+
+    for opp in exec_queue:
         if trades_executed >= max_per_cycle:
             break
         if at_position_cap or (open_count + trades_executed >= max_open):
