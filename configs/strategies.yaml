@@ -1,0 +1,40 @@
+s10_near_resolution:
+  enabled: true
+  max_minutes_remaining: 10080
+  min_probability: 0.85
+  max_probability: 0.989
+  min_volume_24h: 100.0
+  max_spread: 0.05
+  min_edge_after_fees: 0.001
+  max_position_pct: 0.40
+  kelly_fraction: 0.25
+  threshold: 0.25
+  observer_boost: true
+  review:
+    track_metrics: [win_rate, avg_roi, avg_days_left, category_breakdown]
+    rebalance_trigger: weekly
+---
+s1_negrisk_arb:
+  enabled: true
+  min_edge_after_fees: 0.005
+  min_leg_volume_24h: 1000.0   # raised from 50: filter zero-volume phantom legs
+  min_leg_bid: 0.01
+  min_leg_price: 0.03
+  max_leg_price: 0.97
+  max_group_legs: 20
+  max_position_pct: 0.40
+  threshold: 0.30
+  review:
+    track_metrics: [win_rate, avg_edge, avg_num_legs]
+    rebalance_trigger: weekly
+---
+s8_logical_arb:
+  enabled: false
+  min_edge_after_fees: 0.030
+  similarity_threshold: 0.75
+  min_volume_24h: 300.0
+  max_llm_calls_per_scan: 5
+  priority_categories: [politics, other, crypto, sports]
+  max_position_pct: 0.15
+  kelly_fraction: 0.25
+  threshold: 0.65
