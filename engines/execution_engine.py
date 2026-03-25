@@ -83,6 +83,10 @@ class ExecutionEngine:
             else:
                 shares_log  = int(1.0 / buy_price_log) if buy_price_log > 0 else 0
                 actual_cost = round(shares_log * buy_price_log, 4)
+            # Volume: use avg_leg_volume for S1, direct volume_24h for others
+            volume_log = (opp.metadata.get("avg_leg_volume", 0)
+                          if is_negrisk_log
+                          else opp.metadata.get("volume_24h", 0))
             entries.append({
                 "ts":             datetime.now(timezone.utc).isoformat(),
                 "strategy":       opp.strategy,
@@ -92,7 +96,7 @@ class ExecutionEngine:
                 "score":          round(opp.score, 4),
                 "edge":           round(opp.edge, 4),
                 "win_probability": round(opp.win_probability, 4),
-                "buy_price":      round(buy_price, 4),
+                "buy_price":      round(buy_price_log, 4),   # effective price
                 "ev":             round(ev, 4),
                 "kelly_frac":     round(kelly, 4),
                 "ttl_sec":        opp.time_to_resolution_sec,
@@ -105,7 +109,7 @@ class ExecutionEngine:
                 "unused_cash":    round(1.0 - actual_cost, 4),
                 # Strategy metadata for pattern analysis
                 "category":       opp.metadata.get("category", ""),
-                "volume_24h":     opp.metadata.get("volume_24h", 0),
+                "volume_24h":     round(volume_log, 2),
                 "spread":         opp.metadata.get("spread", 0),
                 "fee":            opp.metadata.get("fee", 0),
                 "minutes_left":   opp.metadata.get("minutes_left", round(opp.time_to_resolution_sec/60,1)),

@@ -152,6 +152,13 @@ class S1NegRiskArb(BaseStrategy):
                 ],
                 "avg_leg_volume": round(
                     sum(m.volume_24h for m in valid_legs) / len(valid_legs), 2),
+                # Dominant category from legs (most common)
+                "category": max(
+                    set(m.category for m in valid_legs),
+                    key=lambda c: sum(1 for m in valid_legs if m.category == c)
+                ),
+                # Min leg volume (weakest liquidity point in the chain)
+                "min_leg_volume": round(min(m.volume_24h for m in valid_legs), 2),
             },
         )
 
