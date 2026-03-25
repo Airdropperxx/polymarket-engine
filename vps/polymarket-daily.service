@@ -1,0 +1,17 @@
+[Unit]
+Description=Polymarket Engine — Daily AI Review
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=polymarket
+WorkingDirectory=/opt/polymarket-engine
+EnvironmentFile=/opt/polymarket-engine/.env
+Environment=PYTHONPATH=/opt/polymarket-engine
+ExecStart=/opt/polymarket-engine/venv/bin/python scripts/run_daily_review.py
+MemoryMax=400M
+CPUQuota=50%
+TimeoutStartSec=180
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=polymarket-daily

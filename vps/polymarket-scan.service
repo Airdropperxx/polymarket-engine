@@ -1,0 +1,30 @@
+[Unit]
+Description=Polymarket Engine — Market Scanner
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=polymarket
+WorkingDirectory=/opt/polymarket-engine
+EnvironmentFile=/opt/polymarket-engine/.env
+Environment=PYTHONPATH=/opt/polymarket-engine
+Environment=DRY_RUN=true
+Environment=VPS_MODE=true
+ExecStart=/opt/polymarket-engine/venv/bin/python scripts/run_scan_cycle.py
+
+# Resource limits — scanner is light, cap it so it cannot hog the VPS
+MemoryMax=400M
+CPUQuota=50%
+TimeoutStartSec=120
+
+# Logging goes to journald (use: journalctl -fu polymarket-scan)
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=polymarket-scan
+
+# Restart policy: if it crashes, wait 60s and retry once
+# oneshot services do not auto-restart — the timer triggers the next run
+
+[Install]
+WantedBy=multi-user.target

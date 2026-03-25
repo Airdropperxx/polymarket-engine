@@ -1,0 +1,11 @@
+[Unit]
+Description=Polymarket Engine — Resolution Check Timer
+Requires=polymarket-resolve.service
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=1h
+Persistent=true
+
+[Install]
+WantedBy=timers.target

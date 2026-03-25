@@ -1,0 +1,25 @@
+[Unit]
+Description=Polymarket Engine — Resolution Check
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=oneshot
+User=polymarket
+WorkingDirectory=/opt/polymarket-engine
+EnvironmentFile=/opt/polymarket-engine/.env
+Environment=PYTHONPATH=/opt/polymarket-engine
+Environment=DRY_RUN=true
+Environment=VPS_MODE=true
+ExecStart=/opt/polymarket-engine/venv/bin/python scripts/check_resolutions.py
+
+MemoryMax=300M
+CPUQuota=30%
+TimeoutStartSec=120
+
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=polymarket-resolve
+
+[Install]
+WantedBy=multi-user.target
