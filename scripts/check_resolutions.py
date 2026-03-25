@@ -22,6 +22,10 @@ def load_config():
     return cfg
 
 def commit_data():
+    import os as _os
+    if _os.environ.get("VPS_MODE","false").lower()=="true":
+        log.info("data_persist_vps", note="VPS_MODE=true, skipping git commit")
+        return
     try:
         subprocess.run(["git","config","user.email","engine@polymarket-bot"],capture_output=True)
         subprocess.run(["git","config","user.name","Polymarket Engine"],capture_output=True)

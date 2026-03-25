@@ -62,9 +62,18 @@ def load_strategy_configs() -> dict:
 
 
 def commit_data() -> None:
-    """Commit data/ changes back to repo. Required for GHA persistence."""
+    """Persist data changes.
+
+    GHA mode (default): commits data/ to git so the next runner job sees it.
+    VPS mode (VPS_MODE=true): data lives on disk — no git commit needed.
+    """
+    vps_mode = os.environ.get("VPS_MODE", "false").lower() == "true"
+    if vps_mode:
+        log.info("data_persist_vps", note="VPS_MODE=true, data stays on disk — no git commit")
+        return
+
     try:
-        result = subprocess.run(
+        subprocess.run(
             ["git", "config", "user.email", "engine@polymarket-bot"],
             capture_output=True
         )
