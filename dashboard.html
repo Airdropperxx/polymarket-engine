@@ -17682,7 +17682,7 @@ function rLessons(){
   if(sk.length){
     $$('stratScores').innerHTML=sk.map(function(s){
       var v=sc[s],score=parseFloat(typeof v==='object'?v.score||1:v),delta=typeof v==='object'?parseFloat(v.last_delta||0):0;
-      var nt=typeof v==='object'?(v.notes||')':'';
+      var nt=typeof v==='object'?(v.notes||''):'';
       var bar=Math.round(Math.min(score/2*100,100)),col=score>=1.2?'var(--green)':score>=0.8?'var(--cyan)':'var(--red)';
       return'<div class="alloc">'+
         '<div class="alloc-hd"><span class="alloc-n">'+sB(s)+' <span style="font-size:11px">'+s+'</span>'+

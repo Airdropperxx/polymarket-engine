@@ -83,15 +83,15 @@ def get_engine_state():
                 except: pass
         trades_display.append({
             "time":t.get("entry_time",""),"res_time":t.get("resolution_time",""),
-            "trade_id":t.get("trade_id",""),"strategy":esc(t.get("strategy","")),
-            "market":esc(t.get("market_question",""))[:75],"market_id":t.get("market_id",""),
-            "side":esc(t.get("side","")),"price":float(t.get("price",0) or 0),
+            "trade_id":t.get("trade_id",""),"strategy":(t.get("strategy","") or ""),
+            "market":(t.get("market_question","") or "")[:75],"market_id":t.get("market_id",""),
+            "side":(t.get("side","") or ""),"price":float(t.get("price",0) or 0),
             "shares":float(t.get("shares",0) or 0),"size":cost,
             "fee":float(t.get("fee_usdc",0) or 0),"status":t.get("status","open"),
-            "outcome":esc(t.get("outcome","") or ""),"pnl":pnl,"roi":roi,
+            "outcome":(t.get("outcome","") or ""),"pnl":pnl,"roi":roi,
             "edge":edge,"ev":ev,"kelly":kelly,"win_prob":win_prob,
             "payout":round(float(t.get("shares",0) or 0)*1.0,4) if t.get("outcome")=="win" else 0.0,
-            "notes":esc(notes[:100])
+            "notes":notes[:100]
         })
     dry=os.environ.get("DRY_RUN","false").lower()=="true"
     return {
