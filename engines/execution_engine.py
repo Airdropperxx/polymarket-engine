@@ -247,7 +247,8 @@ class ExecutionEngine:
             if ms is None:
                 return False  # Gamma down, dry trade — retry next cycle
 
-            if not is_market_resolved(ms):
+            entry_time_iso = position.get("entry_time", "") or ""
+            if not is_market_resolved(ms, entry_time_iso=entry_time_iso):
                 return False  # Still live
 
             resolved_yes_price = ms.get("yes_price", -1.0)

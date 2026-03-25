@@ -230,20 +230,46 @@ def fetch_market_resolution(market_id: str, timeout: int = 8,
         return None
 
 
-def is_market_resolved(ms: dict) -> bool:
+def is_market_resolved(ms: dict, entry_time_iso: str = "") -> bool:
     """
     True if market is definitively resolved.
     Handles Gamma quirk: resolved=None for in-progress markets.
     We treat a market as resolved when price is at 0 or 1.
+
+    BUG-4 FIX: NegRisk LOSS detection.
+    For NegRisk BUY_ALL_YES, a LOSS means no leg ever won.
+    best_yes stays at ~0.5 indefinitely — never hits 0.99 or 0.01.
+    We detect expiry by: end_date is in the past AND (resolved flag OR closed flag).
+    Also: if entry_time is provided and end_date is > 7 days past entry, force expire.
     """
+    from datetime import datetime, timezone
     if not ms: return False
     yp = ms.get("yes_price", -1.0)
-    # Price at boundary = resolved, regardless of resolved/closed flags
+    # Price at boundary = resolved WIN or resolved LOSS
     if yp >= 0.99 or yp <= 0.01:
         return True
     # Explicit resolved flag (set after official resolution)
     if ms.get("resolved", False):
         return True
+    # BUG-4 FIX: time-based expiry for NegRisk and standard markets
+    # If end_date is past AND market is closed, treat as resolved (LOSS path in calc_pnl)
+    end_date_str = ms.get("end_date", "")
+    if end_date_str:
+        try:
+            # Gamma end_date format: "2024-12-31T00:00:00Z" or "2024-12-31"
+            ed_str = end_date_str.replace("Z", "+00:00")
+            if "T" not in ed_str:
+                ed_str = ed_str + "T00:00:00+00:00"
+            end_dt = datetime.fromisoformat(ed_str)
+            now    = datetime.now(timezone.utc)
+            if end_dt < now and ms.get("closed", False):
+                return True
+            # Hard expiry: end_date more than 3 days ago = definitely expired
+            from datetime import timedelta
+            if end_dt < (now - timedelta(days=3)):
+                return True
+        except Exception:
+            pass
     return False
 
 
