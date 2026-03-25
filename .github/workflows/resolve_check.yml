@@ -2,7 +2,7 @@ name: Resolution Check
 
 on:
   schedule:
-    - cron: '5 * * * *'   # Every hour at :05
+    - cron: '5 */2 * * *' # Every 2 hours at :05 (keeps within free tier)
   workflow_dispatch:
 
 concurrency:
@@ -40,17 +40,12 @@ jobs:
         with:
           python-version: '3.11'
           cache: 'pip'
+          cache-dependency-path: 'requirements-scan.txt'   # same cache key as scan.yml
 
       - name: Install dependencies
         run: |
           pip install --upgrade pip
-          pip install requests==2.31.0
-          pip install pyyaml==6.0.1
-          pip install sqlalchemy==2.0.28
-          pip install structlog==24.1.0
-          pip install tenacity==8.2.3
-          pip install python-dotenv==1.0.1
-          pip install anthropic==0.25.0
+          pip install -r requirements-scan.txt
 
       - name: Configure git
         run: |

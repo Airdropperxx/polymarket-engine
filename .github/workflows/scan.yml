@@ -2,7 +2,7 @@ name: Market Scanner
 
 on:
   schedule:
-    - cron: '*/5 * * * *'   # every 5 min — 288 scans/day
+    - cron: '*/30 * * * *'  # every 30 min — 48 scans/day (fits free tier budget)
   workflow_dispatch:
 
 concurrency:

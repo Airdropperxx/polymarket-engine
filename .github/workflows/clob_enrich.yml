@@ -2,7 +2,7 @@ name: CLOB Enrichment
 
 on:
   schedule:
-    - cron: '2-57/5 * * * *'  # offset by 2min so it runs AFTER scan (which runs at :00/:05/:10...)
+    - cron: '15 * * * *'      # hourly at :15, runs 15min after scan's :00 trigger
   workflow_dispatch:
 
 concurrency:
