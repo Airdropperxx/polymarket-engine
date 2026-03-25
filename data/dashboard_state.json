@@ -1,28 +1,28 @@
 {
-  "timestamp": "2026-03-25T05:22:30.346777+00:00Z",
-  "balance": 10623.708604,
-  "daily_pnl": 0.30241500000000004,
-  "open_positions": 49,
-  "open_exposure": 49.0,
+  "timestamp": "2026-03-25T08:03:47.182879+00:00Z",
+  "balance": 10622.683563999999,
+  "daily_pnl": -0.722625,
+  "open_positions": 48,
+  "open_exposure": 48.0,
   "dry_run": true,
   "total_trades": 200,
-  "resolved_trades": 151,
+  "resolved_trades": 152,
   "wins_all_time": 150,
-  "losses_all_time": 1,
-  "win_rate_pct": 99.3,
-  "total_pnl": 13020.1385,
-  "total_invested": 1976.56,
-  "roi_pct": 658.73,
+  "losses_all_time": 2,
+  "win_rate_pct": 98.7,
+  "total_pnl": 13019.11346,
+  "total_invested": 1977.56,
+  "roi_pct": 658.34,
   "best_trade_pnl": 1250.320082,
   "worst_trade_pnl": -1.02805,
   "by_strategy": {
     "s10_near_resolution": {
-      "trades": 57,
+      "trades": 58,
       "wins": 56,
-      "losses": 1,
-      "win_rate_pct": 98.2,
-      "pnl": 3.973518,
-      "roi_pct": 6.97
+      "losses": 2,
+      "win_rate_pct": 96.6,
+      "pnl": 2.948478,
+      "roi_pct": 5.08
     },
     "s11_inplay_momentum": {
       "trades": 3,
@@ -41,9 +41,9 @@
       "roi_pct": 679.12
     }
   },
-  "resolved_24h": 101,
+  "resolved_24h": 102,
   "wins_24h": 100,
-  "losses_24h": 1,
+  "losses_24h": 2,
   "trades_executed": 195,
   "trades_rejected": 0,
   "total_opportunities": 1881,
@@ -92,7 +92,7 @@
   "recent_trades": [
     {
       "time": "2026-03-24T08:03:45.802131+00:00",
-      "res_time": null,
+      "res_time": "2026-03-25T08:03:43.184045+00:00",
       "trade_id": "DRY_RUN_979D67E3",
       "strategy": "s10_near_resolution",
       "market": "Will the highest temperature in Seoul be 13°C on March 25?",
@@ -102,10 +102,10 @@
       "shares": 1.15,
       "size": 1.0,
       "fee": 0.025039576575000003,
-      "status": "open",
-      "outcome": "",
-      "pnl": 0.0,
-      "roi": null,
+      "status": "resolved",
+      "outcome": "loss",
+      "pnl": -1.02504,
+      "roi": -102.5,
       "edge": 0.1012,
       "ev": null,
       "kelly": null,
@@ -16726,7 +16726,7 @@
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-03-25T05:18:04.930412+00:00",
+    "enriched_at": "2026-03-25T08:01:22.379468+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
