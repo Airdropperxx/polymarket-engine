@@ -147,6 +147,12 @@ class ExecutionEngine:
             self.log_opportunity(opp, False, "max_positions")
             return None
 
+        # Gate 2b: duplicate position guard — never enter same market twice
+        open_market_ids = self.state.get_open_market_ids()
+        if opp.market_id in open_market_ids:
+            self.log_opportunity(opp, False, "already_open")
+            return None
+
         # Gate 3: position size — always $1 in dry-run for uniform comparison
         size_usdc = 1.0 if self.dry_run else strategy.size(opp, bankroll, self.config)
         if not self.dry_run and size_usdc < 1.0:

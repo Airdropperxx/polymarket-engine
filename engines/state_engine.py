@@ -144,6 +144,17 @@ class StateEngine:
                 return int(row[0]) if row else 0
         except: return 0
 
+    def get_open_market_ids(self) -> set:
+        """Return set of market_ids that have status='open'. Used for duplicate guard."""
+        try:
+            with self._engine.connect() as conn:
+                rows = conn.execute(text(
+                    "SELECT market_id FROM trades WHERE status='open'"
+                )).fetchall()
+                return {r[0] for r in rows if r[0]}
+        except:
+            return set()
+
     def get_all_trades(self, limit: int = 0) -> list:
         """All trades newest first. limit=0 means no limit."""
         try:
