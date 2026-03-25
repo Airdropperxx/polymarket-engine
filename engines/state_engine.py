@@ -105,6 +105,21 @@ class StateEngine:
                     "resolution_time":trade.resolution_time,"notes":trade.notes,
                 })
                 row_id = result.lastrowid or 0
+            # BUG-1 FIX: deduct cost+fee from balance when a position opens.
+            # Balance lifecycle:
+            #   OPEN  -> balance -= (cost + fee)
+            #   CLOSE -> balance += pnl_usdc
+            #   where pnl WIN  = shares - cost - fee  (net profit returned)
+            #   where pnl LOSS = -(cost + fee)         (full loss)
+            if row_id and trade.status == "open":
+                try:
+                    current = self.get_current_balance()
+                    spent   = float(trade.cost_usdc or 0) + float(trade.fee_usdc or 0)
+                    self.update_balance(current - spent)
+                    log.info("balance_deducted", trade_id=trade.trade_id,
+                             spent=round(spent, 6), new_balance=round(current - spent, 4))
+                except Exception as be:
+                    log.error("balance_deduct_failed", trade_id=trade.trade_id, error=str(be))
             log.info("trade_logged", trade_id=trade.trade_id, strategy=trade.strategy)
             return row_id
         except Exception as e:
