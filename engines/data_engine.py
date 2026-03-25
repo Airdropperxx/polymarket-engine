@@ -390,7 +390,9 @@ class DataEngine:
             # ── NegRisk ─────────────────────────────────────────────────────
             negrisk_group_id = None
             if raw.get("negRisk"):
-                ng = raw.get("negRiskRequestID") or raw.get("conditionId") or ""
+                # negRiskMarketID is the shared group ID for all legs of the same market
+                # negRiskRequestID and conditionId are per-market and cannot be used for grouping
+                ng = raw.get("negRiskMarketID") or raw.get("negRiskRequestID") or ""
                 negrisk_group_id = str(ng) if ng else None
 
             # ── Category ────────────────────────────────────────────────────

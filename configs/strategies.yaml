@@ -3,7 +3,7 @@ s10_near_resolution:
   max_minutes_remaining: 10080
   min_probability: 0.85
   max_probability: 0.989
-  min_volume_24h: 100.0
+  min_volume_24h: 1000.0   # $1000 min for exit liquidity
   max_spread: 0.05
   min_edge_after_fees: 0.001
   max_position_pct: 0.40

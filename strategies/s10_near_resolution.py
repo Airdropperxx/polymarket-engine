@@ -165,20 +165,21 @@ class S10NearResolution(BaseStrategy):
         # Edge score (0→1): maps [0.005, 0.05] → [0.0, 1.0]
         edge_score = min(1.0, max(0.0, (opp.edge - 0.005) / 0.045))
 
-        # Volume score (0→1): log-scale, 500→0.0, 50000→1.0
+        # Volume score (0→1): log-scale, $1k→0.0, $100k→1.0
+        # We need $1000+ for entry AND exit liquidity
         import math
-        vol = meta.get("volume_24h", 500)
-        vol_score = min(1.0, math.log10(max(vol, 500)) / math.log10(50000))
+        vol = meta.get("volume_24h", 1000)
+        vol_score = min(1.0, math.log10(max(vol, 1000)) / math.log10(100000))
 
         # Category bonus
         cat_bonus = {"crypto": 0.05, "sports": 0.03, "politics": -0.02}.get(
                          meta.get("category", "other"), 0.0)
 
-        # Weighted composite
-        raw = (time_score   * 0.35
-             + prob_score   * 0.30
+        # Weighted composite — volume weighted higher since we need exit liquidity
+        raw = (time_score   * 0.30
+             + prob_score   * 0.25
              + edge_score   * 0.20
-             + vol_score    * 0.15
+             + vol_score    * 0.25
              + cat_bonus)
 
         return round(min(1.0, max(0.0, raw)), 4)
