@@ -116,9 +116,8 @@ def main():
     markets     = data_engine.fetch_all_markets()
     groups      = data_engine.fetch_negrisk_groups()
 
-    log.info("markets_fetched",
-             total=len(markets),
-             negrisk_groups=len(groups))
+    log.info("pipeline_stage", stage="markets_fetched",
+             total=len(markets), negrisk_groups=len(groups))
 
     if not markets:
         log.warning("no_markets_fetched_trying_cache")
@@ -148,9 +147,10 @@ def main():
 
         cycle_result = signal_engine.run_one_cycle(markets, groups)
         all_opps     = cycle_result.get("opportunities", [])
-        log.info("signal_scan_complete",
+        log.info("pipeline_stage", stage="signal_scan_complete",
                  opportunities_found=len(all_opps),
-                 markets_scanned=cycle_result.get("markets_scanned", 0))
+                 markets_scanned=cycle_result.get("markets_scanned", 0),
+                 scan_errors=cycle_result.get("scan_errors", 0))
     else:
         log.info("signal_scan_skipped", reason="no_markets")
         signal_engine = None
@@ -181,7 +181,7 @@ def main():
         sys.exit(0)
 
     open_count = state_engine.get_open_position_count()
-    max_open   = int(risk_cfg.get("max_open_positions", 5))
+    max_open   = int(risk_cfg.get("max_open_positions", 50))  # YAML default is 50
     at_position_cap = (open_count >= max_open)
     if at_position_cap:
         log.info("at_position_cap_will_still_check_resolutions",
@@ -193,6 +193,7 @@ def main():
     # Solution: divide slots evenly across active strategies, then fill remainder
     # with highest-score remaining opportunities from any strategy.
     trades_executed = 0
+    exec_queue      = []   # populated below; pre-init so cycle_summary always has it
     current_balance = state_engine.get_current_balance()
 
     # Get strategy instances (needed for size() calls)
@@ -324,13 +325,31 @@ def main():
     commit_data()
 
     elapsed = round(time.time() - start_time, 1)
-    log.info("scan_cycle_complete",
+    # ── Structured cycle summary — single log line capturing full pipeline state ──
+    # This is the canonical record for each cycle. All relationships visible here.
+    log.info("cycle_summary",
+             # Pipeline stages
+             stage="complete",
              elapsed_sec=elapsed,
-             markets=len(markets),
-             opportunities=len(all_opps),
-             trades=trades_executed,
-             resolved=resolved_count,
-             dry_run=dry_run)
+             dry_run=dry_run,
+             # Data layer
+             markets_fetched=len(markets),
+             negrisk_groups=len(groups),
+             opportunities_found=len(all_opps),
+             # Execution layer
+             trades_attempted=len(exec_queue),
+             trades_executed=trades_executed,
+             at_position_cap=at_position_cap,
+             open_before=open_count,
+             open_after=open_count + trades_executed,
+             # Settlement layer
+             resolved_this_cycle=resolved_count,
+             # Financial layer
+             balance=round(state_engine.get_current_balance(), 4),
+             daily_pnl=round(state_engine.get_daily_pnl(), 4),
+             open_exposure=round(
+                 sum(float(p.get("cost_usdc",0) or 0)
+                     for p in state_engine.get_open_positions()), 4))
 
     sys.exit(0)
 
