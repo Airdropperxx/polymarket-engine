@@ -120,7 +120,10 @@ def get_engine_state():
         "best_trade_pnl":ts["best_pnl"],"worst_trade_pnl":ts["worst_pnl"],
         "by_strategy":ts["by_strategy"],
         "resolved_24h":len(recent),"wins_24h":wins24,"losses_24h":losses24,
-        "trades_executed":scan["trades_executed"],"trades_rejected":scan["trades_rejected"],
+        # BUG-2 FIX: trades_executed = DB total (not scan_log which is cumulative across resets)
+        # scan_log_executed kept for pipeline analytics (how many scan opps were executed)
+        "trades_executed":ts["total"],"trades_rejected":scan["trades_rejected"],
+        "scan_log_executed":scan["trades_executed"],
         "total_opportunities":scan["total_opportunities"],"scan_by_strategy":scan["by_strategy"],
         "recent_trades":trades_display,
         "lessons_count":len(lessons.get("lessons",[])),"strategy_scores":lessons.get("strategy_scores",{}),"lessons_list":lessons.get("lessons",[]),
