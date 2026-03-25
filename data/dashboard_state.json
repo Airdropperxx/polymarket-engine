@@ -1,28 +1,28 @@
 {
-  "timestamp": "2026-03-25T00:01:23.849604+00:00Z",
-  "balance": 10623.406188999998,
-  "daily_pnl": 0.0,
-  "open_positions": 52,
-  "open_exposure": 52.0,
+  "timestamp": "2026-03-25T05:22:30.346777+00:00Z",
+  "balance": 10623.708604,
+  "daily_pnl": 0.30241500000000004,
+  "open_positions": 49,
+  "open_exposure": 49.0,
   "dry_run": true,
   "total_trades": 200,
-  "resolved_trades": 148,
-  "wins_all_time": 147,
+  "resolved_trades": 151,
+  "wins_all_time": 150,
   "losses_all_time": 1,
   "win_rate_pct": 99.3,
-  "total_pnl": 13019.836085,
-  "total_invested": 1973.56,
-  "roi_pct": 659.71,
+  "total_pnl": 13020.1385,
+  "total_invested": 1976.56,
+  "roi_pct": 658.73,
   "best_trade_pnl": 1250.320082,
   "worst_trade_pnl": -1.02805,
   "by_strategy": {
     "s10_near_resolution": {
-      "trades": 54,
-      "wins": 53,
+      "trades": 57,
+      "wins": 56,
       "losses": 1,
-      "win_rate_pct": 98.1,
-      "pnl": 3.671103,
-      "roi_pct": 6.8
+      "win_rate_pct": 98.2,
+      "pnl": 3.973518,
+      "roi_pct": 6.97
     },
     "s11_inplay_momentum": {
       "trades": 3,
@@ -41,8 +41,8 @@
       "roi_pct": 679.12
     }
   },
-  "resolved_24h": 98,
-  "wins_24h": 97,
+  "resolved_24h": 101,
+  "wins_24h": 100,
   "losses_24h": 1,
   "trades_executed": 195,
   "trades_rejected": 0,
@@ -437,7 +437,7 @@
     },
     {
       "time": "2026-03-24T08:03:45.546046+00:00",
-      "res_time": null,
+      "res_time": "2026-03-25T05:22:27.599901+00:00",
       "trade_id": "DRY_RUN_108655B3",
       "strategy": "s10_near_resolution",
       "market": "Will the highest temperature in London be 8°C on March 25?",
@@ -447,15 +447,15 @@
       "shares": 1.16,
       "size": 1.0,
       "fee": 0.0280500696,
-      "status": "open",
-      "outcome": "",
-      "pnl": 0.0,
-      "roi": null,
+      "status": "resolved",
+      "outcome": "win",
+      "pnl": 0.13195,
+      "roi": 13.2,
       "edge": 0.1074,
       "ev": null,
       "kelly": null,
       "win_prob": 0.85,
-      "payout": 0.0,
+      "payout": 1.16,
       "notes": "DRY score=0.616 edge=0.1074 p=0.850"
     },
     {
@@ -1012,7 +1012,7 @@
     },
     {
       "time": "2026-03-24T06:02:07.116407+00:00",
-      "res_time": null,
+      "res_time": "2026-03-25T05:22:28.997384+00:00",
       "trade_id": "DRY_RUN_D5D39F41",
       "strategy": "s10_near_resolution",
       "market": "Saint Joseph&#x27;s Hawks vs. New Mexico Lobos",
@@ -1022,15 +1022,15 @@
       "shares": 1.16,
       "size": 1.0,
       "fee": 0.0280500696,
-      "status": "open",
-      "outcome": "",
-      "pnl": 0.0,
-      "roi": null,
+      "status": "resolved",
+      "outcome": "win",
+      "pnl": 0.13195,
+      "roi": 13.2,
       "edge": 0.1074,
       "ev": null,
       "kelly": null,
       "win_prob": 0.85,
-      "payout": 0.0,
+      "payout": 1.16,
       "notes": "DRY score=0.632 edge=0.1074 p=0.850"
     },
     {
@@ -3151,7 +3151,7 @@
     },
     {
       "time": "2026-03-23T15:13:08.972577+00:00",
-      "res_time": null,
+      "res_time": "2026-03-25T05:22:30.263260+00:00",
       "trade_id": "DRY_5654B4260E",
       "strategy": "s10_near_resolution",
       "market": "Will the price of Ethereum be above $2,000 on March 25?",
@@ -3161,15 +3161,15 @@
       "shares": 1.0417,
       "size": 1.0,
       "fee": 0.003185049600000005,
-      "status": "open",
-      "outcome": "",
-      "pnl": 0.0,
-      "roi": null,
+      "status": "resolved",
+      "outcome": "win",
+      "pnl": 0.038515,
+      "roi": 3.85,
       "edge": 0.0367,
       "ev": null,
       "kelly": null,
       "win_prob": 0.95,
-      "payout": 0.0,
+      "payout": 1.0417,
       "notes": "DRY score=0.811 edge=0.0367 p=0.950"
     },
     {
@@ -16726,7 +16726,7 @@
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-03-24T23:59:48.135242+00:00",
+    "enriched_at": "2026-03-25T05:18:04.930412+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
