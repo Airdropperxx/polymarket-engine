@@ -72,7 +72,7 @@ def commit_data() -> None:
             ["git", "config", "user.name", "Polymarket Engine"],
             capture_output=True
         )
-        subprocess.run(["git", "add", "data/"], capture_output=True)
+        subprocess.run(["git", "add", "data/", "index.html", "dashboard.html"], capture_output=True)
 
         # Only commit if there are actual changes
         status = subprocess.run(

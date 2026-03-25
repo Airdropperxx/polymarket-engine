@@ -25,7 +25,7 @@ def commit_data():
     try:
         subprocess.run(["git","config","user.email","engine@polymarket-bot"],capture_output=True)
         subprocess.run(["git","config","user.name","Polymarket Engine"],capture_output=True)
-        subprocess.run(["git","add","data/"],capture_output=True)
+        subprocess.run(["git","add","data/","index.html","dashboard.html"],capture_output=True)
         s=subprocess.run(["git","diff","--cached","--quiet"],capture_output=True)
         if s.returncode!=0:
             ts=time.strftime("%Y-%m-%dT%H:%M:%SZ",time.gmtime())
