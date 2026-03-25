@@ -1,1 +1,64 @@
-{}
+{
+  "timestamp": "2026-03-25T09:57:43.078732+00:00Z",
+  "balance": 100.0,
+  "daily_pnl": 0.0,
+  "open_positions": 0,
+  "open_exposure": 0,
+  "dry_run": true,
+  "total_trades": 0,
+  "resolved_trades": 0,
+  "wins_all_time": 0,
+  "losses_all_time": 0,
+  "win_rate_pct": 0.0,
+  "total_pnl": 0.0,
+  "total_invested": 0.0,
+  "roi_pct": 0.0,
+  "best_trade_pnl": 0.0,
+  "worst_trade_pnl": 0.0,
+  "by_strategy": {},
+  "resolved_24h": 0,
+  "wins_24h": 0,
+  "losses_24h": 0,
+  "trades_executed": 0,
+  "trades_rejected": 0,
+  "total_opportunities": 0,
+  "scan_by_strategy": {},
+  "recent_trades": [],
+  "lessons_count": 8,
+  "strategy_scores": {
+    "s1_negrisk_arb": {
+      "score": 1,
+      "last_delta": 0,
+      "notes": "",
+      "updated_at": "2026-03-25T09:53:04.241Z"
+    },
+    "s8_logical_arb": {
+      "score": 1,
+      "last_delta": 0,
+      "notes": "",
+      "updated_at": "2026-03-25T09:53:04.241Z"
+    },
+    "s10_near_resolution": {
+      "score": 1,
+      "last_delta": 0,
+      "notes": "",
+      "updated_at": "2026-03-25T09:53:04.241Z"
+    }
+  },
+  "lessons_list": [
+    "Fee formula: 2.25 * 0.25 * (p*(1-p))^2. At p=0.50 fee is 1.41%. At p=0.95 fee is ~0.013%.",
+    "ALWAYS fetch feeRateBps live before every order. Stale rates cause silent rejections.",
+    "S10 max_minutes_remaining is in MINUTES — code converts to seconds internally. Do not compare raw.",
+    "S10 sports requires min_probability=0.93 not 0.90. Late-reversal risk is real in final minutes.",
+    "S1 NegRisk: reject legs with yes_bid < 0.02. Zero bids = stale market = phantom arb signal.",
+    "S8: US politics markets have the most logical violations. Scan politics/* first.",
+    "Market cache is gzip-compressed to data/market_snapshot.json.gz and committed after each run.",
+    "S1 NegRisk arb: use YES ask (taker price) not YES mid for total_ask computation."
+  ],
+  "lessons_updated": "2026-03-25T09:53:04.241Z",
+  "scan_log": [],
+  "enriched_opps": {
+    "enriched_at": "2026-03-25T09:53:04.242Z",
+    "opportunities": []
+  }
+}
