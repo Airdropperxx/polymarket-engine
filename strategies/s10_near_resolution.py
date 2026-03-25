@@ -98,7 +98,7 @@ class S10NearResolution(BaseStrategy):
             # ── Filter 5: edge after fees ──────────────────────────────────
             # calc_fee returns fee as fraction of $1 notional; multiply by buy_price for per-share
             fee  = self.calc_fee(buy_price) * buy_price
-            edge = probability - buy_price - fee
+            edge = 1.0 - buy_price - fee  # payout is always $1, not probability
 
             if edge < min_edge:
                 continue
