@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-03-29T23:04:36.430755+00:00Z",
+  "timestamp": "2026-03-29T23:50:36.145789+00:00Z",
   "balance": 20.986311999999995,
   "daily_pnl": -1.900382,
   "open_positions": 18,
@@ -33,9 +33,9 @@
       "roi_pct": -33.29
     }
   },
-  "resolved_24h": 38,
-  "wins_24h": 20,
-  "losses_24h": 18,
+  "resolved_24h": 35,
+  "wins_24h": 19,
+  "losses_24h": 16,
   "trades_executed": 115,
   "trades_rejected": 105,
   "scan_log_executed": 145,
