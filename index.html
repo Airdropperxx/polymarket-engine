@@ -510,7 +510,7 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
 
 <script id="engine-data" type="application/json">
 {
-  "timestamp": "2026-05-14T17:46:09.534837+00:00Z",
+  "timestamp": "2026-05-14T19:41:12.449766+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -548,14 +548,14 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 3291,
+  "trades_rejected": 3292,
   "scan_log_executed": 172,
-  "total_opportunities": 3463,
+  "total_opportunities": 3464,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 705,
+      "total": 706,
       "executed": 54,
-      "rejected": 651
+      "rejected": 652
     },
     "s1_negrisk_arb": {
       "total": 2758,
@@ -4504,36 +4504,6 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-05-06T16:59:11.642826+00:00",
-      "strategy": "s1_negrisk_arb",
-      "market_id": "0x0d23842478add0f8655c2979da8dcd8c644ce18ccbfcc9b60c8c01a571a87600",
-      "question": "NegRisk group: Will the April 2026 unemployment rate be 4.2%?...",
-      "action": "BUY_ALL_YES",
-      "score": 0.9357,
-      "edge": 0.166,
-      "win_probability": 1.0,
-      "buy_price": 0.752,
-      "ev": 0.0,
-      "kelly_frac": 0.0,
-      "ttl_sec": 111649,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.752,
-      "unused_cash": 0.248,
-      "category": "politics",
-      "volume_24h": 1816.59,
-      "spread": 0,
-      "fee": 0,
-      "minutes_left": 1860.8,
-      "days_left": 1.29,
-      "num_legs": 3,
-      "total_ask": 0.752,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-05-06T16:59:11.723775+00:00",
       "strategy": "s1_negrisk_arb",
@@ -19503,10 +19473,40 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-05-14T19:41:12.335497+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2247138",
+      "question": "Will the highest temperature in Seoul be 23°C on May 15?",
+      "action": "BUY_NO",
+      "score": 0.7018,
+      "edge": 0.003,
+      "win_probability": 0.9945,
+      "buy_price": 0.997,
+      "ev": -0.0025,
+      "kelly_frac": 0.0,
+      "ttl_sec": 58728,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.997,
+      "unused_cash": 0.003,
+      "category": "other",
+      "volume_24h": 7839.91,
+      "spread": 0.005,
+      "fee": 2e-05,
+      "minutes_left": 978,
+      "days_left": 0.68,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-05-14T15:32:57.761172+00:00",
+    "enriched_at": "2026-05-14T18:06:59.860604+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
