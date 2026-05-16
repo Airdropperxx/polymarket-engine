@@ -510,7 +510,7 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
 
 <script id="engine-data" type="application/json">
 {
-  "timestamp": "2026-05-16T13:13:54.411476+00:00Z",
+  "timestamp": "2026-05-16T14:39:13.661088+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -548,14 +548,14 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 3351,
+  "trades_rejected": 3352,
   "scan_log_executed": 172,
-  "total_opportunities": 3523,
+  "total_opportunities": 3524,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 765,
+      "total": 766,
       "executed": 54,
-      "rejected": 711
+      "rejected": 712
     },
     "s1_negrisk_arb": {
       "total": 2758,
@@ -4504,36 +4504,6 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-05-07T17:46:08.053601+00:00",
-      "strategy": "s1_negrisk_arb",
-      "market_id": "0x0d23842478add0f8655c2979da8dcd8c644ce18ccbfcc9b60c8c01a571a87600",
-      "question": "NegRisk group: Will the April 2026 unemployment rate be 4.3%?...",
-      "action": "BUY_ALL_YES",
-      "score": 0.9674,
-      "edge": 0.5101,
-      "win_probability": 1.0,
-      "buy_price": 0.44,
-      "ev": 0.0,
-      "kelly_frac": 0.0,
-      "ttl_sec": 22435,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.44,
-      "unused_cash": 0.56,
-      "category": "politics",
-      "volume_24h": 1765.75,
-      "spread": 0,
-      "fee": 0,
-      "minutes_left": 373.9,
-      "days_left": 0.26,
-      "num_legs": 2,
-      "total_ask": 0.44,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-05-07T17:46:08.117144+00:00",
       "strategy": "s1_negrisk_arb",
@@ -19503,10 +19473,40 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-05-16T14:39:13.551183+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "1193263",
+      "question": "Will Rizo Velovic win Survivor Season 50?",
+      "action": "BUY_NO",
+      "score": 0.568,
+      "edge": 0.0049,
+      "win_probability": 0.992,
+      "buy_price": 0.995,
+      "ev": -0.0031,
+      "kelly_frac": 0.0,
+      "ttl_sec": 292847,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.995,
+      "unused_cash": 0.005,
+      "category": "sports",
+      "volume_24h": 1162.0,
+      "spread": 0.006,
+      "fee": 5.5e-05,
+      "minutes_left": 4880,
+      "days_left": 3.39,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-05-16T12:06:04.827310+00:00",
+    "enriched_at": "2026-05-16T13:59:44.704735+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
