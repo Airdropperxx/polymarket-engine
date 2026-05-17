@@ -510,7 +510,7 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
 
 <script id="engine-data" type="application/json">
 {
-  "timestamp": "2026-05-17T20:12:10.732660+00:00Z",
+  "timestamp": "2026-05-17T21:14:09.363447+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -548,14 +548,14 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 3375,
+  "trades_rejected": 3376,
   "scan_log_executed": 172,
-  "total_opportunities": 3547,
+  "total_opportunities": 3548,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 789,
+      "total": 790,
       "executed": 54,
-      "rejected": 735
+      "rejected": 736
     },
     "s1_negrisk_arb": {
       "total": 2758,
@@ -4504,36 +4504,6 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-05-08T02:38:41.137621+00:00",
-      "strategy": "s1_negrisk_arb",
-      "market_id": "0xb15e7efdb1b8f67624176810473d5c6ff81f40a890ad7870d5f1e8580c6f3700",
-      "question": "NegRisk group: Will 75-99 ships transit the Strait of Hormuz between May 4-...",
-      "action": "BUY_ALL_YES",
-      "score": 0.9581,
-      "edge": 0.9358,
-      "win_probability": 1.0,
-      "buy_price": 0.064,
-      "ev": 0.0,
-      "kelly_frac": 0.0,
-      "ttl_sec": 163280,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.064,
-      "unused_cash": 0.936,
-      "category": "other",
-      "volume_24h": 2102.0,
-      "spread": 0,
-      "fee": 0,
-      "minutes_left": 2721.3,
-      "days_left": 1.89,
-      "num_legs": 2,
-      "total_ask": 0.064,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-05-08T02:38:41.216253+00:00",
       "strategy": "s1_negrisk_arb",
@@ -19503,10 +19473,40 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-05-17T21:14:09.248078+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2269337",
+      "question": "Will the price of Bitcoin be above $70,000 on May 22?",
+      "action": "BUY_YES",
+      "score": 0.5617,
+      "edge": 0.0173,
+      "win_probability": 0.9785,
+      "buy_price": 0.982,
+      "ev": -0.0043,
+      "kelly_frac": 0.0,
+      "ttl_sec": 413151,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.982,
+      "unused_cash": 0.018,
+      "category": "crypto",
+      "volume_24h": 2060.26,
+      "spread": 0.007,
+      "fee": 0.00069,
+      "minutes_left": 6885,
+      "days_left": 4.78,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-05-17T19:37:43.221602+00:00",
+    "enriched_at": "2026-05-17T21:08:43.161641+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
