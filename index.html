@@ -510,7 +510,7 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
 
 <script id="engine-data" type="application/json">
 {
-  "timestamp": "2026-05-17T23:28:24.661580+00:00Z",
+  "timestamp": "2026-05-18T01:28:23.873121+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -548,14 +548,14 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 3381,
+  "trades_rejected": 3382,
   "scan_log_executed": 172,
-  "total_opportunities": 3553,
+  "total_opportunities": 3554,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 795,
+      "total": 796,
       "executed": 54,
-      "rejected": 741
+      "rejected": 742
     },
     "s1_negrisk_arb": {
       "total": 2758,
@@ -4504,36 +4504,6 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-05-08T05:27:21.307211+00:00",
-      "strategy": "s1_negrisk_arb",
-      "market_id": "0xb15e7efdb1b8f67624176810473d5c6ff81f40a890ad7870d5f1e8580c6f3700",
-      "question": "NegRisk group: Will 75-99 ships transit the Strait of Hormuz between May 4-...",
-      "action": "BUY_ALL_YES",
-      "score": 0.959,
-      "edge": 0.9228,
-      "win_probability": 1.0,
-      "buy_price": 0.077,
-      "ev": 0.0,
-      "kelly_frac": 0.0,
-      "ttl_sec": 153161,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.077,
-      "unused_cash": 0.923,
-      "category": "other",
-      "volume_24h": 2132.77,
-      "spread": 0,
-      "fee": 0,
-      "minutes_left": 2552.7,
-      "days_left": 1.77,
-      "num_legs": 2,
-      "total_ask": 0.077,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-05-08T05:27:21.385175+00:00",
       "strategy": "s1_negrisk_arb",
@@ -19503,10 +19473,40 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-05-18T01:28:23.756939+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "837771",
+      "question": "Will Keisha Lance Bottoms win the 2026 Georgia Governor Democratic primary election?",
+      "action": "BUY_YES",
+      "score": 0.7287,
+      "edge": 0.0476,
+      "win_probability": 0.9435,
+      "buy_price": 0.947,
+      "ev": -0.0094,
+      "kelly_frac": 0.0,
+      "ttl_sec": 81097,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.947,
+      "unused_cash": 0.053,
+      "category": "politics",
+      "volume_24h": 6511.05,
+      "spread": 0.007,
+      "fee": 0.005368,
+      "minutes_left": 1351,
+      "days_left": 0.94,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-05-17T23:11:34.370765+00:00",
+    "enriched_at": "2026-05-18T00:11:46.826774+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
