@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-20T14:03:19.309606+00:00Z",
+  "timestamp": "2026-05-20T17:38:49.970221+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,9 +37,9 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 3395,
+  "trades_rejected": 3396,
   "scan_log_executed": 172,
-  "total_opportunities": 3567,
+  "total_opportunities": 3568,
   "scan_by_strategy": {
     "s10_near_resolution": {
       "total": 809,
@@ -47,9 +47,9 @@
       "rejected": 755
     },
     "s1_negrisk_arb": {
-      "total": 2758,
+      "total": 2759,
       "executed": 118,
-      "rejected": 2640
+      "rejected": 2641
     }
   },
   "recent_trades": [
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-05-08T10:22:04.675541+00:00",
-      "strategy": "s1_negrisk_arb",
-      "market_id": "0xd304570fb6a5afb842b3c2a7495fbec827971d63a379dc08a0abbc7d25542d00",
-      "question": "NegRisk group: Will the highest temperature in Hong Kong be 27°C or higher ...",
-      "action": "BUY_ALL_YES",
-      "score": 0.975,
-      "edge": 0.6663,
-      "win_probability": 1.0,
-      "buy_price": 0.31,
-      "ev": 0.0,
-      "kelly_frac": 0.0,
-      "ttl_sec": 92279,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.31,
-      "unused_cash": 0.69,
-      "category": "other",
-      "volume_24h": 7229.38,
-      "spread": 0,
-      "fee": 0,
-      "minutes_left": 1538.0,
-      "days_left": 1.07,
-      "num_legs": 2,
-      "total_ask": 0.31,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-05-08T10:22:04.758825+00:00",
       "strategy": "s1_negrisk_arb",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-05-20T17:38:49.848799+00:00",
+      "strategy": "s1_negrisk_arb",
+      "market_id": "0x91dcf00242445d67455331ee1a86b541d6d49fe46088ba159fa82fa467db1700",
+      "question": "NegRisk group: Will Sunrisers Hyderabad win the 2026 Indian Premier League?...",
+      "action": "BUY_ALL_YES",
+      "score": 0.9034,
+      "edge": 0.5145,
+      "win_probability": 1.0,
+      "buy_price": 0.454,
+      "ev": 0.0,
+      "kelly_frac": 0.0,
+      "ttl_sec": 886871,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.454,
+      "unused_cash": 0.546,
+      "category": "sports",
+      "volume_24h": 2379.51,
+      "spread": 0,
+      "fee": 0,
+      "minutes_left": 14781.2,
+      "days_left": 10.26,
+      "num_legs": 2,
+      "total_ask": 0.454,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-05-20T12:03:44.607694+00:00",
+    "enriched_at": "2026-05-20T15:56:28.602908+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
