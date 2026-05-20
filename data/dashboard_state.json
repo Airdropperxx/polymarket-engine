@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-20T08:00:18.861593+00:00Z",
+  "timestamp": "2026-05-20T11:15:31.204119+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 3394,
+  "trades_rejected": 3395,
   "scan_log_executed": 172,
-  "total_opportunities": 3566,
+  "total_opportunities": 3567,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 808,
+      "total": 809,
       "executed": 54,
-      "rejected": 754
+      "rejected": 755
     },
     "s1_negrisk_arb": {
       "total": 2758,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-05-08T10:22:04.590933+00:00",
-      "strategy": "s1_negrisk_arb",
-      "market_id": "0x75077561b6e0f29f11782827f47a2540f6674ef1099699ee55ca3dbdc6a6cc00",
-      "question": "NegRisk group: Will Fulham FC win on 2026-05-09?...",
-      "action": "BUY_ALL_YES",
-      "score": 0.9754,
-      "edge": 0.1453,
-      "win_probability": 1.0,
-      "buy_price": 0.76,
-      "ev": 0.0,
-      "kelly_frac": 0.0,
-      "ttl_sec": 99477,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.76,
-      "unused_cash": 0.24,
-      "category": "sports",
-      "volume_24h": 8021.95,
-      "spread": 0,
-      "fee": 0,
-      "minutes_left": 1658.0,
-      "days_left": 1.15,
-      "num_legs": 2,
-      "total_ask": 0.76,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-05-08T10:22:04.675541+00:00",
       "strategy": "s1_negrisk_arb",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-05-20T11:15:31.085808+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2261227",
+      "question": "Will the price of Bitcoin be above $74,000 on May 21?",
+      "action": "BUY_YES",
+      "score": 0.7824,
+      "edge": 0.0088,
+      "win_probability": 0.99,
+      "buy_price": 0.991,
+      "ev": -0.0012,
+      "kelly_frac": 0.0,
+      "ttl_sec": 103470,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.991,
+      "unused_cash": 0.009,
+      "category": "crypto",
+      "volume_24h": 68313.46,
+      "spread": 0.002,
+      "fee": 0.000177,
+      "minutes_left": 1724,
+      "days_left": 1.2,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-05-20T04:36:28.502511+00:00",
+    "enriched_at": "2026-05-20T08:35:13.786031+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
