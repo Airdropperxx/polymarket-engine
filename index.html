@@ -510,7 +510,7 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
 
 <script id="engine-data" type="application/json">
 {
-  "timestamp": "2026-05-21T17:11:12.689538+00:00Z",
+  "timestamp": "2026-05-21T19:24:35.601751+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -548,14 +548,14 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 3410,
+  "trades_rejected": 3411,
   "scan_log_executed": 172,
-  "total_opportunities": 3582,
+  "total_opportunities": 3583,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 817,
+      "total": 818,
       "executed": 54,
-      "rejected": 763
+      "rejected": 764
     },
     "s1_negrisk_arb": {
       "total": 2765,
@@ -4504,36 +4504,6 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-05-08T15:07:50.208932+00:00",
-      "strategy": "s1_negrisk_arb",
-      "market_id": "0xa76ad5cf68a7ed8f9c25d3d522da95f118954bd4b0af65f69590d66da30af500",
-      "question": "NegRisk group: Will the highest temperature in Seoul be 18°C on May 9?...",
-      "action": "BUY_ALL_YES",
-      "score": 0.9739,
-      "edge": 0.8584,
-      "win_probability": 1.0,
-      "buy_price": 0.14,
-      "ev": 0.0,
-      "kelly_frac": 0.0,
-      "ttl_sec": 75131,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.14,
-      "unused_cash": 0.86,
-      "category": "other",
-      "volume_24h": 5537.09,
-      "spread": 0,
-      "fee": 0,
-      "minutes_left": 1252.2,
-      "days_left": 0.87,
-      "num_legs": 2,
-      "total_ask": 0.14,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-05-08T15:07:50.295119+00:00",
       "strategy": "s1_negrisk_arb",
@@ -19503,10 +19473,40 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
       "num_legs": 2,
       "total_ask": 0.459,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-05-21T19:24:35.492652+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2312345",
+      "question": "WTI Crude Oil (WTI) Up or Down on May 21?",
+      "action": "BUY_NO",
+      "score": 0.747,
+      "edge": 0.0979,
+      "win_probability": 0.8705,
+      "buy_price": 0.88,
+      "ev": -0.0359,
+      "kelly_frac": 0.0,
+      "ttl_sec": 5725,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.88,
+      "unused_cash": 0.12,
+      "category": "other",
+      "volume_24h": 99432.44,
+      "spread": 0.019,
+      "fee": 0.02208,
+      "minutes_left": 95,
+      "days_left": 0.07,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-05-21T16:49:00.112616+00:00",
+    "enriched_at": "2026-05-21T19:17:26.716366+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
