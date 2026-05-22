@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-22T20:17:54.976145+00:00Z",
+  "timestamp": "2026-05-22T21:41:20.876694+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 3421,
+  "trades_rejected": 3422,
   "scan_log_executed": 172,
-  "total_opportunities": 3593,
+  "total_opportunities": 3594,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 828,
+      "total": 829,
       "executed": 54,
-      "rejected": 774
+      "rejected": 775
     },
     "s1_negrisk_arb": {
       "total": 2765,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-05-08T18:07:13.870748+00:00",
-      "strategy": "s1_negrisk_arb",
-      "market_id": "0xe063393c666b78bfcb02bb14415d337359433c97d0a0b399f132659725922c00",
-      "question": "NegRisk group: Will Sunderland AFC vs. Manchester United FC end in a draw?...",
-      "action": "BUY_ALL_YES",
-      "score": 0.9883,
-      "edge": 0.1475,
-      "win_probability": 1.0,
-      "buy_price": 0.76,
-      "ev": 0.0,
-      "kelly_frac": 0.0,
-      "ttl_sec": 71570,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.76,
-      "unused_cash": 0.24,
-      "category": "other",
-      "volume_24h": 25637.22,
-      "spread": 0,
-      "fee": 0,
-      "minutes_left": 1192.8,
-      "days_left": 0.83,
-      "num_legs": 2,
-      "total_ask": 0.76,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-05-08T18:07:13.958741+00:00",
       "strategy": "s1_negrisk_arb",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-05-22T21:41:20.757422+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2303417",
+      "question": "Will the price of Bitcoin be above $72,000 on May 26?",
+      "action": "BUY_YES",
+      "score": 0.6278,
+      "edge": 0.0308,
+      "win_probability": 0.964,
+      "buy_price": 0.967,
+      "ev": -0.0054,
+      "kelly_frac": 0.0,
+      "ttl_sec": 325120,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.967,
+      "unused_cash": 0.033,
+      "category": "crypto",
+      "volume_24h": 1952.95,
+      "spread": 0.006,
+      "fee": 0.002216,
+      "minutes_left": 5418,
+      "days_left": 3.76,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-05-22T20:11:04.130397+00:00",
+    "enriched_at": "2026-05-22T21:35:50.270985+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
