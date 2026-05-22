@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-22T18:13:34.734776+00:00Z",
+  "timestamp": "2026-05-22T20:17:54.976145+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 3420,
+  "trades_rejected": 3421,
   "scan_log_executed": 172,
-  "total_opportunities": 3592,
+  "total_opportunities": 3593,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 827,
+      "total": 828,
       "executed": 54,
-      "rejected": 773
+      "rejected": 774
     },
     "s1_negrisk_arb": {
       "total": 2765,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-05-08T18:07:13.782646+00:00",
-      "strategy": "s1_negrisk_arb",
-      "market_id": "0x0c8ae44e14756f10c2df85d4d8c1de2acc83a330ee47ef0b10df643430b76b00",
-      "question": "NegRisk group: Will SS Juve Stabia win on 2026-05-08?...",
-      "action": "BUY_ALL_YES",
-      "score": 0.9992,
-      "edge": 0.1375,
-      "win_probability": 1.0,
-      "buy_price": 0.78,
-      "ev": 0.0,
-      "kelly_frac": 0.0,
-      "ttl_sec": 1371,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.78,
-      "unused_cash": 0.22,
-      "category": "sports",
-      "volume_24h": 46222.43,
-      "spread": 0,
-      "fee": 0,
-      "minutes_left": 22.9,
-      "days_left": 0.02,
-      "num_legs": 2,
-      "total_ask": 0.78,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-05-08T18:07:13.870748+00:00",
       "strategy": "s1_negrisk_arb",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-05-22T20:17:54.842058+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2313546",
+      "question": "Will Elon Musk post 220-239 tweets from May 19 to May 26, 2026?",
+      "action": "BUY_NO",
+      "score": 0.6723,
+      "edge": 0.0468,
+      "win_probability": 0.9455,
+      "buy_price": 0.948,
+      "ev": -0.0081,
+      "kelly_frac": 0.0,
+      "ttl_sec": 330126,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.948,
+      "unused_cash": 0.052,
+      "category": "other",
+      "volume_24h": 53502.64,
+      "spread": 0.005,
+      "fee": 0.005183,
+      "minutes_left": 5502,
+      "days_left": 3.82,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-05-22T18:04:51.901279+00:00",
+    "enriched_at": "2026-05-22T20:11:04.130397+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
