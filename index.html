@@ -510,7 +510,7 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
 
 <script id="engine-data" type="application/json">
 {
-  "timestamp": "2026-05-23T07:14:02.628795+00:00Z",
+  "timestamp": "2026-05-23T09:18:58.975691+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -548,14 +548,14 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 3424,
+  "trades_rejected": 3425,
   "scan_log_executed": 172,
-  "total_opportunities": 3596,
+  "total_opportunities": 3597,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 831,
+      "total": 832,
       "executed": 54,
-      "rejected": 777
+      "rejected": 778
     },
     "s1_negrisk_arb": {
       "total": 2765,
@@ -4504,36 +4504,6 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-05-08T19:52:58.745906+00:00",
-      "strategy": "s1_negrisk_arb",
-      "market_id": "0xc65a181ff4446d4d30e56b13934dc8336ecce76db7572790a89c0c357e30cd00",
-      "question": "NegRisk group: Will Elon Musk post 40-64 tweets from May 7 to May 9, 2026?...",
-      "action": "BUY_ALL_YES",
-      "score": 0.9935,
-      "edge": 0.215,
-      "win_probability": 1.0,
-      "buy_price": 0.71,
-      "ev": 0.0,
-      "kelly_frac": 0.0,
-      "ttl_sec": 72422,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.71,
-      "unused_cash": 0.29,
-      "category": "other",
-      "volume_24h": 45368.64,
-      "spread": 0,
-      "fee": 0,
-      "minutes_left": 1207.0,
-      "days_left": 0.84,
-      "num_legs": 2,
-      "total_ask": 0.71,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-05-08T19:52:58.828001+00:00",
       "strategy": "s1_negrisk_arb",
@@ -19503,10 +19473,40 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-05-23T09:18:58.857150+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2335050",
+      "question": "Will Elon Musk post 420-439 tweets from May 22 to May 29, 2026?",
+      "action": "BUY_NO",
+      "score": 0.4792,
+      "edge": 0.0117,
+      "win_probability": 0.9875,
+      "buy_price": 0.988,
+      "ev": -0.0008,
+      "kelly_frac": 0.0,
+      "ttl_sec": 542462,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.988,
+      "unused_cash": 0.012,
+      "category": "other",
+      "volume_24h": 9907.79,
+      "spread": 0.001,
+      "fee": 0.000312,
+      "minutes_left": 9041,
+      "days_left": 6.28,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-05-23T06:46:00.195092+00:00",
+    "enriched_at": "2026-05-23T09:13:51.456030+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
