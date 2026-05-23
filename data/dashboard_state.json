@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-22T22:54:17.559752+00:00Z",
+  "timestamp": "2026-05-23T00:02:41.791634+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 3422,
+  "trades_rejected": 3423,
   "scan_log_executed": 172,
-  "total_opportunities": 3594,
+  "total_opportunities": 3595,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 829,
+      "total": 830,
       "executed": 54,
-      "rejected": 775
+      "rejected": 776
     },
     "s1_negrisk_arb": {
       "total": 2765,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-05-08T18:07:13.958741+00:00",
-      "strategy": "s1_negrisk_arb",
-      "market_id": "0xf0c425bae7890214a9968729150438b2d75c8939188484feb7841255d6e87700",
-      "question": "NegRisk group: Will Hull City AFC win on 2026-05-08?...",
-      "action": "BUY_ALL_YES",
-      "score": 0.9824,
-      "edge": 0.1941,
-      "win_probability": 1.0,
-      "buy_price": 0.72,
-      "ev": 0.0,
-      "kelly_frac": 0.0,
-      "ttl_sec": 3168,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.72,
-      "unused_cash": 0.28,
-      "category": "sports",
-      "volume_24h": 7607.59,
-      "spread": 0,
-      "fee": 0,
-      "minutes_left": 52.8,
-      "days_left": 0.04,
-      "num_legs": 2,
-      "total_ask": 0.72,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-05-08T19:52:58.661884+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-05-23T00:02:41.673891+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2289486",
+      "question": "Will Solana reach $90 May 18-24?",
+      "action": "BUY_NO",
+      "score": 0.6963,
+      "edge": 0.0368,
+      "win_probability": 0.95,
+      "buy_price": 0.96,
+      "ev": -0.0137,
+      "kelly_frac": 0.0,
+      "ttl_sec": 187039,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.96,
+      "unused_cash": 0.04,
+      "category": "crypto",
+      "volume_24h": 2843.74,
+      "spread": 0.02,
+      "fee": 0.003185,
+      "minutes_left": 3117,
+      "days_left": 2.16,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-05-22T21:35:50.270985+00:00",
+    "enriched_at": "2026-05-22T23:19:19.146345+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
