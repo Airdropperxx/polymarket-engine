@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-23T04:14:10.873429+00:00Z",
+  "timestamp": "2026-05-23T07:14:02.628795+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 3423,
+  "trades_rejected": 3424,
   "scan_log_executed": 172,
-  "total_opportunities": 3595,
+  "total_opportunities": 3596,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 830,
+      "total": 831,
       "executed": 54,
-      "rejected": 776
+      "rejected": 777
     },
     "s1_negrisk_arb": {
       "total": 2765,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-05-08T19:52:58.661884+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2141004",
-      "question": "Will the price of Bitcoin be above $82,000 on May 9?",
-      "action": "BUY_NO",
-      "score": 0.8282,
-      "edge": 0.0282,
-      "win_probability": 0.9695,
-      "buy_price": 0.97,
-      "ev": -0.0024,
-      "kelly_frac": 0.0,
-      "ttl_sec": 72423,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.97,
-      "unused_cash": 0.03,
-      "category": "crypto",
-      "volume_24h": 56318.05,
-      "spread": 0.001,
-      "fee": 0.001848,
-      "minutes_left": 1207,
-      "days_left": 0.84,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-05-08T19:52:58.745906+00:00",
       "strategy": "s1_negrisk_arb",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-05-23T07:14:02.506367+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2335054",
+      "question": "Will Elon Musk post 500+ tweets from May 22 to May 29, 2026?",
+      "action": "BUY_NO",
+      "score": 0.4672,
+      "edge": 0.003,
+      "win_probability": 0.996,
+      "buy_price": 0.997,
+      "ev": -0.001,
+      "kelly_frac": 0.0,
+      "ttl_sec": 549958,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.997,
+      "unused_cash": 0.003,
+      "category": "other",
+      "volume_24h": 9992.38,
+      "spread": 0.002,
+      "fee": 2e-05,
+      "minutes_left": 9165,
+      "days_left": 6.37,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-05-23T04:07:43.579838+00:00",
+    "enriched_at": "2026-05-23T06:46:00.195092+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
