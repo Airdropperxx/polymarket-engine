@@ -510,7 +510,7 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
 
 <script id="engine-data" type="application/json">
 {
-  "timestamp": "2026-05-29T21:20:51.532115+00:00Z",
+  "timestamp": "2026-05-29T22:48:50.787229+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -548,14 +548,14 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 3560,
+  "trades_rejected": 3561,
   "scan_log_executed": 172,
-  "total_opportunities": 3732,
+  "total_opportunities": 3733,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 964,
+      "total": 965,
       "executed": 54,
-      "rejected": 910
+      "rejected": 911
     },
     "s1_negrisk_arb": {
       "total": 2768,
@@ -4504,36 +4504,6 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-05-10T11:54:54.469275+00:00",
-      "strategy": "s1_negrisk_arb",
-      "market_id": "0x5d472ec318c9f6a8979eb653926ffd8a7842466617add4807f2b3b6583f27c00",
-      "question": "NegRisk group: Will Elon Musk post <40 tweets from May 9 to May 11, 2026?...",
-      "action": "BUY_ALL_YES",
-      "score": 0.9922,
-      "edge": 0.3003,
-      "win_probability": 1.0,
-      "buy_price": 0.622,
-      "ev": 0.0,
-      "kelly_frac": 0.0,
-      "ttl_sec": 101107,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.622,
-      "unused_cash": 0.378,
-      "category": "other",
-      "volume_24h": 69082.11,
-      "spread": 0,
-      "fee": 0,
-      "minutes_left": 1685.1,
-      "days_left": 1.17,
-      "num_legs": 2,
-      "total_ask": 0.622,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-05-10T11:54:54.558124+00:00",
       "strategy": "s1_negrisk_arb",
@@ -19503,10 +19473,40 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-05-29T22:48:50.664979+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "1975535",
+      "question": "Will Google have the best AI model at the end of May 2026?",
+      "action": "BUY_NO",
+      "score": 0.6804,
+      "edge": 0.002,
+      "win_probability": 0.997,
+      "buy_price": 0.998,
+      "ev": -0.001,
+      "kelly_frac": 0.0,
+      "ttl_sec": 90670,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.998,
+      "unused_cash": 0.002,
+      "category": "other",
+      "volume_24h": 4546.42,
+      "spread": 0.002,
+      "fee": 9e-06,
+      "minutes_left": 1511,
+      "days_left": 1.05,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-05-29T19:40:50.699256+00:00",
+    "enriched_at": "2026-05-29T22:04:35.239833+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
