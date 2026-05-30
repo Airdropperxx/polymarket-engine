@@ -510,7 +510,7 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
 
 <script id="engine-data" type="application/json">
 {
-  "timestamp": "2026-05-29T22:48:50.787229+00:00Z",
+  "timestamp": "2026-05-30T00:06:00.358829+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -548,14 +548,14 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 3561,
+  "trades_rejected": 3562,
   "scan_log_executed": 172,
-  "total_opportunities": 3733,
+  "total_opportunities": 3734,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 965,
+      "total": 966,
       "executed": 54,
-      "rejected": 911
+      "rejected": 912
     },
     "s1_negrisk_arb": {
       "total": 2768,
@@ -4504,36 +4504,6 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-05-10T11:54:54.558124+00:00",
-      "strategy": "s1_negrisk_arb",
-      "market_id": "0x5d4765a37d94efb210bc0b1d3ff054babd23be682a09961754637fc6cc4d0f00",
-      "question": "NegRisk group: Will the highest temperature in Munich be 23°C on May 10?...",
-      "action": "BUY_ALL_YES",
-      "score": 0.9783,
-      "edge": 0.3705,
-      "win_probability": 1.0,
-      "buy_price": 0.56,
-      "ev": 0.0,
-      "kelly_frac": 0.0,
-      "ttl_sec": 309,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.56,
-      "unused_cash": 0.44,
-      "category": "other",
-      "volume_24h": 4809.91,
-      "spread": 0,
-      "fee": 0,
-      "minutes_left": 5.2,
-      "days_left": 0.0,
-      "num_legs": 2,
-      "total_ask": 0.56,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-05-10T11:54:54.646142+00:00",
       "strategy": "s1_negrisk_arb",
@@ -19503,10 +19473,40 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-05-30T00:06:00.233109+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "1975535",
+      "question": "Will Google have the best AI model at the end of May 2026?",
+      "action": "BUY_NO",
+      "score": 0.6871,
+      "edge": 0.002,
+      "win_probability": 0.997,
+      "buy_price": 0.998,
+      "ev": -0.001,
+      "kelly_frac": 0.0,
+      "ttl_sec": 86040,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.998,
+      "unused_cash": 0.002,
+      "category": "other",
+      "volume_24h": 5577.15,
+      "spread": 0.002,
+      "fee": 9e-06,
+      "minutes_left": 1434,
+      "days_left": 1.0,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-05-29T22:04:35.239833+00:00",
+    "enriched_at": "2026-05-29T23:41:32.412776+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
