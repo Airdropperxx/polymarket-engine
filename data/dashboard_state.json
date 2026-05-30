@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-05-30T00:06:00.358829+00:00Z",
+  "timestamp": "2026-05-30T04:32:36.049546+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 3562,
+  "trades_rejected": 3563,
   "scan_log_executed": 172,
-  "total_opportunities": 3734,
+  "total_opportunities": 3735,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 966,
+      "total": 967,
       "executed": 54,
-      "rejected": 912
+      "rejected": 913
     },
     "s1_negrisk_arb": {
       "total": 2768,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-05-10T11:54:54.646142+00:00",
-      "strategy": "s1_negrisk_arb",
-      "market_id": "0xc4288d741ab52a1fd1249050f03e294c3a3155779a771419c9b827ba847e2000",
-      "question": "NegRisk group: Will Elon Musk post 120-139 tweets from May 8 to May 15, 202...",
-      "action": "BUY_ALL_YES",
-      "score": 0.9584,
-      "edge": 0.5908,
-      "win_probability": 1.0,
-      "buy_price": 0.38,
-      "ev": 0.0,
-      "kelly_frac": 0.0,
-      "ttl_sec": 446708,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.38,
-      "unused_cash": 0.62,
-      "category": "other",
-      "volume_24h": 23069.76,
-      "spread": 0,
-      "fee": 0,
-      "minutes_left": 7445.1,
-      "days_left": 5.17,
-      "num_legs": 2,
-      "total_ask": 0.38,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-05-10T13:09:25.242544+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-05-30T04:32:35.920983+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2375956",
+      "question": "Will the highest temperature in Shenzhen be 34°C or higher on May 30?",
+      "action": "BUY_NO",
+      "score": 0.6843,
+      "edge": 0.0879,
+      "win_probability": 0.8735,
+      "buy_price": 0.894,
+      "ev": -0.0431,
+      "kelly_frac": 0.0,
+      "ttl_sec": 26845,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.894,
+      "unused_cash": 0.106,
+      "category": "other",
+      "volume_24h": 8953.17,
+      "spread": 0.041,
+      "fee": 0.018064,
+      "minutes_left": 447,
+      "days_left": 0.31,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-05-29T23:41:32.412776+00:00",
+    "enriched_at": "2026-05-30T04:17:30.216073+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
