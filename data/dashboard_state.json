@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-06-02T05:09:35.591692+00:00Z",
+  "timestamp": "2026-06-02T09:47:27.596256+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 3622,
+  "trades_rejected": 3623,
   "scan_log_executed": 172,
-  "total_opportunities": 3794,
+  "total_opportunities": 3795,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 1022,
+      "total": 1023,
       "executed": 54,
-      "rejected": 968
+      "rejected": 969
     },
     "s1_negrisk_arb": {
       "total": 2772,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-05-11T02:45:25.665391+00:00",
-      "strategy": "s1_negrisk_arb",
-      "market_id": "0x6c65cc66a487da1a1ec74a1ea7055e0aed5517b9d06175072a72f96b238a9b00",
-      "question": "NegRisk group: Will the highest temperature in Hong Kong be 27°C on May 11?...",
-      "action": "BUY_ALL_YES",
-      "score": 0.9544,
-      "edge": 0.1296,
-      "win_probability": 1.0,
-      "buy_price": 0.79,
-      "ev": 0.0,
-      "kelly_frac": 0.0,
-      "ttl_sec": 33276,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.79,
-      "unused_cash": 0.21,
-      "category": "other",
-      "volume_24h": 7137.17,
-      "spread": 0,
-      "fee": 0,
-      "minutes_left": 554.6,
-      "days_left": 0.39,
-      "num_legs": 3,
-      "total_ask": 0.79,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-05-11T06:36:07.676939+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-06-02T09:47:27.472443+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2379366",
+      "question": "Will the price of Ethereum be above $1,800 on June 4?",
+      "action": "BUY_YES",
+      "score": 0.6878,
+      "edge": 0.0145,
+      "win_probability": 0.983,
+      "buy_price": 0.985,
+      "ev": -0.0025,
+      "kelly_frac": 0.0,
+      "ttl_sec": 195153,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.985,
+      "unused_cash": 0.015,
+      "category": "crypto",
+      "volume_24h": 4963.59,
+      "spread": 0.004,
+      "fee": 0.000484,
+      "minutes_left": 3252,
+      "days_left": 2.26,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-06-02T01:36:20.256943+00:00",
+    "enriched_at": "2026-06-02T06:58:00.270274+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
