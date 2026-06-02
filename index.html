@@ -510,7 +510,7 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
 
 <script id="engine-data" type="application/json">
 {
-  "timestamp": "2026-06-02T09:47:27.596256+00:00Z",
+  "timestamp": "2026-06-02T13:57:47.313908+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -548,14 +548,14 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 3623,
+  "trades_rejected": 3624,
   "scan_log_executed": 172,
-  "total_opportunities": 3795,
+  "total_opportunities": 3796,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 1023,
+      "total": 1024,
       "executed": 54,
-      "rejected": 969
+      "rejected": 970
     },
     "s1_negrisk_arb": {
       "total": 2772,
@@ -4504,36 +4504,6 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-05-11T06:36:07.676939+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2223765",
-      "question": "Counter-Strike: Heroic vs Gentle Mates - Map 2 Winner",
-      "action": "BUY_NO",
-      "score": 0.8246,
-      "edge": 0.0192,
-      "win_probability": 0.975,
-      "buy_price": 0.98,
-      "ev": -0.006,
-      "kelly_frac": 0.0,
-      "ttl_sec": 8638,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.98,
-      "unused_cash": 0.02,
-      "category": "sports",
-      "volume_24h": 93201.61,
-      "spread": 0.01,
-      "fee": 0.000847,
-      "minutes_left": 143,
-      "days_left": 0.1,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-05-11T06:36:07.768320+00:00",
       "strategy": "s1_negrisk_arb",
@@ -19503,10 +19473,40 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-06-02T13:57:47.188485+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2379483",
+      "question": "Will the price of Bitcoin be above $64,000 on June 4?",
+      "action": "BUY_YES",
+      "score": 0.707,
+      "edge": 0.0264,
+      "win_probability": 0.961,
+      "buy_price": 0.972,
+      "ev": -0.013,
+      "kelly_frac": 0.0,
+      "ttl_sec": 180133,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.972,
+      "unused_cash": 0.028,
+      "category": "crypto",
+      "volume_24h": 9456.79,
+      "spread": 0.022,
+      "fee": 0.00162,
+      "minutes_left": 3002,
+      "days_left": 2.08,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-06-02T06:58:00.270274+00:00",
+    "enriched_at": "2026-06-02T11:42:16.812136+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
