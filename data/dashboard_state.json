@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-06-04T21:10:34.507164+00:00Z",
+  "timestamp": "2026-06-04T22:52:26.861532+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -18995,54 +18995,8 @@
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-06-04T19:30:46.853552+00:00",
-    "elapsed_sec": 0.56,
-    "count": 1,
-    "tradeable_count": 1,
-    "opportunities": [
-      {
-        "ts": "2026-06-04T19:21:27.991371+00:00",
-        "strategy": "s10_near_resolution",
-        "market_id": "2433373",
-        "question": "Will Bitcoin reach $66,000 on June 4?",
-        "action": "BUY_NO",
-        "score": 0.8083,
-        "edge": 0.0572,
-        "win_probability": 0.9295,
-        "buy_price": 0.935,
-        "ev": -0.0142,
-        "kelly_frac": 0.0,
-        "ttl_sec": 31113,
-        "executed": false,
-        "reason_skipped": "daily_loss_limit",
-        "trade_id": "",
-        "budget_usdc": 1.0,
-        "shares": 1,
-        "actual_cost": 0.935,
-        "unused_cash": 0.065,
-        "category": "crypto",
-        "volume_24h": 9970.75,
-        "spread": 0.011,
-        "fee": 0.00777,
-        "minutes_left": 518,
-        "days_left": 0.36,
-        "num_legs": 1,
-        "total_ask": 0,
-        "observer_flagged": false,
-        "clob_enriched": true,
-        "yes_token_id": "61765978142312352367212995000732163001082103949853284371067171721893226600278",
-        "no_token_id": "788379868806294878617170787519753328763328918504252235843490409078518985614",
-        "clob_yes_bid": 0.067,
-        "clob_yes_ask": 0.096,
-        "clob_no_bid": 0.904,
-        "clob_no_ask": 0.933,
-        "clob_spread": 0.029,
-        "live_edge": 0.8335,
-        "bid_depth_5": 11726.75,
-        "ask_depth_5": 26027.66,
-        "enriched_at": "2026-06-04T19:30:47.291237+00:00",
-        "tradeable": true
-      }
-    ]
+    "enriched_at": "2026-06-04T21:53:29.503911+00:00",
+    "opportunities": [],
+    "message": "No recent strategy opportunities to enrich"
   }
 }
