@@ -510,7 +510,7 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
 
 <script id="engine-data" type="application/json">
 {
-  "timestamp": "2026-06-04T10:46:45.919312+00:00Z",
+  "timestamp": "2026-06-04T13:56:40.616840+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -548,14 +548,14 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 3641,
+  "trades_rejected": 3642,
   "scan_log_executed": 172,
-  "total_opportunities": 3813,
+  "total_opportunities": 3814,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 1041,
+      "total": 1042,
       "executed": 54,
-      "rejected": 987
+      "rejected": 988
     },
     "s1_negrisk_arb": {
       "total": 2772,
@@ -4504,36 +4504,6 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-05-11T16:31:23.365851+00:00",
-      "strategy": "s1_negrisk_arb",
-      "market_id": "0xad74a96a5d07477f1a9b1354e734ab8bbd2e0ca6a1cdb68ad1340b2083e3d800",
-      "question": "NegRisk group: Will the highest temperature in Hong Kong be 27°C on May 12?...",
-      "action": "BUY_ALL_YES",
-      "score": 0.9769,
-      "edge": 0.8736,
-      "win_probability": 1.0,
-      "buy_price": 0.124,
-      "ev": 0.0,
-      "kelly_frac": 0.0,
-      "ttl_sec": 70118,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.124,
-      "unused_cash": 0.876,
-      "category": "other",
-      "volume_24h": 7347.46,
-      "spread": 0,
-      "fee": 0,
-      "minutes_left": 1168.6,
-      "days_left": 0.81,
-      "num_legs": 2,
-      "total_ask": 0.124,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-05-11T16:31:23.457986+00:00",
       "strategy": "s1_negrisk_arb",
@@ -19503,10 +19473,40 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-06-04T13:56:40.489997+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2424601",
+      "question": "Will the highest temperature in Hong Kong be 36°C or higher on June 5?",
+      "action": "BUY_NO",
+      "score": 0.6814,
+      "edge": 0.0688,
+      "win_probability": 0.91,
+      "buy_price": 0.92,
+      "ev": -0.0231,
+      "kelly_frac": 0.0,
+      "ttl_sec": 79400,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.92,
+      "unused_cash": 0.08,
+      "category": "other",
+      "volume_24h": 8220.64,
+      "spread": 0.02,
+      "fee": 0.011213,
+      "minutes_left": 1323,
+      "days_left": 0.92,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-06-04T09:00:16.303626+00:00",
+    "enriched_at": "2026-06-04T12:18:23.121714+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
