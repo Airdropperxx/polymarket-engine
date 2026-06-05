@@ -510,7 +510,7 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
 
 <script id="engine-data" type="application/json">
 {
-  "timestamp": "2026-06-04T22:52:26.861532+00:00Z",
+  "timestamp": "2026-06-05T00:02:32.693244+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -548,14 +548,14 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 3645,
+  "trades_rejected": 3646,
   "scan_log_executed": 172,
-  "total_opportunities": 3817,
+  "total_opportunities": 3818,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 1045,
+      "total": 1046,
       "executed": 54,
-      "rejected": 991
+      "rejected": 992
     },
     "s1_negrisk_arb": {
       "total": 2772,
@@ -4504,36 +4504,6 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-05-11T18:19:11.899681+00:00",
-      "strategy": "s1_negrisk_arb",
-      "market_id": "0x47ebc1a6d40699cb82931605f8946f2e508e9259fc76bdd28f812042e548f500",
-      "question": "NegRisk group: Will the highest temperature in Seoul be 17°C on May 12?...",
-      "action": "BUY_ALL_YES",
-      "score": 0.975,
-      "edge": 0.7514,
-      "win_probability": 1.0,
-      "buy_price": 0.234,
-      "ev": 0.0,
-      "kelly_frac": 0.0,
-      "ttl_sec": 63650,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.234,
-      "unused_cash": 0.766,
-      "category": "other",
-      "volume_24h": 5668.25,
-      "spread": 0,
-      "fee": 0,
-      "minutes_left": 1060.8,
-      "days_left": 0.74,
-      "num_legs": 2,
-      "total_ask": 0.234,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-05-11T18:19:11.994312+00:00",
       "strategy": "s1_negrisk_arb",
@@ -19503,10 +19473,40 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-06-05T00:02:32.569038+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2424447",
+      "question": "Will the highest temperature in Seoul be 27°C or higher on June 5?",
+      "action": "BUY_NO",
+      "score": 0.709,
+      "edge": 0.0201,
+      "win_probability": 0.968,
+      "buy_price": 0.979,
+      "ev": -0.0122,
+      "kelly_frac": 0.0,
+      "ttl_sec": 43048,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.979,
+      "unused_cash": 0.021,
+      "category": "other",
+      "volume_24h": 7359.25,
+      "spread": 0.022,
+      "fee": 0.000931,
+      "minutes_left": 717,
+      "days_left": 0.5,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-06-04T21:53:29.503911+00:00",
+    "enriched_at": "2026-06-04T23:37:13.040148+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
