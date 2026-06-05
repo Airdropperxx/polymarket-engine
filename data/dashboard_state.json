@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-06-05T00:02:32.693244+00:00Z",
+  "timestamp": "2026-06-05T04:55:11.024663+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 3646,
+  "trades_rejected": 3647,
   "scan_log_executed": 172,
-  "total_opportunities": 3818,
+  "total_opportunities": 3819,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 1046,
+      "total": 1047,
       "executed": 54,
-      "rejected": 992
+      "rejected": 993
     },
     "s1_negrisk_arb": {
       "total": 2772,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-05-11T18:19:11.994312+00:00",
-      "strategy": "s1_negrisk_arb",
-      "market_id": "0x5daf7f9606855c58206e568424dc434fea9cc6d43a78a13d6c4e169a8923dc00",
-      "question": "NegRisk group: Will the price of Bitcoin be between $82,000 and $84,000 on ...",
-      "action": "BUY_ALL_YES",
-      "score": 0.9694,
-      "edge": 0.4157,
-      "win_probability": 1.0,
-      "buy_price": 0.52,
-      "ev": 0.0,
-      "kelly_frac": 0.0,
-      "ttl_sec": 78049,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.52,
-      "unused_cash": 0.48,
-      "category": "crypto",
-      "volume_24h": 3486.85,
-      "spread": 0,
-      "fee": 0,
-      "minutes_left": 1300.8,
-      "days_left": 0.9,
-      "num_legs": 2,
-      "total_ask": 0.52,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-05-11T18:19:12.086742+00:00",
       "strategy": "s1_negrisk_arb",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-06-05T04:55:10.897042+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2386887",
+      "question": "Will the price of XRP be above $1.10 on June 5?",
+      "action": "BUY_YES",
+      "score": 0.7731,
+      "edge": 0.0665,
+      "win_probability": 0.9065,
+      "buy_price": 0.923,
+      "ev": -0.0292,
+      "kelly_frac": 0.0,
+      "ttl_sec": 39890,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.923,
+      "unused_cash": 0.077,
+      "category": "crypto",
+      "volume_24h": 34154.37,
+      "spread": 0.033,
+      "fee": 0.01049,
+      "minutes_left": 664,
+      "days_left": 0.46,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-06-04T23:37:13.040148+00:00",
+    "enriched_at": "2026-06-05T04:46:49.910017+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
