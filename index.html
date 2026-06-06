@@ -510,7 +510,7 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
 
 <script id="engine-data" type="application/json">
 {
-  "timestamp": "2026-06-06T16:05:34.267454+00:00Z",
+  "timestamp": "2026-06-06T17:40:38.487966+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -548,9 +548,9 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 3673,
+  "trades_rejected": 3674,
   "scan_log_executed": 172,
-  "total_opportunities": 3845,
+  "total_opportunities": 3846,
   "scan_by_strategy": {
     "s10_near_resolution": {
       "total": 1072,
@@ -558,9 +558,9 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
       "rejected": 1018
     },
     "s1_negrisk_arb": {
-      "total": 2773,
+      "total": 2774,
       "executed": 118,
-      "rejected": 2655
+      "rejected": 2656
     }
   },
   "recent_trades": [
@@ -4504,36 +4504,6 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-05-12T06:11:56.560002+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2166371",
-      "question": "Will the price of Ethereum be above $2,200 on May 12?",
-      "action": "BUY_YES",
-      "score": 0.8063,
-      "edge": 0.0069,
-      "win_probability": 0.9925,
-      "buy_price": 0.993,
-      "ev": -0.0006,
-      "kelly_frac": 0.0,
-      "ttl_sec": 35284,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.993,
-      "unused_cash": 0.007,
-      "category": "crypto",
-      "volume_24h": 48198.78,
-      "spread": 0.001,
-      "fee": 0.000108,
-      "minutes_left": 588,
-      "days_left": 0.41,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-05-12T06:11:56.632917+00:00",
       "strategy": "s1_negrisk_arb",
@@ -19503,12 +19473,77 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
       "num_legs": 2,
       "total_ask": 0.74,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-06-06T17:40:38.389644+00:00",
+      "strategy": "s1_negrisk_arb",
+      "market_id": "0x84de5ae9e6c665a98b660809537dd4660a9ca80ac78271cc69eb61eec7fc3f00",
+      "question": "NegRisk group: Will Ghana win on 2026-06-17?...",
+      "action": "BUY_ALL_YES",
+      "score": 0.9028,
+      "edge": 0.1708,
+      "win_probability": 1.0,
+      "buy_price": 0.74,
+      "ev": 0.0,
+      "kelly_frac": 0.0,
+      "ttl_sec": 969562,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.74,
+      "unused_cash": 0.26,
+      "category": "sports",
+      "volume_24h": 4427.58,
+      "spread": 0,
+      "fee": 0,
+      "minutes_left": 16159.4,
+      "days_left": 11.22,
+      "num_legs": 2,
+      "total_ask": 0.74,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-06-06T14:53:12.311306+00:00",
-    "opportunities": [],
-    "message": "No recent strategy opportunities to enrich"
+    "enriched_at": "2026-06-06T16:19:30.383935+00:00",
+    "elapsed_sec": 0.15,
+    "count": 1,
+    "tradeable_count": 0,
+    "opportunities": [
+      {
+        "ts": "2026-06-06T16:05:34.161040+00:00",
+        "strategy": "s1_negrisk_arb",
+        "market_id": "0x84de5ae9e6c665a98b660809537dd4660a9ca80ac78271cc69eb61eec7fc3f00",
+        "question": "NegRisk group: Will Ghana win on 2026-06-17?...",
+        "action": "BUY_ALL_YES",
+        "score": 0.9023,
+        "edge": 0.1708,
+        "win_probability": 1.0,
+        "buy_price": 0.74,
+        "ev": 0.0,
+        "kelly_frac": 0.0,
+        "ttl_sec": 975266,
+        "executed": false,
+        "reason_skipped": "daily_loss_limit",
+        "trade_id": "",
+        "budget_usdc": 1.0,
+        "shares": 1,
+        "actual_cost": 0.74,
+        "unused_cash": 0.26,
+        "category": "sports",
+        "volume_24h": 4430.51,
+        "spread": 0,
+        "fee": 0,
+        "minutes_left": 16254.4,
+        "days_left": 11.29,
+        "num_legs": 2,
+        "total_ask": 0.74,
+        "observer_flagged": false,
+        "clob_enriched": false,
+        "error": "gamma_fetch_failed"
+      }
+    ]
   }
 }
 </script>
