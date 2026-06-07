@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-06-07T15:21:15.539543+00:00Z",
+  "timestamp": "2026-06-07T16:50:33.918201+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 3689,
+  "trades_rejected": 3690,
   "scan_log_executed": 172,
-  "total_opportunities": 3861,
+  "total_opportunities": 3862,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 1086,
+      "total": 1087,
       "executed": 54,
-      "rejected": 1032
+      "rejected": 1033
     },
     "s1_negrisk_arb": {
       "total": 2775,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-05-12T13:21:03.864500+00:00",
-      "strategy": "s1_negrisk_arb",
-      "market_id": "0x47c763bf86dece54e1baad7bd101488c46da364287435e8d7eb1ecdfa3822d00",
-      "question": "NegRisk group: Will Elon Musk post 60-79 tweets from May 12 to May 19, 2026...",
-      "action": "BUY_ALL_YES",
-      "score": 0.95,
-      "edge": 0.7683,
-      "win_probability": 1.0,
-      "buy_price": 0.224,
-      "ev": 0.0,
-      "kelly_frac": 0.0,
-      "ttl_sec": 614338,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.224,
-      "unused_cash": 0.776,
-      "category": "other",
-      "volume_24h": 37858.04,
-      "spread": 0,
-      "fee": 0,
-      "minutes_left": 10239.0,
-      "days_left": 7.11,
-      "num_legs": 2,
-      "total_ask": 0.224,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-05-12T13:21:03.959978+00:00",
       "strategy": "s1_negrisk_arb",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-06-07T16:50:33.820460+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "906947",
+      "question": "Will Nancy Mace win the 2026 South Carolina Governor Republican primary election?",
+      "action": "BUY_NO",
+      "score": 0.6623,
+      "edge": 0.0228,
+      "win_probability": 0.9715,
+      "buy_price": 0.976,
+      "ev": -0.0058,
+      "kelly_frac": 0.0,
+      "ttl_sec": 112167,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.976,
+      "unused_cash": 0.024,
+      "category": "politics",
+      "volume_24h": 3995.49,
+      "spread": 0.009,
+      "fee": 0.001205,
+      "minutes_left": 1869,
+      "days_left": 1.3,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-06-07T14:20:13.945825+00:00",
+    "enriched_at": "2026-06-07T16:44:21.799351+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
