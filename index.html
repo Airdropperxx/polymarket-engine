@@ -510,7 +510,7 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
 
 <script id="engine-data" type="application/json">
 {
-  "timestamp": "2026-06-08T17:49:27.003400+00:00Z",
+  "timestamp": "2026-06-08T20:08:52.467775+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -548,14 +548,14 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 3699,
+  "trades_rejected": 3700,
   "scan_log_executed": 172,
-  "total_opportunities": 3871,
+  "total_opportunities": 3872,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 1096,
+      "total": 1097,
       "executed": 54,
-      "rejected": 1042
+      "rejected": 1043
     },
     "s1_negrisk_arb": {
       "total": 2775,
@@ -4504,36 +4504,6 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-05-12T18:05:39.784041+00:00",
-      "strategy": "s1_negrisk_arb",
-      "market_id": "0xb71408d8086c6fe34c2494b05e880323c029f5268062400478dbbf4486925f00",
-      "question": "NegRisk group: Will the highest temperature in Seoul be 18°C on May 13?...",
-      "action": "BUY_ALL_YES",
-      "score": 0.9495,
-      "edge": 0.4342,
-      "win_probability": 1.0,
-      "buy_price": 0.527,
-      "ev": 0.0,
-      "kelly_frac": 0.0,
-      "ttl_sec": 64461,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.527,
-      "unused_cash": 0.473,
-      "category": "other",
-      "volume_24h": 5418.08,
-      "spread": 0,
-      "fee": 0,
-      "minutes_left": 1074.3,
-      "days_left": 0.75,
-      "num_legs": 3,
-      "total_ask": 0.527,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-05-12T18:05:39.878063+00:00",
       "strategy": "s1_negrisk_arb",
@@ -19503,10 +19473,40 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-06-08T20:08:52.341524+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2454698",
+      "question": "Will the price of Ethereum be above $1,300 on June 13?",
+      "action": "BUY_YES",
+      "score": 0.558,
+      "edge": 0.0107,
+      "win_probability": 0.9875,
+      "buy_price": 0.989,
+      "ev": -0.0018,
+      "kelly_frac": 0.0,
+      "ttl_sec": 417068,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.989,
+      "unused_cash": 0.011,
+      "category": "crypto",
+      "volume_24h": 2590.0,
+      "spread": 0.003,
+      "fee": 0.000263,
+      "minutes_left": 6951,
+      "days_left": 4.83,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-06-08T16:20:18.437667+00:00",
+    "enriched_at": "2026-06-08T19:34:58.379193+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
