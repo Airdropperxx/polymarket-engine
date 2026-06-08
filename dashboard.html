@@ -510,7 +510,7 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
 
 <script id="engine-data" type="application/json">
 {
-  "timestamp": "2026-06-08T05:10:55.663150+00:00Z",
+  "timestamp": "2026-06-08T10:01:09.587374+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -548,14 +548,14 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 3695,
+  "trades_rejected": 3696,
   "scan_log_executed": 172,
-  "total_opportunities": 3867,
+  "total_opportunities": 3868,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 1092,
+      "total": 1093,
       "executed": 54,
-      "rejected": 1038
+      "rejected": 1039
     },
     "s1_negrisk_arb": {
       "total": 2775,
@@ -4504,36 +4504,6 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-05-12T15:59:35.997187+00:00",
-      "strategy": "s1_negrisk_arb",
-      "market_id": "0x1ae76bd66ee18abbd857654d4ffc274e75296b3caff886cfd2466c4a880f9600",
-      "question": "NegRisk group: Will Elon Musk post <40 tweets from May 11 to May 13, 2026?...",
-      "action": "BUY_ALL_YES",
-      "score": 0.9933,
-      "edge": 0.1119,
-      "win_probability": 1.0,
-      "buy_price": 0.854,
-      "ev": 0.0,
-      "kelly_frac": 0.0,
-      "ttl_sec": 86426,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.854,
-      "unused_cash": 0.146,
-      "category": "other",
-      "volume_24h": 59642.99,
-      "spread": 0,
-      "fee": 0,
-      "minutes_left": 1440.4,
-      "days_left": 1.0,
-      "num_legs": 2,
-      "total_ask": 0.854,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-05-12T15:59:36.087640+00:00",
       "strategy": "s1_negrisk_arb",
@@ -19503,10 +19473,40 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-06-08T10:01:09.458863+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2454698",
+      "question": "Will the price of Ethereum be above $1,300 on June 13?",
+      "action": "BUY_YES",
+      "score": 0.5538,
+      "edge": 0.0145,
+      "win_probability": 0.984,
+      "buy_price": 0.985,
+      "ev": -0.0015,
+      "kelly_frac": 0.0,
+      "ttl_sec": 453531,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.985,
+      "unused_cash": 0.015,
+      "category": "crypto",
+      "volume_24h": 3380.0,
+      "spread": 0.002,
+      "fee": 0.000484,
+      "minutes_left": 7558,
+      "days_left": 5.25,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-06-08T01:34:18.250685+00:00",
+    "enriched_at": "2026-06-08T07:03:35.800917+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
