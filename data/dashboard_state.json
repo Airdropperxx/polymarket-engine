@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-06-09T02:43:59.711336+00:00Z",
+  "timestamp": "2026-06-09T06:46:05.739575+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 3710,
+  "trades_rejected": 3711,
   "scan_log_executed": 172,
-  "total_opportunities": 3882,
+  "total_opportunities": 3883,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 1107,
+      "total": 1108,
       "executed": 54,
-      "rejected": 1053
+      "rejected": 1054
     },
     "s1_negrisk_arb": {
       "total": 2775,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-05-12T21:48:28.266849+00:00",
-      "strategy": "s1_negrisk_arb",
-      "market_id": "0xc0750a717e96023ca3852fb953fac9328084e6023b0fd0d701eea7e72faaa600",
-      "question": "NegRisk group: Will G2 win PGL Astana 2026?...",
-      "action": "BUY_ALL_YES",
-      "score": 0.9393,
-      "edge": 0.9539,
-      "win_probability": 1.0,
-      "buy_price": 0.046,
-      "ev": 0.0,
-      "kelly_frac": 0.0,
-      "ttl_sec": 353493,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.046,
-      "unused_cash": 0.954,
-      "category": "sports",
-      "volume_24h": 1344.88,
-      "spread": 0,
-      "fee": 0,
-      "minutes_left": 5891.6,
-      "days_left": 4.09,
-      "num_legs": 2,
-      "total_ask": 0.046,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-05-12T21:48:28.355125+00:00",
       "strategy": "s1_negrisk_arb",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-06-09T06:46:05.613209+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2454698",
+      "question": "Will the price of Ethereum be above $1,300 on June 13?",
+      "action": "BUY_YES",
+      "score": 0.5739,
+      "edge": 0.0098,
+      "win_probability": 0.988,
+      "buy_price": 0.99,
+      "ev": -0.0022,
+      "kelly_frac": 0.0,
+      "ttl_sec": 378835,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.99,
+      "unused_cash": 0.01,
+      "category": "crypto",
+      "volume_24h": 2580.0,
+      "spread": 0.004,
+      "fee": 0.000218,
+      "minutes_left": 6313,
+      "days_left": 4.38,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-06-08T23:36:29.696421+00:00",
+    "enriched_at": "2026-06-09T04:35:16.149009+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
