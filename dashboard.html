@@ -510,7 +510,7 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
 
 <script id="engine-data" type="application/json">
 {
-  "timestamp": "2026-06-09T06:46:05.739575+00:00Z",
+  "timestamp": "2026-06-09T10:31:58.242899+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -548,14 +548,14 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 3711,
+  "trades_rejected": 3712,
   "scan_log_executed": 172,
-  "total_opportunities": 3883,
+  "total_opportunities": 3884,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 1108,
+      "total": 1109,
       "executed": 54,
-      "rejected": 1054
+      "rejected": 1055
     },
     "s1_negrisk_arb": {
       "total": 2775,
@@ -4504,36 +4504,6 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-05-12T21:48:28.355125+00:00",
-      "strategy": "s1_negrisk_arb",
-      "market_id": "0x2ae045ab3f45dbce9af71ca72793fa5e9200accce0b9955387b259dacdc97200",
-      "question": "NegRisk group: Will Romania win the televote for Eurovision 2026?...",
-      "action": "BUY_ALL_YES",
-      "score": 0.9327,
-      "edge": 0.4849,
-      "win_probability": 1.0,
-      "buy_price": 0.492,
-      "ev": 0.0,
-      "kelly_frac": 0.0,
-      "ttl_sec": 267093,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.492,
-      "unused_cash": 0.508,
-      "category": "politics",
-      "volume_24h": 4765.87,
-      "spread": 0,
-      "fee": 0,
-      "minutes_left": 4451.6,
-      "days_left": 3.09,
-      "num_legs": 3,
-      "total_ask": 0.492,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-05-12T21:48:28.442986+00:00",
       "strategy": "s1_negrisk_arb",
@@ -19503,10 +19473,40 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-06-09T10:31:58.117452+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2415817",
+      "question": "Will Elon Musk post 160-179 tweets from June 5 to June 12, 2026?",
+      "action": "BUY_NO",
+      "score": 0.6306,
+      "edge": 0.0069,
+      "win_probability": 0.992,
+      "buy_price": 0.993,
+      "ev": -0.0011,
+      "kelly_frac": 0.0,
+      "ttl_sec": 278883,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.993,
+      "unused_cash": 0.007,
+      "category": "other",
+      "volume_24h": 40749.14,
+      "spread": 0.002,
+      "fee": 0.000108,
+      "minutes_left": 4648,
+      "days_left": 3.23,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-06-09T04:35:16.149009+00:00",
+    "enriched_at": "2026-06-09T08:41:11.342947+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
