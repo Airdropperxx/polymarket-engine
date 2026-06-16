@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-06-16T22:08:03.636997+00:00Z",
+  "timestamp": "2026-06-16T23:54:51.065936+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 3816,
+  "trades_rejected": 3817,
   "scan_log_executed": 172,
-  "total_opportunities": 3988,
+  "total_opportunities": 3989,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 1213,
+      "total": 1214,
       "executed": 54,
-      "rejected": 1159
+      "rejected": 1160
     },
     "s1_negrisk_arb": {
       "total": 2775,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-05-15T19:51:36.239667+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "1541199",
-      "question": "Will Italy be the Jury Winner in the Eurovision 2026 Grand Final?",
-      "action": "BUY_NO",
-      "score": 0.7705,
-      "edge": 0.004,
-      "win_probability": 0.9955,
-      "buy_price": 0.996,
-      "ev": -0.0005,
-      "kelly_frac": 0.0,
-      "ttl_sec": 14904,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.996,
-      "unused_cash": 0.004,
-      "category": "sports",
-      "volume_24h": 15261.33,
-      "spread": 0.001,
-      "fee": 3.6e-05,
-      "minutes_left": 248,
-      "days_left": 0.17,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-05-15T19:51:36.340683+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-06-16T23:54:50.932667+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2549684",
+      "question": "Will the highest temperature in Kuala Lumpur be 29°C on June 17?",
+      "action": "BUY_NO",
+      "score": 0.7253,
+      "edge": 0.0264,
+      "win_probability": 0.962,
+      "buy_price": 0.972,
+      "ev": -0.012,
+      "kelly_frac": 0.0,
+      "ttl_sec": 43510,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.972,
+      "unused_cash": 0.028,
+      "category": "other",
+      "volume_24h": 8651.89,
+      "spread": 0.02,
+      "fee": 0.00162,
+      "minutes_left": 725,
+      "days_left": 0.5,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-06-16T21:19:33.443198+00:00",
+    "enriched_at": "2026-06-16T23:48:12.828410+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
