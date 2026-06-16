@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-06-16T19:54:27.141499+00:00Z",
+  "timestamp": "2026-06-16T22:08:03.636997+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 3815,
+  "trades_rejected": 3816,
   "scan_log_executed": 172,
-  "total_opportunities": 3987,
+  "total_opportunities": 3988,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 1212,
+      "total": 1213,
       "executed": 54,
-      "rejected": 1158
+      "rejected": 1159
     },
     "s1_negrisk_arb": {
       "total": 2775,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-05-15T18:00:03.385209+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "1652298",
-      "question": "Will Germany come in last place at Eurovision 2026?",
-      "action": "BUY_NO",
-      "score": 0.6817,
-      "edge": 0.105,
-      "win_probability": 0.855,
-      "buy_price": 0.87,
-      "ev": -0.046,
-      "kelly_frac": 0.0,
-      "ttl_sec": 21597,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.87,
-      "unused_cash": 0.13,
-      "category": "other",
-      "volume_24h": 7035.76,
-      "spread": 0.03,
-      "fee": 0.02504,
-      "minutes_left": 359,
-      "days_left": 0.25,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-05-15T19:51:36.239667+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-06-16T22:08:03.535900+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2566856",
+      "question": "Will MrBeast's next video get between 48 and 49 million views on day 4?",
+      "action": "BUY_NO",
+      "score": 0.7077,
+      "edge": 0.0627,
+      "win_probability": 0.9195,
+      "buy_price": 0.928,
+      "ev": -0.0192,
+      "kelly_frac": 0.0,
+      "ttl_sec": 82317,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.928,
+      "unused_cash": 0.072,
+      "category": "other",
+      "volume_24h": 9914.12,
+      "spread": 0.017,
+      "fee": 0.009322,
+      "minutes_left": 1371,
+      "days_left": 0.95,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-06-16T17:20:30.694481+00:00",
+    "enriched_at": "2026-06-16T21:19:33.443198+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
