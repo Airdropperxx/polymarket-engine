@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-06-20T02:54:56.980061+00:00Z",
+  "timestamp": "2026-06-20T06:58:57.804222+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 3875,
+  "trades_rejected": 3876,
   "scan_log_executed": 172,
-  "total_opportunities": 4047,
+  "total_opportunities": 4048,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 1266,
+      "total": 1267,
       "executed": 54,
-      "rejected": 1212
+      "rejected": 1213
     },
     "s1_negrisk_arb": {
       "total": 2781,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-05-17T21:14:09.248078+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2269337",
-      "question": "Will the price of Bitcoin be above $70,000 on May 22?",
-      "action": "BUY_YES",
-      "score": 0.5617,
-      "edge": 0.0173,
-      "win_probability": 0.9785,
-      "buy_price": 0.982,
-      "ev": -0.0043,
-      "kelly_frac": 0.0,
-      "ttl_sec": 413151,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.982,
-      "unused_cash": 0.018,
-      "category": "crypto",
-      "volume_24h": 2060.26,
-      "spread": 0.007,
-      "fee": 0.00069,
-      "minutes_left": 6885,
-      "days_left": 4.78,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-05-17T22:13:41.061448+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-06-20T06:58:57.674381+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "1897173",
+      "question": "Will IR Iran win on 2026-06-21?",
+      "action": "BUY_NO",
+      "score": 0.6488,
+      "edge": 0.0908,
+      "win_probability": 0.885,
+      "buy_price": 0.89,
+      "ev": -0.0272,
+      "kelly_frac": 0.0,
+      "ttl_sec": 129663,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.89,
+      "unused_cash": 0.11,
+      "category": "sports",
+      "volume_24h": 4605.92,
+      "spread": 0.01,
+      "fee": 0.019193,
+      "minutes_left": 2161,
+      "days_left": 1.5,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-06-20T01:32:36.680901+00:00",
+    "enriched_at": "2026-06-20T06:40:58.347165+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
