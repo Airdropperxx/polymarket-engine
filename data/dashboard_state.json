@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-06-22T13:31:27.374339+00:00Z",
+  "timestamp": "2026-06-22T18:10:37.565687+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 3921,
+  "trades_rejected": 3922,
   "scan_log_executed": 172,
-  "total_opportunities": 4093,
+  "total_opportunities": 4094,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 1312,
+      "total": 1313,
       "executed": 54,
-      "rejected": 1258
+      "rejected": 1259
     },
     "s1_negrisk_arb": {
       "total": 2781,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-05-22T21:41:20.757422+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2303417",
-      "question": "Will the price of Bitcoin be above $72,000 on May 26?",
-      "action": "BUY_YES",
-      "score": 0.6278,
-      "edge": 0.0308,
-      "win_probability": 0.964,
-      "buy_price": 0.967,
-      "ev": -0.0054,
-      "kelly_frac": 0.0,
-      "ttl_sec": 325120,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.967,
-      "unused_cash": 0.033,
-      "category": "crypto",
-      "volume_24h": 1952.95,
-      "spread": 0.006,
-      "fee": 0.002216,
-      "minutes_left": 5418,
-      "days_left": 3.76,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-05-23T00:02:41.673891+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-06-22T18:10:37.431786+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "840172",
+      "question": "Will the Democratic Republic of Congo win Group K in the 2026 FIFA World Cup?",
+      "action": "BUY_NO",
+      "score": 0.5656,
+      "edge": 0.0493,
+      "win_probability": 0.94,
+      "buy_price": 0.945,
+      "ev": -0.0114,
+      "kelly_frac": 0.0,
+      "ttl_sec": 366563,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.945,
+      "unused_cash": 0.055,
+      "category": "politics",
+      "volume_24h": 2601.63,
+      "spread": 0.01,
+      "fee": 0.005744,
+      "minutes_left": 6109,
+      "days_left": 4.24,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-06-22T12:25:21.080911+00:00",
+    "enriched_at": "2026-06-22T17:50:14.405010+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
