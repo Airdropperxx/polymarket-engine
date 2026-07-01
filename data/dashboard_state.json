@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-06-30T23:11:25.524647+00:00Z",
+  "timestamp": "2026-07-01T01:38:22.778644+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4169,
+  "trades_rejected": 4170,
   "scan_log_executed": 172,
-  "total_opportunities": 4341,
+  "total_opportunities": 4342,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 1557,
+      "total": 1558,
       "executed": 54,
-      "rejected": 1503
+      "rejected": 1504
     },
     "s1_negrisk_arb": {
       "total": 2784,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-06-06T09:59:45.456468+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2441044",
-      "question": "Will the highest temperature in Shenzhen be 32°C on June 6?",
-      "action": "BUY_NO",
-      "score": 0.7313,
-      "edge": 0.0059,
-      "win_probability": 0.9925,
-      "buy_price": 0.994,
-      "ev": -0.0016,
-      "kelly_frac": 0.0,
-      "ttl_sec": 7215,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.994,
-      "unused_cash": 0.006,
-      "category": "other",
-      "volume_24h": 9796.73,
-      "spread": 0.003,
-      "fee": 8e-05,
-      "minutes_left": 120,
-      "days_left": 0.08,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-06-06T09:59:45.564778+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-07-01T01:38:22.637931+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2566381",
+      "question": "Will Jared Kushner attend the US-Iran Signing Ceremony?",
+      "action": "BUY_NO",
+      "score": 0.4278,
+      "edge": 0.0088,
+      "win_probability": 0.9865,
+      "buy_price": 0.991,
+      "ev": -0.0047,
+      "kelly_frac": 0.0,
+      "ttl_sec": 598838,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.991,
+      "unused_cash": 0.009,
+      "category": "other",
+      "volume_24h": 6804.73,
+      "spread": 0.009,
+      "fee": 0.000177,
+      "minutes_left": 9980,
+      "days_left": 6.93,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-06-30T22:39:54.844344+00:00",
+    "enriched_at": "2026-07-01T01:32:30.572766+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
