@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-02T16:02:37.254364+00:00Z",
+  "timestamp": "2026-07-02T18:11:16.490369+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4200,
+  "trades_rejected": 4201,
   "scan_log_executed": 172,
-  "total_opportunities": 4372,
+  "total_opportunities": 4373,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 1587,
+      "total": 1588,
       "executed": 54,
-      "rejected": 1533
+      "rejected": 1534
     },
     "s1_negrisk_arb": {
       "total": 2785,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-06-08T22:08:53.056588+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2358322",
-      "question": "Seattle Storm vs. Las Vegas Aces",
-      "action": "BUY_NO",
-      "score": 0.7431,
-      "edge": 0.0836,
-      "win_probability": 0.895,
-      "buy_price": 0.9,
-      "ev": -0.0238,
-      "kelly_frac": 0.0,
-      "ttl_sec": 13868,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.9,
-      "unused_cash": 0.1,
-      "category": "other",
-      "volume_24h": 99708.84,
-      "spread": 0.01,
-      "fee": 0.016402,
-      "minutes_left": 231,
-      "days_left": 0.16,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-06-08T22:08:53.170161+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-07-02T18:11:16.351487+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2707779",
+      "question": "Exact Score: Argentina 1 - 2 Cabo Verde?",
+      "action": "BUY_NO",
+      "score": 0.7038,
+      "edge": 0.0069,
+      "win_probability": 0.9905,
+      "buy_price": 0.993,
+      "ev": -0.0026,
+      "kelly_frac": 0.0,
+      "ttl_sec": 100124,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.993,
+      "unused_cash": 0.007,
+      "category": "sports",
+      "volume_24h": 5973.13,
+      "spread": 0.005,
+      "fee": 0.000108,
+      "minutes_left": 1668,
+      "days_left": 1.16,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-07-02T15:30:14.009015+00:00",
+    "enriched_at": "2026-07-02T18:01:46.102202+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
