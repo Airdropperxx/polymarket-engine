@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-02T13:49:26.524615+00:00Z",
+  "timestamp": "2026-07-02T16:02:37.254364+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4199,
+  "trades_rejected": 4200,
   "scan_log_executed": 172,
-  "total_opportunities": 4371,
+  "total_opportunities": 4372,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 1586,
+      "total": 1587,
       "executed": 54,
-      "rejected": 1532
+      "rejected": 1533
     },
     "s1_negrisk_arb": {
       "total": 2785,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-06-08T20:08:52.341524+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2454698",
-      "question": "Will the price of Ethereum be above $1,300 on June 13?",
-      "action": "BUY_YES",
-      "score": 0.558,
-      "edge": 0.0107,
-      "win_probability": 0.9875,
-      "buy_price": 0.989,
-      "ev": -0.0018,
-      "kelly_frac": 0.0,
-      "ttl_sec": 417068,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.989,
-      "unused_cash": 0.011,
-      "category": "crypto",
-      "volume_24h": 2590.0,
-      "spread": 0.003,
-      "fee": 0.000263,
-      "minutes_left": 6951,
-      "days_left": 4.83,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-06-08T22:08:53.056588+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-07-02T16:02:37.112377+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2719047",
+      "question": "Exact Score: Portugal 1 - 0 Croatia?",
+      "action": "BUY_NO",
+      "score": 0.7668,
+      "edge": 0.0836,
+      "win_probability": 0.895,
+      "buy_price": 0.9,
+      "ev": -0.0238,
+      "kelly_frac": 0.0,
+      "ttl_sec": 25044,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.9,
+      "unused_cash": 0.1,
+      "category": "sports",
+      "volume_24h": 96291.89,
+      "spread": 0.01,
+      "fee": 0.016402,
+      "minutes_left": 417,
+      "days_left": 0.29,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-07-02T12:21:03.141946+00:00",
+    "enriched_at": "2026-07-02T15:30:14.009015+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
