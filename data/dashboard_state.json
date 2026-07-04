@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-04T18:08:41.477831+00:00Z",
+  "timestamp": "2026-07-04T19:43:27.759242+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -18995,54 +18995,8 @@
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-07-04T17:18:50.789402+00:00",
-    "elapsed_sec": 0.43,
-    "count": 1,
-    "tradeable_count": 1,
-    "opportunities": [
-      {
-        "ts": "2026-07-04T16:59:54.075252+00:00",
-        "strategy": "s10_near_resolution",
-        "market_id": "2754672",
-        "question": "Exact Score: Paraguay 0 - 1 France?",
-        "action": "BUY_NO",
-        "score": 0.7711,
-        "edge": 0.0908,
-        "win_probability": 0.885,
-        "buy_price": 0.89,
-        "ev": -0.0272,
-        "kelly_frac": 0.0,
-        "ttl_sec": 14407,
-        "executed": false,
-        "reason_skipped": "daily_loss_limit",
-        "trade_id": "",
-        "budget_usdc": 1.0,
-        "shares": 1,
-        "actual_cost": 0.89,
-        "unused_cash": 0.11,
-        "category": "sports",
-        "volume_24h": 92214.33,
-        "spread": 0.01,
-        "fee": 0.019193,
-        "minutes_left": 240,
-        "days_left": 0.17,
-        "num_legs": 1,
-        "total_ask": 0,
-        "observer_flagged": false,
-        "clob_enriched": true,
-        "yes_token_id": "113026929826886001303269039995794664425427727265276074184416213036511586795311",
-        "no_token_id": "35371420051097980571529391020191940963108890582721510726130912008018851448702",
-        "clob_yes_bid": 0.11,
-        "clob_yes_ask": 0.12,
-        "clob_no_bid": 0.88,
-        "clob_no_ask": 0.89,
-        "clob_spread": 0.01,
-        "live_edge": 0.765,
-        "bid_depth_5": 173874.01,
-        "ask_depth_5": 858525.65,
-        "enriched_at": "2026-07-04T17:18:51.094648+00:00",
-        "tradeable": true
-      }
-    ]
+    "enriched_at": "2026-07-04T19:36:46.936585+00:00",
+    "opportunities": [],
+    "message": "No recent strategy opportunities to enrich"
   }
 }
