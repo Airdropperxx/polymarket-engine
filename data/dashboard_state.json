@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-05T17:04:18.731708+00:00Z",
+  "timestamp": "2026-07-05T18:35:30.583943+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4256,
+  "trades_rejected": 4257,
   "scan_log_executed": 172,
-  "total_opportunities": 4428,
+  "total_opportunities": 4429,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 1641,
+      "total": 1642,
       "executed": 54,
-      "rejected": 1587
+      "rejected": 1588
     },
     "s1_negrisk_arb": {
       "total": 2787,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-06-12T19:28:28.406128+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2506684",
-      "question": "Will the price of Bitcoin be above $56,000 on June 18?",
-      "action": "BUY_YES",
-      "score": 0.5277,
-      "edge": 0.0079,
-      "win_probability": 0.9865,
-      "buy_price": 0.992,
-      "ev": -0.0057,
-      "kelly_frac": 0.0,
-      "ttl_sec": 505892,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.992,
-      "unused_cash": 0.008,
-      "category": "crypto",
-      "volume_24h": 9858.69,
-      "spread": 0.011,
-      "fee": 0.000141,
-      "minutes_left": 8431,
-      "days_left": 5.86,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-06-12T21:13:53.802212+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-07-05T18:35:30.443162+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "1088142",
+      "question": "Will Elise Mertens be the 2026 Women’s Wimbledon Winner?",
+      "action": "BUY_NO",
+      "score": 0.5288,
+      "edge": 0.0228,
+      "win_probability": 0.9745,
+      "buy_price": 0.976,
+      "ev": -0.0028,
+      "kelly_frac": 0.0,
+      "ttl_sec": 537870,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.976,
+      "unused_cash": 0.024,
+      "category": "sports",
+      "volume_24h": 10090.09,
+      "spread": 0.003,
+      "fee": 0.001205,
+      "minutes_left": 8964,
+      "days_left": 6.23,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-07-05T16:18:20.204200+00:00",
+    "enriched_at": "2026-07-05T18:15:45.889032+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
