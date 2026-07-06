@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-06T00:09:25.887585+00:00Z",
+  "timestamp": "2026-07-06T04:50:09.041517+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4263,
+  "trades_rejected": 4264,
   "scan_log_executed": 172,
-  "total_opportunities": 4435,
+  "total_opportunities": 4436,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 1646,
+      "total": 1647,
       "executed": 54,
-      "rejected": 1592
+      "rejected": 1593
     },
     "s1_negrisk_arb": {
       "total": 2789,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-06-13T04:59:01.942065+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2454713",
-      "question": "Will the price of Bitcoin be between $58,000 and $60,000 on June 13?",
-      "action": "BUY_NO",
-      "score": 0.7675,
-      "edge": 0.002,
-      "win_probability": 0.997,
-      "buy_price": 0.998,
-      "ev": -0.001,
-      "kelly_frac": 0.0,
-      "ttl_sec": 39659,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.998,
-      "unused_cash": 0.002,
-      "category": "crypto",
-      "volume_24h": 7816.59,
-      "spread": 0.002,
-      "fee": 9e-06,
-      "minutes_left": 660,
-      "days_left": 0.46,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-06-13T04:59:02.035589+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-07-06T04:50:08.909736+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2782031",
+      "question": "Exact Score: Portugal 3 - 2 Spain?",
+      "action": "BUY_NO",
+      "score": 0.8171,
+      "edge": 0.021,
+      "win_probability": 0.977,
+      "buy_price": 0.978,
+      "ev": -0.0021,
+      "kelly_frac": 0.0,
+      "ttl_sec": 50992,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.978,
+      "unused_cash": 0.022,
+      "category": "sports",
+      "volume_24h": 95042.0,
+      "spread": 0.002,
+      "fee": 0.001019,
+      "minutes_left": 849,
+      "days_left": 0.59,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-07-05T23:30:06.034231+00:00",
+    "enriched_at": "2026-07-06T04:38:39.164212+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
