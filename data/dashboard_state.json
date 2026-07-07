@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-07T12:24:22.009939+00:00Z",
+  "timestamp": "2026-07-07T15:24:23.208987+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4279,
+  "trades_rejected": 4280,
   "scan_log_executed": 172,
-  "total_opportunities": 4451,
+  "total_opportunities": 4452,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 1662,
+      "total": 1663,
       "executed": 54,
-      "rejected": 1608
+      "rejected": 1609
     },
     "s1_negrisk_arb": {
       "total": 2789,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-06-13T16:11:26.838855+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2492315",
-      "question": "Will \"Scary Movie\" 2nd Weekend Box Office be greater than 17m?",
-      "action": "BUY_NO",
-      "score": 0.6821,
-      "edge": 0.0533,
-      "win_probability": 0.925,
-      "buy_price": 0.94,
-      "ev": -0.0231,
-      "kelly_frac": 0.0,
-      "ttl_sec": 157714,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.94,
-      "unused_cash": 0.06,
-      "category": "other",
-      "volume_24h": 9030.28,
-      "spread": 0.03,
-      "fee": 0.006728,
-      "minutes_left": 2628,
-      "days_left": 1.83,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-06-13T17:52:18.811223+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-07-07T15:24:23.049694+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2812904",
+      "question": "Will the highest temperature in Kuala Lumpur be 34°C on July 8?",
+      "action": "BUY_NO",
+      "score": 0.6786,
+      "edge": 0.0088,
+      "win_probability": 0.9805,
+      "buy_price": 0.991,
+      "ev": -0.0108,
+      "kelly_frac": 0.0,
+      "ttl_sec": 74138,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.991,
+      "unused_cash": 0.009,
+      "category": "other",
+      "volume_24h": 8771.88,
+      "spread": 0.021,
+      "fee": 0.000177,
+      "minutes_left": 1235,
+      "days_left": 0.86,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-07-07T12:09:27.910692+00:00",
+    "enriched_at": "2026-07-07T15:14:44.252400+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
