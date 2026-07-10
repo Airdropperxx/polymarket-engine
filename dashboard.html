@@ -510,7 +510,7 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
 
 <script id="engine-data" type="application/json">
 {
-  "timestamp": "2026-07-10T12:40:02.677943+00:00Z",
+  "timestamp": "2026-07-10T15:29:41.075694+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -548,14 +548,14 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4349,
+  "trades_rejected": 4350,
   "scan_log_executed": 172,
-  "total_opportunities": 4521,
+  "total_opportunities": 4522,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 1730,
+      "total": 1731,
       "executed": 54,
-      "rejected": 1676
+      "rejected": 1677
     },
     "s1_negrisk_arb": {
       "total": 2791,
@@ -4504,36 +4504,6 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-06-18T12:48:34.282650+00:00",
-      "strategy": "s1_negrisk_arb",
-      "market_id": "0xd6942a2a776414cc1c4a882865ba0963917c7742853467a6011c9db4ae652400",
-      "question": "NegRisk group: Will Ivory Coast win Group E in the 2026 FIFA World Cup?...",
-      "action": "BUY_ALL_YES",
-      "score": 0.918,
-      "edge": 0.721,
-      "win_probability": 1.0,
-      "buy_price": 0.265,
-      "ev": 0.0,
-      "kelly_frac": 0.0,
-      "ttl_sec": 731487,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.265,
-      "unused_cash": 0.735,
-      "category": "sports",
-      "volume_24h": 3157.33,
-      "spread": 0,
-      "fee": 0,
-      "minutes_left": 12191.5,
-      "days_left": 8.47,
-      "num_legs": 2,
-      "total_ask": 0.265,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-06-18T12:48:34.397137+00:00",
       "strategy": "s10_near_resolution",
@@ -19503,10 +19473,40 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-07-10T15:29:40.918322+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2866785",
+      "question": "Will Bitcoin dip to $62,000 on July 10?",
+      "action": "BUY_NO",
+      "score": 0.7689,
+      "edge": 0.0155,
+      "win_probability": 0.978,
+      "buy_price": 0.984,
+      "ev": -0.0067,
+      "kelly_frac": 0.0,
+      "ttl_sec": 45020,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.984,
+      "unused_cash": 0.016,
+      "category": "crypto",
+      "volume_24h": 9912.88,
+      "spread": 0.012,
+      "fee": 0.000549,
+      "minutes_left": 750,
+      "days_left": 0.52,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-07-10T11:18:58.580199+00:00",
+    "enriched_at": "2026-07-10T15:00:56.019650+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
