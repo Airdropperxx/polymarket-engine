@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-11T07:24:05.673737+00:00Z",
+  "timestamp": "2026-07-11T09:06:36.098494+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4358,
+  "trades_rejected": 4359,
   "scan_log_executed": 172,
-  "total_opportunities": 4530,
+  "total_opportunities": 4531,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 1739,
+      "total": 1740,
       "executed": 54,
-      "rejected": 1685
+      "rejected": 1686
     },
     "s1_negrisk_arb": {
       "total": 2791,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-06-18T23:16:38.435660+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2473006",
-      "question": "Bab el-Mandeb Strait effectively closed by June 22?",
-      "action": "BUY_NO",
-      "score": 0.5943,
-      "edge": 0.004,
-      "win_probability": 0.9945,
-      "buy_price": 0.996,
-      "ev": -0.0015,
-      "kelly_frac": 0.0,
-      "ttl_sec": 261802,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.996,
-      "unused_cash": 0.004,
-      "category": "other",
-      "volume_24h": 5723.57,
-      "spread": 0.003,
-      "fee": 3.6e-05,
-      "minutes_left": 4363,
-      "days_left": 3.03,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-06-19T02:15:18.291956+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-07-11T09:06:35.974599+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2854637",
+      "question": "Will the highest temperature in Shenzhen be 36°C on July 11?",
+      "action": "BUY_NO",
+      "score": 0.7068,
+      "edge": 0.002,
+      "win_probability": 0.987,
+      "buy_price": 0.998,
+      "ev": -0.011,
+      "kelly_frac": 0.0,
+      "ttl_sec": 10405,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.998,
+      "unused_cash": 0.002,
+      "category": "other",
+      "volume_24h": 7741.07,
+      "spread": 0.022,
+      "fee": 9e-06,
+      "minutes_left": 173,
+      "days_left": 0.12,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-07-11T06:26:16.593197+00:00",
+    "enriched_at": "2026-07-11T08:58:58.473494+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
