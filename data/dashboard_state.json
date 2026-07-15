@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-15T07:27:27.581223+00:00Z",
+  "timestamp": "2026-07-15T09:28:43.927220+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4408,
+  "trades_rejected": 4409,
   "scan_log_executed": 172,
-  "total_opportunities": 4580,
+  "total_opportunities": 4581,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 1786,
+      "total": 1787,
       "executed": 54,
-      "rejected": 1732
+      "rejected": 1733
     },
     "s1_negrisk_arb": {
       "total": 2794,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-06-21T21:54:00.440541+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "840172",
-      "question": "Will the Democratic Republic of Congo win Group K in the 2026 FIFA World Cup?",
-      "action": "BUY_NO",
-      "score": 0.5139,
-      "edge": 0.0377,
-      "win_probability": 0.9555,
-      "buy_price": 0.959,
-      "ev": -0.0071,
-      "kelly_frac": 0.0,
-      "ttl_sec": 439560,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.959,
-      "unused_cash": 0.041,
-      "category": "politics",
-      "volume_24h": 2291.39,
-      "spread": 0.007,
-      "fee": 0.003336,
-      "minutes_left": 7326,
-      "days_left": 5.09,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-06-21T23:09:01.593658+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-07-15T09:28:43.769324+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2891767",
+      "question": "Declan Rice: 1+ goals",
+      "action": "BUY_NO",
+      "score": 0.7711,
+      "edge": 0.0564,
+      "win_probability": 0.9355,
+      "buy_price": 0.936,
+      "ev": -0.0086,
+      "kelly_frac": 0.0,
+      "ttl_sec": 34277,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.936,
+      "unused_cash": 0.064,
+      "category": "other",
+      "volume_24h": 9708.48,
+      "spread": 0.001,
+      "fee": 0.007557,
+      "minutes_left": 571,
+      "days_left": 0.4,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-07-15T06:27:50.324303+00:00",
+    "enriched_at": "2026-07-15T09:21:19.905815+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
