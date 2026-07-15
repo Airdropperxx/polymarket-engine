@@ -510,7 +510,7 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
 
 <script id="engine-data" type="application/json">
 {
-  "timestamp": "2026-07-15T14:44:32.206994+00:00Z",
+  "timestamp": "2026-07-15T16:16:34.707593+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -548,14 +548,14 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4413,
+  "trades_rejected": 4414,
   "scan_log_executed": 172,
-  "total_opportunities": 4585,
+  "total_opportunities": 4586,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 1790,
+      "total": 1791,
       "executed": 54,
-      "rejected": 1736
+      "rejected": 1737
     },
     "s1_negrisk_arb": {
       "total": 2795,
@@ -4504,36 +4504,6 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-06-22T07:34:47.791991+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2615161",
-      "question": "Will the highest temperature in London be 25°C on June 22?",
-      "action": "BUY_NO",
-      "score": 0.751,
-      "edge": 0.041,
-      "win_probability": 0.94,
-      "buy_price": 0.955,
-      "ev": -0.0199,
-      "kelly_frac": 0.0,
-      "ttl_sec": 15913,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.955,
-      "unused_cash": 0.045,
-      "category": "other",
-      "volume_24h": 9458.4,
-      "spread": 0.03,
-      "fee": 0.003968,
-      "minutes_left": 265,
-      "days_left": 0.18,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-06-22T07:34:47.906209+00:00",
       "strategy": "s10_near_resolution",
@@ -19503,10 +19473,40 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
       "num_legs": 2,
       "total_ask": 0.22,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-07-15T16:16:34.552177+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2860453",
+      "question": "Will the price of Ethereum be above $2,100 on July 16?",
+      "action": "BUY_NO",
+      "score": 0.7345,
+      "edge": 0.003,
+      "win_probability": 0.993,
+      "buy_price": 0.997,
+      "ev": -0.004,
+      "kelly_frac": 0.0,
+      "ttl_sec": 85406,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.997,
+      "unused_cash": 0.003,
+      "category": "crypto",
+      "volume_24h": 7708.66,
+      "spread": 0.008,
+      "fee": 2e-05,
+      "minutes_left": 1423,
+      "days_left": 0.99,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-07-15T14:09:58.256882+00:00",
+    "enriched_at": "2026-07-15T15:49:35.098053+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
