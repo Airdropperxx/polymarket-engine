@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-17T14:39:03.186662+00:00Z",
+  "timestamp": "2026-07-17T16:11:08.787369+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4447,
+  "trades_rejected": 4448,
   "scan_log_executed": 172,
-  "total_opportunities": 4619,
+  "total_opportunities": 4620,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 1824,
+      "total": 1825,
       "executed": 54,
-      "rejected": 1770
+      "rejected": 1771
     },
     "s1_negrisk_arb": {
       "total": 2795,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-06-23T21:28:47.249619+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2619228",
-      "question": "Will the price of Bitcoin be above $68,000 on June 27?",
-      "action": "BUY_NO",
-      "score": 0.5871,
-      "edge": 0.0098,
-      "win_probability": 0.985,
-      "buy_price": 0.99,
-      "ev": -0.0053,
-      "kelly_frac": 0.0,
-      "ttl_sec": 325874,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.99,
-      "unused_cash": 0.01,
-      "category": "crypto",
-      "volume_24h": 1994.99,
-      "spread": 0.01,
-      "fee": 0.000218,
-      "minutes_left": 5431,
-      "days_left": 3.77,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-06-23T22:47:53.278785+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-07-17T16:11:08.634686+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2907043",
+      "question": "Will Bryson DeChambeau win the 2026 The Open Championship?",
+      "action": "BUY_NO",
+      "score": 0.8148,
+      "edge": 0.0476,
+      "win_probability": 0.9465,
+      "buy_price": 0.947,
+      "ev": -0.0062,
+      "kelly_frac": 0.0,
+      "ttl_sec": 114532,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.947,
+      "unused_cash": 0.053,
+      "category": "sports",
+      "volume_24h": 52254.87,
+      "spread": 0.001,
+      "fee": 0.005368,
+      "minutes_left": 1908,
+      "days_left": 1.33,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-07-17T14:03:10.372014+00:00",
+    "enriched_at": "2026-07-17T15:39:51.707440+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
