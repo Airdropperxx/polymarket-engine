@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-16T23:25:30.063204+00:00Z",
+  "timestamp": "2026-07-17T00:59:12.428655+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4436,
+  "trades_rejected": 4437,
   "scan_log_executed": 172,
-  "total_opportunities": 4608,
+  "total_opportunities": 4609,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 1813,
+      "total": 1814,
       "executed": 54,
-      "rejected": 1759
+      "rejected": 1760
     },
     "s1_negrisk_arb": {
       "total": 2795,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-06-23T05:45:08.993580+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "1478020",
-      "question": "Will Pete Hegseth enter Iran by June 30?",
-      "action": "BUY_NO",
-      "score": 0.4664,
-      "edge": 0.002,
-      "win_probability": 0.9975,
-      "buy_price": 0.998,
-      "ev": -0.0005,
-      "kelly_frac": 0.0,
-      "ttl_sec": 584092,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.998,
-      "unused_cash": 0.002,
-      "category": "crypto",
-      "volume_24h": 1769.54,
-      "spread": 0.001,
-      "fee": 9e-06,
-      "minutes_left": 9734,
-      "days_left": 6.76,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-06-23T09:31:07.216391+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-07-17T00:59:12.322533+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2930633",
+      "question": "Will the highest temperature in Munich be 30°C on July 17?",
+      "action": "BUY_NO",
+      "score": 0.7049,
+      "edge": 0.074,
+      "win_probability": 0.9125,
+      "buy_price": 0.913,
+      "ev": -0.0147,
+      "kelly_frac": 0.0,
+      "ttl_sec": 39682,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.913,
+      "unused_cash": 0.087,
+      "category": "other",
+      "volume_24h": 7367.61,
+      "spread": 0.001,
+      "fee": 0.012961,
+      "minutes_left": 661,
+      "days_left": 0.46,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-07-16T23:10:37.941065+00:00",
+    "enriched_at": "2026-07-17T00:12:42.013980+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
