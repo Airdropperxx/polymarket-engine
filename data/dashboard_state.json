@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-17T12:41:26.836496+00:00Z",
+  "timestamp": "2026-07-17T14:39:03.186662+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4446,
+  "trades_rejected": 4447,
   "scan_log_executed": 172,
-  "total_opportunities": 4618,
+  "total_opportunities": 4619,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 1823,
+      "total": 1824,
       "executed": 54,
-      "rejected": 1769
+      "rejected": 1770
     },
     "s1_negrisk_arb": {
       "total": 2795,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-06-23T21:28:47.131685+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2636599",
-      "question": "Will the highest temperature in London be 41°C on June 24?",
-      "action": "BUY_NO",
-      "score": 0.713,
-      "edge": 0.002,
-      "win_probability": 0.9975,
-      "buy_price": 0.998,
-      "ev": -0.0005,
-      "kelly_frac": 0.0,
-      "ttl_sec": 52274,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.998,
-      "unused_cash": 0.002,
-      "category": "other",
-      "volume_24h": 8025.35,
-      "spread": 0.001,
-      "fee": 9e-06,
-      "minutes_left": 871,
-      "days_left": 0.61,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-06-23T21:28:47.249619+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-07-17T14:39:03.028862+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2936774",
+      "question": "Will \"The Odyssey\" Opening Weekend Box Office be between 120m and 125m?",
+      "action": "BUY_NO",
+      "score": 0.5968,
+      "edge": 0.0979,
+      "win_probability": 0.86,
+      "buy_price": 0.88,
+      "ev": -0.0478,
+      "kelly_frac": 0.0,
+      "ttl_sec": 206398,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.88,
+      "unused_cash": 0.12,
+      "category": "other",
+      "volume_24h": 9614.8,
+      "spread": 0.04,
+      "fee": 0.02208,
+      "minutes_left": 3439,
+      "days_left": 2.39,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-07-17T11:40:50.659876+00:00",
+    "enriched_at": "2026-07-17T14:03:10.372014+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
