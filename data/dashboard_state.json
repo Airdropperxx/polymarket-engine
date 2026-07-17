@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-17T19:00:39.073640+00:00Z",
+  "timestamp": "2026-07-17T20:25:41.283516+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4451,
+  "trades_rejected": 4452,
   "scan_log_executed": 172,
-  "total_opportunities": 4623,
+  "total_opportunities": 4624,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 1828,
+      "total": 1829,
       "executed": 54,
-      "rejected": 1774
+      "rejected": 1775
     },
     "s1_negrisk_arb": {
       "total": 2795,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-06-23T22:47:53.616817+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2129196",
-      "question": "Chirayu Rana divorced?",
-      "action": "BUY_NO",
-      "score": 0.4557,
-      "edge": 0.002,
-      "win_probability": 0.9975,
-      "buy_price": 0.998,
-      "ev": -0.0005,
-      "kelly_frac": 0.0,
-      "ttl_sec": 522727,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.998,
-      "unused_cash": 0.002,
-      "category": "other",
-      "volume_24h": 2664.68,
-      "spread": 0.001,
-      "fee": 9e-06,
-      "minutes_left": 8712,
-      "days_left": 6.05,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-06-23T23:53:15.250283+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-07-17T20:25:41.138577+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2955428",
+      "question": "Will Ethereum dip to $1,750 on July 17?",
+      "action": "BUY_NO",
+      "score": 0.7655,
+      "edge": 0.0059,
+      "win_probability": 0.99,
+      "buy_price": 0.994,
+      "ev": -0.0041,
+      "kelly_frac": 0.0,
+      "ttl_sec": 27260,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.994,
+      "unused_cash": 0.006,
+      "category": "crypto",
+      "volume_24h": 9986.55,
+      "spread": 0.008,
+      "fee": 8e-05,
+      "minutes_left": 454,
+      "days_left": 0.32,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-07-17T17:30:18.795917+00:00",
+    "enriched_at": "2026-07-17T19:32:30.698663+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
