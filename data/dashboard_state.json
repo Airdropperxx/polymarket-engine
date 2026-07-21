@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-21T05:34:19.476992+00:00Z",
+  "timestamp": "2026-07-21T08:20:15.531910+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4522,
+  "trades_rejected": 4523,
   "scan_log_executed": 172,
-  "total_opportunities": 4694,
+  "total_opportunities": 4695,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 1899,
+      "total": 1900,
       "executed": 54,
-      "rejected": 1845
+      "rejected": 1846
     },
     "s1_negrisk_arb": {
       "total": 2795,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-06-25T22:18:23.172459+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2323844",
-      "question": "Türkiye vs. United States: O/U 0.5",
-      "action": "BUY_YES",
-      "score": 0.7616,
-      "edge": 0.0368,
-      "win_probability": 0.955,
-      "buy_price": 0.96,
-      "ev": -0.0085,
-      "kelly_frac": 0.0,
-      "ttl_sec": 13298,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.96,
-      "unused_cash": 0.04,
-      "category": "other",
-      "volume_24h": 6114.26,
-      "spread": 0.01,
-      "fee": 0.003185,
-      "minutes_left": 221,
-      "days_left": 0.15,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-06-25T22:18:23.285563+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-07-21T08:20:15.361778+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2922826",
+      "question": "Will the price of Ethereum be between $2,000 and $2,100 on July 21?",
+      "action": "BUY_NO",
+      "score": 0.7689,
+      "edge": 0.0219,
+      "win_probability": 0.9635,
+      "buy_price": 0.977,
+      "ev": -0.015,
+      "kelly_frac": 0.0,
+      "ttl_sec": 27585,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.977,
+      "unused_cash": 0.023,
+      "category": "crypto",
+      "volume_24h": 9449.92,
+      "spread": 0.027,
+      "fee": 0.00111,
+      "minutes_left": 459,
+      "days_left": 0.32,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-07-21T03:44:54.634920+00:00",
+    "enriched_at": "2026-07-21T06:41:10.026933+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
