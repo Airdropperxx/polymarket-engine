@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-22T15:29:09.827637+00:00Z",
+  "timestamp": "2026-07-22T16:57:04.613303+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4535,
+  "trades_rejected": 4536,
   "scan_log_executed": 172,
-  "total_opportunities": 4707,
+  "total_opportunities": 4708,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 1912,
+      "total": 1913,
       "executed": 54,
-      "rejected": 1858
+      "rejected": 1859
     },
     "s1_negrisk_arb": {
       "total": 2795,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-06-26T06:52:17.936804+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2640031",
-      "question": "Will the price of Ethereum be above $1,400 on June 29?",
-      "action": "BUY_YES",
-      "score": 0.6517,
-      "edge": 0.0377,
-      "win_probability": 0.9505,
-      "buy_price": 0.959,
-      "ev": -0.0123,
-      "kelly_frac": 0.0,
-      "ttl_sec": 292063,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.959,
-      "unused_cash": 0.041,
-      "category": "crypto",
-      "volume_24h": 3179.46,
-      "spread": 0.017,
-      "fee": 0.003336,
-      "minutes_left": 4867,
-      "days_left": 3.38,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-06-26T06:52:18.050797+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-07-22T16:57:04.449442+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2949163",
+      "question": "Exact Score: AS Omónoia Leukosías 0 - 0 Qairat FK?",
+      "action": "BUY_NO",
+      "score": 0.7672,
+      "edge": 0.0688,
+      "win_probability": 0.915,
+      "buy_price": 0.92,
+      "ev": -0.0176,
+      "kelly_frac": 0.0,
+      "ttl_sec": 176,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.92,
+      "unused_cash": 0.08,
+      "category": "sports",
+      "volume_24h": 9916.21,
+      "spread": 0.01,
+      "fee": 0.011213,
+      "minutes_left": 2,
+      "days_left": 0.0,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-07-22T14:21:57.161861+00:00",
+    "enriched_at": "2026-07-22T16:45:43.341233+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
