@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-27T17:16:46.838022+00:00Z",
+  "timestamp": "2026-07-27T18:54:23.195384+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4646,
+  "trades_rejected": 4647,
   "scan_log_executed": 172,
-  "total_opportunities": 4818,
+  "total_opportunities": 4819,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2022,
+      "total": 2023,
       "executed": 54,
-      "rejected": 1968
+      "rejected": 1969
     },
     "s1_negrisk_arb": {
       "total": 2796,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-06-30T08:05:23.653777+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2716949",
-      "question": "Will the highest temperature in Munich be 31°C or higher on June 30?",
-      "action": "BUY_NO",
-      "score": 0.7097,
-      "edge": 0.004,
-      "win_probability": 0.9935,
-      "buy_price": 0.996,
-      "ev": -0.0025,
-      "kelly_frac": 0.0,
-      "ttl_sec": 14077,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.996,
-      "unused_cash": 0.004,
-      "category": "other",
-      "volume_24h": 4550.19,
-      "spread": 0.005,
-      "fee": 3.6e-05,
-      "minutes_left": 234,
-      "days_left": 0.16,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-06-30T08:05:23.774798+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-07-27T18:54:23.028673+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2107954",
+      "question": "No change in Bank of Japan’s interest rates after the July 2026 meeting?",
+      "action": "BUY_YES",
+      "score": 0.5783,
+      "edge": 0.0126,
+      "win_probability": 0.9865,
+      "buy_price": 0.987,
+      "ev": -0.0009,
+      "kelly_frac": 0.0,
+      "ttl_sec": 277538,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.987,
+      "unused_cash": 0.013,
+      "category": "politics",
+      "volume_24h": 5213.1,
+      "spread": 0.001,
+      "fee": 0.000366,
+      "minutes_left": 4625,
+      "days_left": 3.21,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-07-27T17:11:44.201350+00:00",
+    "enriched_at": "2026-07-27T18:48:04.965610+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
