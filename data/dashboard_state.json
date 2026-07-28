@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-28T16:03:01.571556+00:00Z",
+  "timestamp": "2026-07-28T17:50:50.198528+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4668,
+  "trades_rejected": 4669,
   "scan_log_executed": 172,
-  "total_opportunities": 4840,
+  "total_opportunities": 4841,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2044,
+      "total": 2045,
       "executed": 54,
-      "rejected": 1990
+      "rejected": 1991
     },
     "s1_negrisk_arb": {
       "total": 2796,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-06-30T23:11:25.386557+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2726102",
-      "question": "Will the highest temperature in Manila be 28°C on July 1?",
-      "action": "BUY_NO",
-      "score": 0.7155,
-      "edge": 0.003,
-      "win_probability": 0.996,
-      "buy_price": 0.997,
-      "ev": -0.001,
-      "kelly_frac": 0.0,
-      "ttl_sec": 46115,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.997,
-      "unused_cash": 0.003,
-      "category": "other",
-      "volume_24h": 9276.96,
-      "spread": 0.002,
-      "fee": 2e-05,
-      "minutes_left": 768,
-      "days_left": 0.53,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-01T01:38:22.637931+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-07-28T17:50:50.013790+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2817896",
+      "question": "Will Bitcoin dip to $60,000 in July?",
+      "action": "BUY_NO",
+      "score": 0.6533,
+      "edge": 0.0979,
+      "win_probability": 0.875,
+      "buy_price": 0.88,
+      "ev": -0.0308,
+      "kelly_frac": 0.0,
+      "ttl_sec": 295751,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.88,
+      "unused_cash": 0.12,
+      "category": "crypto",
+      "volume_24h": 213576.82,
+      "spread": 0.01,
+      "fee": 0.02208,
+      "minutes_left": 4929,
+      "days_left": 3.42,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-07-28T14:40:50.107424+00:00",
+    "enriched_at": "2026-07-28T16:50:28.981209+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
