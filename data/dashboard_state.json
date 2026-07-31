@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-07-31T18:51:24.319510+00:00Z",
+  "timestamp": "2026-07-31T20:16:18.529992+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4721,
+  "trades_rejected": 4722,
   "scan_log_executed": 172,
-  "total_opportunities": 4893,
+  "total_opportunities": 4894,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2097,
+      "total": 2098,
       "executed": 54,
-      "rejected": 2043
+      "rejected": 2044
     },
     "s1_negrisk_arb": {
       "total": 2796,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-03T18:09:19.929835+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2707886",
-      "question": "Argentina vs. Cabo Verde: Cabo Verde O/U 1.5",
-      "action": "BUY_NO",
-      "score": 0.7715,
-      "edge": 0.0533,
-      "win_probability": 0.935,
-      "buy_price": 0.94,
-      "ev": -0.0125,
-      "kelly_frac": 0.0,
-      "ttl_sec": 13841,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.94,
-      "unused_cash": 0.06,
-      "category": "other",
-      "volume_24h": 6556.45,
-      "spread": 0.01,
-      "fee": 0.006728,
-      "minutes_left": 230,
-      "days_left": 0.16,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-03T18:09:20.049829+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-07-31T20:16:18.363563+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "3126376",
+      "question": "Will Bitcoin reach $68,000 July 27-August 2?",
+      "action": "BUY_NO",
+      "score": 0.7244,
+      "edge": 0.0107,
+      "win_probability": 0.9885,
+      "buy_price": 0.989,
+      "ev": -0.0008,
+      "kelly_frac": 0.0,
+      "ttl_sec": 200622,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.989,
+      "unused_cash": 0.011,
+      "category": "crypto",
+      "volume_24h": 34882.36,
+      "spread": 0.001,
+      "fee": 0.000263,
+      "minutes_left": 3343,
+      "days_left": 2.32,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-07-31T17:51:52.193423+00:00",
+    "enriched_at": "2026-07-31T19:52:16.791185+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
