@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-03T22:04:04.456035+00:00Z",
+  "timestamp": "2026-08-03T23:33:57.854295+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4755,
+  "trades_rejected": 4756,
   "scan_log_executed": 172,
-  "total_opportunities": 4927,
+  "total_opportunities": 4928,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2130,
+      "total": 2131,
       "executed": 54,
-      "rejected": 2076
+      "rejected": 2077
     },
     "s1_negrisk_arb": {
       "total": 2797,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-05T17:04:18.589094+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "1088142",
-      "question": "Will Elise Mertens be the 2026 Women’s Wimbledon Winner?",
-      "action": "BUY_NO",
-      "score": 0.5122,
-      "edge": 0.0164,
-      "win_probability": 0.9795,
-      "buy_price": 0.983,
-      "ev": -0.0042,
-      "kelly_frac": 0.0,
-      "ttl_sec": 543342,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.983,
-      "unused_cash": 0.017,
-      "category": "sports",
-      "volume_24h": 11160.99,
-      "spread": 0.007,
-      "fee": 0.000618,
-      "minutes_left": 9055,
-      "days_left": 6.29,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-05T18:35:30.443162+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-08-03T23:33:57.682630+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "3136009",
+      "question": "Will Modena FC win on 2026-08-08?",
+      "action": "BUY_NO",
+      "score": 0.5309,
+      "edge": 0.004,
+      "win_probability": 0.9815,
+      "buy_price": 0.996,
+      "ev": -0.0146,
+      "kelly_frac": 0.0,
+      "ttl_sec": 404763,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.996,
+      "unused_cash": 0.004,
+      "category": "sports",
+      "volume_24h": 9091.47,
+      "spread": 0.029,
+      "fee": 3.6e-05,
+      "minutes_left": 6746,
+      "days_left": 4.68,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-08-03T21:29:49.580261+00:00",
+    "enriched_at": "2026-08-03T23:18:57.837274+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
