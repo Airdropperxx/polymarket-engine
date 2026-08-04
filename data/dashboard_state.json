@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-04T08:02:15.717904+00:00Z",
+  "timestamp": "2026-08-04T11:02:15.759408+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4758,
+  "trades_rejected": 4759,
   "scan_log_executed": 172,
-  "total_opportunities": 4930,
+  "total_opportunities": 4931,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2133,
+      "total": 2134,
       "executed": 54,
-      "rejected": 2079
+      "rejected": 2080
     },
     "s1_negrisk_arb": {
       "total": 2797,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-05T20:10:23.141337+00:00",
-      "strategy": "s1_negrisk_arb",
-      "market_id": "0xb5c32a9acd39848acad4913ac4cd49c5de2afcc9d23a8a7ba2419375fab87400",
-      "question": "NegRisk group: Will Portugal win the 2026 FIFA World Cup?...",
-      "action": "BUY_ALL_YES",
-      "score": 0.9056,
-      "edge": 0.9175,
-      "win_probability": 1.0,
-      "buy_price": 0.082,
-      "ev": 0.0,
-      "kelly_frac": 0.0,
-      "ttl_sec": 1223378,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.082,
-      "unused_cash": 0.918,
-      "category": "sports",
-      "volume_24h": 3275527.26,
-      "spread": 0,
-      "fee": 0,
-      "minutes_left": 20389.6,
-      "days_left": 14.16,
-      "num_legs": 2,
-      "total_ask": 0.082,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-05T21:33:29.006089+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-08-04T11:02:15.577974+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "3280216",
+      "question": "Will the highest temperature in Munich be 35°C on August 4?",
+      "action": "BUY_NO",
+      "score": 0.7038,
+      "edge": 0.0098,
+      "win_probability": 0.975,
+      "buy_price": 0.99,
+      "ev": -0.0154,
+      "kelly_frac": 0.0,
+      "ttl_sec": 3465,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.99,
+      "unused_cash": 0.01,
+      "category": "other",
+      "volume_24h": 8619.24,
+      "spread": 0.03,
+      "fee": 0.000218,
+      "minutes_left": 57,
+      "days_left": 0.04,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-08-04T06:40:30.599856+00:00",
+    "enriched_at": "2026-08-04T09:50:12.262008+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
