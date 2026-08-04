@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-04T22:07:37.896060+00:00Z",
+  "timestamp": "2026-08-04T23:32:09.130400+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4760,
+  "trades_rejected": 4761,
   "scan_log_executed": 172,
-  "total_opportunities": 4932,
+  "total_opportunities": 4933,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2135,
+      "total": 2136,
       "executed": 54,
-      "rejected": 2081
+      "rejected": 2082
     },
     "s1_negrisk_arb": {
       "total": 2797,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-05T21:33:29.129804+00:00",
-      "strategy": "s1_negrisk_arb",
-      "market_id": "0xb5c32a9acd39848acad4913ac4cd49c5de2afcc9d23a8a7ba2419375fab87400",
-      "question": "NegRisk group: Will Norway win the 2026 FIFA World Cup?...",
-      "action": "BUY_ALL_YES",
-      "score": 0.906,
-      "edge": 0.9236,
-      "win_probability": 1.0,
-      "buy_price": 0.076,
-      "ev": 0.0,
-      "kelly_frac": 0.0,
-      "ttl_sec": 1218392,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.076,
-      "unused_cash": 0.924,
-      "category": "sports",
-      "volume_24h": 3676505.74,
-      "spread": 0,
-      "fee": 0,
-      "minutes_left": 20306.5,
-      "days_left": 14.1,
-      "num_legs": 2,
-      "total_ask": 0.076,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-05T22:58:08.475409+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-08-04T23:32:08.997983+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "907513",
+      "question": "Will Francesca Hong win the 2026 Wisconsin Governor Democratic primary election?",
+      "action": "BUY_YES",
+      "score": 0.5161,
+      "edge": 0.0452,
+      "win_probability": 0.9455,
+      "buy_price": 0.95,
+      "ev": -0.0098,
+      "kelly_frac": 0.0,
+      "ttl_sec": 520072,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.95,
+      "unused_cash": 0.05,
+      "category": "politics",
+      "volume_24h": 10857.84,
+      "spread": 0.009,
+      "fee": 0.004823,
+      "minutes_left": 8667,
+      "days_left": 6.02,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-08-04T21:35:32.968799+00:00",
+    "enriched_at": "2026-08-04T23:18:04.464235+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
