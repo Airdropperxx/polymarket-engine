@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-05T22:54:40.011563+00:00Z",
+  "timestamp": "2026-08-05T23:56:05.630900+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4763,
+  "trades_rejected": 4764,
   "scan_log_executed": 172,
-  "total_opportunities": 4935,
+  "total_opportunities": 4936,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2138,
+      "total": 2139,
       "executed": 54,
-      "rejected": 2084
+      "rejected": 2085
     },
     "s1_negrisk_arb": {
       "total": 2797,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-06T04:50:08.909736+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2782031",
-      "question": "Exact Score: Portugal 3 - 2 Spain?",
-      "action": "BUY_NO",
-      "score": 0.8171,
-      "edge": 0.021,
-      "win_probability": 0.977,
-      "buy_price": 0.978,
-      "ev": -0.0021,
-      "kelly_frac": 0.0,
-      "ttl_sec": 50992,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.978,
-      "unused_cash": 0.022,
-      "category": "sports",
-      "volume_24h": 95042.0,
-      "spread": 0.002,
-      "fee": 0.001019,
-      "minutes_left": 849,
-      "days_left": 0.59,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-06T08:57:36.411624+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-08-05T23:56:05.464067+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "3059766",
+      "question": "Exact Score: Nashville SC 1 - 1 Club León FC?",
+      "action": "BUY_NO",
+      "score": 0.7289,
+      "edge": 0.0979,
+      "win_probability": 0.87,
+      "buy_price": 0.88,
+      "ev": -0.0365,
+      "kelly_frac": 0.0,
+      "ttl_sec": 2035,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.88,
+      "unused_cash": 0.12,
+      "category": "sports",
+      "volume_24h": 9957.04,
+      "spread": 0.02,
+      "fee": 0.02208,
+      "minutes_left": 33,
+      "days_left": 0.02,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-08-05T21:32:06.904588+00:00",
+    "enriched_at": "2026-08-05T23:17:31.156065+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
