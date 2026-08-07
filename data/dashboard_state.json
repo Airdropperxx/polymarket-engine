@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-07T22:04:34.543858+00:00Z",
+  "timestamp": "2026-08-07T23:03:54.975731+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4783,
+  "trades_rejected": 4784,
   "scan_log_executed": 172,
-  "total_opportunities": 4955,
+  "total_opportunities": 4956,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2158,
+      "total": 2159,
       "executed": 54,
-      "rejected": 2104
+      "rejected": 2105
     },
     "s1_negrisk_arb": {
       "total": 2797,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-07T19:48:59.067271+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2816159",
-      "question": "S&P 500 (SPX) Up or Down on July 7?",
-      "action": "BUY_NO",
-      "score": 0.7884,
-      "edge": 0.002,
-      "win_probability": 0.9955,
-      "buy_price": 0.998,
-      "ev": -0.0025,
-      "kelly_frac": 0.0,
-      "ttl_sec": 662,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.998,
-      "unused_cash": 0.002,
-      "category": "other",
-      "volume_24h": 99706.12,
-      "spread": 0.005,
-      "fee": 9e-06,
-      "minutes_left": 11,
-      "days_left": 0.01,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-07T19:48:59.182003+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-08-07T23:03:54.840320+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "3394813",
+      "question": "Will the lowest temperature in Hong Kong be 24°C or below on August 9?",
+      "action": "BUY_NO",
+      "score": 0.6166,
+      "edge": 0.004,
+      "win_probability": 0.993,
+      "buy_price": 0.996,
+      "ev": -0.003,
+      "kelly_frac": 0.0,
+      "ttl_sec": 132966,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.996,
+      "unused_cash": 0.004,
+      "category": "other",
+      "volume_24h": 1004.03,
+      "spread": 0.006,
+      "fee": 3.6e-05,
+      "minutes_left": 2216,
+      "days_left": 1.54,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-08-07T21:55:29.451074+00:00",
+    "enriched_at": "2026-08-07T22:55:20.917486+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
