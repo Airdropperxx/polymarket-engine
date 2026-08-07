@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-07T04:36:03.095804+00:00Z",
+  "timestamp": "2026-08-07T06:06:47.685053+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4767,
+  "trades_rejected": 4768,
   "scan_log_executed": 172,
-  "total_opportunities": 4939,
+  "total_opportunities": 4940,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2142,
+      "total": 2143,
       "executed": 54,
-      "rejected": 2088
+      "rejected": 2089
     },
     "s1_negrisk_arb": {
       "total": 2797,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-06T12:48:31.454748+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "1087894",
-      "question": "Will Alexander Zverev be the 2026 Men’s Wimbledon winner?",
-      "action": "BUY_NO",
-      "score": 0.5325,
-      "edge": 0.0755,
-      "win_probability": 0.9095,
-      "buy_price": 0.911,
-      "ev": -0.0164,
-      "kelly_frac": 0.0,
-      "ttl_sec": 472289,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.911,
-      "unused_cash": 0.089,
-      "category": "sports",
-      "volume_24h": 18184.7,
-      "spread": 0.003,
-      "fee": 0.013475,
-      "minutes_left": 7871,
-      "days_left": 5.47,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-06T18:25:26.670356+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-08-07T06:06:47.511275+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "2633428",
+      "question": "US-Iran Final Nuclear Deal by August 13, 2026?",
+      "action": "BUY_NO",
+      "score": 0.4695,
+      "edge": 0.0049,
+      "win_probability": 0.994,
+      "buy_price": 0.995,
+      "ev": -0.0011,
+      "kelly_frac": 0.0,
+      "ttl_sec": 582733,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.995,
+      "unused_cash": 0.005,
+      "category": "other",
+      "volume_24h": 29619.83,
+      "spread": 0.002,
+      "fee": 5.5e-05,
+      "minutes_left": 9712,
+      "days_left": 6.74,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-08-07T03:19:06.121482+00:00",
+    "enriched_at": "2026-08-07T05:50:18.348637+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
