@@ -510,7 +510,7 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
 
 <script id="engine-data" type="application/json">
 {
-  "timestamp": "2026-08-07T23:03:54.975731+00:00Z",
+  "timestamp": "2026-08-07T23:57:00.882739+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -548,14 +548,14 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4784,
+  "trades_rejected": 4785,
   "scan_log_executed": 172,
-  "total_opportunities": 4956,
+  "total_opportunities": 4957,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2159,
+      "total": 2160,
       "executed": 54,
-      "rejected": 2105
+      "rejected": 2106
     },
     "s1_negrisk_arb": {
       "total": 2797,
@@ -4504,36 +4504,6 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-07T19:48:59.182003+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2812639",
-      "question": "Will the highest temperature in Seoul be 30°C or higher on July 8?",
-      "action": "BUY_NO",
-      "score": 0.755,
-      "edge": 0.0564,
-      "win_probability": 0.9355,
-      "buy_price": 0.936,
-      "ev": -0.0086,
-      "kelly_frac": 0.0,
-      "ttl_sec": 58262,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.936,
-      "unused_cash": 0.064,
-      "category": "other",
-      "volume_24h": 7985.56,
-      "spread": 0.001,
-      "fee": 0.007557,
-      "minutes_left": 971,
-      "days_left": 0.67,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-07T19:48:59.297142+00:00",
       "strategy": "s10_near_resolution",
@@ -19503,10 +19473,40 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-08-07T23:57:00.713898+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "3394813",
+      "question": "Will the lowest temperature in Hong Kong be 24°C or below on August 9?",
+      "action": "BUY_NO",
+      "score": 0.6182,
+      "edge": 0.004,
+      "win_probability": 0.993,
+      "buy_price": 0.996,
+      "ev": -0.003,
+      "kelly_frac": 0.0,
+      "ttl_sec": 129780,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.996,
+      "unused_cash": 0.004,
+      "category": "other",
+      "volume_24h": 1004.03,
+      "spread": 0.006,
+      "fee": 3.6e-05,
+      "minutes_left": 2163,
+      "days_left": 1.5,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-08-07T22:55:20.917486+00:00",
+    "enriched_at": "2026-08-07T23:48:08.788721+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
