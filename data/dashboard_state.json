@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-10T12:07:12.743170+00:00Z",
+  "timestamp": "2026-08-10T13:53:30.698451+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4835,
+  "trades_rejected": 4836,
   "scan_log_executed": 172,
-  "total_opportunities": 5007,
+  "total_opportunities": 5008,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2210,
+      "total": 2211,
       "executed": 54,
-      "rejected": 2156
+      "rejected": 2157
     },
     "s1_negrisk_arb": {
       "total": 2797,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-09T16:59:49.544535+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2555425",
-      "question": "Will G2 Esports win MSI 2026?",
-      "action": "BUY_NO",
-      "score": 0.6604,
-      "edge": 0.0564,
-      "win_probability": 0.933,
-      "buy_price": 0.936,
-      "ev": -0.0113,
-      "kelly_frac": 0.0,
-      "ttl_sec": 298751,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.936,
-      "unused_cash": 0.064,
-      "category": "sports",
-      "volume_24h": 8363.57,
-      "spread": 0.006,
-      "fee": 0.007557,
-      "minutes_left": 4979,
-      "days_left": 3.46,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-09T16:59:49.669506+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-08-10T13:53:30.525097+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "3399417",
+      "question": "US announces end of Iranian blockade by August 12, 2026?",
+      "action": "BUY_NO",
+      "score": 0.7241,
+      "edge": 0.0334,
+      "win_probability": 0.9625,
+      "buy_price": 0.964,
+      "ev": -0.0043,
+      "kelly_frac": 0.0,
+      "ttl_sec": 209130,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.964,
+      "unused_cash": 0.036,
+      "category": "other",
+      "volume_24h": 80930.92,
+      "spread": 0.003,
+      "fee": 0.002612,
+      "minutes_left": 3485,
+      "days_left": 2.42,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-08-10T11:58:47.367484+00:00",
+    "enriched_at": "2026-08-10T13:43:45.263014+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
