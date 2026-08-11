@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-11T05:33:58.140102+00:00Z",
+  "timestamp": "2026-08-11T06:58:24.129795+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -18995,54 +18995,8 @@
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-08-11T04:39:32.222205+00:00",
-    "elapsed_sec": 0.4,
-    "count": 1,
-    "tradeable_count": 1,
-    "opportunities": [
-      {
-        "ts": "2026-08-11T04:16:05.819831+00:00",
-        "strategy": "s10_near_resolution",
-        "market_id": "2925166",
-        "question": "Will Core CPI YoY be 2.6% in July?",
-        "action": "BUY_NO",
-        "score": 0.6766,
-        "edge": 0.0394,
-        "win_probability": 0.9385,
-        "buy_price": 0.957,
-        "ev": -0.0231,
-        "kelly_frac": 0.0,
-        "ttl_sec": 85375,
-        "executed": false,
-        "reason_skipped": "daily_loss_limit",
-        "trade_id": "",
-        "budget_usdc": 1.0,
-        "shares": 1,
-        "actual_cost": 0.957,
-        "unused_cash": 0.043,
-        "category": "other",
-        "volume_24h": 2519.54,
-        "spread": 0.037,
-        "fee": 0.003646,
-        "minutes_left": 1422,
-        "days_left": 0.99,
-        "num_legs": 1,
-        "total_ask": 0,
-        "observer_flagged": false,
-        "clob_enriched": true,
-        "yes_token_id": "65005740169149662513366777047778978086581897461453978914223603946645000966838",
-        "no_token_id": "46218895978136645411678294434530224262735130405433937213341798781718927995978",
-        "clob_yes_bid": 0.045,
-        "clob_yes_ask": 0.08,
-        "clob_no_bid": 0.92,
-        "clob_no_ask": 0.955,
-        "clob_spread": 0.035,
-        "live_edge": 0.8585,
-        "bid_depth_5": 8590.75,
-        "ask_depth_5": 44114.04,
-        "enriched_at": "2026-08-11T04:39:32.489076+00:00",
-        "tradeable": true
-      }
-    ]
+    "enriched_at": "2026-08-11T06:04:02.488176+00:00",
+    "opportunities": [],
+    "message": "No recent strategy opportunities to enrich"
   }
 }
