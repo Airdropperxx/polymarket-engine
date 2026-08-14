@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-14T15:15:30.007156+00:00Z",
+  "timestamp": "2026-08-14T16:14:05.371339+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4882,
+  "trades_rejected": 4883,
   "scan_log_executed": 172,
-  "total_opportunities": 5054,
+  "total_opportunities": 5055,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2257,
+      "total": 2258,
       "executed": 54,
-      "rejected": 2203
+      "rejected": 2204
     },
     "s1_negrisk_arb": {
       "total": 2797,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-12T15:55:25.469364+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2658294",
-      "question": "Mojtaba Khamenei seen in public by July 15?",
-      "action": "BUY_NO",
-      "score": 0.7268,
-      "edge": 0.0377,
-      "win_probability": 0.956,
-      "buy_price": 0.959,
-      "ev": -0.0066,
-      "kelly_frac": 0.0,
-      "ttl_sec": 201875,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.959,
-      "unused_cash": 0.041,
-      "category": "other",
-      "volume_24h": 68352.53,
-      "spread": 0.006,
-      "fee": 0.003336,
-      "minutes_left": 3364,
-      "days_left": 2.34,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-12T15:55:25.604232+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-08-14T16:14:05.242491+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "3557451",
+      "question": "Will the lowest temperature in Shanghai be 27°C on August 15?",
+      "action": "BUY_NO",
+      "score": 0.7035,
+      "edge": 0.002,
+      "win_probability": 0.9965,
+      "buy_price": 0.998,
+      "ev": -0.0015,
+      "kelly_frac": 0.0,
+      "ttl_sec": 71155,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.998,
+      "unused_cash": 0.002,
+      "category": "other",
+      "volume_24h": 8943.23,
+      "spread": 0.003,
+      "fee": 9e-06,
+      "minutes_left": 1185,
+      "days_left": 0.82,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-08-14T15:06:44.991427+00:00",
+    "enriched_at": "2026-08-14T16:05:45.956281+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
