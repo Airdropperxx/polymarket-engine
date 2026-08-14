@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-14T18:23:56.555648+00:00Z",
+  "timestamp": "2026-08-14T19:27:18.899225+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4885,
+  "trades_rejected": 4886,
   "scan_log_executed": 172,
-  "total_opportunities": 5057,
+  "total_opportunities": 5058,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2260,
+      "total": 2261,
       "executed": 54,
-      "rejected": 2206
+      "rejected": 2207
     },
     "s1_negrisk_arb": {
       "total": 2797,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-12T16:54:54.904030+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2658294",
-      "question": "Mojtaba Khamenei seen in public by July 15?",
-      "action": "BUY_NO",
-      "score": 0.7154,
-      "edge": 0.0308,
-      "win_probability": 0.963,
-      "buy_price": 0.967,
-      "ev": -0.0064,
-      "kelly_frac": 0.0,
-      "ttl_sec": 198306,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.967,
-      "unused_cash": 0.033,
-      "category": "other",
-      "volume_24h": 68285.68,
-      "spread": 0.008,
-      "fee": 0.002216,
-      "minutes_left": 3305,
-      "days_left": 2.3,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-12T16:54:55.037086+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-08-14T19:27:18.744448+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "3421329",
+      "question": "Will the price of Ethereum be above $1,900 on August 15?",
+      "action": "BUY_NO",
+      "score": 0.7197,
+      "edge": 0.0763,
+      "win_probability": 0.905,
+      "buy_price": 0.91,
+      "ev": -0.0206,
+      "kelly_frac": 0.0,
+      "ttl_sec": 73962,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.91,
+      "unused_cash": 0.09,
+      "category": "crypto",
+      "volume_24h": 7531.82,
+      "spread": 0.01,
+      "fee": 0.013734,
+      "minutes_left": 1232,
+      "days_left": 0.86,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-08-14T18:06:22.226186+00:00",
+    "enriched_at": "2026-08-14T19:13:38.617334+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
