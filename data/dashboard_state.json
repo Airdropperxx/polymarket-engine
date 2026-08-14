@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-14T17:26:45.084213+00:00Z",
+  "timestamp": "2026-08-14T18:23:56.555648+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4884,
+  "trades_rejected": 4885,
   "scan_log_executed": 172,
-  "total_opportunities": 5056,
+  "total_opportunities": 5057,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2259,
+      "total": 2260,
       "executed": 54,
-      "rejected": 2205
+      "rejected": 2206
     },
     "s1_negrisk_arb": {
       "total": 2797,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-12T15:55:25.723353+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2891230",
-      "question": "Exact Score: England 1 - 2 Argentina?",
-      "action": "BUY_NO",
-      "score": 0.6583,
-      "edge": 0.0611,
-      "win_probability": 0.925,
-      "buy_price": 0.93,
-      "ev": -0.0149,
-      "kelly_frac": 0.0,
-      "ttl_sec": 270275,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.93,
-      "unused_cash": 0.07,
-      "category": "sports",
-      "volume_24h": 9954.94,
-      "spread": 0.01,
-      "fee": 0.008868,
-      "minutes_left": 4504,
-      "days_left": 3.13,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-12T16:54:54.904030+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-08-14T18:23:56.399004+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "3253813",
+      "question": "Exact Score: Wolverhampton Wanderers FC 3 - 0 Blackburn Rovers FC?",
+      "action": "BUY_NO",
+      "score": 0.7913,
+      "edge": 0.0611,
+      "win_probability": 0.925,
+      "buy_price": 0.93,
+      "ev": -0.0149,
+      "kelly_frac": 0.0,
+      "ttl_sec": 2164,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.93,
+      "unused_cash": 0.07,
+      "category": "sports",
+      "volume_24h": 9944.94,
+      "spread": 0.01,
+      "fee": 0.008868,
+      "minutes_left": 36,
+      "days_left": 0.03,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-08-14T17:10:56.653876+00:00",
+    "enriched_at": "2026-08-14T18:06:22.226186+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
