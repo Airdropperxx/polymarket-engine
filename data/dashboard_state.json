@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-15T22:16:07.811941+00:00Z",
+  "timestamp": "2026-08-15T22:46:02.876504+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4901,
+  "trades_rejected": 4902,
   "scan_log_executed": 172,
-  "total_opportunities": 5073,
+  "total_opportunities": 5074,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2276,
+      "total": 2277,
       "executed": 54,
-      "rejected": 2222
+      "rejected": 2223
     },
     "s1_negrisk_arb": {
       "total": 2797,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-14T17:10:03.178971+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2431010",
-      "question": "Will Lamine Yamal win the Golden Ball at the 2026 FIFA World Cup?",
-      "action": "BUY_NO",
-      "score": 0.6027,
-      "edge": 0.0182,
-      "win_probability": 0.979,
-      "buy_price": 0.981,
-      "ev": -0.0028,
-      "kelly_frac": 0.0,
-      "ttl_sec": 470938,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.981,
-      "unused_cash": 0.019,
-      "category": "sports",
-      "volume_24h": 259736.32,
-      "spread": 0.004,
-      "fee": 0.000767,
-      "minutes_left": 7848,
-      "days_left": 5.45,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-14T18:36:57.372069+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-08-15T22:46:02.715682+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "3543268",
+      "question": "Will \"Spider-Man: Brand New Day\" 3rd Weekend Box Office be less than 72m?",
+      "action": "BUY_YES",
+      "score": 0.6473,
+      "edge": 0.0733,
+      "win_probability": 0.901,
+      "buy_price": 0.914,
+      "ev": -0.0281,
+      "kelly_frac": 0.0,
+      "ttl_sec": 90778,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.914,
+      "unused_cash": 0.086,
+      "category": "other",
+      "volume_24h": 6256.41,
+      "spread": 0.026,
+      "fee": 0.012706,
+      "minutes_left": 1512,
+      "days_left": 1.05,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-08-15T21:34:39.093628+00:00",
+    "enriched_at": "2026-08-15T22:36:55.031531+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
