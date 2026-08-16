@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-16T17:15:17.372762+00:00Z",
+  "timestamp": "2026-08-16T17:42:49.435695+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -18995,54 +18995,8 @@
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-08-16T16:42:08.697020+00:00",
-    "elapsed_sec": 0.41,
-    "count": 1,
-    "tradeable_count": 0,
-    "opportunities": [
-      {
-        "ts": "2026-08-16T16:18:39.021445+00:00",
-        "strategy": "s10_near_resolution",
-        "market_id": "3516858",
-        "question": "Will the price of Bitcoin be above $60,000 on August 18?",
-        "action": "BUY_YES",
-        "score": 0.698,
-        "edge": 0.0126,
-        "win_probability": 0.985,
-        "buy_price": 0.987,
-        "ev": -0.0024,
-        "kelly_frac": 0.0,
-        "ttl_sec": 171682,
-        "executed": false,
-        "reason_skipped": "daily_loss_limit",
-        "trade_id": "",
-        "budget_usdc": 1.0,
-        "shares": 1,
-        "actual_cost": 0.987,
-        "unused_cash": 0.013,
-        "category": "crypto",
-        "volume_24h": 5442.75,
-        "spread": 0.004,
-        "fee": 0.000366,
-        "minutes_left": 2861,
-        "days_left": 1.99,
-        "num_legs": 1,
-        "total_ask": 0,
-        "observer_flagged": false,
-        "clob_enriched": true,
-        "yes_token_id": "94133643939986345772497485934689137685064261309842554788726410541215530809225",
-        "no_token_id": "58838919444546516492436655273982485111316448664444569829709754489932146891088",
-        "clob_yes_bid": 0.994,
-        "clob_yes_ask": 0.996,
-        "clob_no_bid": 0.004,
-        "clob_no_ask": 0.006,
-        "clob_spread": 0.002,
-        "live_edge": -0.011,
-        "bid_depth_5": 103318.21,
-        "ask_depth_5": 147171.19,
-        "enriched_at": "2026-08-16T16:42:08.975654+00:00",
-        "tradeable": false
-      }
-    ]
+    "enriched_at": "2026-08-16T17:33:33.777254+00:00",
+    "opportunities": [],
+    "message": "No recent strategy opportunities to enrich"
   }
 }
