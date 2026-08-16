@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-16T02:39:34.906858+00:00Z",
+  "timestamp": "2026-08-16T03:43:10.188026+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4904,
+  "trades_rejected": 4905,
   "scan_log_executed": 172,
-  "total_opportunities": 5076,
+  "total_opportunities": 5077,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2279,
+      "total": 2280,
       "executed": 54,
-      "rejected": 2225
+      "rejected": 2226
     },
     "s1_negrisk_arb": {
       "total": 2797,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-14T18:36:57.580496+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2899243",
-      "question": "Rome: Francesca Pace vs Eva Vedder",
-      "action": "BUY_NO",
-      "score": 0.467,
-      "edge": 0.0246,
-      "win_probability": 0.9645,
-      "buy_price": 0.974,
-      "ev": -0.0112,
-      "kelly_frac": 0.0,
-      "ttl_sec": 566583,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.974,
-      "unused_cash": 0.026,
-      "category": "other",
-      "volume_24h": 9876.06,
-      "spread": 0.019,
-      "fee": 0.001405,
-      "minutes_left": 9443,
-      "days_left": 6.56,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-14T20:06:59.428799+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-08-16T03:43:10.029517+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "3506011",
+      "question": "Will Elon Musk post 200-219 tweets from August 14 to August 21, 2026?",
+      "action": "BUY_NO",
+      "score": 0.452,
+      "edge": 0.1119,
+      "win_probability": 0.855,
+      "buy_price": 0.86,
+      "ev": -0.0384,
+      "kelly_frac": 0.0,
+      "ttl_sec": 476211,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.86,
+      "unused_cash": 0.14,
+      "category": "other",
+      "volume_24h": 5811.8,
+      "spread": 0.01,
+      "fee": 0.02805,
+      "minutes_left": 7936,
+      "days_left": 5.51,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-08-16T01:57:05.914329+00:00",
+    "enriched_at": "2026-08-16T03:12:41.513349+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
