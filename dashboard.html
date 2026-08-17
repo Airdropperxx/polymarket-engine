@@ -510,7 +510,7 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
 
 <script id="engine-data" type="application/json">
 {
-  "timestamp": "2026-08-17T23:18:11.673458+00:00Z",
+  "timestamp": "2026-08-17T23:45:23.116049+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -548,9 +548,9 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4940,
+  "trades_rejected": 4941,
   "scan_log_executed": 172,
-  "total_opportunities": 5112,
+  "total_opportunities": 5113,
   "scan_by_strategy": {
     "s10_near_resolution": {
       "total": 2313,
@@ -558,9 +558,9 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
       "rejected": 2259
     },
     "s1_negrisk_arb": {
-      "total": 2799,
+      "total": 2800,
       "executed": 118,
-      "rejected": 2681
+      "rejected": 2682
     }
   },
   "recent_trades": [
@@ -4504,36 +4504,6 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-17T06:36:13.106414+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2930687",
-      "question": "Will the highest temperature in Singapore be 31°C on July 17?",
-      "action": "BUY_NO",
-      "score": 0.7202,
-      "edge": 0.003,
-      "win_probability": 0.9935,
-      "buy_price": 0.997,
-      "ev": -0.0035,
-      "kelly_frac": 0.0,
-      "ttl_sec": 19428,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.997,
-      "unused_cash": 0.003,
-      "category": "other",
-      "volume_24h": 8343.16,
-      "spread": 0.007,
-      "fee": 2e-05,
-      "minutes_left": 323,
-      "days_left": 0.22,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-17T09:06:10.023659+00:00",
       "strategy": "s10_near_resolution",
@@ -19503,12 +19473,77 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
       "num_legs": 2,
       "total_ask": 0.8,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-08-17T23:45:22.957103+00:00",
+      "strategy": "s1_negrisk_arb",
+      "market_id": "0xc99d812013f3b80930aef613e40782d1948457a45390ed7e6e19decdf5edd900",
+      "question": "NegRisk group: Will the highest temperature in London be 25°C on August 18?...",
+      "action": "BUY_ALL_YES",
+      "score": 0.9781,
+      "edge": 0.1819,
+      "win_probability": 1.0,
+      "buy_price": 0.73,
+      "ev": 0.0,
+      "kelly_frac": 0.0,
+      "ttl_sec": 44078,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.73,
+      "unused_cash": 0.27,
+      "category": "other",
+      "volume_24h": 6781.51,
+      "spread": 0,
+      "fee": 0,
+      "minutes_left": 734.6,
+      "days_left": 0.51,
+      "num_legs": 2,
+      "total_ask": 0.73,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-08-17T22:40:59.686923+00:00",
-    "opportunities": [],
-    "message": "No recent strategy opportunities to enrich"
+    "enriched_at": "2026-08-17T23:36:08.191265+00:00",
+    "elapsed_sec": 0.09,
+    "count": 1,
+    "tradeable_count": 0,
+    "opportunities": [
+      {
+        "ts": "2026-08-17T23:18:11.547106+00:00",
+        "strategy": "s1_negrisk_arb",
+        "market_id": "0xc99d812013f3b80930aef613e40782d1948457a45390ed7e6e19decdf5edd900",
+        "question": "NegRisk group: Will the highest temperature in London be 25°C on August 18?...",
+        "action": "BUY_ALL_YES",
+        "score": 0.9575,
+        "edge": 0.0964,
+        "win_probability": 1.0,
+        "buy_price": 0.8,
+        "ev": 0.0,
+        "kelly_frac": 0.0,
+        "ttl_sec": 45709,
+        "executed": false,
+        "reason_skipped": "daily_loss_limit",
+        "trade_id": "",
+        "budget_usdc": 1.0,
+        "shares": 1,
+        "actual_cost": 0.8,
+        "unused_cash": 0.2,
+        "category": "other",
+        "volume_24h": 6787.85,
+        "spread": 0,
+        "fee": 0,
+        "minutes_left": 761.8,
+        "days_left": 0.53,
+        "num_legs": 2,
+        "total_ask": 0.8,
+        "observer_flagged": false,
+        "clob_enriched": false,
+        "error": "gamma_fetch_failed"
+      }
+    ]
   }
 }
 </script>
