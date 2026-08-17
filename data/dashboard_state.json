@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-17T04:10:58.998619+00:00Z",
+  "timestamp": "2026-08-17T05:06:47.093512+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4921,
+  "trades_rejected": 4922,
   "scan_log_executed": 172,
-  "total_opportunities": 5093,
+  "total_opportunities": 5094,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2295,
+      "total": 2296,
       "executed": 54,
-      "rejected": 2241
+      "rejected": 2242
     },
     "s1_negrisk_arb": {
       "total": 2798,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-16T05:23:59.328486+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2825525",
-      "question": "Will Elon Musk post 240-259 tweets from July 10 to July 17, 2026?",
-      "action": "BUY_NO",
-      "score": 0.7138,
-      "edge": 0.002,
-      "win_probability": 0.9975,
-      "buy_price": 0.998,
-      "ev": -0.0005,
-      "kelly_frac": 0.0,
-      "ttl_sec": 124562,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.998,
-      "unused_cash": 0.002,
-      "category": "other",
-      "volume_24h": 43380.74,
-      "spread": 0.001,
-      "fee": 9e-06,
-      "minutes_left": 2076,
-      "days_left": 1.44,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-16T05:23:59.459111+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-08-17T05:06:46.936618+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "3614579",
+      "question": "Will the highest temperature in Munich be 24°C on August 17?",
+      "action": "BUY_NO",
+      "score": 0.6834,
+      "edge": 0.0908,
+      "win_probability": 0.875,
+      "buy_price": 0.89,
+      "ev": -0.0384,
+      "kelly_frac": 0.0,
+      "ttl_sec": 24794,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.89,
+      "unused_cash": 0.11,
+      "category": "other",
+      "volume_24h": 8185.54,
+      "spread": 0.03,
+      "fee": 0.019193,
+      "minutes_left": 413,
+      "days_left": 0.29,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-08-17T04:04:37.428578+00:00",
+    "enriched_at": "2026-08-17T04:57:46.624262+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
