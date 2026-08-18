@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-18T05:01:13.901650+00:00Z",
+  "timestamp": "2026-08-18T05:53:32.333099+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4943,
+  "trades_rejected": 4944,
   "scan_log_executed": 172,
-  "total_opportunities": 5115,
+  "total_opportunities": 5116,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2315,
+      "total": 2316,
       "executed": 54,
-      "rejected": 2261
+      "rejected": 2262
     },
     "s1_negrisk_arb": {
       "total": 2800,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-17T11:04:24.567675+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2941426",
-      "question": "Will the highest temperature in New York City be between 82-83°F on July 17?",
-      "action": "BUY_NO",
-      "score": 0.7764,
-      "edge": 0.0596,
-      "win_probability": 0.9315,
-      "buy_price": 0.932,
-      "ev": -0.0096,
-      "kelly_frac": 0.0,
-      "ttl_sec": 3336,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.932,
-      "unused_cash": 0.068,
-      "category": "other",
-      "volume_24h": 9692.54,
-      "spread": 0.001,
-      "fee": 0.008423,
-      "minutes_left": 55,
-      "days_left": 0.04,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-17T11:04:24.710914+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-08-18T05:53:32.186077+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "3120626",
+      "question": "Will Ronnie Murchinson-Rivera be the FL-06 Democratic nominee?",
+      "action": "BUY_NO",
+      "score": 0.6324,
+      "edge": 0.0836,
+      "win_probability": 0.88,
+      "buy_price": 0.9,
+      "ev": -0.0404,
+      "kelly_frac": 0.0,
+      "ttl_sec": 65128,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.9,
+      "unused_cash": 0.1,
+      "category": "politics",
+      "volume_24h": 4949.97,
+      "spread": 0.04,
+      "fee": 0.016402,
+      "minutes_left": 1085,
+      "days_left": 0.75,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-08-18T04:52:02.470941+00:00",
+    "enriched_at": "2026-08-18T05:44:42.943729+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
