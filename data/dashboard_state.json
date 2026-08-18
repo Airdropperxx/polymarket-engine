@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-18T02:15:26.943352+00:00Z",
+  "timestamp": "2026-08-18T03:21:34.447070+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4942,
+  "trades_rejected": 4943,
   "scan_log_executed": 172,
-  "total_opportunities": 5114,
+  "total_opportunities": 5115,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2314,
+      "total": 2315,
       "executed": 54,
-      "rejected": 2260
+      "rejected": 2261
     },
     "s1_negrisk_arb": {
       "total": 2800,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-17T09:06:10.167619+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2907029",
-      "question": "Will Tom Kim win the 2026 The Open Championship?",
-      "action": "BUY_NO",
-      "score": 0.687,
-      "edge": 0.0079,
-      "win_probability": 0.9895,
-      "buy_price": 0.992,
-      "ev": -0.0027,
-      "kelly_frac": 0.0,
-      "ttl_sec": 140031,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.992,
-      "unused_cash": 0.008,
-      "category": "sports",
-      "volume_24h": 6316.33,
-      "spread": 0.005,
-      "fee": 0.000141,
-      "minutes_left": 2333,
-      "days_left": 1.62,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-17T11:04:24.567675+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-08-18T03:21:34.323114+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "3624094",
+      "question": "Will the highest temperature in Munich be 24°C on August 18?",
+      "action": "BUY_NO",
+      "score": 0.6991,
+      "edge": 0.0079,
+      "win_probability": 0.986,
+      "buy_price": 0.992,
+      "ev": -0.0062,
+      "kelly_frac": 0.0,
+      "ttl_sec": 31106,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.992,
+      "unused_cash": 0.008,
+      "category": "other",
+      "volume_24h": 5448.88,
+      "spread": 0.012,
+      "fee": 0.000141,
+      "minutes_left": 518,
+      "days_left": 0.36,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-08-18T01:50:27.826785+00:00",
+    "enriched_at": "2026-08-18T03:08:31.717722+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
