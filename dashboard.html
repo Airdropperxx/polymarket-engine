@@ -510,7 +510,7 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
 
 <script id="engine-data" type="application/json">
 {
-  "timestamp": "2026-08-19T11:20:23.347136+00:00Z",
+  "timestamp": "2026-08-19T11:49:13.390432+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -548,14 +548,14 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 4963,
+  "trades_rejected": 4964,
   "scan_log_executed": 172,
-  "total_opportunities": 5135,
+  "total_opportunities": 5136,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2335,
+      "total": 2336,
       "executed": 54,
-      "rejected": 2281
+      "rejected": 2282
     },
     "s1_negrisk_arb": {
       "total": 2800,
@@ -4504,36 +4504,6 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-18T00:53:10.053084+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2922777",
-      "question": "Will the price of Bitcoin be between $58,000 and $60,000 on July 21?",
-      "action": "BUY_NO",
-      "score": 0.6234,
-      "edge": 0.0098,
-      "win_probability": 0.9885,
-      "buy_price": 0.99,
-      "ev": -0.0017,
-      "kelly_frac": 0.0,
-      "ttl_sec": 313611,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.99,
-      "unused_cash": 0.01,
-      "category": "crypto",
-      "volume_24h": 5369.0,
-      "spread": 0.003,
-      "fee": 0.000218,
-      "minutes_left": 5226,
-      "days_left": 3.63,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-18T03:51:38.286024+00:00",
       "strategy": "s10_near_resolution",
@@ -19503,10 +19473,40 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-08-19T11:49:13.291654+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "3541756",
+      "question": "Will the price of Bitcoin be above $64,000 on August 19?",
+      "action": "BUY_YES",
+      "score": 0.7896,
+      "edge": 0.0836,
+      "win_probability": 0.895,
+      "buy_price": 0.9,
+      "ev": -0.0238,
+      "kelly_frac": 0.0,
+      "ttl_sec": 15047,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.9,
+      "unused_cash": 0.1,
+      "category": "crypto",
+      "volume_24h": 87164.95,
+      "spread": 0.01,
+      "fee": 0.016402,
+      "minutes_left": 250,
+      "days_left": 0.17,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-08-19T10:45:52.570955+00:00",
+    "enriched_at": "2026-08-19T11:40:06.492805+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
