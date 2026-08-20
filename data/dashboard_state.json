@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-20T16:39:58.533693+00:00Z",
+  "timestamp": "2026-08-20T17:23:53.287390+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 5002,
+  "trades_rejected": 5003,
   "scan_log_executed": 172,
-  "total_opportunities": 5174,
+  "total_opportunities": 5175,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2374,
+      "total": 2375,
       "executed": 54,
-      "rejected": 2320
+      "rejected": 2321
     },
     "s1_negrisk_arb": {
       "total": 2800,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-19T20:09:14.984007+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2941647",
-      "question": "Will \"Little House on the Prairie: Season 1\" be the #2 US Netflix show this week?",
-      "action": "BUY_YES",
-      "score": 0.6338,
-      "edge": 0.0836,
-      "win_probability": 0.885,
-      "buy_price": 0.9,
-      "ev": -0.0349,
-      "kelly_frac": 0.0,
-      "ttl_sec": 186586,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.9,
-      "unused_cash": 0.1,
-      "category": "sports",
-      "volume_24h": 8472.66,
-      "spread": 0.03,
-      "fee": 0.016402,
-      "minutes_left": 3109,
-      "days_left": 2.16,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-20T05:02:30.218114+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-08-20T17:23:53.127801+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "3670542",
+      "question": "Will Elon Musk post 215-239 tweets from August 20 to August 22, 2026?",
+      "action": "BUY_NO",
+      "score": 0.6577,
+      "edge": 0.002,
+      "win_probability": 0.9975,
+      "buy_price": 0.998,
+      "ev": -0.0005,
+      "kelly_frac": 0.0,
+      "ttl_sec": 167768,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.998,
+      "unused_cash": 0.002,
+      "category": "other",
+      "volume_24h": 8784.65,
+      "spread": 0.001,
+      "fee": 9e-06,
+      "minutes_left": 2796,
+      "days_left": 1.94,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-08-20T15:48:58.334580+00:00",
+    "enriched_at": "2026-08-20T16:50:24.802252+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
