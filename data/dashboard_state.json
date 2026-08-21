@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-21T15:04:42.931610+00:00Z",
+  "timestamp": "2026-08-21T15:57:38.073082+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 5015,
+  "trades_rejected": 5016,
   "scan_log_executed": 172,
-  "total_opportunities": 5187,
+  "total_opportunities": 5188,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2387,
+      "total": 2388,
       "executed": 54,
-      "rejected": 2333
+      "rejected": 2334
     },
     "s1_negrisk_arb": {
       "total": 2800,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-20T15:26:53.114450+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2977555",
-      "question": "Will Elon Musk post 115-139 tweets from July 20 to July 22, 2026?",
-      "action": "BUY_NO",
-      "score": 0.6157,
-      "edge": 0.0049,
-      "win_probability": 0.9945,
-      "buy_price": 0.995,
-      "ev": -0.0006,
-      "kelly_frac": 0.0,
-      "ttl_sec": 174788,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.995,
-      "unused_cash": 0.005,
-      "category": "other",
-      "volume_24h": 2102.47,
-      "spread": 0.001,
-      "fee": 5.5e-05,
-      "minutes_left": 2913,
-      "days_left": 2.02,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-20T18:50:37.650505+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-08-21T15:57:37.908807+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "3670184",
+      "question": "Will the price of Ethereum be above $2,200 on August 24?",
+      "action": "BUY_YES",
+      "score": 0.5932,
+      "edge": 0.0192,
+      "win_probability": 0.961,
+      "buy_price": 0.98,
+      "ev": -0.0203,
+      "kelly_frac": 0.0,
+      "ttl_sec": 259343,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.98,
+      "unused_cash": 0.02,
+      "category": "crypto",
+      "volume_24h": 1346.81,
+      "spread": 0.038,
+      "fee": 0.000847,
+      "minutes_left": 4322,
+      "days_left": 3.0,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-08-21T14:53:15.970652+00:00",
+    "enriched_at": "2026-08-21T15:48:11.824373+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
