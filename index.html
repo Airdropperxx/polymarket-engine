@@ -510,7 +510,7 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
 
 <script id="engine-data" type="application/json">
 {
-  "timestamp": "2026-08-22T12:29:02.827390+00:00Z",
+  "timestamp": "2026-08-22T13:10:06.129793+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -548,14 +548,14 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 5057,
+  "trades_rejected": 5058,
   "scan_log_executed": 172,
-  "total_opportunities": 5229,
+  "total_opportunities": 5230,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2429,
+      "total": 2430,
       "executed": 54,
-      "rejected": 2375
+      "rejected": 2376
     },
     "s1_negrisk_arb": {
       "total": 2800,
@@ -4504,36 +4504,6 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-24T11:38:42.418566+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "3048532",
-      "question": "Will the highest temperature in New York City be 77°F or below on July 24?",
-      "action": "BUY_NO",
-      "score": 0.7377,
-      "edge": 0.0079,
-      "win_probability": 0.991,
-      "buy_price": 0.992,
-      "ev": -0.0011,
-      "kelly_frac": 0.0,
-      "ttl_sec": 1279,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.992,
-      "unused_cash": 0.008,
-      "category": "other",
-      "volume_24h": 9187.75,
-      "spread": 0.002,
-      "fee": 0.000141,
-      "minutes_left": 21,
-      "days_left": 0.01,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-24T11:38:42.545400+00:00",
       "strategy": "s10_near_resolution",
@@ -19503,10 +19473,40 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-08-22T13:10:05.971996+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "3635565",
+      "question": "Will the price of Bitcoin be above $74,000 on August 23?",
+      "action": "BUY_YES",
+      "score": 0.8187,
+      "edge": 0.0334,
+      "win_probability": 0.96,
+      "buy_price": 0.964,
+      "ev": -0.0069,
+      "kelly_frac": 0.0,
+      "ttl_sec": 96595,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.964,
+      "unused_cash": 0.036,
+      "category": "crypto",
+      "volume_24h": 64497.73,
+      "spread": 0.008,
+      "fee": 0.002612,
+      "minutes_left": 1609,
+      "days_left": 1.12,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-08-22T11:34:44.278934+00:00",
+    "enriched_at": "2026-08-22T13:00:36.579598+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
