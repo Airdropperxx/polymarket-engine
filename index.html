@@ -510,7 +510,7 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
 
 <script id="engine-data" type="application/json">
 {
-  "timestamp": "2026-08-22T13:10:06.129793+00:00Z",
+  "timestamp": "2026-08-22T13:51:00.098744+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -548,14 +548,14 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 5058,
+  "trades_rejected": 5059,
   "scan_log_executed": 172,
-  "total_opportunities": 5230,
+  "total_opportunities": 5231,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2430,
+      "total": 2431,
       "executed": 54,
-      "rejected": 2376
+      "rejected": 2377
     },
     "s1_negrisk_arb": {
       "total": 2800,
@@ -4504,36 +4504,6 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-24T11:38:42.545400+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "3050250",
-      "question": "Will the highest temperature in Hong Kong be 35°C on July 25?",
-      "action": "BUY_NO",
-      "score": 0.6871,
-      "edge": 0.0098,
-      "win_probability": 0.985,
-      "buy_price": 0.99,
-      "ev": -0.0053,
-      "kelly_frac": 0.0,
-      "ttl_sec": 87678,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.99,
-      "unused_cash": 0.01,
-      "category": "other",
-      "volume_24h": 8652.39,
-      "spread": 0.01,
-      "fee": 0.000218,
-      "minutes_left": 1461,
-      "days_left": 1.01,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-24T13:26:50.685421+00:00",
       "strategy": "s10_near_resolution",
@@ -19503,10 +19473,40 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-08-22T13:50:59.935618+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "3635565",
+      "question": "Will the price of Bitcoin be above $74,000 on August 23?",
+      "action": "BUY_YES",
+      "score": 0.8147,
+      "edge": 0.0325,
+      "win_probability": 0.9595,
+      "buy_price": 0.965,
+      "ev": -0.0083,
+      "kelly_frac": 0.0,
+      "ttl_sec": 94141,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.965,
+      "unused_cash": 0.035,
+      "category": "crypto",
+      "volume_24h": 64037.19,
+      "spread": 0.011,
+      "fee": 0.002477,
+      "minutes_left": 1569,
+      "days_left": 1.09,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-08-22T13:00:36.579598+00:00",
+    "enriched_at": "2026-08-22T13:44:20.617635+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
