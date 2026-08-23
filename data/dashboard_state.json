@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-23T16:18:57.969902+00:00Z",
+  "timestamp": "2026-08-23T16:49:55.903689+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -18995,54 +18995,8 @@
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-08-23T15:36:07.237414+00:00",
-    "elapsed_sec": 0.46,
-    "count": 1,
-    "tradeable_count": 0,
-    "opportunities": [
-      {
-        "ts": "2026-08-23T15:17:09.182897+00:00",
-        "strategy": "s10_near_resolution",
-        "market_id": "3478198",
-        "question": "Elche CF vs. FC Barcelona: O/U 0.5",
-        "action": "BUY_YES",
-        "score": 0.7743,
-        "edge": 0.0317,
-        "win_probability": 0.9655,
-        "buy_price": 0.966,
-        "ev": -0.0029,
-        "kelly_frac": 0.0,
-        "ttl_sec": 15172,
-        "executed": false,
-        "reason_skipped": "daily_loss_limit",
-        "trade_id": "",
-        "budget_usdc": 1.0,
-        "shares": 1,
-        "actual_cost": 0.966,
-        "unused_cash": 0.034,
-        "category": "other",
-        "volume_24h": 9806.76,
-        "spread": 0.001,
-        "fee": 0.002345,
-        "minutes_left": 252,
-        "days_left": 0.18,
-        "num_legs": 1,
-        "total_ask": 0,
-        "observer_flagged": false,
-        "clob_enriched": true,
-        "yes_token_id": "97640871943381785124280756476051837047422913299721315530154620024913335591134",
-        "no_token_id": "58313199222314331155376034979458133381781274847692229988640816752269083383718",
-        "clob_yes_bid": 0.965,
-        "clob_yes_ask": 0.968,
-        "clob_no_bid": 0.032,
-        "clob_no_ask": 0.035,
-        "clob_spread": 0.003,
-        "live_edge": -0.0025,
-        "bid_depth_5": 585408.5,
-        "ask_depth_5": 10739.47,
-        "enriched_at": "2026-08-23T15:36:07.567735+00:00",
-        "tradeable": false
-      }
-    ]
+    "enriched_at": "2026-08-23T16:43:08.809160+00:00",
+    "opportunities": [],
+    "message": "No recent strategy opportunities to enrich"
   }
 }
