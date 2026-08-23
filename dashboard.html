@@ -510,7 +510,7 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
 
 <script id="engine-data" type="application/json">
 {
-  "timestamp": "2026-08-23T06:32:55.926052+00:00Z",
+  "timestamp": "2026-08-23T07:29:07.492980+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -548,14 +548,14 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 5071,
+  "trades_rejected": 5072,
   "scan_log_executed": 172,
-  "total_opportunities": 5243,
+  "total_opportunities": 5244,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2443,
+      "total": 2444,
       "executed": 54,
-      "rejected": 2389
+      "rejected": 2390
     },
     "s1_negrisk_arb": {
       "total": 2800,
@@ -4504,36 +4504,6 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-25T03:46:34.146493+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "3026050",
-      "question": "Will Benjamin Netanyahu visit New York City by July 31?",
-      "action": "BUY_NO",
-      "score": 0.4998,
-      "edge": 0.0098,
-      "win_probability": 0.9875,
-      "buy_price": 0.99,
-      "ev": -0.0027,
-      "kelly_frac": 0.0,
-      "ttl_sec": 504807,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.99,
-      "unused_cash": 0.01,
-      "category": "other",
-      "volume_24h": 15979.86,
-      "spread": 0.005,
-      "fee": 0.000218,
-      "minutes_left": 8413,
-      "days_left": 5.84,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-25T03:46:34.278856+00:00",
       "strategy": "s10_near_resolution",
@@ -19503,10 +19473,40 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-08-23T07:29:07.330350+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "3635574",
+      "question": "Will the price of Ethereum be greater than $2,300 on August 23?",
+      "action": "BUY_YES",
+      "score": 0.7843,
+      "edge": 0.0201,
+      "win_probability": 0.975,
+      "buy_price": 0.979,
+      "ev": -0.005,
+      "kelly_frac": 0.0,
+      "ttl_sec": 30653,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.979,
+      "unused_cash": 0.021,
+      "category": "crypto",
+      "volume_24h": 7949.03,
+      "spread": 0.008,
+      "fee": 0.000931,
+      "minutes_left": 510,
+      "days_left": 0.35,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-08-23T05:44:59.661714+00:00",
+    "enriched_at": "2026-08-23T07:00:44.579492+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
