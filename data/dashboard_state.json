@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-24T12:39:08.967748+00:00Z",
+  "timestamp": "2026-08-24T13:46:37.030009+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -18995,54 +18995,8 @@
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-08-24T11:43:51.206981+00:00",
-    "elapsed_sec": 0.67,
-    "count": 1,
-    "tradeable_count": 1,
-    "opportunities": [
-      {
-        "ts": "2026-08-24T11:22:38.872172+00:00",
-        "strategy": "s10_near_resolution",
-        "market_id": "3688266",
-        "question": "Will Elon Musk post 260-279 tweets from August 21 to August 28, 2026?",
-        "action": "BUY_NO",
-        "score": 0.4974,
-        "edge": 0.0763,
-        "win_probability": 0.905,
-        "buy_price": 0.91,
-        "ev": -0.0206,
-        "kelly_frac": 0.0,
-        "ttl_sec": 362243,
-        "executed": false,
-        "reason_skipped": "daily_loss_limit",
-        "trade_id": "",
-        "budget_usdc": 1.0,
-        "shares": 1,
-        "actual_cost": 0.91,
-        "unused_cash": 0.09,
-        "category": "other",
-        "volume_24h": 1957.57,
-        "spread": 0.01,
-        "fee": 0.013734,
-        "minutes_left": 6037,
-        "days_left": 4.19,
-        "num_legs": 1,
-        "total_ask": 0,
-        "observer_flagged": false,
-        "clob_enriched": true,
-        "yes_token_id": "93340091214718548351796792220933997726328807130357817084669130547583389964980",
-        "no_token_id": "27329514436696081535292329296878770178099965061347889219598508041328688526044",
-        "clob_yes_bid": 0.09,
-        "clob_yes_ask": 0.1,
-        "clob_no_bid": 0.9,
-        "clob_no_ask": 0.91,
-        "clob_spread": 0.01,
-        "live_edge": 0.805,
-        "bid_depth_5": 8011.94,
-        "ask_depth_5": 19270.41,
-        "enriched_at": "2026-08-24T11:43:51.747450+00:00",
-        "tradeable": true
-      }
-    ]
+    "enriched_at": "2026-08-24T13:12:29.407195+00:00",
+    "opportunities": [],
+    "message": "No recent strategy opportunities to enrich"
   }
 }
