@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-24T18:38:33.257774+00:00Z",
+  "timestamp": "2026-08-24T19:24:43.883833+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -18995,8 +18995,54 @@
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-08-24T17:46:29.764071+00:00",
-    "opportunities": [],
-    "message": "No recent strategy opportunities to enrich"
+    "enriched_at": "2026-08-24T18:59:12.650249+00:00",
+    "elapsed_sec": 0.6,
+    "count": 1,
+    "tradeable_count": 1,
+    "opportunities": [
+      {
+        "ts": "2026-08-24T18:38:33.115157+00:00",
+        "strategy": "s10_near_resolution",
+        "market_id": "3780235",
+        "question": "Will Elon Musk post <40 tweets from August 24 to August 26, 2026?",
+        "action": "BUY_NO",
+        "score": 0.7052,
+        "edge": 0.0452,
+        "win_probability": 0.945,
+        "buy_price": 0.95,
+        "ev": -0.0103,
+        "kelly_frac": 0.0,
+        "ttl_sec": 163288,
+        "executed": false,
+        "reason_skipped": "daily_loss_limit",
+        "trade_id": "",
+        "budget_usdc": 1.0,
+        "shares": 1,
+        "actual_cost": 0.95,
+        "unused_cash": 0.05,
+        "category": "other",
+        "volume_24h": 7987.42,
+        "spread": 0.01,
+        "fee": 0.004823,
+        "minutes_left": 2721,
+        "days_left": 1.89,
+        "num_legs": 1,
+        "total_ask": 0,
+        "observer_flagged": false,
+        "clob_enriched": true,
+        "yes_token_id": "94368254008472398339240446864042264240412883200903877623746864772138405189510",
+        "no_token_id": "67128661916104306350851080752679324676932292228848169908523777228866384946899",
+        "clob_yes_bid": 0.04,
+        "clob_yes_ask": 0.05,
+        "clob_no_bid": 0.95,
+        "clob_no_ask": 0.96,
+        "clob_spread": 0.01,
+        "live_edge": 0.895,
+        "bid_depth_5": 11366.55,
+        "ask_depth_5": 10458.09,
+        "enriched_at": "2026-08-24T18:59:13.114279+00:00",
+        "tradeable": true
+      }
+    ]
   }
 }
