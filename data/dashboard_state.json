@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-24T13:46:37.030009+00:00Z",
+  "timestamp": "2026-08-24T14:36:09.160709+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 5102,
+  "trades_rejected": 5103,
   "scan_log_executed": 172,
-  "total_opportunities": 5274,
+  "total_opportunities": 5275,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2474,
+      "total": 2475,
       "executed": 54,
-      "rejected": 2420
+      "rejected": 2421
     },
     "s1_negrisk_arb": {
       "total": 2800,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-26T08:23:45.710924+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "3076662",
-      "question": "Will the highest temperature in Singapore be 30°C on July 26?",
-      "action": "BUY_YES",
-      "score": 0.743,
-      "edge": 0.0282,
-      "win_probability": 0.96,
-      "buy_price": 0.97,
-      "ev": -0.0122,
-      "kelly_frac": 0.0,
-      "ttl_sec": 12975,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.97,
-      "unused_cash": 0.03,
-      "category": "other",
-      "volume_24h": 8547.31,
-      "spread": 0.02,
-      "fee": 0.001848,
-      "minutes_left": 216,
-      "days_left": 0.15,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-26T08:23:45.838912+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-08-24T14:36:09.036222+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "3422124",
+      "question": "Will claude-opus-5-high be the best AI model on August 24, 2026?",
+      "action": "BUY_YES",
+      "score": 0.6777,
+      "edge": 0.0273,
+      "win_probability": 0.955,
+      "buy_price": 0.971,
+      "ev": -0.0183,
+      "kelly_frac": 0.0,
+      "ttl_sec": 33772,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.971,
+      "unused_cash": 0.029,
+      "category": "other",
+      "volume_24h": 1441.91,
+      "spread": 0.032,
+      "fee": 0.001732,
+      "minutes_left": 562,
+      "days_left": 0.39,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-08-24T13:12:29.407195+00:00",
+    "enriched_at": "2026-08-24T14:03:30.541391+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
