@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-24T17:26:08.731506+00:00Z",
+  "timestamp": "2026-08-24T17:57:01.123503+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -18995,54 +18995,8 @@
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-08-24T16:55:14.461506+00:00",
-    "elapsed_sec": 0.56,
-    "count": 1,
-    "tradeable_count": 1,
-    "opportunities": [
-      {
-        "ts": "2026-08-24T16:31:15.202246+00:00",
-        "strategy": "s10_near_resolution",
-        "market_id": "3829871",
-        "question": "Will Bitcoin reach $84,000 on August 24?",
-        "action": "BUY_NO",
-        "score": 0.7643,
-        "edge": 0.002,
-        "win_probability": 0.994,
-        "buy_price": 0.998,
-        "ev": -0.004,
-        "kelly_frac": 0.0,
-        "ttl_sec": 41326,
-        "executed": false,
-        "reason_skipped": "daily_loss_limit",
-        "trade_id": "",
-        "budget_usdc": 1.0,
-        "shares": 1,
-        "actual_cost": 0.998,
-        "unused_cash": 0.002,
-        "category": "crypto",
-        "volume_24h": 9925.96,
-        "spread": 0.008,
-        "fee": 9e-06,
-        "minutes_left": 688,
-        "days_left": 0.48,
-        "num_legs": 1,
-        "total_ask": 0,
-        "observer_flagged": false,
-        "clob_enriched": true,
-        "yes_token_id": "109602948002955081937064010298340430995078037083187780092554244158091734877024",
-        "no_token_id": "58654868367900673244116911774304044563835366432116089638577301022765032770025",
-        "clob_yes_bid": 0.003,
-        "clob_yes_ask": 0.006,
-        "clob_no_bid": 0.994,
-        "clob_no_ask": 0.997,
-        "clob_spread": 0.003,
-        "live_edge": 0.988,
-        "bid_depth_5": 1144.82,
-        "ask_depth_5": 15635.73,
-        "enriched_at": "2026-08-24T16:55:14.894383+00:00",
-        "tradeable": true
-      }
-    ]
+    "enriched_at": "2026-08-24T17:46:29.764071+00:00",
+    "opportunities": [],
+    "message": "No recent strategy opportunities to enrich"
   }
 }
