@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-25T04:07:24.723667+00:00Z",
+  "timestamp": "2026-08-25T05:03:50.419942+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 5106,
+  "trades_rejected": 5107,
   "scan_log_executed": 172,
-  "total_opportunities": 5278,
+  "total_opportunities": 5279,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2478,
+      "total": 2479,
       "executed": 54,
-      "rejected": 2424
+      "rejected": 2425
     },
     "s1_negrisk_arb": {
       "total": 2800,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-26T13:10:14.362917+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2708522",
-      "question": "Will Charles Leclerc win the 2026 F1 Hungarian Grand Prix?",
-      "action": "BUY_NO",
-      "score": 0.5327,
-      "edge": 0.0611,
-      "win_probability": 0.925,
-      "buy_price": 0.93,
-      "ev": -0.0149,
-      "kelly_frac": 0.0,
-      "ttl_sec": 604186,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.93,
-      "unused_cash": 0.07,
-      "category": "sports",
-      "volume_24h": 62776.41,
-      "spread": 0.01,
-      "fee": 0.008868,
-      "minutes_left": 10069,
-      "days_left": 6.99,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-26T14:47:54.325843+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-08-25T05:03:50.310003+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "3307942",
+      "question": "Will Bitcoin dip to $62,500 in August?",
+      "action": "BUY_NO",
+      "score": 0.504,
+      "edge": 0.0059,
+      "win_probability": 0.993,
+      "buy_price": 0.994,
+      "ev": -0.0011,
+      "kelly_frac": 0.0,
+      "ttl_sec": 600970,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.994,
+      "unused_cash": 0.006,
+      "category": "crypto",
+      "volume_24h": 20387.69,
+      "spread": 0.002,
+      "fee": 8e-05,
+      "minutes_left": 10016,
+      "days_left": 6.96,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-08-25T04:02:10.557943+00:00",
+    "enriched_at": "2026-08-25T04:53:31.222819+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
