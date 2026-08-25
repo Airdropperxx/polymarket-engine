@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-25T15:38:11.624525+00:00Z",
+  "timestamp": "2026-08-25T16:31:00.531371+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -18995,54 +18995,8 @@
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-08-25T15:05:02.223650+00:00",
-    "elapsed_sec": 0.58,
-    "count": 1,
-    "tradeable_count": 0,
-    "opportunities": [
-      {
-        "ts": "2026-08-25T14:39:39.123126+00:00",
-        "strategy": "s10_near_resolution",
-        "market_id": "3746429",
-        "question": "Will the price of Bitcoin be above $72,000 on August 27?",
-        "action": "BUY_YES",
-        "score": 0.709,
-        "edge": 0.0155,
-        "win_probability": 0.9835,
-        "buy_price": 0.984,
-        "ev": -0.0011,
-        "kelly_frac": 0.0,
-        "ttl_sec": 177622,
-        "executed": false,
-        "reason_skipped": "daily_loss_limit",
-        "trade_id": "",
-        "budget_usdc": 1.0,
-        "shares": 1,
-        "actual_cost": 0.984,
-        "unused_cash": 0.016,
-        "category": "crypto",
-        "volume_24h": 6898.76,
-        "spread": 0.001,
-        "fee": 0.000549,
-        "minutes_left": 2960,
-        "days_left": 2.06,
-        "num_legs": 1,
-        "total_ask": 0,
-        "observer_flagged": false,
-        "clob_enriched": true,
-        "yes_token_id": "92200364831218074128278054810476485634492202577291482166690110180206733786917",
-        "no_token_id": "82743832291422764434348874758735866479137011354264492087539783675729147551154",
-        "clob_yes_bid": 0.983,
-        "clob_yes_ask": 0.985,
-        "clob_no_bid": 0.015,
-        "clob_no_ask": 0.017,
-        "clob_spread": 0.002,
-        "live_edge": -0.0015,
-        "bid_depth_5": 17488.21,
-        "ask_depth_5": 50674.8,
-        "enriched_at": "2026-08-25T15:05:02.675912+00:00",
-        "tradeable": false
-      }
-    ]
+    "enriched_at": "2026-08-25T16:00:00.264157+00:00",
+    "opportunities": [],
+    "message": "No recent strategy opportunities to enrich"
   }
 }
