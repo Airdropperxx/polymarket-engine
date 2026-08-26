@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-26T18:12:23.899574+00:00Z",
+  "timestamp": "2026-08-26T20:30:05.275937+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 5142,
+  "trades_rejected": 5143,
   "scan_log_executed": 172,
-  "total_opportunities": 5314,
+  "total_opportunities": 5315,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2514,
+      "total": 2515,
       "executed": 54,
-      "rejected": 2460
+      "rejected": 2461
     },
     "s1_negrisk_arb": {
       "total": 2800,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-27T08:53:20.188502+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2995849",
-      "question": "Will a European country take military action on Iran by July 31?",
-      "action": "BUY_NO",
-      "score": 0.553,
-      "edge": 0.0098,
-      "win_probability": 0.9885,
-      "buy_price": 0.99,
-      "ev": -0.0017,
-      "kelly_frac": 0.0,
-      "ttl_sec": 399941,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.99,
-      "unused_cash": 0.01,
-      "category": "other",
-      "volume_24h": 15052.86,
-      "spread": 0.003,
-      "fee": 0.000218,
-      "minutes_left": 6665,
-      "days_left": 4.63,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-27T12:17:13.887963+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-08-26T20:30:05.111073+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "3691870",
+      "question": "FC Barcelona vs. Rayo Vallecano de Madrid: O/U 0.5",
+      "action": "BUY_YES",
+      "score": 0.5422,
+      "edge": 0.0255,
+      "win_probability": 0.9655,
+      "buy_price": 0.973,
+      "ev": -0.0093,
+      "kelly_frac": 0.0,
+      "ttl_sec": 428396,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.973,
+      "unused_cash": 0.027,
+      "category": "other",
+      "volume_24h": 9962.14,
+      "spread": 0.015,
+      "fee": 0.001511,
+      "minutes_left": 7139,
+      "days_left": 4.96,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-08-26T16:59:15.930955+00:00",
+    "enriched_at": "2026-08-26T19:18:07.228961+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
