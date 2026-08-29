@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-08-28T17:33:45.708609+00:00Z",
+  "timestamp": "2026-08-29T01:24:17.734567+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -18995,54 +18995,8 @@
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-08-28T05:24:33.364280+00:00",
-    "elapsed_sec": 0.47,
-    "count": 1,
-    "tradeable_count": 1,
-    "opportunities": [
-      {
-        "ts": "2026-08-28T05:03:52.525429+00:00",
-        "strategy": "s10_near_resolution",
-        "market_id": "1973894",
-        "question": "Will Min Woo Lee win the 2026 TOUR Championship?",
-        "action": "BUY_NO",
-        "score": 0.5646,
-        "edge": 0.0785,
-        "win_probability": 0.8945,
-        "buy_price": 0.907,
-        "ev": -0.0298,
-        "kelly_frac": 0.0,
-        "ttl_sec": 240968,
-        "executed": false,
-        "reason_skipped": "daily_loss_limit",
-        "trade_id": "",
-        "budget_usdc": 1.0,
-        "shares": 1,
-        "actual_cost": 0.907,
-        "unused_cash": 0.093,
-        "category": "sports",
-        "volume_24h": 1209.92,
-        "spread": 0.025,
-        "fee": 0.01452,
-        "minutes_left": 4016,
-        "days_left": 2.79,
-        "num_legs": 1,
-        "total_ask": 0,
-        "observer_flagged": false,
-        "clob_enriched": true,
-        "yes_token_id": "74877997193767084337119197903539043832429847664531967331534576235909040599165",
-        "no_token_id": "104966021592242261127335722177377046865210612822210384814447974858700876601754",
-        "clob_yes_bid": 0.093,
-        "clob_yes_ask": 0.117,
-        "clob_no_bid": 0.883,
-        "clob_no_ask": 0.907,
-        "clob_spread": 0.024,
-        "live_edge": 0.7775,
-        "bid_depth_5": 3405.08,
-        "ask_depth_5": 10335.29,
-        "enriched_at": "2026-08-28T05:24:33.695092+00:00",
-        "tradeable": true
-      }
-    ]
+    "enriched_at": "2026-08-28T18:42:46.974162+00:00",
+    "opportunities": [],
+    "message": "No recent strategy opportunities to enrich"
   }
 }
