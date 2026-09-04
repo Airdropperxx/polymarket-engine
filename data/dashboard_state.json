@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-09-04T17:23:12.215069+00:00Z",
+  "timestamp": "2026-09-04T19:46:02.120665+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -18995,54 +18995,8 @@
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-09-04T14:21:52.684309+00:00",
-    "elapsed_sec": 0.73,
-    "count": 1,
-    "tradeable_count": 1,
-    "opportunities": [
-      {
-        "ts": "2026-09-04T13:57:19.296170+00:00",
-        "strategy": "s10_near_resolution",
-        "market_id": "3093329",
-        "question": "Will AfD win fewer than 34 seats in the 2026 Sachsen-Anhalt parliamentary elections?",
-        "action": "BUY_NO",
-        "score": 0.583,
-        "edge": 0.002,
-        "win_probability": 0.9965,
-        "buy_price": 0.998,
-        "ev": -0.0015,
-        "kelly_frac": 0.0,
-        "ttl_sec": 208901,
-        "executed": false,
-        "reason_skipped": "daily_loss_limit",
-        "trade_id": "",
-        "budget_usdc": 1.0,
-        "shares": 1,
-        "actual_cost": 0.998,
-        "unused_cash": 0.002,
-        "category": "politics",
-        "volume_24h": 2030.76,
-        "spread": 0.003,
-        "fee": 9e-06,
-        "minutes_left": 3481,
-        "days_left": 2.42,
-        "num_legs": 1,
-        "total_ask": 0,
-        "observer_flagged": false,
-        "clob_enriched": true,
-        "yes_token_id": "27229208152354252148944077510973699405977001087090895092629716344008547683399",
-        "no_token_id": "89609035161268055562752982079619438169669116510431224669820898976429395831760",
-        "clob_yes_bid": 0.002,
-        "clob_yes_ask": 0.005,
-        "clob_no_bid": 0.995,
-        "clob_no_ask": 0.998,
-        "clob_spread": 0.003,
-        "live_edge": 0.9915,
-        "bid_depth_5": 2343.0,
-        "ask_depth_5": 18181.32,
-        "enriched_at": "2026-09-04T14:21:53.277655+00:00",
-        "tradeable": true
-      }
-    ]
+    "enriched_at": "2026-09-04T18:24:40.483468+00:00",
+    "opportunities": [],
+    "message": "No recent strategy opportunities to enrich"
   }
 }
