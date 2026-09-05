@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-09-05T17:26:40.564751+00:00Z",
+  "timestamp": "2026-09-05T19:15:18.095411+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 5156,
+  "trades_rejected": 5157,
   "scan_log_executed": 172,
-  "total_opportunities": 5328,
+  "total_opportunities": 5329,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2528,
+      "total": 2529,
       "executed": 54,
-      "rejected": 2474
+      "rejected": 2475
     },
     "s1_negrisk_arb": {
       "total": 2800,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-28T03:45:00.914010+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2968489",
-      "question": "Will White House post 200+ posts from July 21 to July 28, 2026?",
-      "action": "BUY_YES",
-      "score": 0.6849,
-      "edge": 0.0533,
-      "win_probability": 0.915,
-      "buy_price": 0.94,
-      "ev": -0.0338,
-      "kelly_frac": 0.0,
-      "ttl_sec": 44100,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.94,
-      "unused_cash": 0.06,
-      "category": "other",
-      "volume_24h": 2424.59,
-      "spread": 0.05,
-      "fee": 0.006728,
-      "minutes_left": 735,
-      "days_left": 0.51,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-28T03:45:01.062555+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-09-05T19:15:17.922436+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "4200537",
+      "question": "US Open ATP: Alexander Blockx vs Flavio Cobolli",
+      "action": "BUY_YES",
+      "score": 0.5005,
+      "edge": 0.105,
+      "win_probability": 0.86,
+      "buy_price": 0.87,
+      "ev": -0.0403,
+      "kelly_frac": 0.0,
+      "ttl_sec": 503083,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.87,
+      "unused_cash": 0.13,
+      "category": "other",
+      "volume_24h": 990854.96,
+      "spread": 0.02,
+      "fee": 0.02504,
+      "minutes_left": 8384,
+      "days_left": 5.82,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-09-05T16:04:46.489966+00:00",
+    "enriched_at": "2026-09-05T18:18:30.634229+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
