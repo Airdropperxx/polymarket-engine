@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-09-05T21:27:49.559761+00:00Z",
+  "timestamp": "2026-09-05T23:08:54.322570+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 5159,
+  "trades_rejected": 5160,
   "scan_log_executed": 172,
-  "total_opportunities": 5331,
+  "total_opportunities": 5332,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2531,
+      "total": 2532,
       "executed": 54,
-      "rejected": 2477
+      "rejected": 2478
     },
     "s1_negrisk_arb": {
       "total": 2800,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-28T03:45:01.327291+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2431245",
-      "question": "Will DeepSeek have the best Chinese AI model at the end of July 2026?",
-      "action": "BUY_NO",
-      "score": 0.6041,
-      "edge": 0.004,
-      "win_probability": 0.9945,
-      "buy_price": 0.996,
-      "ev": -0.0015,
-      "kelly_frac": 0.0,
-      "ttl_sec": 245700,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.996,
-      "unused_cash": 0.004,
-      "category": "other",
-      "volume_24h": 6232.23,
-      "spread": 0.003,
-      "fee": 3.6e-05,
-      "minutes_left": 4095,
-      "days_left": 2.84,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-28T06:22:11.287864+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-09-05T23:08:54.163716+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "4237494",
+      "question": "Will Ethereum reach $2,550 on September 5?",
+      "action": "BUY_NO",
+      "score": 0.7792,
+      "edge": 0.0192,
+      "win_probability": 0.97,
+      "buy_price": 0.98,
+      "ev": -0.0111,
+      "kelly_frac": 0.0,
+      "ttl_sec": 17467,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.98,
+      "unused_cash": 0.02,
+      "category": "crypto",
+      "volume_24h": 9965.91,
+      "spread": 0.02,
+      "fee": 0.000847,
+      "minutes_left": 291,
+      "days_left": 0.2,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-09-05T21:14:52.520987+00:00",
+    "enriched_at": "2026-09-05T22:57:59.567996+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
