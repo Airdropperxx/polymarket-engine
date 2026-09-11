@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-09-10T23:18:41.502615+00:00Z",
+  "timestamp": "2026-09-11T01:18:28.153418+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -18995,7 +18995,7 @@
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-09-10T21:38:15.032230+00:00",
+    "enriched_at": "2026-09-11T00:10:32.690950+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
