@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-09-12T17:41:02.199960+00:00Z",
+  "timestamp": "2026-09-12T20:05:50.026271+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 5163,
+  "trades_rejected": 5164,
   "scan_log_executed": 172,
-  "total_opportunities": 5335,
+  "total_opportunities": 5336,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2535,
+      "total": 2536,
       "executed": 54,
-      "rejected": 2481
+      "rejected": 2482
     },
     "s1_negrisk_arb": {
       "total": 2800,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-28T09:15:30.589123+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2431051",
-      "question": "Will Anthropic have the best Math AI model at the end of July 2026?",
-      "action": "BUY_YES",
-      "score": 0.6643,
-      "edge": 0.0155,
-      "win_probability": 0.9825,
-      "buy_price": 0.984,
-      "ev": -0.0021,
-      "kelly_frac": 0.0,
-      "ttl_sec": 225870,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.984,
-      "unused_cash": 0.016,
-      "category": "crypto",
-      "volume_24h": 2966.29,
-      "spread": 0.003,
-      "fee": 0.000549,
-      "minutes_left": 3764,
-      "days_left": 2.61,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-28T11:33:57.175828+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-09-12T20:05:49.893533+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "4412241",
+      "question": "Will the price of Bitcoin be above $80,000 on September 16?",
+      "action": "BUY_NO",
+      "score": 0.5782,
+      "edge": 0.0908,
+      "win_probability": 0.875,
+      "buy_price": 0.89,
+      "ev": -0.0384,
+      "kelly_frac": 0.0,
+      "ttl_sec": 330851,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.89,
+      "unused_cash": 0.11,
+      "category": "crypto",
+      "volume_24h": 7032.15,
+      "spread": 0.03,
+      "fee": 0.019193,
+      "minutes_left": 5514,
+      "days_left": 3.83,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-09-12T17:10:53.640565+00:00",
+    "enriched_at": "2026-09-12T19:22:32.268745+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
