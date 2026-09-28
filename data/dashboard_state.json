@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-09-28T01:04:22.620484+00:00Z",
+  "timestamp": "2026-09-28T07:15:14.957302+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 5171,
+  "trades_rejected": 5172,
   "scan_log_executed": 172,
-  "total_opportunities": 5343,
+  "total_opportunities": 5344,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2543,
+      "total": 2544,
       "executed": 54,
-      "rejected": 2489
+      "rejected": 2490
     },
     "s1_negrisk_arb": {
       "total": 2800,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-28T19:16:06.027254+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2677833",
-      "question": "Will Gold (XAUUSD) hit (HIGH) $4,400 in July?",
-      "action": "BUY_NO",
-      "score": 0.5464,
-      "edge": 0.003,
-      "win_probability": 0.9935,
-      "buy_price": 0.997,
-      "ev": -0.0035,
-      "kelly_frac": 0.0,
-      "ttl_sec": 290634,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.997,
-      "unused_cash": 0.003,
-      "category": "other",
-      "volume_24h": 1369.75,
-      "spread": 0.007,
-      "fee": 2e-05,
-      "minutes_left": 4843,
-      "days_left": 3.36,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-28T20:41:13.723886+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-09-28T07:15:14.792853+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "3866381",
+      "question": "Will Micron Technology, Inc. (MU) hit (HIGH) $1,200 in September?",
+      "action": "BUY_NO",
+      "score": 0.5334,
+      "edge": 0.0763,
+      "win_probability": 0.895,
+      "buy_price": 0.91,
+      "ev": -0.0316,
+      "kelly_frac": 0.0,
+      "ttl_sec": 247485,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.91,
+      "unused_cash": 0.09,
+      "category": "other",
+      "volume_24h": 1328.35,
+      "spread": 0.03,
+      "fee": 0.013734,
+      "minutes_left": 4124,
+      "days_left": 2.86,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-09-28T00:48:17.024302+00:00",
+    "enriched_at": "2026-09-28T06:54:26.903465+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
