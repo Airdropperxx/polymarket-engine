@@ -510,7 +510,7 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
 
 <script id="engine-data" type="application/json">
 {
-  "timestamp": "2026-10-19T11:57:02.187458+00:00Z",
+  "timestamp": "2026-10-19T18:23:20.646499+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -548,14 +548,14 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 5177,
+  "trades_rejected": 5178,
   "scan_log_executed": 172,
-  "total_opportunities": 5349,
+  "total_opportunities": 5350,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2549,
+      "total": 2550,
       "executed": 54,
-      "rejected": 2495
+      "rejected": 2496
     },
     "s1_negrisk_arb": {
       "total": 2800,
@@ -4504,36 +4504,6 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-28T23:05:38.634945+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "3124779",
-      "question": "Will the highest temperature in Wellington be 12°C on July 29?",
-      "action": "BUY_NO",
-      "score": 0.7209,
-      "edge": 0.0228,
-      "win_probability": 0.9685,
-      "buy_price": 0.976,
-      "ev": -0.0089,
-      "kelly_frac": 0.0,
-      "ttl_sec": 46462,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.976,
-      "unused_cash": 0.024,
-      "category": "other",
-      "volume_24h": 7447.41,
-      "spread": 0.015,
-      "fee": 0.001205,
-      "minutes_left": 774,
-      "days_left": 0.54,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-28T23:05:38.783651+00:00",
       "strategy": "s10_near_resolution",
@@ -19503,10 +19473,40 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-10-19T18:23:20.477448+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "5689997",
+      "question": "Will the price of Ethereum be above $2,300 on October 21?",
+      "action": "BUY_YES",
+      "score": 0.6564,
+      "edge": 0.0908,
+      "win_probability": 0.885,
+      "buy_price": 0.89,
+      "ev": -0.0272,
+      "kelly_frac": 0.0,
+      "ttl_sec": 164200,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.89,
+      "unused_cash": 0.11,
+      "category": "crypto",
+      "volume_24h": 5709.76,
+      "spread": 0.01,
+      "fee": 0.019193,
+      "minutes_left": 2736,
+      "days_left": 1.9,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-10-19T07:46:30.635570+00:00",
+    "enriched_at": "2026-10-19T15:36:01.626134+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
