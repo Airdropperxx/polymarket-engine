@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-10-24T06:49:23.109417+00:00Z",
+  "timestamp": "2026-10-24T11:49:02.053871+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 5180,
+  "trades_rejected": 5181,
   "scan_log_executed": 172,
-  "total_opportunities": 5352,
+  "total_opportunities": 5353,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2552,
+      "total": 2553,
       "executed": 54,
-      "rejected": 2498
+      "rejected": 2499
     },
     "s1_negrisk_arb": {
       "total": 2800,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-29T00:55:52.897199+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "3055717",
-      "question": "Will the price of Bitcoin be above $66,000 on July 30?",
-      "action": "BUY_NO",
-      "score": 0.6771,
-      "edge": 0.0908,
-      "win_probability": 0.885,
-      "buy_price": 0.89,
-      "ev": -0.0272,
-      "kelly_frac": 0.0,
-      "ttl_sec": 140648,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.89,
-      "unused_cash": 0.11,
-      "category": "crypto",
-      "volume_24h": 8643.54,
-      "spread": 0.01,
-      "fee": 0.019193,
-      "minutes_left": 2344,
-      "days_left": 1.63,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-29T00:55:53.042965+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-10-24T11:49:01.898829+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "6035972",
+      "question": "Will the highest temperature in Shanghai be 22°C on October 24?",
+      "action": "BUY_YES",
+      "score": 0.7349,
+      "edge": 0.002,
+      "win_probability": 0.9965,
+      "buy_price": 0.998,
+      "ev": -0.0015,
+      "kelly_frac": 0.0,
+      "ttl_sec": 659,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.998,
+      "unused_cash": 0.002,
+      "category": "other",
+      "volume_24h": 7578.43,
+      "spread": 0.003,
+      "fee": 9e-06,
+      "minutes_left": 10,
+      "days_left": 0.01,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-10-24T05:54:06.823876+00:00",
+    "enriched_at": "2026-10-24T11:00:53.123806+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
