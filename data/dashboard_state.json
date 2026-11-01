@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-01T11:09:38.431673+00:00Z",
+  "timestamp": "2026-11-01T17:12:33.281723+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 5183,
+  "trades_rejected": 5184,
   "scan_log_executed": 172,
-  "total_opportunities": 5355,
+  "total_opportunities": 5356,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2555,
+      "total": 2556,
       "executed": 54,
-      "rejected": 2501
+      "rejected": 2502
     },
     "s1_negrisk_arb": {
       "total": 2800,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-29T04:08:58.558635+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2677833",
-      "question": "Will Gold (XAUUSD) hit (HIGH) $4,400 in July?",
-      "action": "BUY_NO",
-      "score": 0.5641,
-      "edge": 0.003,
-      "win_probability": 0.9935,
-      "buy_price": 0.997,
-      "ev": -0.0035,
-      "kelly_frac": 0.0,
-      "ttl_sec": 258661,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.997,
-      "unused_cash": 0.003,
-      "category": "other",
-      "volume_24h": 1492.45,
-      "spread": 0.007,
-      "fee": 2e-05,
-      "minutes_left": 4311,
-      "days_left": 2.99,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-29T07:16:36.014223+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-11-01T17:12:33.139271+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "6273945",
+      "question": "Will Republicans win Kansas, Maine, and Michigan, and lose Alaska, Iowa, Ohio, and Texas?",
+      "action": "BUY_NO",
+      "score": 0.6474,
+      "edge": 0.002,
+      "win_probability": 0.9975,
+      "buy_price": 0.998,
+      "ev": -0.0005,
+      "kelly_frac": 0.0,
+      "ttl_sec": 197188,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.998,
+      "unused_cash": 0.002,
+      "category": "politics",
+      "volume_24h": 26886.34,
+      "spread": 0.001,
+      "fee": 9e-06,
+      "minutes_left": 3286,
+      "days_left": 2.28,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-11-01T07:32:07.602273+00:00",
+    "enriched_at": "2026-11-01T15:09:00.839462+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
