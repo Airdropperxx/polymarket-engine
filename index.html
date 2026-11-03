@@ -510,7 +510,7 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
 
 <script id="engine-data" type="application/json">
 {
-  "timestamp": "2026-11-03T05:53:43.625520+00:00Z",
+  "timestamp": "2026-11-03T13:30:46.045219+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -548,14 +548,14 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 5187,
+  "trades_rejected": 5188,
   "scan_log_executed": 172,
-  "total_opportunities": 5359,
+  "total_opportunities": 5360,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2559,
+      "total": 2560,
       "executed": 54,
-      "rejected": 2505
+      "rejected": 2506
     },
     "s1_negrisk_arb": {
       "total": 2800,
@@ -4504,36 +4504,6 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-29T10:05:34.575517+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2107956",
-      "question": "Bank of Japan increases interest rates by 50+ bps after the July 2026 meeting?",
-      "action": "BUY_NO",
-      "score": 0.6257,
-      "edge": 0.003,
-      "win_probability": 0.995,
-      "buy_price": 0.997,
-      "ev": -0.002,
-      "kelly_frac": 0.0,
-      "ttl_sec": 136466,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.997,
-      "unused_cash": 0.003,
-      "category": "politics",
-      "volume_24h": 3290.44,
-      "spread": 0.004,
-      "fee": 2e-05,
-      "minutes_left": 2274,
-      "days_left": 1.58,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-29T10:05:34.709402+00:00",
       "strategy": "s10_near_resolution",
@@ -19503,10 +19473,40 @@ td.mono{font-family:var(--mono);font-size:11px} td.pos{color:var(--green);font-f
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-11-03T13:30:45.872631+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "634879",
+      "question": "Will the Republicans win the Louisiana Senate race in 2026?",
+      "action": "BUY_YES",
+      "score": 0.6525,
+      "edge": 0.0979,
+      "win_probability": 0.875,
+      "buy_price": 0.88,
+      "ev": -0.0308,
+      "kelly_frac": 0.0,
+      "ttl_sec": 55695,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.88,
+      "unused_cash": 0.12,
+      "category": "politics",
+      "volume_24h": 10056.04,
+      "spread": 0.01,
+      "fee": 0.02208,
+      "minutes_left": 928,
+      "days_left": 0.64,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-11-02T23:30:11.728472+00:00",
+    "enriched_at": "2026-11-03T06:47:27.247733+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
