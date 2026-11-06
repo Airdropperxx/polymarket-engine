@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-05T23:12:14.019899+00:00Z",
+  "timestamp": "2026-11-06T03:30:46.428163+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 5190,
+  "trades_rejected": 5191,
   "scan_log_executed": 172,
-  "total_opportunities": 5362,
+  "total_opportunities": 5363,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2562,
+      "total": 2563,
       "executed": 54,
-      "rejected": 2508
+      "rejected": 2509
     },
     "s1_negrisk_arb": {
       "total": 2800,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-29T12:27:45.608886+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2107956",
-      "question": "Bank of Japan increases interest rates by 50+ bps after the July 2026 meeting?",
-      "action": "BUY_NO",
-      "score": 0.6311,
-      "edge": 0.003,
-      "win_probability": 0.9955,
-      "buy_price": 0.997,
-      "ev": -0.0015,
-      "kelly_frac": 0.0,
-      "ttl_sec": 127935,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.997,
-      "unused_cash": 0.003,
-      "category": "politics",
-      "volume_24h": 3282.99,
-      "spread": 0.003,
-      "fee": 2e-05,
-      "minutes_left": 2132,
-      "days_left": 1.48,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-29T14:42:13.037517+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-11-06T03:30:46.305631+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "6563883",
+      "question": "Will Ethereum reach $2,900 November 2-8?",
+      "action": "BUY_NO",
+      "score": 0.6908,
+      "edge": 0.004,
+      "win_probability": 0.995,
+      "buy_price": 0.996,
+      "ev": -0.001,
+      "kelly_frac": 0.0,
+      "ttl_sec": 264554,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.996,
+      "unused_cash": 0.004,
+      "category": "crypto",
+      "volume_24h": 49048.03,
+      "spread": 0.002,
+      "fee": 3.6e-05,
+      "minutes_left": 4409,
+      "days_left": 3.06,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-11-05T21:59:00.060242+00:00",
+    "enriched_at": "2026-11-06T02:26:09.264844+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
