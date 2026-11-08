@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-08T13:44:38.800553+00:00Z",
+  "timestamp": "2026-11-08T18:37:38.076758+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 5192,
+  "trades_rejected": 5193,
   "scan_log_executed": 172,
-  "total_opportunities": 5364,
+  "total_opportunities": 5365,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2564,
+      "total": 2565,
       "executed": 54,
-      "rejected": 2510
+      "rejected": 2511
     },
     "s1_negrisk_arb": {
       "total": 2800,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-29T16:17:18.487946+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "3094522",
-      "question": "LoL: VfB eSports vs G2 NORD (BO3) - Prime League 1st Division Group B",
-      "action": "BUY_NO",
-      "score": 0.7276,
-      "edge": 0.002,
-      "win_probability": 0.9845,
-      "buy_price": 0.998,
-      "ev": -0.0135,
-      "kelly_frac": 0.0,
-      "ttl_sec": 16962,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.998,
-      "unused_cash": 0.002,
-      "category": "sports",
-      "volume_24h": 7859.43,
-      "spread": 0.027,
-      "fee": 9e-06,
-      "minutes_left": 282,
-      "days_left": 0.2,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-29T16:17:18.631600+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-11-08T18:37:37.903137+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "6772874",
+      "question": "Will the highest temperature in Hong Kong be 25°C on November 9?",
+      "action": "BUY_NO",
+      "score": 0.6899,
+      "edge": 0.002,
+      "win_probability": 0.995,
+      "buy_price": 0.998,
+      "ev": -0.003,
+      "kelly_frac": 0.0,
+      "ttl_sec": 62543,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.998,
+      "unused_cash": 0.002,
+      "category": "other",
+      "volume_24h": 4658.55,
+      "spread": 0.006,
+      "fee": 9e-06,
+      "minutes_left": 1042,
+      "days_left": 0.72,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-11-08T07:20:23.120190+00:00",
+    "enriched_at": "2026-11-08T15:12:17.643273+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
