@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-09T20:55:08.034850+00:00Z",
+  "timestamp": "2026-11-10T03:07:06.435933+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 5193,
+  "trades_rejected": 5194,
   "scan_log_executed": 172,
-  "total_opportunities": 5365,
+  "total_opportunities": 5366,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2565,
+      "total": 2566,
       "executed": 54,
-      "rejected": 2511
+      "rejected": 2512
     },
     "s1_negrisk_arb": {
       "total": 2800,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-29T16:17:18.631600+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "3010131",
-      "question": "Will Elon Musk post 280-299 tweets from July 24 to July 31, 2026?",
-      "action": "BUY_NO",
-      "score": 0.7068,
-      "edge": 0.0665,
-      "win_probability": 0.9215,
-      "buy_price": 0.923,
-      "ev": -0.013,
-      "kelly_frac": 0.0,
-      "ttl_sec": 171762,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.923,
-      "unused_cash": 0.077,
-      "category": "other",
-      "volume_24h": 58103.21,
-      "spread": 0.003,
-      "fee": 0.01049,
-      "minutes_left": 2862,
-      "days_left": 1.99,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-29T16:17:18.759125+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-11-10T03:07:06.278581+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "5775586",
+      "question": "Will the USS Theodore Roosevelt arrive in CENTCOM by November 12, 2026?",
+      "action": "BUY_NO",
+      "score": 0.5255,
+      "edge": 0.1022,
+      "win_probability": 0.8665,
+      "buy_price": 0.874,
+      "ev": -0.0359,
+      "kelly_frac": 0.0,
+      "ttl_sec": 265914,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.874,
+      "unused_cash": 0.126,
+      "category": "other",
+      "volume_24h": 1407.81,
+      "spread": 0.015,
+      "fee": 0.023848,
+      "minutes_left": 4431,
+      "days_left": 3.08,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-11-09T17:29:17.706761+00:00",
+    "enriched_at": "2026-11-10T01:31:09.344730+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
