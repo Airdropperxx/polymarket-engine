@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-20T16:38:05.121767+00:00Z",
+  "timestamp": "2026-11-20T22:56:22.562883+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 5205,
+  "trades_rejected": 5206,
   "scan_log_executed": 172,
-  "total_opportunities": 5377,
+  "total_opportunities": 5378,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2577,
+      "total": 2578,
       "executed": 54,
-      "rejected": 2523
+      "rejected": 2524
     },
     "s1_negrisk_arb": {
       "total": 2800,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-30T16:23:29.104727+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "3101537",
-      "question": "Will the price of Bitcoin be above $60,000 on August 1?",
-      "action": "BUY_YES",
-      "score": 0.667,
-      "edge": 0.002,
-      "win_probability": 0.9945,
-      "buy_price": 0.998,
-      "ev": -0.0035,
-      "kelly_frac": 0.0,
-      "ttl_sec": 171392,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.998,
-      "unused_cash": 0.002,
-      "category": "crypto",
-      "volume_24h": 2062.16,
-      "spread": 0.007,
-      "fee": 9e-06,
-      "minutes_left": 2856,
-      "days_left": 1.98,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-30T17:55:54.481122+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-11-20T22:56:22.435331+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "7192991",
+      "question": "Counter-Strike: paiN Academy vs Los Niños - Map 2 Winner",
+      "action": "BUY_NO",
+      "score": 0.7251,
+      "edge": 0.1119,
+      "win_probability": 0.85,
+      "buy_price": 0.86,
+      "ev": -0.0442,
+      "kelly_frac": 0.0,
+      "ttl_sec": 14618,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.86,
+      "unused_cash": 0.14,
+      "category": "sports",
+      "volume_24h": 11154.16,
+      "spread": 0.02,
+      "fee": 0.02805,
+      "minutes_left": 243,
+      "days_left": 0.17,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-11-20T11:53:39.333644+00:00",
+    "enriched_at": "2026-11-20T20:20:14.574415+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
