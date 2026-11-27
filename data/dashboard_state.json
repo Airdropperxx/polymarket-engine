@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-27T04:44:06.755842+00:00Z",
+  "timestamp": "2026-11-27T14:38:09.329949+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 5209,
+  "trades_rejected": 5210,
   "scan_log_executed": 172,
-  "total_opportunities": 5381,
+  "total_opportunities": 5382,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2581,
+      "total": 2582,
       "executed": 54,
-      "rejected": 2527
+      "rejected": 2528
     },
     "s1_negrisk_arb": {
       "total": 2800,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-30T20:41:39.105620+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "2761559",
-      "question": "Will the United States send warships through the Strait of Hormuz by July 31, 2026?",
-      "action": "BUY_NO",
-      "score": 0.6777,
-      "edge": 0.0098,
-      "win_probability": 0.9875,
-      "buy_price": 0.99,
-      "ev": -0.0027,
-      "kelly_frac": 0.0,
-      "ttl_sec": 98242,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.99,
-      "unused_cash": 0.01,
-      "category": "other",
-      "volume_24h": 5348.87,
-      "spread": 0.005,
-      "fee": 0.000218,
-      "minutes_left": 1637,
-      "days_left": 1.14,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-30T20:41:39.254267+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-11-27T14:38:09.156650+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "7024893",
+      "question": "FAA outage attributed to AI?",
+      "action": "BUY_NO",
+      "score": 0.5546,
+      "edge": 0.0117,
+      "win_probability": 0.9835,
+      "buy_price": 0.988,
+      "ev": -0.0049,
+      "kelly_frac": 0.0,
+      "ttl_sec": 310852,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.988,
+      "unused_cash": 0.012,
+      "category": "other",
+      "volume_24h": 2549.7,
+      "spread": 0.009,
+      "fee": 0.000312,
+      "minutes_left": 5180,
+      "days_left": 3.6,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-11-27T02:09:41.456583+00:00",
+    "enriched_at": "2026-11-27T10:51:39.538854+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
