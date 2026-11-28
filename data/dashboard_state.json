@@ -1,5 +1,5 @@
 {
-  "timestamp": "2026-11-28T04:50:02.675185+00:00Z",
+  "timestamp": "2026-11-28T13:50:08.011001+00:00Z",
   "balance": -1.5611340000000056,
   "daily_pnl": 0.0,
   "open_positions": 0,
@@ -37,14 +37,14 @@
   "wins_24h": 0,
   "losses_24h": 0,
   "trades_executed": 142,
-  "trades_rejected": 5210,
+  "trades_rejected": 5211,
   "scan_log_executed": 172,
-  "total_opportunities": 5382,
+  "total_opportunities": 5383,
   "scan_by_strategy": {
     "s10_near_resolution": {
-      "total": 2582,
+      "total": 2583,
       "executed": 54,
-      "rejected": 2528
+      "rejected": 2529
     },
     "s1_negrisk_arb": {
       "total": 2800,
@@ -3993,36 +3993,6 @@
   ],
   "lessons_updated": "2026-03-25T09:53:04.241Z",
   "scan_log": [
-    {
-      "ts": "2026-07-30T20:41:39.254267+00:00",
-      "strategy": "s10_near_resolution",
-      "market_id": "3092019",
-      "question": "Will fewer than 25 ships transit the Strait of Hormuz between July 27-August 2?",
-      "action": "BUY_NO",
-      "score": 0.5895,
-      "edge": 0.0126,
-      "win_probability": 0.9825,
-      "buy_price": 0.987,
-      "ev": -0.0049,
-      "kelly_frac": 0.0,
-      "ttl_sec": 271042,
-      "executed": false,
-      "reason_skipped": "daily_loss_limit",
-      "trade_id": "",
-      "budget_usdc": 1.0,
-      "shares": 1,
-      "actual_cost": 0.987,
-      "unused_cash": 0.013,
-      "category": "other",
-      "volume_24h": 4736.64,
-      "spread": 0.009,
-      "fee": 0.000366,
-      "minutes_left": 4517,
-      "days_left": 3.14,
-      "num_legs": 1,
-      "total_ask": 0,
-      "observer_flagged": false
-    },
     {
       "ts": "2026-07-30T22:07:36.406842+00:00",
       "strategy": "s10_near_resolution",
@@ -18992,10 +18962,40 @@
       "num_legs": 1,
       "total_ask": 0,
       "observer_flagged": false
+    },
+    {
+      "ts": "2026-11-28T13:50:07.904568+00:00",
+      "strategy": "s10_near_resolution",
+      "market_id": "7206752",
+      "question": "Will Real Madrid CF win on 2026-11-28?",
+      "action": "BUY_YES",
+      "score": 0.7632,
+      "edge": 0.1119,
+      "win_probability": 0.855,
+      "buy_price": 0.86,
+      "ev": -0.0384,
+      "kelly_frac": 0.0,
+      "ttl_sec": 22193,
+      "executed": false,
+      "reason_skipped": "daily_loss_limit",
+      "trade_id": "",
+      "budget_usdc": 1.0,
+      "shares": 1,
+      "actual_cost": 0.86,
+      "unused_cash": 0.14,
+      "category": "sports",
+      "volume_24h": 76713.64,
+      "spread": 0.01,
+      "fee": 0.02805,
+      "minutes_left": 369,
+      "days_left": 0.26,
+      "num_legs": 1,
+      "total_ask": 0,
+      "observer_flagged": false
     }
   ],
   "enriched_opps": {
-    "enriched_at": "2026-11-28T02:40:41.105668+00:00",
+    "enriched_at": "2026-11-28T11:45:05.268172+00:00",
     "opportunities": [],
     "message": "No recent strategy opportunities to enrich"
   }
